@@ -1,0 +1,60 @@
+.option-ingresar {
+  width: 350px;
+  position: absolute;
+  top: 30px;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  cursor: default;
+}
+
+.option-ingresar .link-reset-pass {
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  color: #0066bb;
+  text-decoration: none;
+  font-weight: 700;
+  width: 50%;
+  margin: auto;
+}
+
+.option-ingresar .container-actions button {
+  font-size: 14px;
+  color: black;
+  font-weight: 700;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 5px;
+}
+
+.option-ingresar .container-separator .separator {
+  width: 45%;
+  border: 1px solid #ccc;
+  height: 1px;
+}
+
+.option-ingresar .container-separator span {
+  width: 15%;
+  color: #a0a0a0;
+  font-size: 15px;
+}
+
+.option-ingresar .container-btn-auth button {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.option-ingresar .container-btn-auth button:nth-of-type(2) {
+  margin-top: 10px;
+}
+
+.option-ingresar button:hover {
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}

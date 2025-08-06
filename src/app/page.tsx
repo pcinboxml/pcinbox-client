@@ -1,6 +1,5 @@
+import Index from "./index/page";
 
 export default function Home() {
-  return (
-    <div>Hola</div>
-  );
+  return <Index />;
 }

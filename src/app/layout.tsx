@@ -1,5 +1,10 @@
-import "./globals.css";
+"use client";
 
+import AppWrapper from "./wrapper";
+import "./globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import { GlobalProvider } from "./services/globalContext";
 
 export default function RootLayout({
   children,
@@ -8,10 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        
-      >
-        {children}
+      <body>
+        <GlobalProvider>
+          <AppWrapper children={children} />
+        </GlobalProvider>
       </body>
     </html>
   );
