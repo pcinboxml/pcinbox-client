@@ -3,9 +3,13 @@ import { FaApple } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import useLogin from "./useLogin";
 import { ChangeEvent } from "react";
+import useService from "@/app/services/useService";
 
 const Login = () => {
-  const { onSubmit, formData, setFormData, loadingLogin } = useLogin();
+  const { onSubmit, formData, setFormData, loadingLogin, signInWithGoogle } =
+    useLogin();
+
+  const { onRouterLink } = useService();
 
   return (
     <div className="option-ingresar">
@@ -43,7 +47,12 @@ const Login = () => {
         ></div>
         <br />
 
-        <a className="link-reset-pass" href="#">
+        <a
+          className="link-reset-pass"
+          target="_blank"
+          style={{ cursor: "pointer" }}
+          onClick={() => onRouterLink("/forgotpassword", false)}
+        >
           Olvide mi contraseña
         </a>
 
@@ -84,7 +93,7 @@ const Login = () => {
       <br />
 
       <div className="container-btn-auth flex flex-col items-center justify-center gap-1">
-        <button>
+        <button onClick={() => signInWithGoogle()}>
           <FcGoogle size={24} />
           Iniciar sesión con Google
         </button>
