@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdArrowDropDown } from "react-icons/md";
-import Login from "../login/Login";
 
 const submenu: {
   id: number;
@@ -12,8 +11,8 @@ const submenu: {
 }[] = [
   {
     id: 1,
-    label: "Ingresar",
-    html: <Login />,
+    label: "test",
+    html: "",
 
     icon: <MdArrowDropDown size={22} color="gray" />,
   },
@@ -34,6 +33,8 @@ const submenu: {
 
 const useNavbar = () => {
   const [submenuActivo, setSubmenuActivo] = useState<number | null>(null);
+  const [hasToken, setHasToken] = useState(false);
+  const menuCuentaRef = useRef<HTMLDivElement>(null);
 
   const onMouseEnterSubmenu = (id: number) => {
     setSubmenuActivo(id);
@@ -43,11 +44,31 @@ const useNavbar = () => {
     setSubmenuActivo(null);
   };
 
+  useEffect(() => {
+    setHasToken(!!localStorage.getItem("token"));
+  }, []);
+
+  const onMouseEnterMenuCuenta = () => {
+    if (menuCuentaRef.current) {
+      menuCuentaRef.current.style.display = "block";
+    }
+  };
+
+  const onMouseLeaveMenuCuenta = () => {
+    if (menuCuentaRef.current) {
+      menuCuentaRef.current.style.display = "none";
+    }
+  };
+
   return {
     submenu,
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
     submenuActivo,
+    hasToken,
+    menuCuentaRef,
+    onMouseEnterMenuCuenta,
+    onMouseLeaveMenuCuenta,
   };
 };
 

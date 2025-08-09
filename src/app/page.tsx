@@ -1,5 +1,5 @@
-import Index from "./index/page";
+import Login from "./login/page";
 
 export default function Home() {
-  return <Index />;
+  return <Login />;
 }

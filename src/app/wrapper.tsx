@@ -1,6 +1,7 @@
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
 import { useTheContext } from "./services/globalContext";
+import { usePathname } from "next/navigation";
 
 export default function AppWrapper({
   children,
@@ -9,9 +10,16 @@ export default function AppWrapper({
 }) {
   const { bgActive, dataModal } = useTheContext();
 
+  const pathname = usePathname();
+
+  // Define las rutas donde quieres mostrar el Navbar
+  const showNavbarRoutes = ["/login", "/register"];
+
+  const showNavbar = showNavbarRoutes.includes(pathname);
+
   return (
-    <section style={{ background: bgActive, height: "100%" }}>
-      <Navbar />
+    <section style={{ background: bgActive }}>
+      {showNavbar && <Navbar />}
       {children}
       <ModalComponent
         isOpen={dataModal.isOpen}

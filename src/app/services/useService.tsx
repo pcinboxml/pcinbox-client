@@ -2,10 +2,13 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useTheContext } from "./globalContext";
 
 const useService = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const { setDataModal } = useTheContext();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -26,11 +29,11 @@ const useService = () => {
     }
   };
 
-  const onRouterHref = (route: string): void => {
+  const onRouterLink = (route: string): void => {
     router.push(route);
   };
 
-  const onRouterLink = (route: string, blank: boolean): void => {
+  const onRouterHref = (route: string, blank: boolean): void => {
     if (blank) {
       window.open(route, "_blank");
     } else {
@@ -38,9 +41,25 @@ const useService = () => {
     }
   };
 
+  const Logout = () => {
+    setDataModal({
+      isOpen: true,
+      message: "¿Seguro que deseas cerrar sesión?",
+      title: "Cerrar Sesión",
+      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: () => {
+        localStorage.removeItem("token");
+        window.location.reload();
+      },
+      type: "info",
+    });
+  };
+
   return {
     requestPost,
     onRouterLink,
+    onRouterHref,
+    Logout,
   };
 };
 
