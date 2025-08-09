@@ -16,6 +16,7 @@ const useService = () => {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
+    withCredentials: true,
   });
 
   const router = useRouter();
@@ -23,6 +24,15 @@ const useService = () => {
   const requestPost = async (data: any, endPoint: string) => {
     try {
       const res = await api.post(endPoint, data);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const requestGet = async (endPoint: string) => {
+    try {
+      const res = await api.get(endPoint);
       return res;
     } catch (error) {
       throw error;
@@ -56,6 +66,7 @@ const useService = () => {
   };
 
   return {
+    requestGet,
     requestPost,
     onRouterLink,
     onRouterHref,

@@ -13,13 +13,19 @@ import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 
 const useLogin = () => {
-  const [formData, setFormData] = useState<LoginI>({ email: "", password: "" });
+  const [formData, setFormData] = useState<LoginI>({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { setDataModal } = useTheContext();
-
   const { requestPost } = useService();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     e.preventDefault();
 
     if (
@@ -31,6 +37,20 @@ const useLogin = () => {
       return;
     }
 
+    if (!emailRegex.test(formData.email)) {
+      setDataModal({
+        isOpen: true,
+        message: `El correo ${formData.email} no tiene el formato correcto`,
+        title: "Error",
+        type: "error",
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+      return;
+    }
+
     setLoadingLogin(true);
 
     try {
@@ -39,10 +59,17 @@ const useLogin = () => {
 
       if (res && res.status == 200) {
         const data = res.data;
-        localStorage.setItem("token", data.data.token);
-        window.location.reload();
+
+        if (!formData.rememberMe) {
+          localStorage.setItem("token", data.data.token);
+          //redirigir a la pagina principal
+        } else {
+          console.log("iniciaste sesion con cookie");
+          //redirigir a la pagina principal
+        }
       }
     } catch (error: any) {
+      localStorage.setItem("email", formData.email);
       setLoadingLogin(false);
       setDataModal({
         isOpen: true,
@@ -57,40 +84,13 @@ const useLogin = () => {
     }
   };
 
-  useEffect(() => {
-    setLoadingLogin(true);
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          const user = result.user;
-          console.log(user);
-
-          // Guardar token si lo necesitas
-          const credential =
-            GoogleAuthProvider.credentialFromResult(result) ||
-            FacebookAuthProvider.credentialFromResult(result);
-          const token = credential?.accessToken;
-          if (token) localStorage.setItem("token", token);
-        }
-      })
-      .catch((error) => {
-        setDataModal({
-          isOpen: true,
-          message: "Error al iniciar sesión: " + error.message,
-          title: "Error",
-          type: "error",
-          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        });
-      })
-      .finally(() => setLoadingLogin(false));
-  }, []);
-
   return {
     onSubmit,
     formData,
     setFormData,
     loadingLogin,
+    showPassword,
+    setShowPassword,
   };
 };
 

@@ -3,14 +3,35 @@
 import "./login.css";
 
 import useLogin from "./useLogin";
-import { ChangeEvent } from "react";
 import useService from "@/app/services/useService";
-import { Lock, Mail, Shield, Star, Truck } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Shield, Star, Truck } from "lucide-react";
+import { useEffect } from "react";
 
 const Login = () => {
-  const { onSubmit, formData, setFormData, loadingLogin } = useLogin();
+  const {
+    onSubmit,
+    formData,
+    setFormData,
+    loadingLogin,
+    showPassword,
+    setShowPassword,
+  } = useLogin();
 
-  const { onRouterLink, onRouterHref } = useService();
+  const { onRouterLink } = useService();
+  const { requestGet } = useService();
+
+  useEffect(() => {
+    requestGet("/cookies/getCookie").then((res) => {
+      if (res && res.status == 200) {
+        //redirigir a la pagina principal
+      }
+    });
+
+    const getEmailStorage = localStorage.getItem("email");
+    if (getEmailStorage) {
+      setFormData((prev) => ({ ...prev, email: getEmailStorage }));
+    }
+  }, []);
 
   return (
     <div className="container-first">
@@ -31,85 +52,103 @@ const Login = () => {
           </div>
 
           <div>
-            {/* Email */}
-            <div style={{ position: "relative", marginBottom: "20px" }}>
-              <Mail className="icon-class" />
-              <input
-                type="email"
-                name="email"
-                className="input-class"
-                placeholder="Correo electrónico"
-                //value={formData.email}
-                // onChange={handleInputChange}
-                required
-                onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
-              />
-            </div>
-
-            {/* Contraseña */}
-            <div style={{ position: "relative", marginBottom: "20px" }}>
-              <Lock className="icon-class" />
-              <input
-                //type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="Contraseña"
-                // value={formData.password}
-                //onChange={handleInputChange}
-                required
-                className="input-class"
-                onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
-              />
-              <button
-                type="button"
-                //onClick={() => setShowPassword(!showPassword)}
-                className="icon-class-eye"
-              >
-                {/* {showPassword ? <EyeOff size={18} /> : <Eye size={18} />} */}
-              </button>
-            </div>
-
-            {/* Recordarme y olvidar contraseña */}
-            <div className="container-forgot-pass">
-              <label>
+            <form onSubmit={onSubmit}>
+              {/* Email */}
+              <div style={{ position: "relative", marginBottom: "20px" }}>
+                <Mail className="icon-class" />
                 <input
-                  type="checkbox"
-                  //  checked={rememberMe}
-                  //  onChange={(e) => setRememberMe(e.target.checked)}
-                  style={{
-                    accentColor: "#f74928",
-                  }}
+                  type="email"
+                  name="email"
+                  className="input-class"
+                  placeholder="Correo electrónico"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  required
+                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
+                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
                 />
-                <span>Recordarme</span>
-              </label>
+              </div>
 
-              <a
-                href="#"
-                style={{
-                  color: "#f74928",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                }}
+              {/* Contraseña */}
+              <div style={{ position: "relative", marginBottom: "20px" }}>
+                <Lock className="icon-class" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Contraseña"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                  required
+                  className="input-class"
+                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
+                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="icon-class-eye"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              {/* Recordarme y olvidar contraseña */}
+              <div className="container-forgot-pass">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.rememberMe}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        rememberMe: e.target.checked,
+                      }))
+                    }
+                    style={{
+                      accentColor: "#f74928",
+                    }}
+                  />
+                  <span>Recordarme</span>
+                </label>
+
+                <a
+                  role="button"
+                  onClick={() => onRouterLink("/forgotpassword")}
+                  style={{
+                    color: "#f74928",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                  }}
+                >
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+
+              {/* Botón de login */}
+              <button
+                type="submit"
+                className="btnLogin"
+                disabled={loadingLogin}
               >
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
-
-            {/* Botón de login */}
-            <button
-              // onClick={handleSubmit}
-              className="btnLogin"
-              onMouseEnter={(e) => {
-                //  e.target.style.boxShadow = 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px';
-              }}
-              onMouseLeave={(e) => {
-                //e.target.style.boxShadow = 'none';
-              }}
-            >
-              Iniciar Sesión
-            </button>
-
+                {loadingLogin ? (
+                  <div className="flex w-full justify-center items-center cursor-not-allowed">
+                    <span
+                      className="spinner-border spinner-border-sm flex items-center justify-center"
+                      aria-hidden="true"
+                    ></span>
+                  </div>
+                ) : (
+                  "Iniciar Sesión"
+                )}
+              </button>
+            </form>
             {/* Divisor */}
             <div
               style={{
@@ -148,7 +187,8 @@ const Login = () => {
               <p style={{ color: "#666", fontSize: "14px" }}>
                 ¿No tienes una cuenta?{" "}
                 <a
-                  href="#"
+                  role="button"
+                  onClick={() => onRouterLink("/register")}
                   style={{
                     color: "#f74928",
                     textDecoration: "none",

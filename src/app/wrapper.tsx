@@ -12,8 +12,7 @@ export default function AppWrapper({
 
   const pathname = usePathname();
 
-  // Define las rutas donde quieres mostrar el Navbar
-  const showNavbarRoutes = ["/login", "/register"];
+  const showNavbarRoutes = ["/dashboard"];
 
   const showNavbar = showNavbarRoutes.includes(pathname);
 

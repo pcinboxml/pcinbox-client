@@ -1,6 +1,7 @@
 export interface LoginI {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface GoogleProviderI {

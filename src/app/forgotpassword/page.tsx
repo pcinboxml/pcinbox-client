@@ -1,15 +1,18 @@
 "use client";
 
+import "./forgotpassword.css";
 import { Mail, Shield } from "lucide-react";
 import useForgotPassword from "./useForgotPassword";
+import useService from "../services/useService";
 
 const ForgotPassword = () => {
   const { emailR, handleInputChange, loading, handleClick, handleKeyup } =
     useForgotPassword();
+  const { onRouterLink } = useService();
 
   return (
     <section className="w-full mt-2">
-      <div className=" via-white to-red-50 flex items-center justify-center p-4">
+      <div className="container-forgot via-white to-red-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
           <div className="p-8">
             <div className="space-y-6">
@@ -57,6 +60,25 @@ const ForgotPassword = () => {
                     </>
                   )}
                 </button>
+
+                <br />
+
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ color: "#666", fontSize: "14px" }}>
+                    ¿Quieres regresar a la pagina de inicio de sesión?{" "}
+                    <a
+                      role="button"
+                      onClick={() => onRouterLink("/")}
+                      style={{
+                        color: "#f74928",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Aquí
+                    </a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>

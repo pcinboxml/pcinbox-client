@@ -1,46 +1,24 @@
 "use client";
-
-import React, { useState } from "react";
-import {
-  Eye,
-  EyeOff,
-  User,
-  Mail,
-  Lock,
-  Phone,
-  Calendar,
-  Shield,
-} from "lucide-react";
+import "./register.css";
+import { Eye, EyeOff, User, Mail, Lock, Phone, Shield } from "lucide-react";
+import useService from "../services/useService";
+import useRegister from "./useRegister";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    birthDate: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const { onRouterLink } = useService();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [acceptNewsletter, setAcceptNewsletter] = useState(false);
-
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log("Datos de registro:", formData);
-    alert("Registro exitoso! (Demo)");
-  };
+  const {
+    acceptTerms,
+    formData,
+    handleInputChange,
+    handleSubmit,
+    setAcceptTerms,
+    setShowConfirmPassword,
+    setShowPassword,
+    showConfirmPassword,
+    showPassword,
+    loadingRegister,
+  } = useRegister();
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
@@ -87,6 +65,7 @@ const Register = () => {
           <div>
             {/* Nombres */}
             <div
+              className="container-names"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -108,9 +87,9 @@ const Register = () => {
                 />
                 <input
                   type="text"
-                  name="firstName"
+                  name="name"
                   placeholder="Nombre"
-                  value={formData.firstName}
+                  value={formData.name}
                   onChange={handleInputChange}
                   required
                   style={{
@@ -146,9 +125,9 @@ const Register = () => {
                 />
                 <input
                   type="text"
-                  name="lastName"
+                  name="lastname"
                   placeholder="Apellido"
-                  value={formData.lastName}
+                  value={formData.lastname}
                   onChange={handleInputChange}
                   required
                   style={{
@@ -369,7 +348,7 @@ const Register = () => {
               <label
                 style={{
                   display: "flex",
-                  alignItems: "flex-start",
+                  alignItems: "center",
                   gap: "10px",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -409,7 +388,7 @@ const Register = () => {
             {/* Botón de registro */}
             <button
               type="submit"
-              disabled={!acceptTerms}
+              disabled={!acceptTerms || loadingRegister}
               onClick={handleSubmit}
               style={{
                 width: "100%",
@@ -424,16 +403,17 @@ const Register = () => {
                 transition: "all 300ms ease-in-out",
                 marginBottom: "20px",
               }}
-              onMouseEnter={(e) => {
-                if (acceptTerms) {
-                  // e.target.style.boxShadow = 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px';
-                }
-              }}
-              onMouseLeave={(e) => {
-                // e.target.style.boxShadow = 'none';
-              }}
             >
-              Crear Cuenta
+              {loadingRegister ? (
+                <div className="flex w-full justify-center items-center cursor-not-allowed">
+                  <span
+                    className="spinner-border spinner-border-sm flex items-center justify-center"
+                    aria-hidden="true"
+                  ></span>
+                </div>
+              ) : (
+                "Crear cuenta"
+              )}
             </button>
 
             {/* Link de inicio de sesión */}
@@ -441,7 +421,8 @@ const Register = () => {
               <p style={{ color: "#666", fontSize: "14px" }}>
                 ¿Ya tienes una cuenta?{" "}
                 <a
-                  href="#"
+                  role="button"
+                  onClick={() => onRouterLink("/")}
                   style={{
                     color: "#f74928",
                     textDecoration: "none",
