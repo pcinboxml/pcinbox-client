@@ -21,7 +21,7 @@ const useLogin = () => {
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { setDataModal } = useTheContext();
-  const { requestPost } = useService();
+  const { requestPost, onRouterLink } = useService();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,15 +58,9 @@ const useLogin = () => {
       setLoadingLogin(false);
 
       if (res && res.status == 200) {
-        const data = res.data;
-
-        if (!formData.rememberMe) {
-          localStorage.setItem("token", data.data.token);
-          //redirigir a la pagina principal
-        } else {
-          console.log("iniciaste sesion con cookie");
-          //redirigir a la pagina principal
-        }
+        setTimeout(() => {
+          onRouterLink("/index");
+        }, 100);
       }
     } catch (error: any) {
       localStorage.setItem("email", formData.email);

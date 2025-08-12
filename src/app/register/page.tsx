@@ -3,6 +3,8 @@ import "./register.css";
 import { Eye, EyeOff, User, Mail, Lock, Phone, Shield } from "lucide-react";
 import useService from "../services/useService";
 import useRegister from "./useRegister";
+import useProtectedRoutes from "@/app/services/useProtectedRoutes";
+import { useEffect } from "react";
 
 const Register = () => {
   const { onRouterLink } = useService();
@@ -19,6 +21,13 @@ const Register = () => {
     showPassword,
     loadingRegister,
   } = useRegister();
+
+  const { ProtectedLoginAndRegister } = useProtectedRoutes();
+
+  useEffect(() => {
+    //Proteger ruta register
+    ProtectedLoginAndRegister();
+  }, []);
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>

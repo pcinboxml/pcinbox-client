@@ -1,5 +1,6 @@
 "use client";
 
+import useService from "@/app/services/useService";
 import { useEffect, useRef, useState } from "react";
 import { MdArrowDropDown } from "react-icons/md";
 
@@ -35,6 +36,7 @@ const useNavbar = () => {
   const [submenuActivo, setSubmenuActivo] = useState<number | null>(null);
   const [hasToken, setHasToken] = useState(false);
   const menuCuentaRef = useRef<HTMLDivElement>(null);
+  const { requestGet } = useService();
 
   const onMouseEnterSubmenu = (id: number) => {
     setSubmenuActivo(id);
@@ -45,8 +47,17 @@ const useNavbar = () => {
   };
 
   useEffect(() => {
-    setHasToken(!!localStorage.getItem("token"));
-  }, []);
+    requestGet("/cookies/getCookie")
+      .then((res) => {
+        if (res && res.status == 200) {
+          const dataRes = res.data;
+          setHasToken(dataRes.isAuthenticated);
+        }
+      })
+      .catch((er) => {
+        console.log("errror" + er);
+      });
+  }, [hasToken]);
 
   const onMouseEnterMenuCuenta = () => {
     if (menuCuentaRef.current) {

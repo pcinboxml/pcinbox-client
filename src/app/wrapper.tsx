@@ -1,3 +1,4 @@
+import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
 import { useTheContext } from "./services/globalContext";
@@ -12,13 +13,12 @@ export default function AppWrapper({
 
   const pathname = usePathname();
 
-  const showNavbarRoutes = ["/dashboard"];
-
-  const showNavbar = showNavbarRoutes.includes(pathname);
+  const showNavbarAndFooterRoutes =
+    pathname !== "/" && pathname !== "/register";
 
   return (
     <section style={{ background: bgActive }}>
-      {showNavbar && <Navbar />}
+      {showNavbarAndFooterRoutes && <Navbar />}
       {children}
       <ModalComponent
         isOpen={dataModal.isOpen}
@@ -28,6 +28,7 @@ export default function AppWrapper({
         onClose={() => dataModal.onClose()}
         type={dataModal.type}
       />
+      {showNavbarAndFooterRoutes && <Footer />}
     </section>
   );
 }

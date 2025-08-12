@@ -1,31 +1,49 @@
 "use client";
 
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
 import { useTheContext } from "./globalContext";
 
 const useService = () => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
   const { setDataModal } = useTheContext();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
       "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
     },
     withCredentials: true,
   });
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const requestPost = async (data: any, endPoint: string) => {
     try {
       const res = await api.post(endPoint, data);
       return res;
-    } catch (error) {
+    } catch (error: any) {
+      if (
+        pathname != "/" &&
+        pathname != "/register" &&
+        error.response.status == 401
+      ) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
+          title: "Sesión expirada",
+          onClose: () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "info",
+        });
+      }
       throw error;
     }
   };
@@ -33,8 +51,58 @@ const useService = () => {
   const requestGet = async (endPoint: string) => {
     try {
       const res = await api.get(endPoint);
+
       return res;
-    } catch (error) {
+    } catch (error: any) {
+      if (
+        pathname != "/" &&
+        pathname != "/register" &&
+        error.response.status == 401
+      ) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
+          title: "Sesión expirada",
+          onClose: () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "info",
+        });
+      }
+      throw error;
+    }
+  };
+
+  const requestDelete = async (endPoint: string) => {
+    try {
+      const res = await api.delete(endPoint);
+      return res;
+    } catch (error: any) {
+      if (
+        pathname != "/" &&
+        pathname != "/register" &&
+        error.response.status == 401
+      ) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
+          title: "Sesión expirada",
+          onClose: () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            onRouterLink("/");
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "info",
+        });
+      }
       throw error;
     }
   };
@@ -57,9 +125,15 @@ const useService = () => {
       message: "¿Seguro que deseas cerrar sesión?",
       title: "Cerrar Sesión",
       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      onConfirm: () => {
-        localStorage.removeItem("token");
-        window.location.reload();
+      onConfirm: async () => {
+        try {
+          const res = await requestDelete("/cookies/removeCookies");
+
+          if (res && res.status == 200) {
+            localStorage.removeItem("email");
+            onRouterLink("/");
+          }
+        } catch (error) {}
       },
       type: "info",
     });
@@ -68,6 +142,7 @@ const useService = () => {
   return {
     requestGet,
     requestPost,
+    requestDelete,
     onRouterLink,
     onRouterHref,
     Logout,

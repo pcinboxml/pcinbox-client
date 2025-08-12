@@ -1,11 +1,11 @@
 "use client";
 
 import "./login.css";
-
+import { useEffect } from "react";
 import useLogin from "./useLogin";
 import useService from "@/app/services/useService";
 import { Eye, EyeOff, Lock, Mail, Shield, Star, Truck } from "lucide-react";
-import { useEffect } from "react";
+import useProtectedRoutes from "@/app/services/useProtectedRoutes";
 
 const Login = () => {
   const {
@@ -18,14 +18,11 @@ const Login = () => {
   } = useLogin();
 
   const { onRouterLink } = useService();
-  const { requestGet } = useService();
+  const { ProtectedLoginAndRegister } = useProtectedRoutes();
 
   useEffect(() => {
-    requestGet("/cookies/getCookie").then((res) => {
-      if (res && res.status == 200) {
-        //redirigir a la pagina principal
-      }
-    });
+    //Proteger ruta login
+    ProtectedLoginAndRegister();
 
     const getEmailStorage = localStorage.getItem("email");
     if (getEmailStorage) {

@@ -91,65 +91,73 @@ const ModalComponent = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ zIndex: 9999 }}
-    >
-      {/* Backdrop */}
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center`}>
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-200 ${
-          isVisible ? "opacity-50" : "opacity-0"
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          isVisible
+            ? "opacity-50 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={handleClose}
       />
 
-      {/* Modal */}
       <div
-        className={`relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 transform transition-all duration-200 ${
-          isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        className={`relative bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 p-8 transform transition-all duration-300 ${
+          isVisible
+            ? "scale-100 opacity-100"
+            : "scale-95 opacity-0 pointer-events-none"
         }`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
       >
-        {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Cerrar modal"
         >
           <X className="w-5 h-5 text-gray-500" />
         </button>
 
-        {/* Content */}
-        <div className="text-center">
-          {/* Icon container */}
+        <div className="text-center" style={{ padding: "25px" }}>
           <div
-            className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${config.bgColor} ${config.borderColor} border-2`}
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 ${config.bgColor} ${config.borderColor} border-2`}
           >
             <IconComponent className={`w-8 h-8 ${config.iconColor}`} />
           </div>
 
-          {/* Title */}
           {title && (
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3
+              id="modal-title"
+              className="text-2xl font-semibold text-gray-900 mb-3"
+            >
               {title}
             </h3>
           )}
 
-          {/* Message */}
           {message && (
-            <p className="text-gray-600 mb-6 leading-relaxed">{message}</p>
+            <p
+              id="modal-description"
+              className="text-gray-700 mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
+            >
+              {message}
+            </p>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-4 justify-center">
             <button
               onClick={handleClose}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              style={{ padding: "10px" }}
+              className="border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               Cancelar
             </button>
 
             <button
               onClick={handleConfirm}
-              className={`px-6 py-2.5 text-white rounded-lg transition-colors font-medium ${config.buttonColor}`}
+              style={{ padding: "10px" }}
+              className={` text-white rounded-lg transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 ${config.buttonColor}`}
             >
               Aceptar
             </button>
@@ -160,5 +168,4 @@ const ModalComponent = ({
   );
 };
 
-// Ejemplo de uso del componente
 export default ModalComponent;
