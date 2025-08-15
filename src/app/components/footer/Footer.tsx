@@ -1,5 +1,6 @@
 "use client";
 
+import "./footer.css";
 import { MapPin, Phone } from "lucide-react";
 
 const Footer = () => {
@@ -36,7 +37,7 @@ const Footer = () => {
                 marginBottom: "20px",
               }}
             >
-              TechStore
+              PCInbox
             </div>
             <p
               style={{
@@ -215,7 +216,7 @@ const Footer = () => {
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
               >
                 📧
-                <span>info@techstore.mx</span>
+                <span>info@pcinbox.mx</span>
               </div>
             </div>
           </div>
@@ -230,7 +231,7 @@ const Footer = () => {
             color: "#999",
           }}
         >
-          <p>© 2025 TechStore. Todos los derechos reservados.</p>
+          <p>© 2025 PCInbox. Todos los derechos reservados.</p>
           <div
             style={{
               marginTop: "10px",

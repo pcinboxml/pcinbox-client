@@ -1,23 +1,10 @@
 "use client";
-import { MdArrowBack } from "react-icons/md";
 
 import "./configUser.css";
-import useService from "../services/useService";
 
 const ConfigUser = () => {
-  const { onRouterLink } = useService();
-
   return (
     <div className="container">
-      <div className="flex items-center justify-start pb-3">
-        <button
-          className="flex justify-center gap-3 btn-back"
-          onClick={() => onRouterLink("/index")}
-        >
-          <MdArrowBack size={25} />
-          Regresar a la pagina inicio
-        </button>
-      </div>
       <div className="page-header">
         <h1 className="page-title">Ajustes</h1>
         <p className="page-subtitle">
@@ -41,7 +28,7 @@ const ConfigUser = () => {
             <input
               type="text"
               className="input-control"
-              value="usuario123"
+              //value="usuario123"
               placeholder="Nombre de usuario"
             />
           </div>
@@ -55,7 +42,7 @@ const ConfigUser = () => {
             <input
               type="email"
               className="input-control"
-              value="usuario@email.com"
+              //value="usuario@email.com"
               placeholder="Email"
             />
           </div>
@@ -94,10 +81,8 @@ const ConfigUser = () => {
                 Selecciona tu idioma preferido
               </div>
             </div>
-            <select className="select-control">
-              <option defaultValue={"es"} value="es">
-                Español
-              </option>
+            <select defaultValue="es" className="select-control">
+              <option value="es">Español</option>
               <option value="en">English</option>
               <option value="fr">Français</option>
             </select>
@@ -109,13 +94,9 @@ const ConfigUser = () => {
                 Ajustar tamaño del texto
               </div>
             </div>
-            <select className="select-control">
-              <option defaultValue={"small"} value="small">
-                Pequeño
-              </option>
-              <option value="medium" selected>
-                Mediano
-              </option>
+            <select defaultValue="small" className="select-control">
+              <option value="small">Pequeño</option>
+              <option value="medium">Mediano</option>
               <option value="large">Grande</option>
             </select>
           </div>

@@ -11,7 +11,7 @@ const ModalComponent = ({
   type = "success",
   title,
   message,
-
+  children,
   onConfirm,
 }: {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const ModalComponent = ({
   type: ModalType;
   title: string;
   message: string;
-
+  children: React.ReactNode;
   onConfirm: () => void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -143,6 +143,11 @@ const ModalComponent = ({
             >
               {message}
             </p>
+          )}
+
+          {/* {children} */}
+          {children && (
+            <div className="flex gap-4 justify-center pb-2">{children}</div>
           )}
 
           <div className="flex gap-4 justify-center">

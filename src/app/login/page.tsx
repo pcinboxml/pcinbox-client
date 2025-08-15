@@ -31,502 +31,429 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="container-first">
-      {/* Contenido principal */}
-      <div className="container-grid">
-        {/* Panel izquierdo - Login */}
-        <div className="bg-container">
-          <div style={{ textAlign: "center", marginBottom: "30px" }}>
-            <h1>Iniciar Sesión</h1>
-            <p
-              style={{
-                color: "#666",
-                fontSize: "16px",
-              }}
-            >
-              Accede a tu cuenta y disfruta de tus productos favoritos
-            </p>
-          </div>
+    <div className="w-full" style={{ background: "#f8f9fa" }}>
+      <div className="container-first">
+        {/* Contenido principal */}
+        <div className="container-grid">
+          {/* Panel izquierdo - Login */}
+          <div className="bg-container">
+            <div style={{ textAlign: "center", marginBottom: "30px" }}>
+              <h1>Iniciar Sesión</h1>
+              <p
+                style={{
+                  color: "#666",
+                  fontSize: "16px",
+                }}
+              >
+                Accede a tu cuenta y disfruta de tus productos favoritos
+              </p>
+            </div>
 
-          <div>
-            <form onSubmit={onSubmit}>
-              {/* Email */}
-              <div style={{ position: "relative", marginBottom: "20px" }}>
-                <Mail className="icon-class" />
-                <input
-                  type="email"
-                  name="email"
-                  className="input-class"
-                  placeholder="Correo electrónico"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, email: e.target.value }))
-                  }
-                  required
-                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
-                />
-              </div>
-
-              {/* Contraseña */}
-              <div style={{ position: "relative", marginBottom: "20px" }}>
-                <Lock className="icon-class" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Contraseña"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      password: e.target.value,
-                    }))
-                  }
-                  required
-                  className="input-class"
-                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="icon-class-eye"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-
-              {/* Recordarme y olvidar contraseña */}
-              <div className="container-forgot-pass">
-                <label>
+            <div>
+              <form onSubmit={onSubmit}>
+                {/* Email */}
+                <div style={{ position: "relative", marginBottom: "20px" }}>
+                  <Mail className="icon-class" />
                   <input
-                    type="checkbox"
-                    checked={formData.rememberMe}
+                    type="email"
+                    name="email"
+                    className="input-class"
+                    placeholder="Correo electrónico"
+                    value={formData.email}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
-                        rememberMe: e.target.checked,
+                        email: e.target.value,
                       }))
                     }
-                    style={{
-                      accentColor: "#f74928",
-                    }}
+                    required
+                    onFocus={(e) => (e.target.style.borderColor = "#f74928")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
                   />
-                  <span>Recordarme</span>
-                </label>
+                </div>
 
-                <a
-                  role="button"
-                  onClick={() => onRouterLink("/forgotpassword")}
+                {/* Contraseña */}
+                <div style={{ position: "relative", marginBottom: "20px" }}>
+                  <Lock className="icon-class" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Contraseña"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
+                    required
+                    className="input-class"
+                    onFocus={(e) => (e.target.style.borderColor = "#f74928")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="icon-class-eye"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+
+                {/* Recordarme y olvidar contraseña */}
+                <div className="container-forgot-pass">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={formData.rememberMe}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          rememberMe: e.target.checked,
+                        }))
+                      }
+                      style={{
+                        accentColor: "#f74928",
+                      }}
+                    />
+                    <span>Recordarme</span>
+                  </label>
+
+                  <a
+                    role="button"
+                    onClick={() => onRouterLink("/forgotpassword")}
+                    style={{
+                      color: "#f74928",
+                      textDecoration: "none",
+                      fontSize: "14px",
+                    }}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+
+                {/* Botón de login */}
+                <button
+                  type="submit"
+                  className="btnLogin"
+                  disabled={loadingLogin}
+                >
+                  {loadingLogin ? (
+                    <div className="flex w-full justify-center items-center cursor-not-allowed">
+                      <span
+                        className="spinner-border spinner-border-sm flex items-center justify-center"
+                        aria-hidden="true"
+                      ></span>
+                    </div>
+                  ) : (
+                    "Iniciar Sesión"
+                  )}
+                </button>
+              </form>
+              {/* Divisor */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  marginBottom: "20px",
+                }}
+              >
+                <div
                   style={{
-                    color: "#f74928",
-                    textDecoration: "none",
+                    height: "1px",
+                    background: "#e7e7e7",
+                    flex: 1,
+                  }}
+                ></div>
+                <span
+                  style={{
+                    color: "#999",
                     fontSize: "14px",
                   }}
                 >
-                  ¿Olvidaste tu contraseña?
-                </a>
+                  o
+                </span>
+                <div
+                  style={{
+                    height: "1px",
+                    background: "#e7e7e7",
+                    flex: 1,
+                  }}
+                ></div>
               </div>
 
-              {/* Botón de login */}
-              <button
-                type="submit"
-                className="btnLogin"
-                disabled={loadingLogin}
-              >
-                {loadingLogin ? (
-                  <div className="flex w-full justify-center items-center cursor-not-allowed">
-                    <span
-                      className="spinner-border spinner-border-sm flex items-center justify-center"
-                      aria-hidden="true"
-                    ></span>
-                  </div>
-                ) : (
-                  "Iniciar Sesión"
-                )}
-              </button>
-            </form>
-            {/* Divisor */}
+              {/* Link de registro */}
+              <div style={{ textAlign: "center" }}>
+                <p style={{ color: "#666", fontSize: "14px" }}>
+                  ¿No tienes una cuenta?{" "}
+                  <a
+                    role="button"
+                    onClick={() => onRouterLink("/register")}
+                    style={{
+                      color: "#f74928",
+                      textDecoration: "none",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Regístrate aquí
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel derecho - Información y beneficios */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+          >
+            {/* Bienvenida */}
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "15px",
-                marginBottom: "20px",
+                background: "linear-gradient(135deg, #f74928 0%, #ff6b47 100%)",
+                borderRadius: "10px",
+                padding: "40px",
+                color: "white",
+                textAlign: "center",
               }}
             >
-              <div
+              <h2
                 style={{
-                  height: "1px",
-                  background: "#e7e7e7",
-                  flex: 1,
-                }}
-              ></div>
-              <span
-                style={{
-                  color: "#999",
-                  fontSize: "14px",
+                  fontSize: "28px",
+                  fontWeight: "bold",
+                  marginBottom: "15px",
                 }}
               >
-                o
-              </span>
-              <div
+                ¡Bienvenido de vuelta!
+              </h2>
+              <p
                 style={{
-                  height: "1px",
-                  background: "#e7e7e7",
-                  flex: 1,
+                  fontSize: "16px",
+                  lineHeight: "1.5",
+                  opacity: "0.95",
                 }}
-              ></div>
-            </div>
-
-            {/* Link de registro */}
-            <div style={{ textAlign: "center" }}>
-              <p style={{ color: "#666", fontSize: "14px" }}>
-                ¿No tienes una cuenta?{" "}
-                <a
-                  role="button"
-                  onClick={() => onRouterLink("/register")}
-                  style={{
-                    color: "#f74928",
-                    textDecoration: "none",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Regístrate aquí
-                </a>
+              >
+                Accede a miles de productos tecnológicos con las mejores ofertas
+                del mercado
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* Panel derecho - Información y beneficios */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Bienvenida */}
-          <div
-            style={{
-              background: "linear-gradient(135deg, #f74928 0%, #ff6b47 100%)",
-              borderRadius: "10px",
-              padding: "40px",
-              color: "white",
-              textAlign: "center",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "28px",
-                fontWeight: "bold",
-                marginBottom: "15px",
-              }}
-            >
-              ¡Bienvenido de vuelta!
-            </h2>
-            <p
-              style={{
-                fontSize: "16px",
-                lineHeight: "1.5",
-                opacity: "0.95",
-              }}
-            >
-              Accede a miles de productos tecnológicos con las mejores ofertas
-              del mercado
-            </p>
-          </div>
-
-          {/* Beneficios */}
-          <div
-            style={{
-              background: "white",
-              borderRadius: "10px",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-              padding: "30px",
-              border: "1px solid #e7e7e7",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-                color: "#333",
-                marginBottom: "25px",
-                textAlign: "center",
-              }}
-            >
-              ¿Por qué elegir TechStore?
-            </h3>
-
+            {/* Beneficios */}
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+              style={{
+                background: "white",
+                borderRadius: "10px",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                padding: "30px",
+                border: "1px solid #e7e7e7",
+              }}
             >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "15px" }}
+              <h3
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  color: "#333",
+                  marginBottom: "25px",
+                  textAlign: "center",
+                }}
               >
-                <div
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    background: "#f74928",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Truck
-                    style={{ color: "white", width: "20px", height: "20px" }}
-                  />
-                </div>
-                <div>
-                  <h4
-                    style={{
-                      color: "#333",
-                      fontSize: "16px",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    Envío Gratis
-                  </h4>
-                  <p style={{ color: "#666", fontSize: "14px" }}>
-                    En pedidos mayores a $999
-                  </p>
-                </div>
-              </div>
+                ¿Por qué elegir PCInbox?
+              </h3>
 
               <div
-                style={{ display: "flex", alignItems: "center", gap: "15px" }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "20px",
+                }}
               >
                 <div
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    background: "#f74928",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={{ display: "flex", alignItems: "center", gap: "15px" }}
                 >
-                  <Shield
-                    style={{ color: "white", width: "20px", height: "20px" }}
-                  />
-                </div>
-                <div>
-                  <h4
+                  <div
                     style={{
-                      color: "#333",
-                      fontSize: "16px",
-                      marginBottom: "5px",
+                      width: "50px",
+                      height: "50px",
+                      background: "#f74928",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    Garantía Extendida
-                  </h4>
-                  <p style={{ color: "#666", fontSize: "14px" }}>
-                    Protección total en tus compras
-                  </p>
+                    <Truck
+                      style={{ color: "white", width: "20px", height: "20px" }}
+                    />
+                  </div>
+                  <div>
+                    <h4
+                      style={{
+                        color: "#333",
+                        fontSize: "16px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Envío Gratis
+                    </h4>
+                    <p style={{ color: "#666", fontSize: "14px" }}>
+                      En pedidos mayores a $999
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "15px" }}
-              >
                 <div
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    background: "#f74928",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={{ display: "flex", alignItems: "center", gap: "15px" }}
                 >
-                  <Star
-                    style={{ color: "white", width: "20px", height: "20px" }}
-                  />
-                </div>
-                <div>
-                  <h4
+                  <div
                     style={{
-                      color: "#333",
-                      fontSize: "16px",
-                      marginBottom: "5px",
+                      width: "50px",
+                      height: "50px",
+                      background: "#f74928",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    Soporte 24/7
-                  </h4>
-                  <p style={{ color: "#666", fontSize: "14px" }}>
-                    Atención al cliente siempre disponible
-                  </p>
+                    <Shield
+                      style={{ color: "white", width: "20px", height: "20px" }}
+                    />
+                  </div>
+                  <div>
+                    <h4
+                      style={{
+                        color: "#333",
+                        fontSize: "16px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Garantía Extendida
+                    </h4>
+                    <p style={{ color: "#666", fontSize: "14px" }}>
+                      Protección total en tus compras
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "15px" }}
+                >
+                  <div
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      background: "#f74928",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Star
+                      style={{ color: "white", width: "20px", height: "20px" }}
+                    />
+                  </div>
+                  <div>
+                    <h4
+                      style={{
+                        color: "#333",
+                        fontSize: "16px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Soporte 24/7
+                    </h4>
+                    <p style={{ color: "#666", fontSize: "14px" }}>
+                      Atención al cliente siempre disponible
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Estadísticas */}
-          <div
-            style={{
-              background: "white",
-              borderRadius: "10px",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-              padding: "25px",
-              border: "1px solid #e7e7e7",
-            }}
-          >
+            {/* Estadísticas */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "20px",
-                textAlign: "center",
+                background: "white",
+                borderRadius: "10px",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                padding: "25px",
+                border: "1px solid #e7e7e7",
               }}
             >
-              <div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#f74928",
-                    marginBottom: "5px",
-                  }}
-                >
-                  50K+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gap: "20px",
+                  textAlign: "center",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                      color: "#f74928",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    50K+
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    Productos
+                  </div>
                 </div>
-                <div style={{ fontSize: "12px", color: "#666" }}>Productos</div>
-              </div>
 
-              <div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#f74928",
-                    marginBottom: "5px",
-                  }}
-                >
-                  100K+
+                <div>
+                  <div
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                      color: "#f74928",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    100K+
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    Clientes
+                  </div>
                 </div>
-                <div style={{ fontSize: "12px", color: "#666" }}>Clientes</div>
-              </div>
 
-              <div>
-                <div
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#f74928",
-                    marginBottom: "5px",
-                  }}
-                >
-                  4.8★
-                </div>
-                <div style={{ fontSize: "12px", color: "#666" }}>
-                  Valoración
+                <div>
+                  <div
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                      color: "#f74928",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    4.8★
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    Valoración
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Responsive para móviles */}
-      <style>
-        {`
+        {/* Responsive para móviles */}
+        <style>
+          {`
           @media (max-width: 768px) {
             .main-content {
               grid-template-columns: 1fr !important;
             }
           }
         `}
-      </style>
+        </style>
+      </div>
     </div>
   );
-
-  // return (
-  //   <div className="option-ingresar">
-  //     <form onSubmit={onSubmit}>
-  //       <div className="mb-3">
-  //         <label className="form-label">Email</label>
-  //         <input
-  //           type="email"
-  //           className="form-control"
-  //           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-  //             setFormData({ ...formData, email: event.target.value })
-  //           }
-  //           value={formData.email}
-  //         />
-  //       </div>
-  //       <div className="mb-3">
-  //         <label className="form-label">Contraseña</label>
-  //         <input
-  //           type="password"
-  //           className="form-control"
-  //           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-  //             setFormData({ ...formData, password: event.target.value })
-  //           }
-  //           value={formData.password}
-  //         />
-  //       </div>
-  //       <AlertComponent
-  //         idAlert={"1"}
-  //         type="error"
-  //         message="Falta completar los campos"
-  //         title="Error"
-  //       />
-
-  //       <div
-  //         className="br"
-  //         style={{
-  //           width: "80%",
-  //           margin: "auto",
-  //           height: "5px",
-  //           border: "3px solid #fa7c04",
-  //         }}
-  //       ></div>
-  //       <br />
-
-  //       <a
-  //         className="link-reset-pass"
-  //         target="_blank"
-  //         style={{ cursor: "pointer" }}
-  //         onClick={() => onRouterLink("/forgotpassword")}
-  //       >
-  //         Olvide mi contraseña
-  //       </a>
-
-  //       <br />
-
-  //       <div className="container-actions w-full flex flex-col items-center gap-3">
-  //         <button
-  //           type="submit"
-  //           className="bg-amber-300 shadow-amber-50 font-bold cursor-pointer p-2 w-35
-  //           disabled:opacity-50 disabled:cursor-not-allowed
-  //           "
-  //           disabled={loadingLogin}
-  //         >
-  //           {loadingLogin ? (
-  //             <div className="flex w-full justify-center items-center">
-  //               <span
-  //                 className="spinner-border spinner-border-sm flex items-center justify-center"
-  //                 aria-hidden="true"
-  //               ></span>
-  //             </div>
-  //           ) : (
-  //             " Iniciar sesión"
-  //           )}
-  //         </button>
-  //         <button
-  //           onClick={() => onRouterLink("/register")}
-  //           className="bg-white shadow-amber-50 font-bold cursor-pointer p-2 w-35"
-  //         >
-  //           Registrarse
-  //         </button>
-  //       </div>
-  //     </form>
-
-  //     <br />
-
-  //     <br />
-  //   </div>
-  // );
 };
 
 export default Login;

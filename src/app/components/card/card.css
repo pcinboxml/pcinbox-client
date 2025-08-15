@@ -1,0 +1,154 @@
+.mi-card {
+  min-width: 200px;
+  max-width: 300px;
+  min-height: 150px;
+}
+
+.mi-card .container-img {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 120px;
+}
+
+.mi-card .container-img img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  margin-top: 20px;
+}
+
+.mi-card .container-rating {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.mi-card .container-rating .rating {
+  display: flex;
+  align-items: center;
+}
+
+.mi-card .container-rating .comments span {
+  font-size: 10px;
+  color: #9b9b9b;
+}
+
+.mi-card .container-description {
+  width: 100%;
+  margin-top: 25px;
+  padding-left: 40px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}
+
+.container-description .name-product {
+  display: block;
+  text-align: start;
+  font-size: 15px;
+  color: #666666;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.container-description .code {
+  display: block;
+  text-align: start;
+  font-size: 10px;
+  color: #b2b2b2;
+}
+
+.mi-card .actions-product {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.mi-card .actions-product .buttons {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mi-card .actions-product .container-actions-shop {
+  background: white;
+  left: 75%;
+  bottom: 100%;
+  padding: 20px;
+  width: 220px;
+  border-radius: 10px;
+  z-index: 100;
+}
+
+.container-actions-shop button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px;
+}
+
+.container-actions-shop button:nth-of-type(1) {
+  border: 1px solid black !important;
+  background: white !important;
+  color: black !important;
+  padding: 8px !important;
+}
+
+.container-actions-shop button:nth-of-type(2) {
+  border: 1px solid #004caa !important;
+  background: white !important;
+  color: #004caa !important;
+  padding: 8px !important;
+}
+
+.container-actions-shop button:nth-of-type(3) {
+  border: 1px solid red !important;
+  background: white !important;
+  color: red !important;
+  padding: 8px !important;
+}
+
+.mi-card .actions-product .buttons button {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background: #4d4d4d;
+  color: yellow;
+  border: 1px solid #ccc;
+  border-bottom-right-radius: 10px;
+}
+
+.mi-card .actions-product .cantidad-product {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-left: 10px;
+}
+
+.mi-card .actions-product .cantidad-product .costoProducto {
+  font-size: 20px;
+  font-weight: 800;
+  color: #494949;
+  word-break: break-word;
+}
+
+.mi-card .actions-product .cantidad-product .costoEnvio {
+  font-size: 10px;
+  color: #004caa;
+  word-break: break-word;
+}
+
+.mi-card .actions-product .cantidad-product .stock {
+  font-size: 10px;
+  color: #868686;
+  word-break: break-word;
+}

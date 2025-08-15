@@ -431,7 +431,7 @@ const Register = () => {
                 ¿Ya tienes una cuenta?{" "}
                 <a
                   role="button"
-                  onClick={() => onRouterLink("/")}
+                  onClick={() => onRouterLink("/login")}
                   style={{
                     color: "#f74928",
                     textDecoration: "none",

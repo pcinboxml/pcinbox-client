@@ -9,26 +9,41 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const { bgActive, dataModal } = useTheContext();
+  const { dataModal } = useTheContext();
 
   const pathname = usePathname();
 
   const showNavbarAndFooterRoutes =
-    pathname !== "/" && pathname !== "/register";
+    pathname !== "/login" &&
+    pathname !== "/register" &&
+    pathname !== "/forgotpassword";
 
   return (
-    <section style={{ background: bgActive }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+
+        minHeight: "100vh",
+      }}
+    >
       {showNavbarAndFooterRoutes && <Navbar />}
-      {children}
-      <ModalComponent
-        isOpen={dataModal.isOpen}
-        title={dataModal.title}
-        message={dataModal.message}
-        onConfirm={() => dataModal.onConfirm()}
-        onClose={() => dataModal.onClose()}
-        type={dataModal.type}
-      />
+
+      <main style={{ flex: 1 }}>
+        {children}
+
+        <ModalComponent
+          isOpen={dataModal.isOpen}
+          title={dataModal.title}
+          message={dataModal.message}
+          onConfirm={() => dataModal.onConfirm()}
+          onClose={() => dataModal.onClose()}
+          type={dataModal.type}
+          children={dataModal.children}
+        />
+      </main>
+
       {showNavbarAndFooterRoutes && <Footer />}
-    </section>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { useRouter, usePathname } from "next/navigation";
-
 import { useTheContext } from "./globalContext";
 
 const useService = () => {
@@ -25,7 +24,7 @@ const useService = () => {
       return res;
     } catch (error: any) {
       if (
-        pathname != "/" &&
+        pathname != "/login" &&
         pathname != "/register" &&
         error.response.status == 401
       ) {
@@ -34,11 +33,11 @@ const useService = () => {
           message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
           title: "Sesión expirada",
           onClose: () => {
-            onRouterLink("/");
+            onRouterLink("/login");
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            onRouterLink("/");
+            onRouterLink("/login");
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           type: "info",
@@ -48,31 +47,36 @@ const useService = () => {
     }
   };
 
-  const requestGet = async (endPoint: string) => {
+  const requestGet = async (
+    endPoint: string,
+    showErrorSesion: boolean = true
+  ) => {
     try {
       const res = await api.get(endPoint);
 
       return res;
     } catch (error: any) {
       if (
-        pathname != "/" &&
+        pathname != "/login" &&
         pathname != "/register" &&
         error.response.status == 401
       ) {
-        setDataModal({
-          isOpen: true,
-          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
-          title: "Sesión expirada",
-          onClose: () => {
-            onRouterLink("/");
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            onRouterLink("/");
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "info",
-        });
+        if (showErrorSesion) {
+          setDataModal({
+            isOpen: true,
+            message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
+            title: "Sesión expirada",
+            onClose: () => {
+              onRouterLink("/login");
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+            onConfirm: async () => {
+              onRouterLink("/login");
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+            type: "info",
+          });
+        }
       }
       throw error;
     }
@@ -84,7 +88,7 @@ const useService = () => {
       return res;
     } catch (error: any) {
       if (
-        pathname != "/" &&
+        pathname != "/login" &&
         pathname != "/register" &&
         error.response.status == 401
       ) {
@@ -93,11 +97,11 @@ const useService = () => {
           message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
           title: "Sesión expirada",
           onClose: () => {
-            onRouterLink("/");
+            onRouterLink("/login");
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            onRouterLink("/");
+            onRouterLink("/login");
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           type: "info",
@@ -119,6 +123,12 @@ const useService = () => {
     }
   };
 
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+    }).format(value);
+
   const Logout = () => {
     setDataModal({
       isOpen: true,
@@ -131,7 +141,7 @@ const useService = () => {
 
           if (res && res.status == 200) {
             localStorage.removeItem("email");
-            onRouterLink("/");
+            onRouterLink("/login");
           }
         } catch (error) {}
       },
@@ -145,6 +155,7 @@ const useService = () => {
     requestDelete,
     onRouterLink,
     onRouterHref,
+    formatCurrency,
     Logout,
   };
 };

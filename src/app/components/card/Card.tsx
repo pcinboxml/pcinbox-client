@@ -1,99 +1,96 @@
 "use client";
+import "./card.css";
 
-import { Eye, Heart, ShoppingCart, Star, StarIcon } from "lucide-react";
+import {
+  Eye,
+  Heart,
+  ShoppingCart,
+  Star,
+  StarIcon,
+  BadgeDollarSign,
+} from "lucide-react";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Rating from "@mui/material/Rating";
+import {
+  MdArrowDropDown,
+  MdHearing,
+  MdHeartBroken,
+  MdMoney,
+  MdMonitorHeart,
+  MdShoppingCart,
+  MdStar,
+} from "react-icons/md";
+import useCard from "./useCard";
 
-const Card = ({ currentProduct }: { currentProduct: any }) => {
+const Card = () => {
+  const { handleMouseEnter, handleMouseLeave, showActions } = useCard();
+
   return (
-    <div className="bg-gray-50 p-4 flex justify-center">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 w-full max-w-sm transition-all hover:shadow-lg hover:-translate-y-1 duration-300">
-        {/* Badge & Discount */}
-        <div className="relative">
-          <img
-            src={currentProduct.image}
-            alt={currentProduct.name}
-            className="h-56 w-full object-contain p-4"
+    <div className="mi-card border">
+      <div className="container-img">
+        <img src="/pcgamer.jpg" alt="" />
+      </div>
+      <div className="container-rating">
+        <div className="rating">
+          <Rating
+            className="text-blue-500"
+            name="simple-controlled"
+            defaultValue={0}
+            max={5}
+            size="medium"
           />
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-            {/* {currentProduct.badge} */}1
-          </div>
-          {/* {currentProduct.discount && (
-            <div className="absolute top-3 right-3 bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold">
-              -{currentProduct.discount}%
+        </div>
+        <div className="comments flex">
+          <button
+            className="flex justify-center items-center border"
+            style={{ marginLeft: "5px", borderRadius: "2px" }}
+          >
+            <MdArrowDropDown size={10} color="gray" />
+          </button>
+          <span style={{ marginLeft: "5px" }}>10 opiniones</span>
+        </div>
+      </div>
+
+      <div className="container-description">
+        <span className="name-product">Monitor de 20 pulgadas HP</span>
+        <span className="code">COD 100-100001404WOF</span>
+      </div>
+
+      <div className="actions-product">
+        <div
+          className="buttons relative"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <button>Agregar</button>
+          {showActions ? (
+            <div className="container-actions-shop absolute bg-white shadow">
+              <button>
+                Agregar al carrito
+                <MdShoppingCart size={15} />
+              </button>
+              <button>
+                Comprar ahora
+                <MdMoney size={15} />
+              </button>
+              <button>
+                Agregar a favoritos
+                <MdStar size={15} />
+              </button>
             </div>
-          )} */}
-          {/* Floating Buttons */}
-          <div className="absolute top-16 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
-              <Heart size={16} />
-            </button>
-            <button className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
-              <Eye size={16} />
-            </button>
-          </div>
+          ) : null}
         </div>
 
-        {/* Product Info */}
-        <div className="px-4 pb-4">
-          {/* Provider & Verified */}
-          <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
-            <span className="bg-gray-100 px-2 py-0.5 rounded-full">
-              {/* {currentProduct.provider} */}
-              Proveedor 1
-            </span>
-            {/* {currentProduct.verified && (
-              <Check size={14} className="text-green-600" />
-            )} */}
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-1 mt-2">
-            <Star
-              size={16}
-              className={`${
-                Math.floor(currentProduct.rating.rate)
-                  ? "text-yellow-400"
-                  : "text-gray-300"
-              }`}
-            />
-
-            {/* <span className="text-xs text-gray-500">
-               ({currentProduct.reviews}) 1
-            </span> */}
-          </div>
-
-          {/* Title & Description */}
-          <h3 className="text-sm font-semibold text-gray-800 mt-2 line-clamp-2">
-            {currentProduct.title}
-          </h3>
-          <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-            {currentProduct.description}
-          </p>
-
-          {/* Price */}
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-base font-bold text-black">
-              ${currentProduct.price} MXN
-            </span>
-          </div>
-
-          {/* Buttons */}
-          <div className="mt-4 flex flex-col gap-2">
-            <button className="flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2 border text-black rounded-md  transition">
-              <ShoppingCart size={16} />
-              Agregar al carrito
-            </button>
-
-            <button className="flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white transition">
-              <Heart size={16} />
-              Comprar ahora
-            </button>
-
-            <button className="flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2 border border-yellow-500 text-yellow-500 rounded-md hover:bg-yellow-500 hover:text-white transition">
-              <StarIcon size={16} />
-              Agregar a favoritos
-            </button>
-          </div>
+        <div className="cantidad-product">
+          <span className="costoProducto">$6,000.71</span>
+          <span className="costoEnvio">Costo de envío desde $155.00.</span>
+          <span className="stock">Disponible: 12 pzas.</span>
         </div>
+      </div>
+
+      <div className="w-full  p-2 flex items-center">
+        <FormControlLabel control={<Checkbox />} label="Comparar" />
       </div>
     </div>
   );

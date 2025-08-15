@@ -2,52 +2,44 @@
 
 import useService from "@/app/services/useService";
 import { useEffect, useRef, useState } from "react";
-import { MdArrowDropDown } from "react-icons/md";
-
-const submenu: {
-  id: number;
-  label: string;
-  html: any;
-  icon: any;
-}[] = [
-  {
-    id: 1,
-    label: "test",
-    html: "",
-
-    icon: <MdArrowDropDown size={22} color="gray" />,
-  },
-
-  {
-    id: 2,
-    label: "Favoritos",
-    html: "",
-    icon: <MdArrowDropDown size={22} color="gray" />,
-  },
-  {
-    id: 3,
-    label: "Comparar",
-    html: "",
-    icon: <MdArrowDropDown size={22} color="gray" />,
-  },
-];
 
 const useNavbar = () => {
-  const [submenuActivo, setSubmenuActivo] = useState<number | null>(null);
   const [hasToken, setHasToken] = useState(false);
-  const menuCuentaRef = useRef<HTMLDivElement>(null);
+  const [navRefResponsive, setNavRefResponsive] = useState(false);
   const { requestGet } = useService();
+  const navRef = useRef<HTMLDivElement>(null);
+  const optionProducts = useRef<HTMLDivElement>(null);
 
-  const onMouseEnterSubmenu = (id: number) => {
-    setSubmenuActivo(id);
+  const onMouseEnterSubmenu = (idSubmenu: string) => {
+    const idSub = document.getElementById(idSubmenu);
+
+    if (idSub) {
+      idSub.style.display = "block";
+    }
   };
 
-  const onMouseLeaveSubMenu = () => {
-    setSubmenuActivo(null);
+  const onMouseLeaveSubMenu = (idSubmenu: string) => {
+    const idSub = document.getElementById(idSubmenu);
+
+    if (idSub) {
+      idSub.style.display = "none";
+    }
+  };
+
+  const onMouseEnterProducts = () => {
+    if (optionProducts.current) {
+      optionProducts.current.style.display = "block";
+    }
+  };
+
+  const onMouseLeaveProducts = () => {
+    if (optionProducts.current) {
+      optionProducts.current.style.display = "none";
+    }
   };
 
   useEffect(() => {
-    requestGet("/cookies/getCookie")
+    requestGet("/cookies/getCookie", false)
       .then((res) => {
         if (res && res.status == 200) {
           const dataRes = res.data;
@@ -59,27 +51,46 @@ const useNavbar = () => {
       });
   }, [hasToken]);
 
-  const onMouseEnterMenuCuenta = () => {
-    if (menuCuentaRef.current) {
-      menuCuentaRef.current.style.display = "block";
+  const handleToggleNav = () => {
+    setNavRefResponsive(!navRefResponsive);
+  };
+
+  const handleDOM = (e: any) => {
+    if (
+      !e.target.closest("#btnHamburguer") &&
+      !e.target.closest("#container-submenu-responsive")
+    ) {
+      setNavRefResponsive(false);
     }
   };
 
-  const onMouseLeaveMenuCuenta = () => {
-    if (menuCuentaRef.current) {
-      menuCuentaRef.current.style.display = "none";
+  const handleDetectedScroll = () => {
+    const scrollY = window.scrollY;
+
+    if (scrollY > 120) {
+      if (navRef.current) {
+        navRef.current.style.position = "fixed";
+        navRef.current.style.zIndex = "300";
+      }
+    } else {
+      if (navRef.current) {
+        navRef.current.style.position = "relative";
+      }
     }
   };
 
   return {
-    submenu,
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
-    submenuActivo,
     hasToken,
-    menuCuentaRef,
-    onMouseEnterMenuCuenta,
-    onMouseLeaveMenuCuenta,
+    handleToggleNav,
+    handleDOM,
+    navRefResponsive,
+    handleDetectedScroll,
+    navRef,
+    onMouseEnterProducts,
+    onMouseLeaveProducts,
+    optionProducts,
   };
 };
 

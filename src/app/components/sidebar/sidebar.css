@@ -1,0 +1,15 @@
+.aside {
+  width: 150px;
+  background: white;
+  border-radius: 10px;
+  min-height: 150px;
+  border: solid;
+}
+
+.aside ul {
+  list-style: none;
+}
+
+.aside ul li {
+  list-style: none;
+}

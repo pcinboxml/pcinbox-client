@@ -8,6 +8,8 @@ footer {
   background: #333;
   color: white;
   padding: 50px 0 30px;
+  position: relative;
+  bottom: 0px;
 }
 
 .container-first {

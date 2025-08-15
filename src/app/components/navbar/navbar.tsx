@@ -1,206 +1,275 @@
 "use client";
 
 import "./navbar.css";
-import { MdArrowDropDown } from "react-icons/md";
-
-import { useTheContext } from "./../../services/globalContext";
+import {
+  MdArrowDropDown,
+  MdReceiptLong,
+  MdList,
+  MdAdjust,
+  MdLogin,
+  MdPersonAdd,
+} from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
 import { MdSettings } from "react-icons/md";
 import { MdLogout } from "react-icons/md";
+import { MdShoppingCart } from "react-icons/md";
+import { useEffect } from "react";
 
 const Navbar = () => {
-  const { onMouseEnter, onMouseLeave, visible } = useTheContext();
-
   const {
-    submenu,
-    submenuActivo,
+    navRefResponsive,
+    hasToken,
+    navRef,
+    optionProducts,
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
-    hasToken,
-    menuCuentaRef,
-    onMouseEnterMenuCuenta,
-    onMouseLeaveMenuCuenta,
+    handleToggleNav,
+    handleDOM,
+    handleDetectedScroll,
+    onMouseEnterProducts,
+    onMouseLeaveProducts,
   } = useNavbar();
 
-  const { onRouterLink, Logout } = useService();
+  const { onRouterLink, Logout, formatCurrency } = useService();
+
+  useEffect(() => {
+    document.addEventListener("click", handleDOM);
+    document.addEventListener("scroll", handleDetectedScroll);
+    return () => {
+      document.removeEventListener("click", handleDOM),
+        document.removeEventListener("scroll", handleDetectedScroll);
+    };
+  }, []);
 
   return (
-    <header className="main-header">
-      <div className="header-content">
-        <div className="logo">
-          <span className="cursor-pointer" onClick={() => onRouterLink("/")}>
-            PCINBOX
-          </span>
+    <header className="main-header" ref={navRef}>
+      <div className="container-header flex w-full justify-center p-2 items-center">
+        <div className="logo" onClick={() => onRouterLink("/index")}>
+          <img src="/LOGO_PCINBOX.jpg" />
         </div>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="¿Qué estás buscando?"
-            id="searchInput"
-          />
-          <button
-          //onclick="performSearch()"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-search"
-              viewBox="0 0 16 16"
-            >
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-            </svg>
-          </button>
+        <div className="search">
+          <form action="" className="flex">
+            <input type="search" placeholder="¿Qué articulo buscas?" />
+            <button>
+              <span className="px-2">Buscar</span>
+            </button>
+          </form>
         </div>
-        <div className="header-actions">
-          <div
-            className="header-btn relative"
-            onMouseEnter={onMouseEnterMenuCuenta}
-            onMouseLeave={onMouseLeaveMenuCuenta}
-            style={{ position: "relative" }}
-          >
-            <div
-              className="flex items-center gap-1 cursor-pointer"
-              style={{ position: "relative" }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="black"
-                className="bi bi-person"
-                viewBox="0 0 16 16"
-              >
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
-              </svg>
-              Mi cuenta
-              <div
-                ref={menuCuentaRef}
-                className="absolute w-48 bg-white rounded-md shadow-lg z-10 animate-fadeIn"
-                style={{
-                  marginLeft: "-45px",
-                  display: "none",
-                  top: "100%",
-                }}
-              >
-                <div className="py-1">
-                  <a
-                    style={{
-                      textDecoration: "none",
-                      color: "black",
-                      cursor: "pointer",
-                    }}
-                    className=" flex justify-center gap-2 items-center px-4 py-2 text-gray-800 hover:bg-gray-100 transition duration-150"
-                  >
-                    Ajustes
-                    <MdSettings size={22} />
-                  </a>
-                </div>
-
-                {hasToken ? (
-                  <div className="py-1">
-                    <a
-                      style={{
-                        textDecoration: "none",
-                        color: "black",
-                        cursor: "pointer",
-                      }}
-                      role="button"
-                      onClick={Logout}
-                      className="flex justify-center gap-2 items-center px-4 py-2 text-gray-800 hover:bg-gray-100 transition duration-150"
-                    >
-                      Cerrar Sesión
-                      <MdLogout size={22} />
-                    </a>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-
-          <a
-            role="button"
-            style={{ position: "relative" }}
-            className="header-btn"
-            id="cartBtn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="black"
-              className="bi bi-cart"
-              viewBox="0 0 16 16"
-            >
-              <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-            </svg>
-            Carrito
+        <div className="container-car">
+          <div className="icon-car relative">
+            <MdShoppingCart size={22} />
             <span
-              className="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
-              style={{ top: "-3px" }}
+              className="absolute  translate-middle badge rounded-pill bg-danger"
+              style={{ top: "-35%", left: "50%" }}
             >
               99+
             </span>
-          </a>
-        </div>
-      </div>
-      <div className="container-sub-menu">
-        <div
-          className="container-categories"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
-          <div className="text-categories">
-            <span>Categorías</span>
-            <MdArrowDropDown size={30} color="#666666" />
           </div>
 
-          {/* Menu de categorias */}
-          <div className="list-categorias" style={{ display: visible }}>
+          <div className="container-cash">
+            <b>{formatCurrency(0)}</b>
+          </div>
+        </div>
+      </div>
+      <div className="flex w-full">
+        <div className="container-products" onMouseLeave={onMouseLeaveProducts}>
+          <button className="btn-products" onMouseEnter={onMouseEnterProducts}>
+            Productos
+          </button>
+
+          <div
+            ref={optionProducts}
+            className="container-list-products absolute bg-white shadow"
+            style={{ display: "none" }}
+          >
             <ul>
               <li>
-                <span>Categoria 1</span>
+                <a href="#">Procesadores</a>
               </li>
               <li>
-                <span>Categoria 2</span>
+                <a href="#">Tarjetas de video</a>
               </li>
               <li>
-                <span>Categoria 3</span>
+                <a href="#">Placas madre</a>
               </li>
               <li>
-                <span>Categoria 4</span>
+                <a href="#">Memoria Ram</a>
+              </li>
+              <li>
+                <a href="#">Almacenamiento</a>
+              </li>
+              <li>
+                <a href="#">Gabinetes para PC</a>
+              </li>
+              <li>
+                <a href="#">Fuentes de Poder</a>
+              </li>
+              <li>
+                <a href="#">Enfriamientos</a>
+              </li>
+              <li>
+                <a href="#">Monitores</a>
+              </li>
+              <li>
+                <a href="#">Teclados</a>
+              </li>
+              <li>
+                <a href="#">Mouse</a>
+              </li>
+              <li>
+                <a href="#">Energia</a>
+              </li>
+              <li>
+                <a href="#">Redes</a>
               </li>
             </ul>
           </div>
         </div>
 
-        <nav className="submenu flex w-full justify-center pb-1">
-          <ul>
-            {submenu
-              .filter((currentSubMenu) => {
-                if (hasToken) {
-                  return currentSubMenu.label !== "Ingresar";
-                }
+        <div className="container-submenu">
+          <div className="icon-hamburguer relative">
+            <button onClick={handleToggleNav} id="btnHamburguer">
+              <MdList size={22} color="white" />
+            </button>
 
-                return true;
-              })
-              .map((sub) => {
-                return (
-                  <li
-                    key={sub.id}
-                    onMouseEnter={() => onMouseEnterSubmenu(sub.id)}
-                    onMouseLeave={() => onMouseLeaveSubMenu()}
-                  >
-                    <span>{sub.label}</span>
-                    {sub.icon}
-                    {submenuActivo == sub.id ? sub.html : null}
+            {/* Sub menu responsivo para celulares */}
+            {navRefResponsive ? (
+              <div
+                id="container-submenu-responsive"
+                className="absolute flex flex-col justify-center shadow container-submenu-responsive bg-white rounded-2xl"
+              >
+                <ul>
+                  <li>
+                    <a href="#">Mi cuenta</a>
+                    <MdArrowDropDown size={22} color="gray" />
                   </li>
-                );
-              })}
-          </ul>
-        </nav>
+                  <li>
+                    <a href="#">Favoritos (0)</a>
+                    <MdArrowDropDown size={22} color="gray" />
+                  </li>
+                  <li>
+                    <a href="#">Comparar (0)</a>
+                    <MdArrowDropDown size={22} color="gray" />
+                  </li>
+                  <li>
+                    <a href="#">Configurador de PC</a>
+                    <MdArrowDropDown size={22} color="gray" />
+                  </li>
+                  <li>
+                    <a href="#" style={{ color: "#2F6AAC", fontWeight: "600" }}>
+                      ¿Eres nuevo? ¡Registrate!
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            ) : null}
+            {/*Fin Sub menu responsivo para celulares */}
+          </div>
+          <div className="submenu">
+            <ul>
+              <li
+                className="relative"
+                onMouseEnter={() => onMouseEnterSubmenu("1")}
+                onMouseLeave={() => onMouseLeaveSubMenu("1")}
+              >
+                <a href="#">
+                  Mi cuenta
+                  <MdArrowDropDown size={22} color="gray" />
+                </a>
+
+                <div
+                  id="1"
+                  style={{ display: "none" }}
+                  className="absolute bg-white container-sub-menu shadow"
+                >
+                  <ul className="list-options-cuenta">
+                    {!hasToken ? (
+                      <>
+                        <li className="hover:bg-gray-100">
+                          <a
+                            role="button"
+                            onClick={() => onRouterLink("/login")}
+                          >
+                            <MdLogin size={22} />
+                            Iniciar Sesión
+                          </a>
+                        </li>
+                        <li className="hover:bg-gray-100">
+                          <a
+                            role="button"
+                            onClick={() => onRouterLink("/register")}
+                          >
+                            <MdPersonAdd size={22} />
+                            Registrate
+                          </a>
+                        </li>
+                      </>
+                    ) : null}
+                    {hasToken ? (
+                      <li className="hover:bg-gray-100">
+                        <a
+                          role="button"
+                          onClick={() => onRouterLink("/configUser")}
+                        >
+                          <MdSettings size={22} />
+                          Ajustes generales
+                        </a>
+                      </li>
+                    ) : null}
+                    {hasToken ? (
+                      <li className="hover:bg-gray-100">
+                        <a role="button" onClick={() => Logout()}>
+                          <MdLogout size={22} />
+                          Cerrar sesión
+                        </a>
+                      </li>
+                    ) : null}
+                  </ul>
+                </div>
+              </li>
+              <li
+                className="relative"
+                onMouseEnter={() => onMouseEnterSubmenu("2")}
+                onMouseLeave={() => onMouseLeaveSubMenu("2")}
+              >
+                <a href="#">
+                  Favoritos (0)
+                  <MdArrowDropDown size={22} color="gray" />
+                </a>
+
+                <div
+                  id="2"
+                  className="absolute w-full h-96 bg-white"
+                  style={{ top: "100%", zIndex: "90", display: "none" }}
+                >
+                  contenido
+                </div>
+              </li>
+              <li>
+                <a href="#">Comparar (0)</a>
+                <MdArrowDropDown size={22} color="gray" />
+              </li>
+              <li>
+                <a href="#">Configurador de PC</a>
+                <MdArrowDropDown size={22} color="gray" />
+              </li>
+              {!hasToken ? (
+                <li>
+                  <a
+                    role="button"
+                    onClick={() => {
+                      onRouterLink("/register");
+                    }}
+                    style={{ color: "#2F6AAC", fontWeight: "600" }}
+                  >
+                    ¿Eres nuevo? ¡Registrate!
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </div>
+        </div>
       </div>
     </header>
   );
