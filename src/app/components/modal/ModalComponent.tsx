@@ -139,7 +139,7 @@ const ModalComponent = ({
           {message && (
             <p
               id="modal-description"
-              className="text-gray-700 mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
+              className="text-black mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
             >
               {message}
             </p>

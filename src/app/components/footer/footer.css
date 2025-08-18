@@ -1,33 +1,121 @@
-p {
-  line-height: 1.6;
-  color: #ccc;
-  margin-bottom: 20px;
-}
-
 footer {
-  background: #333;
-  color: white;
-  padding: 50px 0 30px;
+  width: 90%;
+  background: #ffffff;
   position: relative;
   bottom: 0px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: auto;
 }
 
-.container-first {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+.container-footer {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 6px;
 }
 
-.container-first .container-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-  margin-bottom: 40px;
+.container-footer .iconos-formas-de-pago {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 5px;
+}
+.container-footer .iconos-formas-de-pago img {
+  width: 80px;
+  height: 60px;
+  object-fit: contain;
+  margin-left: 10px;
 }
 
-.techStore {
-  font-size: 24px;
-  font-weight: bold;
-  color: #f74928;
-  margin-bottom: 20px;
+.container-footer .iconos-envios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.container-footer .iconos-envios img {
+  width: 75px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.container-footer span {
+  color: #646464;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.container-footer:nth-of-type(2) span {
+  font-size: 20px;
+}
+
+.container-footer p {
+  color: #8a8a8a;
+  font-size: 14px;
+}
+
+.container-footer .iconos-redes {
+  display: flex;
+  flex-direction: column;
+}
+
+.container-footer .iconos-redes img {
+  height: 80px;
+  object-fit: contain;
+}
+
+.container-footer .iconos-redes span {
+  font-weight: 500;
+  color: black;
+  display: block;
+  text-align: center;
+}
+
+.container-footer .redes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 5px;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.container-footer .redes img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+@media (max-width: 1038px) {
+  footer {
+    flex-wrap: wrap;
+  }
+  .container-footer {
+    flex: 0 1 calc(50% - 15px);
+  }
+
+  .container-footer:nth-of-type(3) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 544px) {
+  footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container-footer {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 20px;
+  }
 }

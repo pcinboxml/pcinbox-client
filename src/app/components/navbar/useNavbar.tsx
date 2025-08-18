@@ -42,12 +42,13 @@ const useNavbar = () => {
     requestGet("/cookies/getCookie", false)
       .then((res) => {
         if (res && res.status == 200) {
-          const dataRes = res.data;
-          setHasToken(dataRes.isAuthenticated);
+          setHasToken(true);
         }
       })
       .catch((er) => {
-        console.log("errror" + er);
+        if (er.response.status == 401) {
+          setHasToken(false);
+        }
       });
   }, [hasToken]);
 
@@ -65,18 +66,17 @@ const useNavbar = () => {
   };
 
   const handleDetectedScroll = () => {
-    const scrollY = window.scrollY;
-
-    if (scrollY > 120) {
-      if (navRef.current) {
-        navRef.current.style.position = "fixed";
-        navRef.current.style.zIndex = "300";
-      }
-    } else {
-      if (navRef.current) {
-        navRef.current.style.position = "relative";
-      }
-    }
+    //const scrollY = window.scrollY;
+    // if (scrollY > 120) {
+    //   if (navRef.current) {
+    //     navRef.current.style.position = "fixed";
+    //     navRef.current.style.zIndex = "300";
+    //   }
+    // } else {
+    //   if (navRef.current) {
+    //     navRef.current.style.position = "relative";
+    //   }
+    // }
   };
 
   return {

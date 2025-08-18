@@ -1,44 +1,34 @@
 "use client";
 import "./card.css";
 
-import {
-  Eye,
-  Heart,
-  ShoppingCart,
-  Star,
-  StarIcon,
-  BadgeDollarSign,
-} from "lucide-react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Rating from "@mui/material/Rating";
-import {
-  MdArrowDropDown,
-  MdHearing,
-  MdHeartBroken,
-  MdMoney,
-  MdMonitorHeart,
-  MdShoppingCart,
-  MdStar,
-} from "react-icons/md";
-import useCard from "./useCard";
+import { MdArrowDropDown } from "react-icons/md";
+import useService from "@/app/services/useService";
 
 const Card = () => {
-  const { handleMouseEnter, handleMouseLeave, showActions } = useCard();
+  const { onRouterLink } = useService();
 
   return (
     <div className="mi-card border">
       <div className="container-img">
-        <img src="/pcgamer.jpg" alt="" />
+        <img
+          src="/tarjeta_video.png"
+          alt=""
+          style={{ backgroundColor: "transparent" }}
+        />
       </div>
       <div className="container-rating">
         <div className="rating">
           <Rating
-            className="text-blue-500"
             name="simple-controlled"
             defaultValue={0}
             max={5}
             size="medium"
+            sx={{
+              color: "#BB3D4B",
+            }}
           />
         </div>
         <div className="comments flex">
@@ -60,26 +50,12 @@ const Card = () => {
       <div className="actions-product">
         <div
           className="buttons relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
         >
-          <button>Agregar</button>
-          {showActions ? (
-            <div className="container-actions-shop absolute bg-white shadow">
-              <button>
-                Agregar al carrito
-                <MdShoppingCart size={15} />
-              </button>
-              <button>
-                Comprar ahora
-                <MdMoney size={15} />
-              </button>
-              <button>
-                Agregar a favoritos
-                <MdStar size={15} />
-              </button>
-            </div>
-          ) : null}
+          <button onClick={() => onRouterLink("/detailsProduct")}>
+            Agregar
+          </button>
         </div>
 
         <div className="cantidad-product">

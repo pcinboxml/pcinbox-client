@@ -1,6 +1,5 @@
 .mi-card {
-  min-width: 200px;
-  max-width: 300px;
+  width: 290px;
   min-height: 150px;
 }
 
@@ -132,10 +131,11 @@
   flex-direction: column;
   justify-content: flex-end;
   padding-left: 10px;
+  padding-right: 20px;
 }
 
 .mi-card .actions-product .cantidad-product .costoProducto {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   color: #494949;
   word-break: break-word;
@@ -144,7 +144,6 @@
 .mi-card .actions-product .cantidad-product .costoEnvio {
   font-size: 10px;
   color: #004caa;
-  word-break: break-word;
 }
 
 .mi-card .actions-product .cantidad-product .stock {

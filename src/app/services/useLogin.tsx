@@ -1,0 +1,76 @@
+import { LoginI } from "@/app/interfaces/login.interface";
+
+import { useState } from "react";
+import useService from "@/app/services/useService";
+
+const useLogin = () => {
+  const [formData, setFormData] = useState<LoginI>({
+    email: "",
+    password: "",
+  });
+  const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const { requestPost } = useService();
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [messageError, setMessageError] = useState<string>("");
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+    console.log(formData);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+      !formData.email ||
+      formData.email == "" ||
+      !formData.password ||
+      formData.password == ""
+    ) {
+      return;
+    }
+
+    if (!emailRegex.test(formData.email)) {
+      setMessageError(
+        `El correo ${formData.email} no tiene el formato correcto`
+      );
+
+      return;
+    }
+
+    setLoadingLogin(true);
+
+    try {
+      const res = await requestPost(formData, "/user/login");
+      setLoadingLogin(false);
+
+      if (res && res.status == 200) {
+        window.location.reload();
+      }
+    } catch (error: any) {
+      localStorage.setItem("email", formData.email);
+      setShowAlert(true);
+
+      setLoadingLogin(false);
+      setMessageError(error.response.data.message);
+    }
+  };
+
+  const closeAlert = () => {
+    setShowAlert(false);
+    setMessageError("");
+  };
+
+  return {
+    formData,
+    loadingLogin,
+    showPassword,
+    showAlert,
+    messageError,
+    onSubmit,
+    setFormData,
+    setShowPassword,
+    closeAlert,
+  };
+};
+
+export default useLogin;

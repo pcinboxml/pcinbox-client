@@ -14,9 +14,7 @@ export default function AppWrapper({
   const pathname = usePathname();
 
   const showNavbarAndFooterRoutes =
-    pathname !== "/login" &&
-    pathname !== "/register" &&
-    pathname !== "/forgotpassword";
+    pathname !== "/login" && pathname !== "/register";
 
   return (
     <div

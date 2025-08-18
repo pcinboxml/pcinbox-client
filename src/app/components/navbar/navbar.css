@@ -13,18 +13,21 @@
 }
 
 .container-header .logo {
-  width: 25%;
+  width: 280px;
   height: 80px;
   max-height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-right: 2px solid #84a8cc;
+  padding-right: 20px;
+  margin-left: 40px;
+  border-right: 1px solid #808080;
 }
 
 .container-header .logo img {
-  width: 300px;
+  width: 180px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .container-header .search {
@@ -54,12 +57,37 @@
 
 .container-header .container-car {
   width: 20%;
-  min-height: 80px;
+  height: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding-top: 15px;
+  margin-top: 20px;
+}
+
+.container-car .icon-car img {
+  width: 45px;
+  height: 30px;
+  object-fit: contain;
+  position: relative;
+  z-index: 50;
+}
+
+.container-car .badge-car {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: 10px;
+  width: 35px;
+  position: absolute;
+  top: -71%;
+  left: 5%;
+  height: 35px;
+  background: #bb3d4b;
+  color: white;
+  font-weight: 700;
 }
 
 .container-products {
@@ -71,7 +99,7 @@
 .container-products .btn-products {
   width: 150px;
   border-top-left-radius: 10px;
-  background: #cccccc;
+  background: #808080;
   color: white;
 }
 
@@ -79,8 +107,10 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   width: 150px;
+  height: 544px;
   top: 100%;
-  padding: 10px;
+  padding: 9px;
+  overflow-y: auto;
 }
 
 .container-list-products ul {
@@ -92,15 +122,15 @@
 }
 
 .container-list-products ul li a {
-  color: black;
+  color: #5f5f5f;
   text-decoration: none;
 }
 
 .container-list-products ul li:hover a {
-  color: #0056b9;
+  color: #bb3d4b;
   font-weight: 600;
   text-decoration-line: underline;
-  text-decoration-color: #fae500;
+  text-decoration-color: #a67845;
   text-decoration-thickness: 3px;
 }
 
@@ -119,7 +149,7 @@
 }
 
 .container-submenu .icon-hamburguer button {
-  background: #999;
+  background: #bb3d4b;
   height: 100%;
   display: block;
   margin-left: auto;
@@ -197,12 +227,12 @@
   gap: 5;
   font-size: 15px;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .submenu .container-sub-menu {
-  width: 250px;
-
-  min-height: 100px;
+  /* min-width: 250px;
+  min-height: 100px; */
   border-radius: 10px;
   top: 100%;
   z-index: 100;
@@ -231,6 +261,96 @@
   text-decoration: none;
 }
 
+.submenu .container-sub-menu .list-options-cuenta .formLogin {
+  width: 100%;
+  padding: 10px;
+}
+
+.formLogin .form-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.formLogin .form-group label {
+  color: #666;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.formLogin .form-group input {
+  padding: 3px;
+}
+
+.formLogin .linea {
+  width: 80%;
+  height: 5px;
+  background: #bb3d4b;
+  margin: auto;
+  border: 2px solid #bb3d4b;
+}
+
+.formLogin a {
+  color: #bb3d4b !important;
+  font-weight: 700;
+  display: block;
+}
+
+.formLogin .group-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.formLogin .group-btn button {
+  width: 100%;
+  padding: 6px;
+}
+
+.formLogin .group-btn button:nth-of-type(1) {
+  background: #bb3d4b;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.formLogin .group-btn button:nth-of-type(1):hover {
+  background: #991f2e !important;
+}
+
+.formLogin .group-btn button:nth-of-type(2) {
+  background: #808080;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 10px;
+  color: white;
+}
+
+.formLogin .group-btn button:nth-of-type(2):hover {
+  background: #4d4d4d !important;
+}
+
+.container-mi-cuenta .btn-logout {
+  cursor: pointer;
+  background: #808080;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  width: 70%;
+  margin: 15px auto;
+  padding: 5px;
+  height: 35px;
+  border-radius: 10px;
+}
+
+.container-mi-cuenta .btn-logout:hover {
+  background: #666666;
+}
+
 @media (max-width: 1360px) {
   .container-submenu {
     justify-content: flex-start;
@@ -253,7 +373,15 @@
   }
 }
 
-@media (max-width: 575px) {
+@media (max-width: 724px) {
+  .container-header .search {
+    visibility: hidden;
+  }
+
+  .container-submenu .icon-hamburguer button {
+    margin-right: 40px;
+  }
+
   .container-submenu .icon-hamburguer {
     display: block !important;
   }

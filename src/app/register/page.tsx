@@ -115,8 +115,8 @@ const Register = () => {
                     outline: "none",
                     transition: "border-color 0.3s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                  onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                  onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
                 />
               </div>
 
@@ -153,8 +153,8 @@ const Register = () => {
                     outline: "none",
                     transition: "border-color 0.3s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                  onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                  onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
                 />
               </div>
             </div>
@@ -193,8 +193,8 @@ const Register = () => {
                   outline: "none",
                   transition: "border-color 0.3s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
               />
             </div>
 
@@ -236,8 +236,8 @@ const Register = () => {
                     outline: "none",
                     transition: "border-color 0.3s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                  onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                  onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
                 />
               </div>
             </div>
@@ -276,8 +276,8 @@ const Register = () => {
                   outline: "none",
                   transition: "border-color 0.3s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
               />
               <button
                 type="button"
@@ -331,8 +331,8 @@ const Register = () => {
                   outline: "none",
                   transition: "border-color 0.3s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#f74928")}
-                onBlur={(e) => (e.target.style.borderColor = "#e7e7e7")}
+                onFocus={(e) => (e.target.style.borderColor = "#0055b8")}
+                onBlur={(e) => (e.target.style.borderColor = "#0055b8")}
               />
               <button
                 type="button"
@@ -372,21 +372,21 @@ const Register = () => {
                   required
                   style={{
                     marginTop: "2px",
-                    accentColor: "#f74928",
+                    accentColor: "#0055b8",
                   }}
                 />
                 <span>
                   Acepto los{" "}
                   <a
                     href="#"
-                    style={{ color: "#f74928", textDecoration: "none" }}
+                    style={{ color: "#0055b8", textDecoration: "none" }}
                   >
                     términos y condiciones
                   </a>{" "}
                   y la{" "}
                   <a
                     href="#"
-                    style={{ color: "#f74928", textDecoration: "none" }}
+                    style={{ color: "#0055b8", textDecoration: "none" }}
                   >
                     política de privacidad
                   </a>
@@ -402,7 +402,7 @@ const Register = () => {
               style={{
                 width: "100%",
                 height: "50px",
-                background: acceptTerms ? "#f74928" : "#ccc",
+                background: acceptTerms ? "#0055b8" : "#ccc",
                 color: "white",
                 border: "none",
                 borderRadius: "5px",
@@ -433,7 +433,7 @@ const Register = () => {
                   role="button"
                   onClick={() => onRouterLink("/login")}
                   style={{
-                    color: "#f74928",
+                    color: "#0055b8",
                     textDecoration: "none",
                     fontWeight: "bold",
                   }}
@@ -480,7 +480,7 @@ const Register = () => {
                 style={{
                   width: "60px",
                   height: "60px",
-                  background: "#f74928",
+                  background: "#0055b8",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
@@ -511,7 +511,7 @@ const Register = () => {
                 style={{
                   width: "60px",
                   height: "60px",
-                  background: "#f74928",
+                  background: "#0055b8",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",

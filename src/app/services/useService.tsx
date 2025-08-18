@@ -141,7 +141,7 @@ const useService = () => {
 
           if (res && res.status == 200) {
             localStorage.removeItem("email");
-            onRouterLink("/login");
+            window.location.reload();
           }
         } catch (error) {}
       },
