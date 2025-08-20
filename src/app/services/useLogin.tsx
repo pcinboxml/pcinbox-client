@@ -16,7 +16,6 @@ const useLogin = () => {
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(formData);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -3,15 +3,15 @@
 import axios from "axios";
 import { useRouter, usePathname } from "next/navigation";
 import { useTheContext } from "./globalContext";
+import { auth, provider } from "@/lib/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const useService = () => {
   const { setDataModal } = useTheContext();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
-    headers: {
-      "Content-Type": "application/json",
-    },
+
     withCredentials: true,
   });
 
@@ -149,6 +149,13 @@ const useService = () => {
     });
   };
 
+  const handleLoginGoogle = async () => {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("data google user");
+    console.log(user);
+  };
+
   return {
     requestGet,
     requestPost,
@@ -157,6 +164,7 @@ const useService = () => {
     onRouterHref,
     formatCurrency,
     Logout,
+    handleLoginGoogle,
   };
 };
 

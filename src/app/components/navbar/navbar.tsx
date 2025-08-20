@@ -8,6 +8,7 @@ import { ChangeEvent, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
+import { FcGoogle } from "react-icons/fc";
 
 const Navbar = () => {
   const {
@@ -22,9 +23,11 @@ const Navbar = () => {
     handleDetectedScroll,
     onMouseEnterProducts,
     onMouseLeaveProducts,
+    setNavRefResponsive,
   } = useNavbar();
 
-  const { onRouterLink, formatCurrency, Logout } = useService();
+  const { onRouterLink, formatCurrency, Logout, handleLoginGoogle } =
+    useService();
   const {
     messageError,
     showAlert,
@@ -175,7 +178,7 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Sub menu responsivo para celulares */}
+            {/* Sub menu responsivo para tablets */}
             {navRefResponsive ? (
               <div
                 id="container-submenu-responsive"
@@ -183,12 +186,38 @@ const Navbar = () => {
               >
                 <ul>
                   <li>
-                    <a href="#">{hasToken ? "Mi cuenta" : "Ingresar"}</a>
-                    <MdArrowDropDown size={22} color="gray" />
+                    <a
+                      role="button"
+                      onClick={() =>
+                        hasToken
+                          ? [
+                              onRouterLink("/mi-cuenta"),
+                              setNavRefResponsive(false),
+                            ]
+                          : {}
+                      }
+                      className="
+                              hover:!text-[#bb3d4b] 
+                              hover:!font-semibold 
+                              hover:!underline 
+                              hover:!decoration-[#a67845] 
+                              hover:!decoration-[3px]"
+                    >
+                      {hasToken ? "Mi cuenta" : "Ingresar"}
+                    </a>
                   </li>
                   <li>
-                    <a href="#">Favoritos (0)</a>
-                    <MdArrowDropDown size={22} color="gray" />
+                    <a
+                      role="button"
+                      className="
+                              hover:!text-[#bb3d4b] 
+                              hover:!font-semibold 
+                              hover:!underline 
+                              hover:!decoration-[#a67845] 
+                              hover:!decoration-[3px]"
+                    >
+                      Favoritos (0)
+                    </a>
                   </li>
                   <li>
                     <a href="#">Comparar (0)</a>
@@ -199,7 +228,11 @@ const Navbar = () => {
                     <MdArrowDropDown size={22} color="gray" />
                   </li>
                   <li>
-                    <a href="#" style={{ color: "#BB3D4B", fontWeight: "600" }}>
+                    <a
+                      role="button"
+                      onClick={() => onRouterLink("/register")}
+                      style={{ color: "#BB3D4B", fontWeight: "600" }}
+                    >
                       ¿Eres nuevo? ¡Registrate!
                     </a>
                   </li>
@@ -297,13 +330,52 @@ const Navbar = () => {
                               disabled={loadingLogin}
                             >
                               {loadingLogin ? (
-                                <MdAutorenew size={12} />
+                                <MdAutorenew
+                                  size={20}
+                                  className="m-auto the-spinner"
+                                />
                               ) : (
                                 "Iniciar Sesión"
                               )}
                             </button>
-                            <button className="cursor-pointer">
+                            <button
+                              className="cursor-pointer"
+                              onClick={() => onRouterLink("/register")}
+                            >
                               Registrarse
+                            </button>
+                          </div>
+
+                          <div className="containerLineaDivisora flex w-full mt-3 justify-center items-center gap-2">
+                            <div
+                              style={{
+                                width: "40%",
+                                height: "4px",
+                                background: "#ccc",
+                                border: "1px solid #ccc",
+                              }}
+                            ></div>
+                            <span style={{ color: "gray", fontSize: "18px" }}>
+                              o
+                            </span>
+                            <div
+                              style={{
+                                width: "40%",
+                                height: "4px",
+                                border: "1px solid #ccc",
+                                background: "#ccc",
+                              }}
+                            ></div>
+                          </div>
+
+                          <div className="mt-2 flex w-full justify-center p-1">
+                            <button
+                              type="button"
+                              className="border w-full flex justify-center gap-2 items-center p-2"
+                              onClick={handleLoginGoogle}
+                            >
+                              <FcGoogle size={22} />
+                              Iniciar Sesión con Google
                             </button>
                           </div>
                         </form>
@@ -313,7 +385,8 @@ const Navbar = () => {
                         <ul>
                           <li>
                             <a
-                              href="#"
+                              role="button"
+                              onClick={() => onRouterLink("/mi-cuenta")}
                               className="
                               hover:!text-[#bb3d4b] 
                               hover:!font-semibold 

@@ -1,0 +1,29 @@
+.tagA {
+  text-decoration: none;
+  color: #808080;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.li {
+  cursor: pointer;
+  padding: 3px 10px;
+}
+
+.li:hover .tagA {
+  color: #bb3d4b;
+  font-weight: 600;
+}
+
+.li:hover {
+  border-bottom: 3px solid #a67845;
+}
+
+.activeLi {
+  border-bottom: 3px solid #a67845 !important;
+}
+
+.activeA {
+  color: #bb3d4b !important;
+  font-weight: 600 !important;
+}

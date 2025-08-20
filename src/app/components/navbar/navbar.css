@@ -351,6 +351,20 @@
   background: #666666;
 }
 
+.the-spinner {
+  animation: girar 300ms ease-in-out infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotateZ(0deg);
+  }
+
+  from {
+    transform: rotateZ(360deg);
+  }
+}
+
 @media (max-width: 1360px) {
   .container-submenu {
     justify-content: flex-start;

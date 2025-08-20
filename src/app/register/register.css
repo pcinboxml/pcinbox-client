@@ -1,6 +1,0 @@
-@media (max-width: 750px) {
-  .container-names {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-  }
-}

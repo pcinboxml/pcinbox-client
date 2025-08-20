@@ -1,0 +1,48 @@
+.section {
+  width: 80%;
+  margin: 20px auto;
+  display: flex;
+  columns: 2;
+}
+
+.imgTarjeta {
+  padding: 8px;
+}
+
+.imgUser {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.miLabel {
+  color: #bb3d4b;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.miAnswer {
+  color: #808080;
+  font-size: 15px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.btnSubirFoto {
+  background: #bb3d4b;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  width: 150px;
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.btnSubirFoto:hover {
+  background: #8c2e36;
+}

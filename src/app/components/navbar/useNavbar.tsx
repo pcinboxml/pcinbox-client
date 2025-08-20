@@ -91,6 +91,7 @@ const useNavbar = () => {
     onMouseEnterProducts,
     onMouseLeaveProducts,
     optionProducts,
+    setNavRefResponsive,
   };
 };
 

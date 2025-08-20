@@ -4,21 +4,24 @@ import { useState } from "react";
 import { RegisterI } from "../interfaces/register.interface";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
+import { auth, provider } from "@/lib/firebase";
+import { signInWithPopup } from "firebase/auth";
+
+type Strength = "weak" | "medium" | "strong" | "";
 
 const useRegister = () => {
   const [formData, setFormData] = useState<RegisterI>({
     name: "",
     lastname: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [loadingRegister, setLoadingRegister] = useState<boolean>(false);
+  const [typeStrength, setTypeStrength] = useState<Strength>("");
 
   const { setDataModal } = useTheContext();
   const { requestPost, onRouterLink } = useService();
@@ -26,9 +29,30 @@ const useRegister = () => {
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
 
+    if (name === "password") {
+      if (value != "") {
+        const hasLetters = /[a-zA-Z]/.test(value);
+        const hasNumbers = /\d/.test(value);
+        const hasSymbols = /[^a-zA-Z0-9]/.test(value);
+
+        if (value.length >= 10 && hasLetters && hasNumbers && hasSymbols) {
+          setTypeStrength("strong");
+        } else if (
+          value.length >= 6 &&
+          ((hasLetters && hasNumbers) || (hasLetters && hasSymbols))
+        ) {
+          setTypeStrength("medium");
+        } else {
+          setTypeStrength("weak");
+        }
+      } else {
+        setTypeStrength("");
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value ? value.trim() : "",
+      [name]: value,
     }));
   };
 
@@ -70,22 +94,6 @@ const useRegister = () => {
       return;
     }
 
-    if (!/^\d*$/.test(formData.phone)) {
-      setDataModal({
-        isOpen: true,
-        message: `El número de teléfono deben ser puros numeros`,
-        type: "error",
-        title: "Error",
-        onClose: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-        onConfirm: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-      });
-      return;
-    }
-
     if (
       formData.password != formData.confirmPassword ||
       formData.confirmPassword != formData.password
@@ -111,7 +119,7 @@ const useRegister = () => {
           name: formData.name,
           lastname: formData.lastname,
           email: formData.email,
-          phone: formData.phone,
+
           password: formData.password,
         },
         "/user/register"
@@ -119,6 +127,13 @@ const useRegister = () => {
       setLoadingRegister(false);
 
       if (res.status == 200) {
+        setFormData({
+          name: "",
+          confirmPassword: "",
+          email: "",
+          lastname: "",
+          password: "",
+        });
         setDataModal({
           isOpen: true,
           message: "Cuenta creada correctamente",
@@ -127,7 +142,7 @@ const useRegister = () => {
           onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
           onConfirm: () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
-            onRouterLink("/login");
+            onRouterLink("/index");
           },
         });
       }
@@ -146,17 +161,24 @@ const useRegister = () => {
     }
   };
 
+  const handleRegisterGoogle = async () => {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("data google user");
+    console.log(user);
+  };
+
   return {
     formData,
     showPassword,
     showConfirmPassword,
-    acceptTerms,
     loadingRegister,
+    typeStrength,
     handleInputChange,
     handleSubmit,
     setShowPassword,
     setShowConfirmPassword,
-    setAcceptTerms,
+    handleRegisterGoogle,
   };
 };
 

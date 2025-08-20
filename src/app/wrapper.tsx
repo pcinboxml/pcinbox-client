@@ -11,11 +11,6 @@ export default function AppWrapper({
 }) {
   const { dataModal } = useTheContext();
 
-  const pathname = usePathname();
-
-  const showNavbarAndFooterRoutes =
-    pathname !== "/login" && pathname !== "/register";
-
   return (
     <div
       style={{
@@ -25,7 +20,7 @@ export default function AppWrapper({
         minHeight: "100vh",
       }}
     >
-      {showNavbarAndFooterRoutes && <Navbar />}
+      <Navbar />
 
       <main style={{ flex: 1 }}>
         {children}
@@ -40,8 +35,7 @@ export default function AppWrapper({
           children={dataModal.children}
         />
       </main>
-
-      {showNavbarAndFooterRoutes && <Footer />}
+      <Footer />
     </div>
   );
 }
