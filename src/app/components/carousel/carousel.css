@@ -2,22 +2,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 400px;
+  min-height: 400px;
+  overflow: hidden;
 }
 
 .imageContainer {
   position: relative;
   width: 100%;
-  height: 300px;
+  max-width: 1200px;
+  height: 400px;
+  aspect-ratio: 16 / 9; /* opcional: asegura proporción constante */
   overflow: hidden;
   border-radius: 8px;
 }
 
-.image {
+.imageContainer .image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #000;
   display: block;
-  border-radius: 8px;
 }
 
 /* Overlay de dots */
@@ -45,4 +51,11 @@
 
 .dot.active {
   background-color: #fff;
+}
+
+@media (max-width: 999px) {
+  .imageContainer .image {
+    object-fit: cover;
+    object-position: center;
+  }
 }

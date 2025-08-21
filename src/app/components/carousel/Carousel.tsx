@@ -2,23 +2,10 @@
 
 import "./carousel.css";
 import { useEffect, useRef, useState } from "react";
+import useCarousel from "./useCarousel";
 
 const Carousel = () => {
-  const AUTO_PLAY_INTERVAL = 3000;
-
-  // Imágenes de ejemplo
-  const images = [
-    "/banner_prin.png",
-
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=entropy",
-
-    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&crop=entropy",
-
-    "https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=800&h=600&fit=crop&crop=entropy",
-
-    "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800&h=600&fit=crop&crop=entropy",
-  ];
-
+  const { AUTO_PLAY_INTERVAL, images } = useCarousel();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

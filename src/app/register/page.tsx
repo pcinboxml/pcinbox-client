@@ -1,9 +1,6 @@
 "use client";
 import styles from "./register.module.css";
-import useService from "../services/useService";
 import useRegister from "./useRegister";
-import useProtectedRoutes from "@/app/services/useProtectedRoutes";
-import { useEffect } from "react";
 import PasswordStrengthBar from "../components/password-strength-bar/PasswordStrengthBar";
 import { FcGoogle } from "react-icons/fc";
 import { Eye, EyeClosed } from "lucide-react";
@@ -20,15 +17,9 @@ const Register = () => {
     showPassword,
     typeStrength,
     loadingRegister,
+    loadingRegisterGoogle,
     handleRegisterGoogle,
   } = useRegister();
-
-  const { ProtectedLoginAndRegister } = useProtectedRoutes();
-
-  useEffect(() => {
-    //Proteger ruta register
-    ProtectedLoginAndRegister();
-  }, []);
 
   return (
     <section className={`${styles.section} border flex`}>
@@ -142,9 +133,16 @@ const Register = () => {
               type="button"
               className="border"
               onClick={handleRegisterGoogle}
+              disabled={loadingRegisterGoogle}
             >
-              <FcGoogle size={22} />
-              Registrarse con Google
+              {loadingRegisterGoogle ? (
+                <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : (
+                <>
+                  <FcGoogle size={22} />
+                  Iniciar Sesión con Google
+                </>
+              )}
             </button>
           </div>
         </form>

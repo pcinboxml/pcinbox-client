@@ -107,10 +107,10 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   width: 150px;
-  height: 544px;
+  min-height: 544px;
   top: 100%;
   padding: 9px;
-  overflow-y: auto;
+  z-index: 2000;
 }
 
 .container-list-products ul {
@@ -375,6 +375,12 @@
   }
 }
 
+@media (max-width: 1200px) {
+  .container-header .container-car {
+    width: 10%;
+  }
+}
+
 @media (max-width: 1069px) {
   .container-products {
     display: flex;
@@ -387,20 +393,34 @@
   }
 }
 
-@media (max-width: 724px) {
-  .container-header .search {
-    visibility: hidden;
-  }
-
-  .container-submenu .icon-hamburguer button {
-    margin-right: 40px;
-  }
-
-  .container-submenu .icon-hamburguer {
-    display: block !important;
-  }
-
+@media (max-width: 996px) {
   .submenu {
     display: none;
+  }
+
+  .container-car-first {
+    display: none !important;
+  }
+  .container-submenu .icon-hamburguer {
+    display: block !important;
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+
+  .container-header {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .container-header .logo {
+    width: 240px;
+  }
+
+  .container-header .search {
+    width: 100%;
+  }
+
+  .container-header .search form button {
+    width: 100px !important;
   }
 }

@@ -91,3 +91,27 @@
   gap: 10px;
   align-items: center;
 }
+
+@media (max-width: 1090px) {
+  .section .img {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+@media (max-width: 999px) {
+  .section > div:nth-of-type(1) {
+    display: none;
+  }
+
+  .section > div:nth-of-type(2) {
+    width: 80%;
+    margin: auto;
+  }
+}
+
+@media (min-width: 1328px) {
+  .section {
+    width: 1200px;
+  }
+}

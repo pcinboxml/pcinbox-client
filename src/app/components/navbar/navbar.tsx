@@ -26,16 +26,17 @@ const Navbar = () => {
     setNavRefResponsive,
   } = useNavbar();
 
-  const { onRouterLink, formatCurrency, Logout, handleLoginGoogle } =
-    useService();
+  const { onRouterLink, formatCurrency, Logout } = useService();
   const {
     messageError,
     showAlert,
     formData,
     loadingLogin,
+    loadingLoginGoogle,
     closeAlert,
     onSubmit,
     setFormData,
+    onLoginGoogle,
   } = useLogin();
   const pathname = usePathname();
   useEffect(() => {
@@ -61,7 +62,7 @@ const Navbar = () => {
             </button>
           </form>
         </div>
-        <div className="container-car">
+        <div className="container-car container-car-first">
           <div className="icon-car relative">
             <img src="/carrito.png" />
             <span
@@ -152,7 +153,7 @@ const Navbar = () => {
         <div className="container-submenu">
           <div className="icon-hamburguer relative">
             <div className="flex p-0">
-              <form action="" className="flex w-full">
+              {/* <form action="" className="flex w-full">
                 <input
                   type="search"
                   placeholder="¿Qué articulo buscas?"
@@ -168,7 +169,7 @@ const Navbar = () => {
                 >
                   <span className="px-2 text-white">Buscar</span>
                 </button>
-              </form>
+              </form> */}
               <button
                 onClick={handleToggleNav}
                 id="btnHamburguer"
@@ -176,6 +177,21 @@ const Navbar = () => {
               >
                 <MdList size={22} color="white" />
               </button>
+              <div className="container-car">
+                <div className="icon-car relative">
+                  <img src="/carrito.png" />
+                  <span
+                    className="absolute badge badge-car"
+                    style={{ background: "#bb3d4b" }}
+                  >
+                    99+
+                  </span>
+                </div>
+
+                <div className="container-cash">
+                  <b style={{ color: "#BB3D4B" }}>{formatCurrency(0)}</b>
+                </div>
+              </div>
             </div>
 
             {/* Sub menu responsivo para tablets */}
@@ -235,6 +251,30 @@ const Navbar = () => {
                     >
                       ¿Eres nuevo? ¡Registrate!
                     </a>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      className="border w-full flex p-2"
+                      style={{
+                        background: "white",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: "10px",
+                        gap: "10px",
+                      }}
+                      onClick={onLoginGoogle}
+                    >
+                      {loadingLoginGoogle ? (
+                        <MdAutorenew size={20} className="m-auto the-spinner" />
+                      ) : (
+                        <>
+                          <FcGoogle size={20} />
+                          Iniciar Sesion con Google
+                        </>
+                      )}
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -372,10 +412,19 @@ const Navbar = () => {
                             <button
                               type="button"
                               className="border w-full flex justify-center gap-2 items-center p-2"
-                              onClick={handleLoginGoogle}
+                              onClick={onLoginGoogle}
                             >
-                              <FcGoogle size={22} />
-                              Iniciar Sesión con Google
+                              {loadingLoginGoogle ? (
+                                <MdAutorenew
+                                  size={20}
+                                  className="m-auto the-spinner"
+                                />
+                              ) : (
+                                <>
+                                  <FcGoogle size={22} />
+                                  Iniciar Sesion con Google
+                                </>
+                              )}
                             </button>
                           </div>
                         </form>
@@ -482,25 +531,6 @@ const Navbar = () => {
                         </button>
                       </div>
                     )}
-                    {/* {hasToken ? (
-                      <li className="hover:bg-gray-100">
-                        <a
-                          role="button"
-                          onClick={() => onRouterLink("/configUser")}
-                        >
-                          <MdSettings size={22} />
-                          Ajustes generales
-                        </a>
-                      </li>
-                    ) : null}
-                    {hasToken ? (
-                      <li className="hover:bg-gray-100">
-                        <a role="button" onClick={() => Logout()}>
-                          <MdLogout size={22} />
-                          Cerrar sesión
-                        </a>
-                      </li>
-                    ) : null} */}
                   </ul>
                 </div>
               </li>

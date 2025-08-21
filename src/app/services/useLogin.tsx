@@ -1,7 +1,9 @@
-import { LoginI } from "@/app/interfaces/login.interface";
+"use client";
 
+import { LoginI } from "@/app/interfaces/login.interface";
 import { useState } from "react";
 import useService from "@/app/services/useService";
+import { signIn } from "next-auth/react";
 
 const useLogin = () => {
   const [formData, setFormData] = useState<LoginI>({
@@ -9,6 +11,7 @@ const useLogin = () => {
     password: "",
   });
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
+  const [loadingLoginGoogle, setLoadingLogingGoogle] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { requestPost } = useService();
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -54,6 +57,13 @@ const useLogin = () => {
     }
   };
 
+  const onLoginGoogle = async () => {
+    setLoadingLogingGoogle(true);
+    document.cookie = "mode=login; path=/";
+
+    await signIn("google");
+  };
+
   const closeAlert = () => {
     setShowAlert(false);
     setMessageError("");
@@ -65,10 +75,12 @@ const useLogin = () => {
     showPassword,
     showAlert,
     messageError,
+    loadingLoginGoogle,
     onSubmit,
     setFormData,
     setShowPassword,
     closeAlert,
+    onLoginGoogle,
   };
 };
 

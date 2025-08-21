@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import useService from "../services/useService";
+import { useSession } from "next-auth/react";
 
 const useIndex = () => {
   const MARCAS = [
@@ -52,6 +53,7 @@ const useIndex = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const sectionRef = useRef<HTMLDivElement>(null);
+  const { requestPost } = useService();
 
   //  const cacheProduct = useMemo(() => {
   //   return loadingProducts ? dataProducts : []

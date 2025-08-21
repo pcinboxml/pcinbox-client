@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { auth, provider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
+import { signOut } from "next-auth/react";
 
 const useService = () => {
   const { setDataModal } = useTheContext();
@@ -140,6 +141,7 @@ const useService = () => {
           const res = await requestDelete("/cookies/removeCookies");
 
           if (res && res.status == 200) {
+            signOut();
             localStorage.removeItem("email");
             window.location.reload();
           }
@@ -147,13 +149,6 @@ const useService = () => {
       },
       type: "info",
     });
-  };
-
-  const handleLoginGoogle = async () => {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    console.log("data google user");
-    console.log(user);
   };
 
   return {
@@ -164,7 +159,6 @@ const useService = () => {
     onRouterHref,
     formatCurrency,
     Logout,
-    handleLoginGoogle,
   };
 };
 

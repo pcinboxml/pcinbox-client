@@ -1,12 +1,8 @@
 "use client";
 import "./index.css";
-import { CreditCard, Phone, Shield, Truck } from "lucide-react";
 import useIndex from "./useIndex";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
-import { useEffect } from "react";
-import Skeleton from "../components/skeleton/Skeleton";
-import PaginationComponent from "../components/pagination/PaginationComponent";
 
 const Index = () => {
   const {
@@ -19,10 +15,6 @@ const Index = () => {
     itemsPerPage,
     sectionRef,
   } = useIndex();
-
-  useEffect(() => {
-    getListProducts();
-  }, []);
 
   return (
     <section>

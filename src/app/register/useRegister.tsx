@@ -4,8 +4,7 @@ import { useState } from "react";
 import { RegisterI } from "../interfaces/register.interface";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { auth, provider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signIn } from "next-auth/react";
 
 type Strength = "weak" | "medium" | "strong" | "";
 
@@ -21,6 +20,8 @@ const useRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loadingRegister, setLoadingRegister] = useState<boolean>(false);
+  const [loadingRegisterGoogle, setLoadingRegisterGoogle] =
+    useState<boolean>(false);
   const [typeStrength, setTypeStrength] = useState<Strength>("");
 
   const { setDataModal } = useTheContext();
@@ -162,10 +163,10 @@ const useRegister = () => {
   };
 
   const handleRegisterGoogle = async () => {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    console.log("data google user");
-    console.log(user);
+    setLoadingRegisterGoogle(true);
+    document.cookie = "mode=login; path=/";
+
+    await signIn("google");
   };
 
   return {
@@ -174,6 +175,7 @@ const useRegister = () => {
     showConfirmPassword,
     loadingRegister,
     typeStrength,
+    loadingRegisterGoogle,
     handleInputChange,
     handleSubmit,
     setShowPassword,
