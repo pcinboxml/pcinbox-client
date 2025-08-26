@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "npx kill-port 3000 && next dev --turbopack",
-    "build": "next build",
+    "qa": "npx dotenv -e .env.production -- next dev",
+    "build:dev": "next build",
+    "build:qa": "npx dotenv -e .env.qa -- next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -37,6 +39,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^10.0.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
