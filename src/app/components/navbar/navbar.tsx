@@ -76,7 +76,7 @@ const Navbar = () => {
   return (
     <header className="main-header" ref={navRef}>
       <div className="container-header flex w-full justify-center p-2 items-center">
-        <div className="logo" onClick={() => onRouterLink("/index")}>
+        <div className="logo" onClick={() => onRouterLink("/principal")}>
           <img src="/logo.png" />
         </div>
         <div className="search">
@@ -117,7 +117,7 @@ const Navbar = () => {
         <div
           className="container-products"
           onMouseLeave={
-            pathname == "/index" || pathname == "/"
+            pathname == "/principal" || pathname == "/"
               ? () => {}
               : onMouseLeaveProducts
           }
@@ -125,7 +125,7 @@ const Navbar = () => {
           <button
             className="btn-products"
             onMouseEnter={
-              pathname == "/index" || pathname == "/"
+              pathname == "/principal" || pathname == "/"
                 ? () => {}
                 : onMouseEnterProducts
             }
@@ -138,7 +138,7 @@ const Navbar = () => {
             className="container-list-products absolute bg-white shadow"
             style={{
               display:
-                pathname == "/index" || pathname == "/" ? "block" : "none",
+                pathname == "/principal" || pathname == "/" ? "block" : "none",
             }}
           >
             <ul>

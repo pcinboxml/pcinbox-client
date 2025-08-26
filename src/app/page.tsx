@@ -1,9 +1,8 @@
-import dynamic from "next/dynamic";
+"use client";
 
-const IndexContent = dynamic(() => import("./index/IndexComponent"), {
-  ssr: false,
-});
+import IndexComponent from "./principal/PrincipalComponent";
+export const dynamic = "force-dynamic";
 
 export default function Home() {
-  return <IndexContent />;
+  return <IndexComponent />;
 }

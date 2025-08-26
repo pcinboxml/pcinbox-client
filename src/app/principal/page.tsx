@@ -1,7 +1,9 @@
 // app/index/page.tsx
 "use client";
 
-import IndexComponent from "./IndexComponent";
+import IndexComponent from "./PrincipalComponent";
+
+export const dynamic = "force-dynamic";
 
 const IndexPage = () => {
   return <IndexComponent />;

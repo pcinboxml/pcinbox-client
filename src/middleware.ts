@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (!token) {
-    return NextResponse.redirect(new URL("/index", request.url));
+    return NextResponse.redirect(new URL("/principal", request.url));
   }
 
   return NextResponse.next();

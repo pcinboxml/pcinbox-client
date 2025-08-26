@@ -1,11 +1,11 @@
 "use client";
-import "./index.css";
-import useIndex from "./useIndex";
+import "./principal.css";
+import usePrincipal from "./usePrincipal";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
 import { useEffect } from "react";
 
-const IndexComponent = () => {
+const PrincipalComponent = () => {
   const {
     getListProducts,
     dataProducts,
@@ -15,7 +15,7 @@ const IndexComponent = () => {
     currentPage,
     itemsPerPage,
     sectionRef,
-  } = useIndex();
+  } = usePrincipal();
 
   useEffect(() => {
     getListProducts();
@@ -86,4 +86,4 @@ const IndexComponent = () => {
   );
 };
 
-export default IndexComponent;
+export default PrincipalComponent;

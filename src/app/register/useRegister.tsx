@@ -143,7 +143,7 @@ const useRegister = () => {
           onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
           onConfirm: () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
-            onRouterLink("/index");
+            onRouterLink("/principal");
           },
         });
       }

@@ -92,7 +92,7 @@ const handler = NextAuth({
     },
 
     redirect({ url, baseUrl }) {
-      return `${baseUrl}/index`;
+      return `${baseUrl}/principal`;
     },
   },
   pages: {

@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import useService from "../services/useService";
-import ProductI from "./../interfaces/products/product.interface";
-const useIndex = () => {
+import ProductI from "../interfaces/products/product.interface";
+const usePrincipal = () => {
   const MARCAS = [
     {
       id: 1,
@@ -96,4 +96,4 @@ const useIndex = () => {
   };
 };
 
-export default useIndex;
+export default usePrincipal;
