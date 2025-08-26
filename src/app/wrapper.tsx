@@ -24,7 +24,6 @@ export default function AppWrapper({
         }}
       >
         <Navbar />
-
         <main style={{ flex: 1 }}>
           {children}
 
