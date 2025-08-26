@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "npx kill-port 3000 && next dev --turbopack",
-    "qa": "npx dotenv -e .env.production -- next dev",
     "build:dev": "next build",
-    "build:qa": "npx dotenv -e .env.qa -- next build",
+    "start:qa": "npx dotenv -e .env.production -- next dev",
+    "build:qa": "npx dotenv -e .env.production -- next build",
     "start": "next start",
     "lint": "next lint"
   },
