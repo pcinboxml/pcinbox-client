@@ -20,7 +20,6 @@ export default function AppWrapper({
         style={{
           display: "flex",
           flexDirection: "column",
-
           minHeight: "100vh",
         }}
       >
