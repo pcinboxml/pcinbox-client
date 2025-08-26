@@ -1,17 +1,91 @@
 "use client";
 
+import ProductI from "@/app/interfaces/products/product.interface";
+import { useTheContext } from "@/app/services/globalContext";
+import useService from "@/app/services/useService";
 import { useState } from "react";
 
 const useCard = () => {
-  const [showActions, setShowActions] = useState<boolean>(false);
+  const { setDataCart, setDataModal, setDataNotification } = useTheContext();
+  const { requestPost } = useService();
 
-  const handleMouseEnter = () => setShowActions(true);
-  const handleMouseLeave = () => setShowActions(false);
+  const [loadingAgregar, setLoadingAgregar] = useState<boolean>(false);
+
+  const handleAddProductCart = async (product: ProductI) => {
+    try {
+      setLoadingAgregar(true);
+
+      const resp = await requestPost(
+        {
+          product: product,
+          quantity: 1,
+          price: product.price,
+          isDetails: false,
+        },
+        "/cart/addProduct"
+      );
+
+      setLoadingAgregar(false);
+
+      if (resp && resp.status == 200) {
+        setDataNotification({
+          open: true,
+          handleClose: () =>
+            setDataNotification((prevNoti) => ({
+              ...prevNoti,
+              open: false,
+            })),
+          message: "Producto agregado al carrito correctamente",
+          type: "success",
+        });
+
+        setDataCart((prev) => {
+          const existingProductIndex = prev.findIndex(
+            (item) => item.idProduct === product.idProduct
+          );
+
+          if (existingProductIndex !== -1) {
+            return prev.map((item, index) =>
+              index === existingProductIndex
+                ? { ...item, quantity: Number(item.quantity) + Number(1) }
+                : item
+            );
+          }
+
+          return [
+            ...prev,
+            {
+              categoryId: product.categoryId,
+              createdAt: product.createdAt,
+              description: product.description,
+              idProduct: product.idProduct,
+              image_url: product.image_url,
+              name: product.name,
+              price: product.price,
+              providerId: product.providerId,
+              stock: product.stock,
+              quantity: 1,
+            },
+          ];
+        });
+      }
+    } catch (error: any) {
+      setLoadingAgregar(false);
+
+      setDataModal({
+        isOpen: true,
+        title: "Error",
+        type: "error",
+        message: error.response.message || error.message,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+    }
+  };
 
   return {
-    handleMouseEnter,
-    handleMouseLeave,
-    showActions,
+    handleAddProductCart,
+    loadingAgregar,
   };
 };
 

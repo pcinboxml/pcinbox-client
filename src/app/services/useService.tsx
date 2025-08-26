@@ -1,10 +1,8 @@
 "use client";
 
 import axios from "axios";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTheContext } from "./globalContext";
-import { auth, provider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
 import { signOut } from "next-auth/react";
 
 const useService = () => {
@@ -12,33 +10,29 @@ const useService = () => {
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
-
     withCredentials: true,
   });
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const requestPost = async (data: any, endPoint: string) => {
     try {
       const res = await api.post(endPoint, data);
       return res;
     } catch (error: any) {
-      if (
-        pathname != "/login" &&
-        pathname != "/register" &&
-        error.response.status == 401
-      ) {
+      if (error.response.status == 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
           title: "Sesión expirada",
           onClose: () => {
-            onRouterLink("/login");
+            window.location.reload();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            onRouterLink("/login");
+            window.location.reload();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           type: "info",
@@ -57,22 +51,18 @@ const useService = () => {
 
       return res;
     } catch (error: any) {
-      if (
-        pathname != "/login" &&
-        pathname != "/register" &&
-        error.response.status == 401
-      ) {
+      if (error.response.status == 401) {
         if (showErrorSesion) {
           setDataModal({
             isOpen: true,
             message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
             title: "Sesión expirada",
             onClose: () => {
-              onRouterLink("/login");
+              window.location.reload();
               setDataModal((prev) => ({ ...prev, isOpen: false }));
             },
             onConfirm: async () => {
-              onRouterLink("/login");
+              window.location.reload();
               setDataModal((prev) => ({ ...prev, isOpen: false }));
             },
             type: "info",
@@ -88,21 +78,19 @@ const useService = () => {
       const res = await api.delete(endPoint);
       return res;
     } catch (error: any) {
-      if (
-        pathname != "/login" &&
-        pathname != "/register" &&
-        error.response.status == 401
-      ) {
+      if (error.response.status == 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
           title: "Sesión expirada",
           onClose: () => {
-            onRouterLink("/login");
+            window.location.reload();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            onRouterLink("/login");
+            window.location.reload();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           type: "info",
@@ -129,6 +117,17 @@ const useService = () => {
       style: "currency",
       currency: "MXN",
     }).format(value);
+
+  const handleGetCookie = async (setHasToken: any) => {
+    try {
+      const resp = await requestGet("/cookies/getCookie", false);
+      if (resp && resp.status == 200) {
+        setHasToken(true);
+      }
+    } catch (error) {
+      setHasToken(false);
+    }
+  };
 
   const Logout = () => {
     setDataModal({
@@ -159,6 +158,7 @@ const useService = () => {
     onRouterHref,
     formatCurrency,
     Logout,
+    handleGetCookie,
   };
 };
 

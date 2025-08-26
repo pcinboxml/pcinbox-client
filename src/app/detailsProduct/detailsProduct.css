@@ -78,6 +78,34 @@
   margin-top: 5px;
 }
 
+.container-detail .btnAgregar:hover {
+  background: yellow;
+  border: 1px solid yellow;
+  color: #4d4d4d;
+}
+
+.btnAgregarFavoritos {
+  min-width: 150px;
+  border: solid;
+  min-height: 45px;
+  margin-top: 20px;
+  color: #bb3d4b;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.btnAgregarFavoritos:hover {
+  background: #bb3d4b;
+  border: 2px solid white;
+  color: white;
+}
+
 .container-img {
   width: 30%;
 }

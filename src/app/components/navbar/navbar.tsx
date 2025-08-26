@@ -1,14 +1,25 @@
 "use client";
 
 import "./navbar.css";
-import { MdArrowDropDown, MdClose, MdList, MdAutorenew } from "react-icons/md";
+import {
+  MdArrowDropDown,
+  MdClose,
+  MdList,
+  MdAutorenew,
+  MdFavorite,
+  MdCompare,
+  MdSwapHoriz,
+} from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
 import { FcGoogle } from "react-icons/fc";
+import { Cart, ModalCart } from "../cart/Cart";
+import { useTheContext } from "@/app/services/globalContext";
+import useCart from "../cart/useCart";
 
 const Navbar = () => {
   const {
@@ -24,6 +35,7 @@ const Navbar = () => {
     onMouseEnterProducts,
     onMouseLeaveProducts,
     setNavRefResponsive,
+    handleGetDataCart,
   } = useNavbar();
 
   const { onRouterLink, formatCurrency, Logout } = useService();
@@ -38,8 +50,21 @@ const Navbar = () => {
     setFormData,
     onLoginGoogle,
   } = useLogin();
+
+  const { dataCart } = useTheContext();
   const pathname = usePathname();
+  const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      .map((item) => Number(item.price) * item.quantity)
+      .reduce((sum, current) => sum + current, 0);
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
+
   useEffect(() => {
+    handleGetDataCart();
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
@@ -63,18 +88,28 @@ const Navbar = () => {
           </form>
         </div>
         <div className="container-car container-car-first">
-          <div className="icon-car relative">
-            <img src="/carrito.png" />
-            <span
-              className="absolute badge badge-car"
-              style={{ background: "#bb3d4b" }}
-            >
-              99+
-            </span>
+          <div className="icon-car relative cursor-pointer">
+            <div onMouseEnter={onMouseEnterCart}>
+              <Cart />
+            </div>
+
+            <ModalCart
+              showDivCart={showDivCart}
+              onMouseLeaveCart={onMouseLeaveCart}
+            />
+
+            {dataCart && dataCart.length > 0 ? (
+              <span
+                className="absolute badge badge-car"
+                style={{ background: "#bb3d4b" }}
+              >
+                {dataCart.length}
+              </span>
+            ) : null}
           </div>
 
           <div className="container-cash">
-            <b style={{ color: "#BB3D4B" }}>{formatCurrency(0)}</b>
+            <b style={{ color: "#BB3D4B" }}>{formatCurrency(totalPrice)}</b>
           </div>
         </div>
       </div>
@@ -153,23 +188,6 @@ const Navbar = () => {
         <div className="container-submenu">
           <div className="icon-hamburguer relative">
             <div className="flex p-0">
-              {/* <form action="" className="flex w-full">
-                <input
-                  type="search"
-                  placeholder="¿Qué articulo buscas?"
-                  className="w-full border"
-                />
-                <button
-                  style={{
-                    width: "100px",
-                    color: "#fff",
-                    background: "#4d4d4d",
-                    borderBottomRightRadius: "25px",
-                  }}
-                >
-                  <span className="px-2 text-white">Buscar</span>
-                </button>
-              </form> */}
               <button
                 onClick={handleToggleNav}
                 id="btnHamburguer"
@@ -295,7 +313,7 @@ const Navbar = () => {
 
                 <div
                   id="1"
-                  style={{ display: "none" }}
+                  style={{ display: "none", left: "-50px" }}
                   className="absolute bg-white container-sub-menu shadow"
                 >
                   <ul className="list-options-cuenta cursor-default">
@@ -430,7 +448,10 @@ const Navbar = () => {
                         </form>
                       </>
                     ) : (
-                      <div className="flex w-auto container-mi-cuenta flex-col">
+                      <div
+                        className="flex w-auto container-mi-cuenta flex-col"
+                        style={{ zIndex: "120" }}
+                      >
                         <ul>
                           <li>
                             <a
@@ -546,15 +567,50 @@ const Navbar = () => {
 
                 <div
                   id="2"
-                  className="absolute w-full h-96 bg-white"
-                  style={{ top: "100%", zIndex: "90", display: "none" }}
+                  className="absolute w-auto  bg-white p-1"
+                  style={{ top: "100%", zIndex: "60", display: "none" }}
                 >
-                  contenido
+                  <div
+                    className="w-[300px] flex justify-center items-center p-2 gap-1 shadow"
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <span
+                      className="text-[#bb3d4b]"
+                      style={{ fontSize: "15px", fontWeight: "600" }}
+                    >
+                      No tienes productos favoritos
+                    </span>
+                    <MdFavorite size={20} color="#bb3d4b" />
+                  </div>
                 </div>
               </li>
-              <li>
-                <a href="#">Comparar (0)</a>
-                <MdArrowDropDown size={22} color="gray" />
+              <li
+                className="relative"
+                onMouseEnter={() => onMouseEnterSubmenu("3")}
+                onMouseLeave={() => onMouseLeaveSubMenu("3")}
+              >
+                <a href="#">
+                  Comparar (0)
+                  <MdArrowDropDown size={22} color="gray" />
+                </a>
+                <div
+                  id="3"
+                  className="absolute w-auto bg-white p-1"
+                  style={{ top: "100%", zIndex: "60", display: "none" }}
+                >
+                  <div
+                    className="w-[300px] flex justify-center items-center p-2 gap-1 shadow"
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <span
+                      className="text-black"
+                      style={{ fontSize: "15px", fontWeight: "600" }}
+                    >
+                      No tienes productos para comparar
+                    </span>
+                    <MdSwapHoriz size={20} color="black" />
+                  </div>
+                </div>
               </li>
               <li>
                 <a href="#">Configurador de PC</a>

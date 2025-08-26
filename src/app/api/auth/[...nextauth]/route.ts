@@ -54,7 +54,6 @@ const handler = NextAuth({
             }
           );
 
-          // Establecer cookie
           (await cookieStore).set("token", token, {
             httpOnly: true,
             secure: process.env.NEXT_PUBLIC_NODE_ENV === "production",
@@ -62,7 +61,7 @@ const handler = NextAuth({
             maxAge: 3 * 24 * 60 * 60 * 1000,
             path: "/",
           });
-
+          (user as any).idUser = data.idUser;
           return true;
         } else {
           throw new Error(data?.message);
@@ -76,6 +75,8 @@ const handler = NextAuth({
         token.email = user.email;
         token.name = user.name;
         token.picture = user.image;
+        token.sub = token.sub;
+        token.idUser = (user as any).idUser;
       }
       return token;
     },
@@ -85,6 +86,7 @@ const handler = NextAuth({
         session.user!.email = token.email;
         session.user!.name = token.name;
         session.user!.image = token.picture;
+        (session as any).idUser = token.idUser;
       }
       return session;
     },

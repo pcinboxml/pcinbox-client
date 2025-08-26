@@ -4,17 +4,31 @@ import "./card.css";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Rating from "@mui/material/Rating";
-import { MdArrowDropDown } from "react-icons/md";
+import { MdArrowDropDown, MdAutorenew } from "react-icons/md";
 import useService from "@/app/services/useService";
+import ProductI from "@/app/interfaces/products/product.interface";
+import useCard from "./useCard";
 
-const Card = () => {
-  const { onRouterLink } = useService();
+const Card = ({ product }: { product: ProductI }) => {
+  const { onRouterLink, formatCurrency } = useService();
+  const { handleAddProductCart, loadingAgregar } = useCard();
 
   return (
     <div className="mi-card border">
-      <div className="container-img">
+      <div
+        className="container-img"
+        onClick={() => {
+          localStorage.setItem(
+            "product",
+            JSON.stringify({
+              ...product,
+            })
+          );
+          onRouterLink("/detailsProduct");
+        }}
+      >
         <img
-          src="/tarjeta_video.png"
+          src={product.image_url}
           alt=""
           style={{ backgroundColor: "transparent" }}
         />
@@ -23,8 +37,9 @@ const Card = () => {
         <div className="rating">
           <Rating
             name="simple-controlled"
-            defaultValue={0}
             max={5}
+            readOnly
+            value={3}
             size="medium"
             sx={{
               color: "#BB3D4B",
@@ -43,25 +58,30 @@ const Card = () => {
       </div>
 
       <div className="container-description">
-        <span className="name-product">Monitor de 20 pulgadas HP</span>
+        <span className="name-product">{product.name}</span>
         <span className="code">COD 100-100001404WOF</span>
       </div>
 
       <div className="actions-product">
-        <div
-          className="buttons relative"
-          // onMouseEnter={handleMouseEnter}
-          // onMouseLeave={handleMouseLeave}
-        >
-          <button onClick={() => onRouterLink("/detailsProduct")}>
-            Agregar
+        <div className="buttons relative">
+          <button
+            disabled={loadingAgregar}
+            onClick={() => handleAddProductCart(product)}
+          >
+            {loadingAgregar ? (
+              <MdAutorenew size={20} className="m-auto the-spinner" />
+            ) : (
+              "Agregar"
+            )}
           </button>
         </div>
 
         <div className="cantidad-product">
-          <span className="costoProducto">$6,000.71</span>
+          <span className="costoProducto">
+            {formatCurrency(Number(product.price))}
+          </span>
           <span className="costoEnvio">Costo de envío desde $155.00.</span>
-          <span className="stock">Disponible: 12 pzas.</span>
+          <span className="stock">Disponible: {product.stock} pzas.</span>
         </div>
       </div>
 

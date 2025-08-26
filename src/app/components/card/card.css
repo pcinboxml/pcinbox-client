@@ -151,3 +151,8 @@
   color: #868686;
   word-break: break-word;
 }
+
+.mi-card:has(.container-img:hover) {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  cursor: pointer;
+}

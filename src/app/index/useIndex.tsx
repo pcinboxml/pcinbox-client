@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useService from "../services/useService";
-import { useSession } from "next-auth/react";
-
+import ProductI from "./../interfaces/products/product.interface";
 const useIndex = () => {
   const MARCAS = [
     {
@@ -49,15 +48,10 @@ const useIndex = () => {
   ];
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
-  const [dataProducts, setDataProducts] = useState([]);
+  const [dataProducts, setDataProducts] = useState<ProductI[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { requestPost } = useService();
-
-  //  const cacheProduct = useMemo(() => {
-  //   return loadingProducts ? dataProducts : []
-  //  }, [dataProducts, loadingProducts])
 
   const { requestGet } = useService();
 
@@ -72,7 +66,7 @@ const useIndex = () => {
   const getListProducts = async () => {
     try {
       setLoadingProducts(false);
-      const resp = await requestGet("/products/getList");
+      const resp = await requestGet("/products/getProducts");
 
       setLoadingProducts(true);
 
@@ -81,8 +75,6 @@ const useIndex = () => {
       }
     } catch (error) {
       setLoadingProducts(false);
-      console.log("error");
-      console.log(error);
     }
   };
 

@@ -1,14 +1,15 @@
 "use client";
 
+import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import { useEffect, useRef, useState } from "react";
 
 const useNavbar = () => {
-  const [hasToken, setHasToken] = useState(false);
   const [navRefResponsive, setNavRefResponsive] = useState(false);
-  const { requestGet } = useService();
+  const { handleGetCookie, requestGet } = useService();
   const navRef = useRef<HTMLDivElement>(null);
   const optionProducts = useRef<HTMLDivElement>(null);
+  const { hasToken, setHasToken, setDataCart, setDataModal } = useTheContext();
 
   const onMouseEnterSubmenu = (idSubmenu: string) => {
     const idSub = document.getElementById(idSubmenu);
@@ -39,17 +40,7 @@ const useNavbar = () => {
   };
 
   useEffect(() => {
-    requestGet("/cookies/getCookie", false)
-      .then((res) => {
-        if (res && res.status == 200) {
-          setHasToken(true);
-        }
-      })
-      .catch((er) => {
-        if (er.response.status == 401) {
-          setHasToken(false);
-        }
-      });
+    handleGetCookie(setHasToken);
   }, [hasToken]);
 
   const handleToggleNav = () => {
@@ -62,6 +53,25 @@ const useNavbar = () => {
       !e.target.closest("#container-submenu-responsive")
     ) {
       setNavRefResponsive(false);
+    }
+  };
+
+  const handleGetDataCart = async () => {
+    try {
+      const resp = await requestGet("/cart/getCart", true);
+      if (resp && resp.status == 200) {
+        const data = await resp.data;
+        setDataCart(data.data);
+      }
+    } catch (error: any) {
+      setDataModal({
+        isOpen: true,
+        title: "Error",
+        type: "error",
+        message: error.response.message || error.message,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
     }
   };
 
@@ -92,6 +102,7 @@ const useNavbar = () => {
     onMouseLeaveProducts,
     optionProducts,
     setNavRefResponsive,
+    handleGetDataCart,
   };
 };
 

@@ -3,6 +3,7 @@ import "./index.css";
 import useIndex from "./useIndex";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
+import { useEffect } from "react";
 
 const Index = () => {
   const {
@@ -15,6 +16,10 @@ const Index = () => {
     itemsPerPage,
     sectionRef,
   } = useIndex();
+
+  useEffect(() => {
+    getListProducts();
+  }, []);
 
   return (
     <section>
@@ -36,9 +41,10 @@ const Index = () => {
             <span>Tenemos lo más destacado en Gaming!</span>
           </div>
           <div className="container-destacado">
-            {[1, 2, 3].map((item) => (
-              <Card key={item} />
-            ))}
+            {dataProducts &&
+              dataProducts.map((product) => (
+                <Card key={product.idProduct} product={product} />
+              ))}
           </div>
 
           <div className="head-container">
@@ -46,9 +52,10 @@ const Index = () => {
           </div>
 
           <div className="container-destacado">
-            {[1, 2, 3].map((item) => (
-              <Card key={item} />
-            ))}
+            {dataProducts &&
+              dataProducts.map((product) => (
+                <Card key={product.idProduct} product={product} />
+              ))}
           </div>
 
           <div className="head-container">
@@ -56,9 +63,10 @@ const Index = () => {
           </div>
 
           <div className="container-destacado">
-            {[1, 2, 3].map((item) => (
-              <Card key={item} />
-            ))}
+            {dataProducts &&
+              dataProducts.map((product) => (
+                <Card key={product.idProduct} product={product} />
+              ))}
           </div>
         </div>
       </div>

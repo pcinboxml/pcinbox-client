@@ -3,6 +3,7 @@
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
+import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
 
@@ -11,7 +12,7 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const { dataModal } = useTheContext();
+  const { dataModal, dataNotification } = useTheContext();
 
   return (
     <SessionProvider>
@@ -37,6 +38,8 @@ export default function AppWrapper({
             type={dataModal.type}
             children={dataModal.children}
           />
+
+          <Notification dataNotification={dataNotification} />
         </main>
         <Footer />
       </div>
