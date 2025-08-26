@@ -6,13 +6,9 @@ const useCarousel = () => {
   // Imágenes de ejemplo
   const images = [
     "/banner_prin.png",
-
     "/banner_prin_02.png",
-
     "/banner_prin_03.png",
-
     "/banner_prin_04.png",
-
     "/banner_prin_05.png",
   ];
 

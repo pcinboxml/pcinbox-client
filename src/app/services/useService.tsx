@@ -44,7 +44,7 @@ const useService = () => {
 
   const requestGet = async (
     endPoint: string,
-    showErrorSesion: boolean = true
+    showErrorSesion: boolean = false
   ) => {
     try {
       const res = await api.get(endPoint);
@@ -52,22 +52,22 @@ const useService = () => {
       return res;
     } catch (error: any) {
       if (error.response.status == 401) {
-        if (showErrorSesion) {
-          setDataModal({
-            isOpen: true,
-            message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
-            title: "Sesión expirada",
-            onClose: () => {
-              window.location.reload();
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
-            onConfirm: async () => {
-              window.location.reload();
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
-            type: "info",
-          });
-        }
+        // if (showErrorSesion) {
+        //   setDataModal({
+        //     isOpen: true,
+        //     message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
+        //     title: "Sesión expirada",
+        //     onClose: () => {
+        //       window.location.reload();
+        //       setDataModal((prev) => ({ ...prev, isOpen: false }));
+        //     },
+        //     onConfirm: async () => {
+        //       window.location.reload();
+        //       setDataModal((prev) => ({ ...prev, isOpen: false }));
+        //     },
+        //     type: "info",
+        //   });
+        // }
       }
       throw error;
     }
