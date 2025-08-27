@@ -62,7 +62,7 @@ const handler = NextAuth({
               process.env.NEXT_PUBLIC_NODE_ENV == "qa"
                 ? true
                 : false,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 3 * 24 * 60 * 60 * 1000,
             path: "/",
           });
@@ -72,6 +72,7 @@ const handler = NextAuth({
           throw new Error(data?.message);
         }
       }
+
       return false;
     },
 
