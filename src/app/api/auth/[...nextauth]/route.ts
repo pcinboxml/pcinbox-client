@@ -113,7 +113,7 @@ const handler = NextAuth({
     strategy: "jwt",
   },
 
-  secret: process.env.NEXT_PUBLIC_KEY_JWT,
+  secret: process.env.NEXTAUTH_SECRET,
   debug: true, // Mostrar errores en consola (útil para QA)
 });
 
