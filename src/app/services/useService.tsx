@@ -11,9 +11,10 @@ const useService = () => {
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     withCredentials: true,
+    headers: {
+      "ngrok-skip-browser-warning": "true",
+    },
   });
-
-  api.defaults.headers.common["ngrok-skip-browser-warning"] = "any";
 
   const router = useRouter();
 
