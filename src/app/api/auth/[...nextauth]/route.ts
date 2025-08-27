@@ -72,7 +72,6 @@ const handler = NextAuth({
           throw new Error(data?.message);
         }
       }
-
       return false;
     },
 
