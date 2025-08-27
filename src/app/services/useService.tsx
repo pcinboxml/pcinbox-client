@@ -13,6 +13,8 @@ const useService = () => {
     withCredentials: true,
   });
 
+  api.defaults.headers.common["ngrok-skip-browser-warning"] = "any";
+
   const router = useRouter();
 
   const requestPost = async (data: any, endPoint: string) => {
