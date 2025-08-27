@@ -64,14 +64,16 @@ const useNavbar = () => {
         setDataCart(data.data);
       }
     } catch (error: any) {
-      setDataModal({
-        isOpen: true,
-        title: "Error",
-        type: "error",
-        message: error.response.message || error.message,
-        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      });
+      if (error.response.status != 401) {
+        setDataModal({
+          isOpen: true,
+          title: "Error",
+          type: "error",
+          message: error.response.message || error.message,
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        });
+      }
     }
   };
 
