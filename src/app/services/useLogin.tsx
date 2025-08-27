@@ -61,7 +61,8 @@ const useLogin = () => {
     setLoadingLogingGoogle(true);
     document.cookie = "mode=login; path=/";
 
-    await signIn("google", { redirect: false });
+    await signIn("google");
+    setLoadingLogingGoogle(false);
   };
 
   const closeAlert = () => {
