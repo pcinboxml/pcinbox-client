@@ -1,0 +1,12 @@
+@media (max-height: 639px) {
+  .contentCart {
+    height: 90vh !important;
+    max-height: 90vh !important;
+  }
+}
+
+@media (max-height: 801px) {
+  .contentCart {
+    max-height: 45vh !important;
+  }
+}

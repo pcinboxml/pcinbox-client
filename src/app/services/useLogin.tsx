@@ -46,10 +46,14 @@ const useLogin = () => {
       setLoadingLogin(false);
 
       if (res && res.status == 200) {
+        const data = await res.data;
+
+        localStorage.setItem("email", formData.email);
+        localStorage.setItem("authGoogle", "false");
+        localStorage.setItem("token", data.data.token);
         window.location.reload();
       }
     } catch (error: any) {
-      localStorage.setItem("email", formData.email);
       setShowAlert(true);
 
       setLoadingLogin(false);
@@ -63,6 +67,7 @@ const useLogin = () => {
 
     await signIn("google");
     setLoadingLogingGoogle(false);
+    localStorage.setItem("authGoogle", "true");
   };
 
   const closeAlert = () => {

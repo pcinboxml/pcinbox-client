@@ -54,27 +54,10 @@ const handler = NextAuth({
               expiresIn: "3d",
             }
           );
-
-          // {
-          //         httpOnly: true,
-          //         secure:
-          //           process.env.NEXT_PUBLIC_NODE_ENV == "production" ||
-          //           process.env.NEXT_PUBLIC_NODE_ENV == "qa"
-          //             ? true
-          //             : false,
-          //         sameSite: "none",
-          //         maxAge: 3 * 24 * 60 * 60 * 1000,
-          //         path: "/",
-          //       }
-
-          (await cookieStore).set("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 3 * 24 * 60 * 60 * 1000,
-            path: "/",
-          });
           (user as any).idUser = data.idUser;
+          (user as any).jwt = token;
+          (user as any).idUser = data.idUser;
+          (user as any).rol = "customer";
           return true;
         } else {
           throw new Error(data?.message);
@@ -93,6 +76,7 @@ const handler = NextAuth({
         token.sub = token.sub;
         token.idUser = (user as any).idUser;
         token.rol = (user as any).rol;
+        token.jwt = (user as any).jwt;
       }
       return token;
     },
@@ -104,11 +88,12 @@ const handler = NextAuth({
         session.user!.image = token.picture;
         (session as any).idUser = token.idUser;
         (session as any).rol = token.rol;
+        (session as any).token = token.jwt;
       }
       return session;
     },
 
-    redirect({ baseUrl }) {
+    redirect({ baseUrl, url }) {
       return `${baseUrl}/principal`;
     },
   },

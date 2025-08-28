@@ -1,5 +1,6 @@
 "use client";
 
+import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
 import { useMemo } from "react";
@@ -45,7 +46,6 @@ export const ModalCart = ({
           top: "50px",
           right: "120px",
           width: "500px",
-          maxHeight: "790px",
         }}
         onMouseLeave={() => {
           onMouseLeaveCart();
@@ -67,7 +67,13 @@ export const ModalCart = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 mt-2">
+        <div
+          className="flex-1 overflow-y-auto p-4 mt-2 contentCart"
+          style={{
+            height: "45vh",
+            maxHeight: "60vh",
+          }}
+        >
           {dataCart.length === 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="mx-auto text-gray-300 mb-4" size={64} />

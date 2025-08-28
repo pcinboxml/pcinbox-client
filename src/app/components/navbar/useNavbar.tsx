@@ -6,10 +6,10 @@ import { useEffect, useRef, useState } from "react";
 
 const useNavbar = () => {
   const [navRefResponsive, setNavRefResponsive] = useState(false);
-  const { handleGetCookie, requestGet } = useService();
+  const { requestGet } = useService();
   const navRef = useRef<HTMLDivElement>(null);
   const optionProducts = useRef<HTMLDivElement>(null);
-  const { hasToken, setHasToken, setDataCart, setDataModal } = useTheContext();
+  const { hasToken, setDataCart, setDataModal } = useTheContext();
 
   const onMouseEnterSubmenu = (idSubmenu: string) => {
     const idSub = document.getElementById(idSubmenu);
@@ -38,10 +38,6 @@ const useNavbar = () => {
       optionProducts.current.style.display = "none";
     }
   };
-
-  useEffect(() => {
-    handleGetCookie(setHasToken);
-  }, [hasToken]);
 
   const handleToggleNav = () => {
     setNavRefResponsive(!navRefResponsive);

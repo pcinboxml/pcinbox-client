@@ -11,16 +11,17 @@ const useService = () => {
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     withCredentials: true,
-    headers: {
-      "ngrok-skip-browser-warning": "true",
-    },
   });
 
   const router = useRouter();
 
   const requestPost = async (data: any, endPoint: string) => {
     try {
-      const res = await api.post(endPoint, data);
+      const res = await api.post(endPoint, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return res;
     } catch (error: any) {
       if (error.response.status == 401) {
@@ -50,7 +51,11 @@ const useService = () => {
     showErrorSesion: boolean = false
   ) => {
     try {
-      const res = await api.get(endPoint);
+      const res = await api.get(endPoint, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       return res;
     } catch (error: any) {
@@ -78,7 +83,11 @@ const useService = () => {
 
   const requestDelete = async (endPoint: string) => {
     try {
-      const res = await api.delete(endPoint);
+      const res = await api.delete(endPoint, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return res;
     } catch (error: any) {
       if (error.response.status == 401) {
@@ -121,9 +130,9 @@ const useService = () => {
       currency: "MXN",
     }).format(value);
 
-  const handleGetCookie = async (setHasToken: any) => {
+  const handleGetAuth = async (setHasToken: any) => {
     try {
-      const resp = await requestGet("/cookies/getCookie", false);
+      const resp = await requestGet("/auth/getAuth", false);
       if (resp && resp.status == 200) {
         setHasToken(true);
       }
@@ -139,15 +148,11 @@ const useService = () => {
       title: "Cerrar Sesión",
       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
-        try {
-          const res = await requestDelete("/cookies/removeCookies");
-
-          if (res && res.status == 200) {
-            signOut();
-            localStorage.removeItem("email");
-            window.location.reload();
-          }
-        } catch (error) {}
+        signOut();
+        localStorage.removeItem("email");
+        localStorage.removeItem("token");
+        localStorage.removeItem("authGoogle");
+        window.location.reload();
       },
       type: "info",
     });
@@ -161,7 +166,7 @@ const useService = () => {
     onRouterHref,
     formatCurrency,
     Logout,
-    handleGetCookie,
+    handleGetAuth,
   };
 };
 

@@ -167,6 +167,9 @@ const useRegister = () => {
     document.cookie = "mode=login; path=/";
 
     await signIn("google");
+    setLoadingRegisterGoogle(true);
+
+    localStorage.setItem("authGoogle", "true");
   };
 
   return {

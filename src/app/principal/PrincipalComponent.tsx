@@ -4,6 +4,9 @@ import usePrincipal from "./usePrincipal";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import useService from "../services/useService";
+import { useTheContext } from "../services/globalContext";
 
 const PrincipalComponent = () => {
   const {
@@ -17,9 +20,29 @@ const PrincipalComponent = () => {
     sectionRef,
   } = usePrincipal();
 
+  const { data: session, status } = useSession();
+  const { handleGetAuth } = useService();
+  const { setHasToken, hasToken } = useTheContext();
+
   useEffect(() => {
     getListProducts();
   }, []);
+
+  useEffect(() => {
+    const authGoogle = localStorage.getItem("authGoogle");
+
+    if (session && status == "authenticated" && authGoogle == "true") {
+      const token = (session as any)?.token;
+      if (token && token !== "undefined" && token !== "null") {
+        localStorage.setItem("token", token);
+        handleGetAuth(setHasToken);
+      }
+    }
+  }, [session, status]);
+
+  useEffect(() => {
+    handleGetAuth(setHasToken);
+  }, [hasToken]);
 
   return (
     <section>
