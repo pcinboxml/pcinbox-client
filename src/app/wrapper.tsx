@@ -26,13 +26,12 @@ export default function AppWrapper({
       const productsStorage = JSON.parse(
         localStorage.getItem("dataCart") || ""
       );
-      console.log("asing token");
+
       setDataCart(productsStorage);
     } else if (hasToken == true) {
       addProductFromStorage().then(async (resp) => {
         await handleGetDataCart();
       });
-      console.log(hasToken);
     }
   }, [hasToken]);
 

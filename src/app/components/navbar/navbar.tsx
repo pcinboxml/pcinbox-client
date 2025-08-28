@@ -57,9 +57,11 @@ const Navbar = () => {
   const { handleGetAuth } = useService();
 
   const totalPrice = useMemo(() => {
-    const total = dataCart
-      .map((item) => Number(item.price) * item.quantity)
-      .reduce((sum, current) => sum + current, 0);
+    const total =
+      dataCart &&
+      dataCart
+        .map((item) => Number(item.price) * item.quantity)
+        .reduce((sum, current) => sum + current, 0);
 
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);

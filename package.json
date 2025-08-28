@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npx kill-port 3000 && next dev --turbopack",
+    "tunel": "next dev -H 0.0.0.0",
     "build:dev": "next build",
     "start:qa": "npx dotenv -e .env.production -- next dev",
     "build:qa": "npx dotenv -e .env.production -- next build",

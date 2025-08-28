@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["authjs.dev"],
   },
+
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

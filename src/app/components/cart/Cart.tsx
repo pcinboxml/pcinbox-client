@@ -20,14 +20,16 @@ export const ModalCart = ({
   onMouseLeaveCart: any;
   showDivCart: boolean;
 }) => {
-  const { dataCart, setDataCart, hasToken } = useTheContext();
+  const { dataCart, setDataCart } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
   const { handleRemoveItemCart } = useCart();
 
   const totalPrice = useMemo(() => {
-    const total = dataCart
-      .map((item) => Number(item.price) * item.quantity)
-      .reduce((sum, current) => sum + current, 0);
+    const total =
+      dataCart &&
+      dataCart
+        .map((item) => Number(item.price) * item.quantity)
+        .reduce((sum, current) => sum + current, 0);
 
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
@@ -74,7 +76,7 @@ export const ModalCart = ({
             maxHeight: "60vh",
           }}
         >
-          {dataCart.length === 0 ? (
+          {dataCart && dataCart.length === 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="mx-auto text-gray-300 mb-4" size={64} />
               <p className="text-gray-500 text-lg">Tu carrito está vacío</p>
@@ -193,7 +195,7 @@ export const ModalCart = ({
         </div>
 
         {/* Footer with totals and actions */}
-        {dataCart.length > 0 && (
+        {dataCart && dataCart.length > 0 && (
           <div className="border-t border-gray-200 p-4 bg-gray-50">
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">

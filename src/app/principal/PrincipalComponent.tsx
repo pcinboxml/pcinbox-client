@@ -53,7 +53,7 @@ const PrincipalComponent = () => {
           </div>
 
           <div className="container-destacado">
-            {dataProducts.length > 0 ? (
+            {dataProducts && dataProducts.length > 0 ? (
               dataProducts.map((product) => (
                 <Card key={product.idProduct} product={product} />
               ))
@@ -67,7 +67,7 @@ const PrincipalComponent = () => {
           </div>
 
           <div className="container-destacado">
-            {dataProducts.length > 0 ? (
+            {dataProducts && dataProducts.length > 0 ? (
               dataProducts.map((product) => (
                 <Card key={product.idProduct} product={product} />
               ))
