@@ -20,11 +20,11 @@ import { FcGoogle } from "react-icons/fc";
 import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const {
     navRefResponsive,
-    hasToken,
     navRef,
     optionProducts,
     onMouseEnterSubmenu,
@@ -35,7 +35,6 @@ const Navbar = () => {
     onMouseEnterProducts,
     onMouseLeaveProducts,
     setNavRefResponsive,
-    handleGetDataCart,
   } = useNavbar();
 
   const { onRouterLink, formatCurrency, Logout } = useService();
@@ -51,9 +50,11 @@ const Navbar = () => {
     onLoginGoogle,
   } = useLogin();
 
-  const { dataCart } = useTheContext();
+  const { dataCart, setHasToken, hasToken } = useTheContext();
   const pathname = usePathname();
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+  const { data: session, status } = useSession();
+  const { handleGetAuth } = useService();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -64,7 +65,6 @@ const Navbar = () => {
   }, [dataCart]);
 
   useEffect(() => {
-    handleGetDataCart();
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
@@ -72,6 +72,22 @@ const Navbar = () => {
         document.removeEventListener("scroll", handleDetectedScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const authGoogle = localStorage.getItem("authGoogle");
+
+    if (session && status == "authenticated" && authGoogle == "true") {
+      const token = (session as any)?.token;
+      if (token && token !== "undefined" && token !== "null") {
+        localStorage.setItem("token", token);
+        handleGetAuth(setHasToken);
+      }
+    }
+  }, [session, status]);
+
+  useEffect(() => {
+    handleGetAuth(setHasToken);
+  }, [hasToken]);
 
   return (
     <header className="main-header" ref={navRef}>

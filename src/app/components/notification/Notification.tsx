@@ -5,7 +5,7 @@ const Notification = ({ dataNotification }: { dataNotification: any }) => {
   return (
     <Snackbar
       open={dataNotification.open}
-      autoHideDuration={3000}
+      autoHideDuration={1500}
       onClose={dataNotification.handleClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >

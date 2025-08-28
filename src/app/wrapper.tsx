@@ -1,18 +1,39 @@
 "use client";
 
+import useCart from "./components/cart/useCart";
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
+import useNavbar from "./components/navbar/useNavbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function AppWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { dataModal, dataNotification } = useTheContext();
+  const { dataModal, dataNotification, hasToken, setDataCart } =
+    useTheContext();
+
+  const { addProductFromStorage } = useCart();
+  const { handleGetDataCart } = useNavbar();
+
+  useEffect(() => {
+    if (localStorage.getItem("dataCart") && hasToken == false) {
+      const productsStorage = JSON.parse(
+        localStorage.getItem("dataCart") || ""
+      );
+      setDataCart(productsStorage);
+    } else if (hasToken == true) {
+      addProductFromStorage().then(async (resp) => {
+        await handleGetDataCart();
+      });
+      console.log(hasToken);
+    }
+  }, [hasToken]);
 
   return (
     <SessionProvider>

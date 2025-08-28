@@ -48,11 +48,43 @@ const useCart = () => {
     }
   };
 
+  const addProductFromStorage = async () => {
+    if (localStorage.getItem("dataCart")) {
+      const storage = JSON.parse(localStorage.getItem("dataCart") || "");
+
+      try {
+        const getStatus = await requestPost(
+          {
+            dataCart: storage,
+          },
+          "/cart/addProductFromStorage"
+        );
+
+        if (getStatus.status == 200) {
+          localStorage.removeItem("dataCart");
+        }
+      } catch (error: any) {
+        if (error.response.status != 401) {
+          setDataModal({
+            isOpen: true,
+            title: "Error",
+            type: "error",
+            message: error.response.message || error.message,
+            onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+            onConfirm: () =>
+              setDataModal((prev) => ({ ...prev, isOpen: false })),
+          });
+        }
+      }
+    }
+  };
+
   return {
     handleRemoveItemCart,
     showDivCart,
     onMouseEnterCart,
     onMouseLeaveCart,
+    addProductFromStorage,
   };
 };
 

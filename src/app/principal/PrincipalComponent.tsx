@@ -4,9 +4,7 @@ import usePrincipal from "./usePrincipal";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import useService from "../services/useService";
-import { useTheContext } from "../services/globalContext";
+import Skeleton from "../components/skeleton/Skeleton";
 
 const PrincipalComponent = () => {
   const {
@@ -20,29 +18,9 @@ const PrincipalComponent = () => {
     sectionRef,
   } = usePrincipal();
 
-  const { data: session, status } = useSession();
-  const { handleGetAuth } = useService();
-  const { setHasToken, hasToken } = useTheContext();
-
   useEffect(() => {
     getListProducts();
   }, []);
-
-  useEffect(() => {
-    const authGoogle = localStorage.getItem("authGoogle");
-
-    if (session && status == "authenticated" && authGoogle == "true") {
-      const token = (session as any)?.token;
-      if (token && token !== "undefined" && token !== "null") {
-        localStorage.setItem("token", token);
-        handleGetAuth(setHasToken);
-      }
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    handleGetAuth(setHasToken);
-  }, [hasToken]);
 
   return (
     <section>
@@ -75,10 +53,13 @@ const PrincipalComponent = () => {
           </div>
 
           <div className="container-destacado">
-            {dataProducts &&
+            {dataProducts.length > 0 ? (
               dataProducts.map((product) => (
                 <Card key={product.idProduct} product={product} />
-              ))}
+              ))
+            ) : (
+              <Skeleton />
+            )}
           </div>
 
           <div className="head-container">
@@ -86,10 +67,13 @@ const PrincipalComponent = () => {
           </div>
 
           <div className="container-destacado">
-            {dataProducts &&
+            {dataProducts.length > 0 ? (
               dataProducts.map((product) => (
                 <Card key={product.idProduct} product={product} />
-              ))}
+              ))
+            ) : (
+              <Skeleton />
+            )}
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ const handler = NextAuth({
           `${process.env.NEXT_PUBLIC_API_URL}/user/loginGoogle`,
           {
             method: "POST",
-            credentials: "include",
+
             headers: {
               "Content-Type": "application/json",
             },

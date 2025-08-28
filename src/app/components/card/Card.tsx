@@ -1,6 +1,5 @@
 "use client";
 import "./card.css";
-
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Rating from "@mui/material/Rating";

@@ -3,7 +3,7 @@
 import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
@@ -20,7 +20,7 @@ export const ModalCart = ({
   onMouseLeaveCart: any;
   showDivCart: boolean;
 }) => {
-  const { dataCart, setDataCart } = useTheContext();
+  const { dataCart, setDataCart, hasToken } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
   const { handleRemoveItemCart } = useCart();
 

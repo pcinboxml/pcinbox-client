@@ -6,12 +6,46 @@ import useService from "@/app/services/useService";
 import { useState } from "react";
 
 const useCard = () => {
-  const { setDataCart, setDataModal, setDataNotification } = useTheContext();
+  const { setDataCart, setDataModal, setDataNotification, hasToken } =
+    useTheContext();
   const { requestPost } = useService();
 
   const [loadingAgregar, setLoadingAgregar] = useState<boolean>(false);
 
   const handleAddProductCart = async (product: ProductI) => {
+    if (!hasToken) {
+      const stored = localStorage.getItem("dataCart");
+      const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
+      const existingProductIndex = products.findIndex(
+        (p: any) => p.idProduct == product.idProduct
+      );
+
+      if (existingProductIndex != -1) {
+        products[existingProductIndex].quantity += 1;
+      } else {
+        products.push({
+          ...product,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem("dataCart", JSON.stringify(products));
+
+      setDataNotification({
+        open: true,
+        handleClose: () =>
+          setDataNotification((prevNoti) => ({
+            ...prevNoti,
+            open: false,
+          })),
+        message: `${product.name} agregado al carrito correctamente`,
+        type: "success",
+      });
+
+      setDataCart(JSON.parse(localStorage.getItem("dataCart") || ""));
+      return;
+    }
+
     try {
       setLoadingAgregar(true);
 
