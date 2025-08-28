@@ -10,6 +10,7 @@ const useService = () => {
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
+    withCredentials: true,
   });
 
   const router = useRouter();
