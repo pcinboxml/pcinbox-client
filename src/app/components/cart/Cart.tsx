@@ -25,11 +25,11 @@ export const ModalCart = ({
   const { handleRemoveItemCart } = useCart();
 
   const totalPrice = useMemo(() => {
-    const total =
-      dataCart &&
-      dataCart
-        .map((item) => Number(item.price) * item.quantity)
-        .reduce((sum, current) => sum + current, 0);
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
 
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
@@ -76,7 +76,7 @@ export const ModalCart = ({
             maxHeight: "60vh",
           }}
         >
-          {dataCart && dataCart.length === 0 ? (
+          {dataCart && dataCart.length == 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="mx-auto text-gray-300 mb-4" size={64} />
               <p className="text-gray-500 text-lg">Tu carrito está vacío</p>
