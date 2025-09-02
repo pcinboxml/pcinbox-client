@@ -5,6 +5,7 @@ import PasswordStrengthBar from "../components/password-strength-bar/PasswordStr
 import { FcGoogle } from "react-icons/fc";
 import { Eye, EyeClosed } from "lucide-react";
 import { MdAutorenew } from "react-icons/md";
+import ProtectedRoute from "../middleware/protectedRoute";
 
 const Register = () => {
   const {
@@ -20,6 +21,8 @@ const Register = () => {
     loadingRegisterGoogle,
     handleRegisterGoogle,
   } = useRegister();
+
+  ProtectedRoute();
 
   return (
     <section className={`${styles.section} border flex`}>

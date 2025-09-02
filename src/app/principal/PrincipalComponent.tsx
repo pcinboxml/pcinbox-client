@@ -27,68 +27,75 @@ const PrincipalComponent = () => {
       {/*Carrusel */}
 
       <div className="content-main">
-        <div className="list-products">
-          <img src="/banner0.png" className="banner0" />
-          <img src="/banner1.png" className="banner1" />
-          <img src="/banner2.png" className="banner2" />
-        </div>
+        {dataProducts && dataProducts.length > 0 ? (
+          <div className="list-products">
+            <img src="/banner0.png" className="banner0" />
+            <img src="/banner1.png" className="banner1" />
+            <img src="/banner2.png" className="banner2" />
+          </div>
+        ) : (
+          ""
+        )}
+
         <div className="content-index">
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
-            <Carousel />
-          </div>
 
-          <div className="head-container">
-            <span>Tenemos lo más destacado en Gaming!</span>
-          </div>
-          <div className="container-destacado">
-            {dataProducts &&
-              dataProducts.map((product) => (
-                <Card key={product.idProduct} product={product} />
-              ))}
-          </div>
-
-          <div className="head-container">
-            <span>Lo más buscado!</span>
-          </div>
-
-          <div className="container-destacado">
             {dataProducts && dataProducts.length > 0 ? (
-              dataProducts.map((product) => (
-                <Card key={product.idProduct} product={product} />
-              ))
+              <Carousel />
             ) : (
               <Skeleton />
             )}
           </div>
 
-          <div className="head-container">
-            <span>Lo más vendido!</span>
-          </div>
+          {dataProducts && dataProducts.length > 0 ? (
+            <>
+              <div className="head-container">
+                <span>Tenemos lo más destacado en Gaming!</span>
+              </div>
 
-          <div className="container-destacado">
-            {dataProducts && dataProducts.length > 0 ? (
-              dataProducts.map((product) => (
-                <Card key={product.idProduct} product={product} />
-              ))
-            ) : (
-              <Skeleton />
-            )}
-          </div>
+              <div className="container-destacado">
+                {dataProducts.map((product) => (
+                  <Card key={product.idProduct} product={product} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <Skeleton />
+          )}
+
+          {dataProducts && dataProducts.length > 0 ? (
+            <>
+              <div className="head-container">
+                <span>Lo más buscado!</span>
+              </div>
+              <div className="container-destacado">
+                {dataProducts.map((product) => (
+                  <Card key={product.idProduct} product={product} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <Skeleton />
+          )}
+
+          {dataProducts && dataProducts.length > 0 ? (
+            <>
+              <div className="head-container">
+                <span>Lo más vendido!</span>
+              </div>
+
+              <div className="container-destacado">
+                {dataProducts.map((product) => (
+                  <Card key={product.idProduct} product={product} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <Skeleton />
+          )}
         </div>
       </div>
-
-      {/* <div className="img">
-        <img src="/pcgamer.jpg" alt="" />
-      </div>
-
-      <div className="tema">
-        <span>Tenemos lo más destacado en Gaming!</span>
-      </div>
-
-      <div className="container-products-destacados">
-        <Card />
-      </div> */}
     </section>
   );
 };

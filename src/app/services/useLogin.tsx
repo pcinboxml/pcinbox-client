@@ -51,7 +51,9 @@ const useLogin = () => {
         localStorage.setItem("email", formData.email);
         localStorage.setItem("authGoogle", "false");
         localStorage.setItem("token", data.data.token);
-        window.location.reload();
+        localStorage.setItem("name", data.data.name);
+        localStorage.setItem("lastname", data.data.lastname);
+        window.location.href = "/principal";
       }
     } catch (error: any) {
       setShowAlert(true);

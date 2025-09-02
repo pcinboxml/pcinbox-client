@@ -82,6 +82,9 @@ const Navbar = () => {
       const token = (session as any)?.token;
       if (token && token !== "undefined" && token !== "null") {
         localStorage.setItem("token", token);
+        localStorage.setItem("email", session.user?.email!);
+        localStorage.setItem("name", session.user?.name!);
+        localStorage.setItem("lastname", "");
         handleGetAuth(setHasToken);
       }
     }
@@ -243,7 +246,7 @@ const Navbar = () => {
                       onClick={() =>
                         hasToken
                           ? [
-                              onRouterLink("/mi-cuenta"),
+                              onRouterLink("/perfil"),
                               setNavRefResponsive(false),
                             ]
                           : {}
@@ -467,107 +470,75 @@ const Navbar = () => {
                       </>
                     ) : (
                       <div
-                        className="flex w-auto container-mi-cuenta flex-col"
+                        className="flex w-auto container-mi-cuenta"
                         style={{ zIndex: "120" }}
                       >
-                        <ul>
-                          <li>
-                            <a
-                              role="button"
-                              onClick={() => onRouterLink("/mi-cuenta")}
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Mi cuenta
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Configuración de cuenta
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Datos de envío, pago y facturación
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Historial de pedidos
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Mi perfil
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Mis PC's configuradas
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              href="#"
-                              className="
-                              hover:!text-[#bb3d4b] 
-                              hover:!font-semibold 
-                              hover:!underline 
-                              hover:!decoration-[#a67845] 
-                              hover:!decoration-[3px]"
-                            >
-                              Mis reembolso
-                            </a>
-                          </li>
-                        </ul>
+                        <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
+                          <img
+                            src="/user.jpeg"
+                            style={{
+                              width: "120px",
+                              height: "120px",
+                              objectFit: "contain",
+                              margin: "auto",
+                            }}
+                          />
 
-                        <button className="btn-logout" onClick={Logout}>
-                          Salir de cuenta
-                        </button>
+                          <span
+                            className="text-[#A67845] text-center"
+                            style={{
+                              fontSize: "18px",
+                              fontWeight: "600",
+                              marginTop: "10px",
+                            }}
+                          >
+                            Alex Paredes jdkfjds jfdlskjfdslk
+                          </span>
+                        </div>
+
+                        <div className="ml-2 flex flex-col justify-center min-w-[150px]">
+                          <ul className="pl-0 pr-2">
+                            {[
+                              {
+                                path: "/perfil",
+                                name: "Mi perfil",
+                              },
+                              {
+                                path: "/cambiar-contrasena",
+                                name: "Cambiar contraseña",
+                              },
+                              {
+                                path: "/mis-pedidos",
+                                name: "Mis pedidos",
+                              },
+                              {
+                                path: "/ordenes",
+                                name: "Ordenes",
+                              },
+                            ].map((item: any) => {
+                              return (
+                                <li key={item.path}>
+                                  <a
+                                    role="button"
+                                    className="
+                              hover:!text-[#bb3d4b] 
+                              hover:!font-semibold 
+                              hover:!underline 
+                              hover:!decoration-[#a67845] 
+                              hover:!decoration-[3px]"
+                                    onClick={() => onRouterLink(item.path)}
+                                  >
+                                    {item.name}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+
+                          <button className="btn-logout" onClick={Logout}>
+                            Salir de cuenta
+                          </button>
+                        </div>
                       </div>
                     )}
                   </ul>

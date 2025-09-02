@@ -5,44 +5,53 @@
   columns: 2;
 }
 
-.imgTarjeta {
-  padding: 8px;
-}
-
-.imgUser {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.miLabel {
+.headerCard {
+  padding: 10px;
   color: #bb3d4b;
   font-weight: 600;
-  font-size: 16px;
-  white-space: nowrap;
+  font-size: 18px;
 }
 
-.miAnswer {
-  color: #808080;
-  font-size: 15px;
-  font-weight: 500;
-  word-break: break-word;
+.containerImg {
+  position: relative;
 }
 
-.btnSubirFoto {
+.opaco {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  right: 0%;
+  bottom: 0%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnChangeFoto {
+  width: 80%;
+  min-height: 45px;
   background: #bb3d4b;
   color: white;
   font-weight: 600;
   border-radius: 10px;
-  width: 150px;
-  min-height: 40px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  align-items: center;
-  position: relative;
 }
 
-.btnSubirFoto:hover {
+.description {
+  font-size: 14px;
+  color: #808080;
+}
+
+.btnPerfil {
+  width: 150;
+  min-height: 45px;
+  background: #bb3d4b;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.btnChangeFoto:hover,
+.btnPerfil:hover {
   background: #8c2e36;
 }

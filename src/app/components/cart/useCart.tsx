@@ -5,7 +5,7 @@ import useService from "@/app/services/useService";
 import { useState } from "react";
 
 const useCart = () => {
-  const { setDataCart, setDataModal } = useTheContext();
+  const { setDataCart, setDataModal, hasToken } = useTheContext();
   const { requestPost } = useService();
 
   const [showDivCart, setShowDivCart] = useState<boolean>(false);
@@ -22,29 +22,42 @@ const useCart = () => {
     dataCartProp: ProductI[],
     productProp: ProductI
   ) => {
-    try {
-      const resp = await requestPost(
-        {
-          idProduct: productProp.idProduct,
-        },
-        "/cart/removeProduct"
-      );
+    if (hasToken) {
+      try {
+        const resp = await requestPost(
+          {
+            idProduct: productProp.idProduct,
+          },
+          "/cart/removeProduct"
+        );
 
-      if (resp && resp.status == 200) {
-        const removeProduct = dataCartProp.filter(
+        if (resp && resp.status == 200) {
+          const removeProduct = dataCartProp.filter(
+            (item: ProductI) => item.idProduct != productProp.idProduct
+          );
+          setDataCart(removeProduct);
+        }
+      } catch (error: any) {
+        setDataModal({
+          isOpen: true,
+          title: "Error",
+          type: "error",
+          message: error.response.message || error.message,
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        });
+      }
+      return;
+    } else {
+      if (localStorage.getItem("dataCart")) {
+        const storage = JSON.parse(localStorage.getItem("dataCart") || "");
+        let removeProductStorage = storage.filter(
           (item: ProductI) => item.idProduct != productProp.idProduct
         );
-        setDataCart(removeProduct);
+
+        setDataCart(removeProductStorage);
+        localStorage.setItem("dataCart", JSON.stringify(removeProductStorage));
       }
-    } catch (error: any) {
-      setDataModal({
-        isOpen: true,
-        title: "Error",
-        type: "error",
-        message: error.response.message || error.message,
-        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      });
     }
   };
 

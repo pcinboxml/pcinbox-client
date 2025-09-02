@@ -151,8 +151,10 @@ const useService = () => {
         signOut();
         localStorage.removeItem("email");
         localStorage.removeItem("token");
+        localStorage.removeItem("name");
+        localStorage.removeItem("lastname");
         localStorage.removeItem("authGoogle");
-        window.location.reload();
+        window.location.href = "/principal";
       },
       type: "info",
     });

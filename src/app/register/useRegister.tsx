@@ -5,8 +5,7 @@ import { RegisterI } from "../interfaces/register.interface";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import { signIn } from "next-auth/react";
-
-type Strength = "weak" | "medium" | "strong" | "";
+import { Strength } from "./../interfaces/Strength/strength.interface";
 
 const useRegister = () => {
   const [formData, setFormData] = useState<RegisterI>({
