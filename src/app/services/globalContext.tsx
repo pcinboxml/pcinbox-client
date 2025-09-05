@@ -43,6 +43,8 @@ interface ContextProps {
 
   dataNotification: NotificationData;
   setDataNotification: Dispatch<SetStateAction<NotificationData>>;
+  rutaImgPerfil: string;
+  setRutaImgPerfil: Dispatch<SetStateAction<string>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -69,6 +71,8 @@ const CreateContext = createContext<ContextProps>({
     type: "success",
   },
   setDataNotification: () => {},
+  rutaImgPerfil: "",
+  setRutaImgPerfil: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -93,6 +97,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     type: "success",
   });
 
+  const [rutaImgPerfil, setRutaImgPerfil] = useState<string>("");
+
   return (
     <CreateContext.Provider
       value={{
@@ -106,6 +112,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setHasToken,
         dataNotification,
         setDataNotification,
+        rutaImgPerfil,
+        setRutaImgPerfil,
       }}
     >
       {children}

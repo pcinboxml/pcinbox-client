@@ -5,27 +5,51 @@ import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
 import { useEffect } from "react";
 import Skeleton from "../components/skeleton/Skeleton";
+import PaginationComponent from "../components/pagination/PaginationComponent";
+import io from "./../services/ioClient";
 
 const PrincipalComponent = () => {
   const {
     getListProducts,
     dataProducts,
-    loadingProducts,
-    MARCAS,
-    changePagination,
-    currentPage,
-    itemsPerPage,
-    sectionRef,
+    handleOnChange,
+    onSubmitNewProduct,
+    setDataProducts,
   } = usePrincipal();
 
   useEffect(() => {
     getListProducts();
+
+    io.on("newProduct", (data: any) => {
+      setDataProducts((prev) => [
+        ...prev,
+        {
+          idProduct: data.idProduct,
+          categoryId: data.categoryId,
+          description: data.description,
+          name: data.name,
+          price: data.price,
+          quantity: 0,
+          image_url: data.image_url,
+          stock: data.stock,
+          rating: data.rating,
+          providerId: data.providerId,
+          createdAt: data.createdAt,
+          reviews: data.reviews.filter(
+            (item: any) => item.productId == data.idProduct
+          ),
+        },
+      ]);
+      //Llamar a funcion setDataProducts para actualizar la vista del usuario
+    });
+
+    return () => {
+      io.off("newProduct");
+    };
   }, []);
 
   return (
     <section>
-      {/*Carrusel */}
-
       <div className="content-main">
         {dataProducts && dataProducts.length > 0 ? (
           <div className="list-products">
@@ -38,13 +62,78 @@ const PrincipalComponent = () => {
         )}
 
         <div className="content-index">
+          <form
+            style={{ display: "none" }}
+            className="flex flex-col items-center mt-1"
+            onSubmit={onSubmitNewProduct}
+          >
+            <input
+              type="text"
+              placeholder="Nombre"
+              name="name"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+            <input
+              type="text"
+              placeholder="Descripcion"
+              name="description"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+            <input
+              type="number"
+              placeholder="price"
+              name="price"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+
+            <input
+              type="number"
+              placeholder="rating"
+              name="rating"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+
+            <input
+              type="text"
+              placeholder="imagen url"
+              name="image_url"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+
+            <input
+              type="text"
+              placeholder="categoryId"
+              name="categoryId"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+
+            <input
+              type="text"
+              placeholder="proveedorId"
+              name="providerId"
+              className="form-control"
+              onChange={handleOnChange}
+            />
+
+            <button type="submit" className="btn btn-info">
+              Guardar Producto
+            </button>
+          </form>
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
 
             {dataProducts && dataProducts.length > 0 ? (
               <Carousel />
             ) : (
-              <Skeleton />
+              <div className="w-full flex justify-center">
+                <Skeleton />
+              </div>
             )}
           </div>
 
@@ -55,10 +144,19 @@ const PrincipalComponent = () => {
               </div>
 
               <div className="container-destacado">
-                {dataProducts.map((product) => (
-                  <Card key={product.idProduct} product={product} />
-                ))}
+                {dataProducts
+                  .sort((a, b) => Number(b.idProduct) - Number(a.idProduct))
+                  .slice(0, 6)
+                  .map((product) => (
+                    <Card key={product.idProduct} product={product} />
+                  ))}
               </div>
+
+              {/* <PaginationComponent
+                count={pagination[0].pageCount}
+                page={pagination[0].currentPage}
+                onChange={(event, page) => changePagination(event, page, 1)}
+              /> */}
             </>
           ) : (
             <Skeleton />
@@ -70,7 +168,7 @@ const PrincipalComponent = () => {
                 <span>Lo más buscado!</span>
               </div>
               <div className="container-destacado">
-                {dataProducts.map((product) => (
+                {dataProducts.slice(0, 6).map((product) => (
                   <Card key={product.idProduct} product={product} />
                 ))}
               </div>
@@ -86,7 +184,7 @@ const PrincipalComponent = () => {
               </div>
 
               <div className="container-destacado">
-                {dataProducts.map((product) => (
+                {dataProducts.slice(0, 6).map((product) => (
                   <Card key={product.idProduct} product={product} />
                 ))}
               </div>

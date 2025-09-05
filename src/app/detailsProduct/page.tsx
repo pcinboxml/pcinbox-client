@@ -5,12 +5,17 @@ import useDetailsProduct from "./useDetailsProducts";
 import { useEffect, useState } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import useService from "../services/useService";
-import { MdFavorite } from "react-icons/md";
+import { MdAutorenew, MdCheck, MdFavorite } from "react-icons/md";
 import { Checkbox, FormControlLabel } from "@mui/material";
 
 const DetailsProduct = () => {
-  const { quantity, handleAdd, handleSubstract, handleAddProductCart } =
-    useDetailsProduct();
+  const {
+    quantity,
+    loadingAddProduct,
+    handleAdd,
+    handleSubstract,
+    handleAddProductCart,
+  } = useDetailsProduct();
   const { formatCurrency } = useService();
 
   const [dataProduct, setProduct] = useState<ProductI>({
@@ -24,6 +29,8 @@ const DetailsProduct = () => {
     providerId: "",
     quantity: 0,
     stock: 0,
+    reviews: [],
+    rating: 0,
   });
 
   useEffect(() => {
@@ -76,7 +83,11 @@ const DetailsProduct = () => {
             className="btnAgregar"
             onClick={() => handleAddProductCart(dataProduct, quantity)}
           >
-            Agregar
+            {loadingAddProduct ? (
+              <MdAutorenew size={20} className="m-auto the-spinner" />
+            ) : (
+              "Agregar"
+            )}
           </button>
           <br />
 
@@ -100,12 +111,75 @@ const DetailsProduct = () => {
         <h4>Descripción</h4>
         <br />
         <br />
-        <div className="w-full flex justify-center items-center flex-col">
-          <label htmlFor="">Panel trasero Puertos</label>
-          <div className="content-description">
-            <span>Entrada de linea</span>
-          </div>
-        </div>
+        {[
+          {
+            label: "Panel trasero",
+            data: [
+              {
+                description: "Estrada de linea",
+                check: true,
+                quantity: 0,
+              },
+            ],
+          },
+          {
+            label: "Puertos e interfaces",
+            data: [
+              {
+                description: "Numero de puertos HDMI",
+                check: false,
+                quantity: 1,
+              },
+              {
+                description: "Cantidad de puertos VGA (D-Sub)",
+                check: false,
+                quantity: 1,
+              },
+            ],
+          },
+          {
+            label: "Ranuras de expansion",
+            data: [
+              {
+                description: "Ranuras PCI Express",
+                check: false,
+                quantity: 2,
+              },
+            ],
+          },
+        ].map((item, indexFather) => {
+          return (
+            <div
+              key={indexFather}
+              className="w-full flex justify-center items-center flex-col mb-3"
+            >
+              <label htmlFor="">{item.label}</label>
+              <div className="content-description flex flex-col items-center justify-start">
+                {item.data.map((d, indexChild) => {
+                  return (
+                    <div key={indexChild} className="flex justify-center gap-2">
+                      <span>{d.description}</span>
+                      {d.check && (
+                        <span className="mx-2 block">
+                          <MdCheck
+                            size={20}
+                            color="#0054B4"
+                            style={{ fontWeight: "500" }}
+                          />
+                        </span>
+                      )}
+                      {d.quantity == 0 ? null : (
+                        <span className="block mx-2 font-bold text-black">
+                          {d.quantity}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="content-history">
@@ -114,7 +188,7 @@ const DetailsProduct = () => {
         </div>
         <div className="history">
           <div className="head-container">
-            <span>Historial</span>
+            <span>Historial de pedidos</span>
           </div>
 
           <div className="items-history">

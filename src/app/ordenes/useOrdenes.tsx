@@ -1,63 +1,86 @@
 "use client";
 
+import { useMemo } from "react";
+import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
+import { useMediaQuery } from "@mui/material";
 
 const useOrdenes = () => {
   const { formatCurrency } = useService();
+  const { dataCart } = useTheContext();
+  const isSmallScreen = useMediaQuery("(max-width: 1550px)");
 
-  const rows = [
-    {
-      id: 1,
-      img: "/tarjeta_video.png",
-      description: "the Community version",
-      quantity: 1,
-      unitPrice: 108,
-      totalPrice: 108,
-    },
-    {
-      id: 2,
-      img: "/tarjeta_video.png",
-      description: "the Pro version",
-      quantity: 2,
-      unitPrice: 200,
-      totalPrice: 400,
-    },
-    {
-      id: 3,
-      img: "/tarjeta_video.png",
-      description: "the Premium version",
-      quantity: 4,
-      unitPrice: 50,
-      totalPrice: 200,
-    },
-  ];
+  const subTotal = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
+
+  const rows = dataCart.map((itemCart) => ({
+    id: itemCart.idProduct,
+    img: itemCart.image_url,
+    description: itemCart.description,
+    quantity: Number(itemCart.quantity),
+    unitPrice: Number(itemCart.price),
+    totalPrice: Number(itemCart.quantity) * Number(itemCart.price),
+  }));
 
   const columns = [
     {
       field: "img",
       headerName: "Imagen",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 170 : undefined,
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <img
-              src={params.value}
-              alt="User"
-              width={50}
-              height={50}
-              className="m-auto"
-            />
+            <div className="pb-2 h-[80px]">
+              <img
+                src={params.value}
+                alt="User"
+                width={50}
+                height={50}
+                className="mx-auto my-2"
+              />
+            </div>
           );
         } else {
           return <span>{params.value}</span>;
         }
       },
     },
-    { field: "description", headerName: "Descripción", width: 200 },
+    {
+      field: "description",
+      headerName: "Descripción",
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 170 : undefined,
+      renderCell: (params: any) => {
+        if (params) {
+          return (
+            <div className="h-[80px] w-full p-2 overflow-hidden">
+              <p
+                className="break-words text-[#808080] whitespace-normal text-sm leading-snug"
+                title={params.value}
+                style={{ fontSize: "15px" }}
+              >
+                {params.value && params.value.length > 50
+                  ? `${params.value.slice(0, 50)}...`
+                  : params.value}
+              </p>
+            </div>
+          );
+        }
+      },
+    },
     {
       field: "quantity",
       headerName: "Cantidad",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 170 : undefined,
       renderCell: (params: any) => {
         if (params.value) {
           return (
@@ -74,7 +97,8 @@ const useOrdenes = () => {
     {
       field: "unitPrice",
       headerName: "Precio Unitario",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 170 : undefined,
       renderCell: (params: any) => {
         if (params.value) {
           return (
@@ -91,7 +115,8 @@ const useOrdenes = () => {
     {
       field: "totalPrice",
       headerName: "Precio Total",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 170 : undefined,
       renderCell: (params: any) => {
         if (params.value) {
           return (
@@ -110,6 +135,7 @@ const useOrdenes = () => {
   return {
     rows,
     columns,
+    subTotal,
   };
 };
 

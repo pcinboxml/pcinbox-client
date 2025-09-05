@@ -2,10 +2,18 @@
 import useService from "@/app/services/useService";
 import styles from "./sidebar-mi-cuenta.module.css";
 import useSidebarMiCuenta from "./useSidebarMiCuenta";
+import { useEffect, useState } from "react";
 
 const SidebarMiCuenta = () => {
   const { isRouteActive } = useSidebarMiCuenta();
   const { Logout, onRouterLink } = useService();
+
+  const [idUser, setIdUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem("idUser");
+    setIdUser(id);
+  }, []);
 
   return (
     <aside className="w-[100%]">
@@ -91,7 +99,8 @@ const SidebarMiCuenta = () => {
           className="relative font-medium text-[#BB3D4B]"
           style={{ fontSize: "18px", fontWeight: "700" }}
         >
-          Numero de cliente: 00001
+          Numero de cliente: 000
+          {idUser || 0}
         </span>
       </div>
     </aside>

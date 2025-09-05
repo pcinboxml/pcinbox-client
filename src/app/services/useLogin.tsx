@@ -53,6 +53,7 @@ const useLogin = () => {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("name", data.data.name);
         localStorage.setItem("lastname", data.data.lastname);
+        localStorage.setItem("idUser", data.data.idUser);
         window.location.href = "/principal";
       }
     } catch (error: any) {

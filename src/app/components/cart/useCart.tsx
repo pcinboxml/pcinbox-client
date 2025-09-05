@@ -9,6 +9,7 @@ const useCart = () => {
   const { requestPost } = useService();
 
   const [showDivCart, setShowDivCart] = useState<boolean>(false);
+  const [loadingRmAllCart, setLoadingRmAllCart] = useState<boolean>(false);
 
   const onMouseEnterCart = () => {
     setShowDivCart(true);
@@ -92,12 +93,54 @@ const useCart = () => {
     }
   };
 
+  const handleRemoveAllCart = async (dataCartProp: ProductI[]) => {
+    if (hasToken) {
+      try {
+        setLoadingRmAllCart(true);
+        const resp = await requestPost(
+          {
+            dataCart: dataCartProp,
+          },
+          "/cart/removeAllCart"
+        );
+
+        setLoadingRmAllCart(false);
+
+        const status = await resp.status;
+        if (status == 200) {
+          setDataCart([]);
+        }
+      } catch (error) {
+        setLoadingRmAllCart(false);
+        setDataModal({
+          isOpen: true,
+          message: "Ocurrio un error al borrar el carrito",
+          title: "Error",
+          type: "error",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+      }
+    } else {
+      if (localStorage.getItem("dataCart")) {
+        setDataCart([]);
+        localStorage.setItem("dataCart", JSON.stringify([]));
+      }
+    }
+  };
+
   return {
     handleRemoveItemCart,
+    loadingRmAllCart,
     showDivCart,
     onMouseEnterCart,
     onMouseLeaveCart,
     addProductFromStorage,
+    handleRemoveAllCart,
   };
 };
 

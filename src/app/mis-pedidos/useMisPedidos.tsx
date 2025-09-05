@@ -1,8 +1,11 @@
 "use client";
 
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { useMediaQuery } from "@mui/material";
 
 const useMisPedidos = () => {
+  const isSmallScreen = useMediaQuery("(max-width: 1550px)");
+
   const rows: GridRowsProp = [
     {
       id: 1,
@@ -19,32 +22,38 @@ const useMisPedidos = () => {
     {
       field: "noDePedido",
       headerName: "No. de pedido",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
     },
     {
       field: "fecha",
       headerName: "Fecha",
-      width: 150,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
     },
     {
       field: "cantidad",
       headerName: "Cantidad",
-      width: 110,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
     },
     {
       field: "total",
       headerName: "Total",
-      width: 110,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
     },
     {
       field: "methodPay",
       headerName: "Metodo de pago",
-      width: 160,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
     },
     {
       field: "opciones",
       headerName: "Opciones",
-      width: 140,
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
 
       renderCell: (params) => {
         return (

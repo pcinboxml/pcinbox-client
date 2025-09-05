@@ -7,7 +7,7 @@ import { useEffect, useMemo } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
-import { MdClose } from "react-icons/md";
+import { MdAutorenew, MdClose } from "react-icons/md";
 
 export const Cart = () => {
   return <img src="/carrito.png" />;
@@ -22,7 +22,8 @@ export const ModalCart = ({
 }) => {
   const { dataCart, setDataCart } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
-  const { handleRemoveItemCart } = useCart();
+  const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
+    useCart();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -42,7 +43,7 @@ export const ModalCart = ({
       }}
     >
       <div
-        className="bg-white flex flex-col rounded-lg shadow-xl"
+        className="bg-white flex flex-col rounded-lg shadow-xl cursor-default"
         style={{
           position: "absolute",
           top: "50px",
@@ -68,9 +69,28 @@ export const ModalCart = ({
           </div>
         </div>
 
+        {dataCart && dataCart.length > 0 ? (
+          <div className="w-full flex justify-end py-2 px-2">
+            <button
+              className="border flex justify-center items-center p-2"
+              disabled={loadingRmAllCart}
+              onClick={() => handleRemoveAllCart(dataCart)}
+            >
+              {loadingRmAllCart ? (
+                <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : (
+                <>
+                  <span className="mx-2">Vaciar carrito</span>
+                  <Trash2 size={20} />
+                </>
+              )}
+            </button>
+          </div>
+        ) : null}
+
         {/* Content */}
         <div
-          className="flex-1 overflow-y-auto p-4 mt-2 contentCart"
+          className="flex-1 overflow-y-auto p-4 contentCart"
           style={{
             height: "45vh",
             maxHeight: "60vh",
@@ -199,8 +219,8 @@ export const ModalCart = ({
           <div className="border-t border-gray-200 p-4 bg-gray-50">
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal:</span>
-                <span className="font-semibold">{formatCurrency(10)}</span>
+                {/* <span className="text-gray-600">Subtotal:</span>
+                <span className="font-semibold">{formatCurrency(10)}</span> */}
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">
@@ -216,7 +236,7 @@ export const ModalCart = ({
                 </p>
               )} */}
               <div className="flex justify-between text-lg font-bold text-[#bb3d4b] border-t border-gray-300 pt-2">
-                <span>Total:</span>
+                <span>Subtotal:</span>
 
                 <span>{formatCurrency(Number(totalPrice))}</span>
               </div>

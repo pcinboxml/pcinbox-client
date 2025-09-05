@@ -32,9 +32,14 @@
   align-items: center;
 }
 
-.mi-card .container-rating .comments span {
+.mi-card .container-rating .comments a {
   font-size: 10px;
   color: #9b9b9b;
+  cursor: pointer;
+}
+
+.mi-card .container-rating .comments a:hover {
+  color: #bb3d4b;
 }
 
 .mi-card .container-description {

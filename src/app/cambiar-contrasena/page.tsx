@@ -33,7 +33,7 @@ const CambiarContrasena = () => {
           </span>
 
           <div className="containerForm">
-            <form className="w-[60%] m-auto" onSubmit={onSubmit}>
+            <form className="w-[500px] m-auto" onSubmit={onSubmit}>
               <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-center mt-4 relative">
                 <label className="text-[#808080] text-base text-end">
                   Contraseña actual:
@@ -127,10 +127,11 @@ const CambiarContrasena = () => {
                 </div>
               ) : null}
 
-              <div className="inputButton flex justify-center items-center mt-4">
+              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-center mt-4 relative">
+                <label htmlFor=""></label>
                 <button
                   type="submit"
-                  className="bg-[#BB3D4B] text-white font-bold text-center p-2 rounded w-[50%]"
+                  className="bg-[#BB3D4B] text-white font-bold text-center p-2 rounded"
                   disabled={loadingChangePassword}
                 >
                   {loadingChangePassword ? (

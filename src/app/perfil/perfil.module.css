@@ -55,3 +55,43 @@
 .btnPerfil:hover {
   background: #8c2e36;
 }
+
+@media (min-width: 1500px) {
+  .containerDatosPersonales form {
+    width: 700px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .containerDatosPersonales form {
+    width: 650px;
+  }
+
+  .containerDataEnvioYfacturacion {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .containerDataEnvioYfacturacion > div {
+    width: 700px;
+    margin: auto;
+  }
+}
+
+@media (max-width: 1320px) {
+  .containerDataEnvioYfacturacion > div {
+    width: 500px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .containerDatosPersonales form {
+    width: 550px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .containerDatosPersonales form > div {
+    grid-template-columns: auto 1fr;
+  }
+}

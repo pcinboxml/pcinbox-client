@@ -9,12 +9,16 @@ import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import ProtectedRoute from "./middleware/protectedRoute";
 
 export default function AppWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathName = usePathname();
+
   const { dataModal, dataNotification, hasToken, setDataCart } =
     useTheContext();
 
@@ -34,6 +38,8 @@ export default function AppWrapper({
       });
     }
   }, [hasToken]);
+
+  ProtectedRoute(pathName);
 
   return (
     <SessionProvider>

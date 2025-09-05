@@ -7,6 +7,24 @@ import { MdArrowDropDown, MdAutorenew } from "react-icons/md";
 import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
+import { Box, Tooltip, Typography, styled } from "@mui/material";
+
+const StyledTooltip = styled(({ className, ...props }: any) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(() => ({
+  [`& .MuiTooltip-tooltip`]: {
+    backgroundColor: "#fff",
+    color: "#000",
+    borderRadius: 8,
+    boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+    padding: 12,
+    minWidth: 300,
+    maxWidth: 400,
+  },
+  [`& .MuiTooltip-arrow`]: {
+    color: "#fff",
+  },
+}));
 
 const Card = ({ product }: { product: ProductI }) => {
   const { onRouterLink, formatCurrency } = useService();
@@ -38,22 +56,80 @@ const Card = ({ product }: { product: ProductI }) => {
             name="simple-controlled"
             max={5}
             readOnly
-            value={3}
+            value={product.rating}
             size="medium"
             sx={{
               color: "#BB3D4B",
             }}
           />
         </div>
-        <div className="comments flex">
-          <button
-            className="flex justify-center items-center border"
-            style={{ marginLeft: "5px", borderRadius: "2px" }}
-          >
-            <MdArrowDropDown size={10} color="gray" />
-          </button>
-          <span style={{ marginLeft: "5px" }}>10 opiniones</span>
-        </div>
+        {product.reviews && product.reviews.length > 0 && (
+          <div className="comments flex">
+            <StyledTooltip
+              title={
+                <div className="w-full  flex justify-center">
+                  <Box>
+                    {product.reviews &&
+                      product.reviews.length > 2 &&
+                      product.reviews.map((review, index) => (
+                        <Box key={index} sx={{ mb: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>
+                            <span className="break-words">
+                              {" "}
+                              {review.reviewerName}
+                            </span>
+                          </Typography>
+                          <Rating
+                            value={review.rating}
+                            readOnly
+                            size="small"
+                            precision={0.5}
+                          />
+                          <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            <span className="break-words">
+                              {review.description}
+                            </span>
+                          </Typography>
+                          <br />
+                        </Box>
+                      ))}
+
+                    <Box>
+                      <div className="w-full">
+                        <a
+                          href="#"
+                          style={{
+                            color: "#bb3d4b",
+                            fontSize: "16px",
+                            fontWeight: "500",
+                          }}
+                          className="text-center block text-[#bb3d4b]"
+                        >
+                          Ver todas las opiniones
+                        </a>
+                      </div>
+                    </Box>
+                  </Box>
+                </div>
+              }
+            >
+              <div className="flex">
+                <button
+                  className="flex justify-center items-center border"
+                  style={{ marginLeft: "5px", borderRadius: "2px" }}
+                >
+                  <MdArrowDropDown size={10} color="gray" />
+                </button>
+              </div>
+            </StyledTooltip>
+            <a style={{ marginLeft: "5px" }}>
+              {product.reviews
+                .filter((item) => item.productId == product.idProduct)
+                .length.toLocaleString()}{" "}
+              opiniones
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="container-description">

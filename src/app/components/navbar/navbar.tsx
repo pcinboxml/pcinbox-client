@@ -21,6 +21,7 @@ import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
 import { useSession } from "next-auth/react";
+import usePerfil from "@/app/perfil/usePerfil";
 
 const Navbar = () => {
   const {
@@ -50,11 +51,12 @@ const Navbar = () => {
     onLoginGoogle,
   } = useLogin();
 
-  const { dataCart, setHasToken, hasToken } = useTheContext();
+  const { dataCart, setHasToken, hasToken, rutaImgPerfil } = useTheContext();
   const pathname = usePathname();
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
   const { data: session, status } = useSession();
   const { handleGetAuth } = useService();
+  const { getPhotoUser } = usePerfil();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -67,6 +69,8 @@ const Navbar = () => {
   }, [dataCart]);
 
   useEffect(() => {
+    getPhotoUser();
+
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
@@ -80,10 +84,12 @@ const Navbar = () => {
 
     if (session && status == "authenticated" && authGoogle == "true") {
       const token = (session as any)?.token;
+      const idUser = (session as any)?.idUser;
       if (token && token !== "undefined" && token !== "null") {
         localStorage.setItem("token", token);
         localStorage.setItem("email", session.user?.email!);
         localStorage.setItem("name", session.user?.name!);
+        localStorage.setItem("idUser", idUser);
         localStorage.setItem("lastname", "");
         handleGetAuth(setHasToken);
       }
@@ -475,7 +481,9 @@ const Navbar = () => {
                       >
                         <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
                           <img
-                            src="/user.jpeg"
+                            src={
+                              rutaImgPerfil == "" ? "/user.jpeg" : rutaImgPerfil
+                            }
                             style={{
                               width: "120px",
                               height: "120px",
@@ -492,7 +500,19 @@ const Navbar = () => {
                               marginTop: "10px",
                             }}
                           >
-                            Alex Paredes jdkfjds jfdlskjfdslk
+                            {`${
+                              localStorage.getItem("name")
+                                ? localStorage.getItem("name")
+                                : ""
+                            }
+                              
+                              ${
+                                localStorage.getItem("lastname")
+                                  ? localStorage.getItem("lastname")
+                                  : ""
+                              }
+                              
+                              `}
                           </span>
                         </div>
 
@@ -536,7 +556,7 @@ const Navbar = () => {
                           </ul>
 
                           <button className="btn-logout" onClick={Logout}>
-                            Salir de cuenta
+                            Salir de la cuenta
                           </button>
                         </div>
                       </div>

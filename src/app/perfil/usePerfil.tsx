@@ -3,20 +3,24 @@
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from "react";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { DataSendI } from "../interfaces/perfil/perfil.interface";
+import {
+  CatalagosCFDI,
+  DataSendI,
+  FacturacionI,
+} from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 
 const usePerfil = () => {
-  const { setDataModal } = useTheContext();
+  const { setDataModal, setRutaImgPerfil } = useTheContext();
   const { requestPost, requestGet } = useService();
 
   const [showLoader, setShowLoader] = useState<boolean>(false);
-  const [rutaImg, setRutaImg] = useState<string>("");
   const [dataPerfil, setDataPerfil] = useState<{
     email: string;
     name: string;
     lastname: string;
   }>({ email: "", name: "", lastname: "" });
+  const [showLineaProgress, setShowLinearProgress] = useState<boolean>(false);
 
   const [dataAddress, setDataAddress] = useState<DataSendI>({
     street: "",
@@ -30,8 +34,39 @@ const usePerfil = () => {
     phone2: "",
     country: "México",
   });
+  const [catalagoCFDi, setCatalagoCFDI] = useState<{
+    regimenesFiscales: {
+      clave: string;
+      descripcion: string;
+    }[];
+    usosCFDI: {
+      clave: string;
+      descripcion: string;
+      persona: string;
+    }[];
+  } | null>();
+
+  const [dataFacturacion, setDataFacturacion] = useState<FacturacionI>({
+    street: "",
+    noExt: "",
+    noInt: "",
+    codePostal: 0,
+    cologne: "",
+    state: "",
+    city: "",
+    CFDI: "",
+    companyName: "",
+    methodPay: "",
+    observations: "",
+    rfc: "",
+    taxRegimen: "",
+    country: "México",
+  });
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
+  const [postalCodes2, setPostalCodes2] = useState<PostalCodeLookupI[]>([]);
   const [loadingDataAddress, setLoadingDataAddress] = useState<boolean>(false);
+  const [loadingDataFacturacion, setLoadingDataFacturacion] =
+    useState<boolean>(false);
 
   const onChangeUploadPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files![0];
@@ -59,11 +94,13 @@ const usePerfil = () => {
       formData.append("file", file);
 
       try {
+        setShowLinearProgress(true);
         setShowLoader(true);
         const resp = await requestPost(formData, "/user/uploadPhotoUser");
         setShowLoader(false);
+        setShowLinearProgress(false);
         if (resp.status == 200) {
-          setRutaImg(resp.data.data.rutaImg);
+          setRutaImgPerfil(resp.data.data.rutaImg);
           setDataModal({
             isOpen: true,
             type: "success",
@@ -78,6 +115,7 @@ const usePerfil = () => {
         }
       } catch (error: any) {
         setShowLoader(false);
+        setShowLinearProgress(false);
         setDataModal({
           isOpen: true,
           type: "error",
@@ -97,22 +135,26 @@ const usePerfil = () => {
     try {
       const resp = await requestGet("/user/getPhotoUser");
       if (resp.status == 200) {
-        setRutaImg(resp.data.data.rutaImg);
+        setRutaImgPerfil(resp.data.data.rutaImg);
       }
     } catch (error: any) {
+      console.log(error.status);
+      console.log(error.message);
       setShowLoader(false);
 
-      setDataModal({
-        isOpen: true,
-        type: "error",
-        title: `Error`,
-        message: error.response.data.message || error.message,
-        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        onConfirm: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-      });
-      return;
+      if (error.response.data.status != 401) {
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: `Error`,
+          message: error.response.data.message || error.message,
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+        return;
+      }
     }
   };
 
@@ -137,6 +179,34 @@ const usePerfil = () => {
     }
 
     setDataAddress((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleOnChange2 = async (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+
+    if (name == "codePostal" && value.length == 5) {
+      const resp = await requestPost(
+        {
+          postalCode: value,
+        },
+        "/geonames/getAddressWithPostalCode"
+      );
+
+      if (resp.status == 200) {
+        const dataResp = await resp.data.data;
+
+        setPostalCodes2(dataResp.postalcodes);
+      }
+    } else if (name == "codePostal" && value.length < 5) {
+      setPostalCodes2([]);
+    }
+
+    setDataFacturacion((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -198,8 +268,89 @@ const usePerfil = () => {
       });
       return;
     }
+  };
 
-    console.log(dataAddress);
+  const onSubmit2 = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const excludeKeys = ["noInt", "observations"];
+
+    const emptyFields = Object.entries(dataFacturacion)
+      .filter(
+        ([key, value]) =>
+          !excludeKeys.includes(key) &&
+          (value === "" || value === null || value === undefined)
+      )
+      .map(([key]) => key);
+
+    if (emptyFields.length > 0) {
+      setDataModal({
+        isOpen: true,
+        message: "Completa los campos",
+        title: "Error",
+        type: "error",
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
+
+    try {
+      setLoadingDataFacturacion(true);
+
+      const resp = await requestPost(
+        {
+          companyName: dataFacturacion.companyName.trim(),
+          rfc: dataFacturacion.rfc.trim(),
+          cfdi: dataFacturacion.CFDI,
+          taxRegimen: dataFacturacion.taxRegimen,
+          methodPay: dataFacturacion.methodPay,
+          codePostal: dataFacturacion.codePostal,
+          cologne: dataFacturacion.cologne,
+          state: dataFacturacion.state,
+          city: dataFacturacion.city,
+          street: dataFacturacion.street.trim(),
+          noExt: dataFacturacion.noExt.trim(),
+          noInt: dataFacturacion.noInt?.trim(),
+          observations: dataFacturacion.observations.trim(),
+        },
+        "/billing/createBilling"
+      );
+
+      setLoadingDataFacturacion(false);
+
+      if (resp.status == 200) {
+        setDataModal({
+          isOpen: true,
+          type: "success",
+          title: "Correcto",
+          message: "Datos de facturación registrados correctamente",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+        return;
+      }
+    } catch (error: any) {
+      setLoadingDataFacturacion(false);
+
+      setDataModal({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: error.response.data.message,
+        onClose: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+      return;
+    }
   };
 
   const handleOnSelect = async (
@@ -209,24 +360,101 @@ const usePerfil = () => {
 
     setDataAddress((prev) => ({
       ...prev,
-      [name]: value,
+      cologne: name == "cologne" ? value : "",
+      state: postalCodes[0].adminName1,
+      city: postalCodes[0].adminName3,
     }));
   };
 
+  const handleOnSelect2 = async (
+    event: SyntheticEvent<HTMLSelectElement, Event>
+  ) => {
+    const { name, value } = event.currentTarget;
+
+    if (name != "cologne" && name != "state" && name != "city") {
+      setDataFacturacion((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      setDataFacturacion((prev) => ({
+        ...prev,
+        cologne: name == "cologne" ? value : "",
+        state: postalCodes2[0].adminName1,
+        city: postalCodes2[0].adminName3,
+      }));
+    }
+  };
+
+  const getCatalagoCfdi = async () => {
+    const resp = await fetch("/json/catalagoCfdi.json");
+    if (resp.status == 200) {
+      const data: CatalagosCFDI = await resp.json();
+      setCatalagoCFDI(data);
+    } else {
+      setCatalagoCFDI(null);
+    }
+  };
+
+  // const getAddressAuth = async () => {
+  //   try {
+  //     const resp = await requestGet("/auth/getAuth");
+
+  //     if (resp.status == 200) {
+  //       const valueResp = await resp.data;
+  //       setDataAddress((prevAddress) => ({
+  //         ...prevAddress,
+  //         street: valueResp.data.dataAddress[0].street,
+  //         noExt: valueResp.data.dataAddress[0].noExt,
+  //         noInt: valueResp.data.dataAddress[0].noInt,
+  //         codePostal: valueResp.data.dataAddress[0].postalCode,
+  //         cologne: valueResp.data.dataAddress[0].cologne,
+  //         state: valueResp.data.dataAddress[0].state,
+  //         city: valueResp.data.dataAddress[0].city,
+  //         phone1: valueResp.data.dataAddress[0].phone1,
+  //         phone2: valueResp.data.dataAddress[0].phone2,
+  //         country: "México",
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     setDataAddress({
+  //       street: "",
+  //       noExt: "",
+  //       noInt: "",
+  //       codePostal: 0,
+  //       cologne: "",
+  //       state: "",
+  //       city: "",
+  //       phone1: "",
+  //       phone2: "",
+  //       country: "México",
+  //     });
+  //   }
+  // };
+
   return {
     showLoader,
-    rutaImg,
     dataPerfil,
     dataAddress,
     postalCodes,
+    postalCodes2,
+    dataFacturacion,
     loadingDataAddress,
+    showLineaProgress,
+    catalagoCFDi,
+    loadingDataFacturacion,
     setDataPerfil,
     onChangeUploadPhoto,
     getPhotoUser,
     handleOnChange,
+    handleOnChange2,
     onSubmit,
+    onSubmit2,
     setDataAddress,
     handleOnSelect,
+    handleOnSelect2,
+    getCatalagoCfdi,
+    //  getAddressAuth,
   };
 };
 

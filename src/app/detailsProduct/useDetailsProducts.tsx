@@ -9,19 +9,20 @@ const useDetailsProduct = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const { requestPost } = useService();
   const { setDataCart, setDataModal, setDataNotification } = useTheContext();
+  const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
 
-  useEffect(() => {
-    const productStorage = localStorage.getItem("product");
-    if (productStorage) {
-      const convertJSON = JSON.parse(productStorage);
-      const storedQuantity = Number(convertJSON.quantity);
+  // useEffect(() => {
+  //   const productStorage = localStorage.getItem("product");
+  //   if (productStorage) {
+  //     const convertJSON = JSON.parse(productStorage);
+  //     const storedQuantity = Number(convertJSON.quantity);
 
-      // Solo actualizar si storedQuantity es un número válido y mayor a 0
-      if (!isNaN(storedQuantity) && storedQuantity > 0) {
-        setQuantity(storedQuantity || 1);
-      }
-    }
-  }, []);
+  //     // Solo actualizar si storedQuantity es un número válido y mayor a 0
+  //     if (!isNaN(storedQuantity) && storedQuantity > 0) {
+  //       setQuantity(storedQuantity || 1);
+  //     }
+  //   }
+  // }, []);
 
   const handleAdd = () => {
     const newQuantity = quantity + 1;
@@ -48,6 +49,8 @@ const useDetailsProduct = () => {
     quantityProp: number
   ) => {
     try {
+      setLoadingAddProduct(true);
+
       const resp = await requestPost(
         {
           product: dataProduct,
@@ -57,6 +60,8 @@ const useDetailsProduct = () => {
         },
         "/cart/addProduct"
       );
+
+      setLoadingAddProduct(false);
 
       if (resp && resp.status == 200) {
         setDataNotification({
@@ -96,11 +101,15 @@ const useDetailsProduct = () => {
               price: dataProduct.price,
               providerId: dataProduct.providerId,
               stock: dataProduct.stock,
+              rating: dataProduct.rating,
+              reviews: dataProduct.reviews,
             },
           ];
         });
       }
     } catch (error: any) {
+      setLoadingAddProduct(false);
+
       setDataModal({
         isOpen: true,
         title: "Error",
@@ -114,6 +123,7 @@ const useDetailsProduct = () => {
 
   return {
     quantity,
+    loadingAddProduct,
     handleAdd,
     handleSubstract,
     handleAddProductCart,
