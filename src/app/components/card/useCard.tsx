@@ -73,13 +73,13 @@ const useCard = () => {
           type: "success",
         });
 
-        setDataCart((prev) => {
+        setDataCart((prev: any) => {
           const existingProductIndex = prev.findIndex(
-            (item) => item.idProduct === product.idProduct
+            (item: any) => item.idProduct === product.idProduct
           );
 
           if (existingProductIndex !== -1) {
-            return prev.map((item, index) =>
+            return prev.map((item: any, index: number) =>
               index === existingProductIndex
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
                 : item
@@ -89,15 +89,15 @@ const useCard = () => {
           return [
             ...prev,
             {
-              categoryId: product.categoryId,
+              categoryId: Number(product.categoryId),
               createdAt: product.createdAt,
               description: product.description,
-              idProduct: product.idProduct,
+              idProduct: Number(product.idProduct),
               image_url: product.image_url,
               name: product.name,
-              price: product.price,
-              providerId: product.providerId,
-              stock: product.stock,
+              price: Number(product.price),
+              providerId: Number(product.providerId),
+              stock: Number(product.stock),
               quantity: 1,
             },
           ];
