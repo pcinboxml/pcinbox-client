@@ -137,25 +137,7 @@ const usePerfil = () => {
       if (resp.status == 200) {
         setRutaImgPerfil(resp.data.data.rutaImg);
       }
-    } catch (error: any) {
-      console.log(error.status);
-      console.log(error.message);
-      setShowLoader(false);
-
-      if (error.response.data.status != 401) {
-        setDataModal({
-          isOpen: true,
-          type: "error",
-          title: `Error`,
-          message: error.response.data.message || error.message,
-          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-          onConfirm: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-        });
-        return;
-      }
-    }
+    } catch (error: any) {}
   };
 
   const handleOnChange = async (event: ChangeEvent<HTMLInputElement>) => {

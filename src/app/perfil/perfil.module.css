@@ -67,6 +67,18 @@
     width: 650px;
   }
 
+  .containerBtnGuardar1,
+  .containerBtnGuardar2 {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .containerBtnGuardar1 button,
+  .containerBtnGuardar2 button {
+    width: 450px;
+  }
+
   .containerDataEnvioYfacturacion {
     display: grid;
     grid-template-columns: 1fr;

@@ -6,9 +6,12 @@ import Card from "../components/card/Card";
 import { useEffect } from "react";
 import Skeleton from "../components/skeleton/Skeleton";
 import PaginationComponent from "../components/pagination/PaginationComponent";
-import io from "./../services/ioClient";
+import useSocket from "./../services/ioClient";
+import ProductI from "../interfaces/products/product.interface";
 
 const PrincipalComponent = () => {
+  const io = useSocket();
+
   const {
     getListProducts,
     dataProducts,
@@ -20,7 +23,7 @@ const PrincipalComponent = () => {
   useEffect(() => {
     getListProducts();
 
-    io.on("newProduct", (data: any) => {
+    io.current?.on("newProduct", (data: ProductI) => {
       setDataProducts((prev) => [
         ...prev,
         {
@@ -36,7 +39,7 @@ const PrincipalComponent = () => {
           providerId: data.providerId,
           createdAt: data.createdAt,
           reviews: data.reviews.filter(
-            (item: any) => item.productId == data.idProduct
+            (item) => item.productId == data.idProduct
           ),
         },
       ]);
@@ -44,7 +47,7 @@ const PrincipalComponent = () => {
     });
 
     return () => {
-      io.off("newProduct");
+      io.current?.off("newProduct");
     };
   }, []);
 

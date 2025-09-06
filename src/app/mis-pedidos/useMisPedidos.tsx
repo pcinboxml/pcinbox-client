@@ -10,7 +10,7 @@ const useMisPedidos = () => {
     {
       id: 1,
       noDePedido: "000001",
-      fecha: "29-08-2025 11:12:12",
+      fecha: new Date("2025-04-30T09:41:02Z").toLocaleString(),
       cantidad: 1,
       total: 123,
       methodPay: "Tarjeta de debito",
@@ -24,30 +24,95 @@ const useMisPedidos = () => {
       headerName: "No. de pedido",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 150 : undefined,
+      renderCell: (params) => {
+        return (
+          <div className="flex justify-center items-center h-[100%]">
+            <span
+              title={params.value}
+              style={{ fontSize: "16px" }}
+              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+            >
+              {params.value}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "fecha",
       headerName: "Fecha",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 150 : undefined,
+      renderCell: (params) => {
+        return (
+          <div className="flex justify-center items-center h-[100%]">
+            <span
+              title={params.value}
+              style={{ fontSize: "16px" }}
+              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+            >
+              {params.value}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "cantidad",
       headerName: "Cantidad",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 150 : undefined,
+      renderCell: (params) => {
+        return (
+          <div className="flex justify-center items-center h-[100%]">
+            <span
+              title={params.value}
+              style={{ fontSize: "16px" }}
+              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+            >
+              {params.value}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "total",
       headerName: "Total",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 150 : undefined,
+      renderCell: (params) => {
+        return (
+          <div className="flex justify-center items-center h-[100%]">
+            <span
+              title={params.value}
+              style={{ fontSize: "16px" }}
+              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+            >
+              {params.value}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "methodPay",
       headerName: "Metodo de pago",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 150 : undefined,
+      renderCell: (params) => {
+        return (
+          <div className="flex justify-center items-center h-[100%]">
+            <span
+              title={params.value}
+              style={{ fontSize: "16px" }}
+              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+            >
+              {params.value}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "opciones",

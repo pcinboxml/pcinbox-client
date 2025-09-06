@@ -363,7 +363,9 @@ const MiCuenta = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-[auto] gap-2 items-center mt-4 relative">
+              <div
+                className={`grid grid-cols-[auto] gap-2 items-center mt-4 relative ${styles.containerBtnGuardar1}`}
+              >
                 <button
                   type="submit"
                   disabled={loadingDataAddress}
@@ -640,7 +642,9 @@ const MiCuenta = () => {
                 ></textarea>
               </div>
 
-              <div className="grid grid-cols-[auto] gap-2  mt-4 relative">
+              <div
+                className={`grid grid-cols-[auto] gap-2  mt-4 relative ${styles.containerBtnGuardar2}`}
+              >
                 <button
                   type="submit"
                   className="p-2 bg-[#BB3D4B] text-white font-bold mt-4"

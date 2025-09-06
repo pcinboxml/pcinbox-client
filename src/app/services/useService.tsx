@@ -4,14 +4,73 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const useService = () => {
+  const pathName = usePathname();
+
   const { setDataModal } = useTheContext();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
-    //withCredentials: true,
   });
+
+  api.interceptors.response.use(
+    (response) => response,
+    (er) => {
+      if (
+        pathName != "/" &&
+        pathName != "/principal" &&
+        er.response?.status == 401
+      ) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
+          title: "Sesión expirada",
+          onClose: () => {
+            location.href = "/principal";
+
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            location.href = "/principal";
+
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "info",
+        });
+
+        return;
+      } else if (er.response?.status != 401) {
+        setDataModal({
+          isOpen: true,
+          message: er.response?.message || er?.message,
+          title: "Error",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "error",
+        });
+      } else {
+        setDataModal({
+          isOpen: true,
+          message:
+            er.response?.message || er?.message || "Error interno del servidor",
+          title: "Error",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: async () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          type: "error",
+        });
+      }
+    }
+  );
 
   const router = useRouter();
 
@@ -24,24 +83,6 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      if (error.response.status == 401) {
-        setDataModal({
-          isOpen: true,
-          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
-          title: "Sesión expirada",
-          onClose: () => {
-            window.location.reload();
-
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            window.location.reload();
-
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "info",
-        });
-      }
       throw error;
     }
   };
@@ -59,24 +100,6 @@ const useService = () => {
 
       return res;
     } catch (error: any) {
-      if (error.response.status == 401) {
-        if (showErrorSesion) {
-          setDataModal({
-            isOpen: true,
-            message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
-            title: "Sesión expirada",
-            onClose: () => {
-              window.location.reload();
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
-            onConfirm: async () => {
-              window.location.reload();
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
-            type: "info",
-          });
-        }
-      }
       throw error;
     }
   };
@@ -90,24 +113,6 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      if (error.response.status == 401) {
-        setDataModal({
-          isOpen: true,
-          message: "Tu sesión expiro, debes iniciar sesión nuevamente ",
-          title: "Sesión expirada",
-          onClose: () => {
-            window.location.reload();
-
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            window.location.reload();
-
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "info",
-        });
-      }
       throw error;
     }
   };

@@ -4,8 +4,10 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import useProveedores from "../services/proveedores/useProveedores";
-import io from "./../services/ioClient";
+import useSocket from "./../services/ioClient";
 const usePrincipal = () => {
+  const io = useSocket();
+
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [dataProducts, setDataProducts] = useState<ProductI[]>([]);
   const [newProduct, setNewProduct] = useState({
@@ -75,7 +77,7 @@ const usePrincipal = () => {
       }
     );
 
-    io.on("newAllProducts", (inputDataSocket: any) => {
+    io.current?.on("newAllProducts", (inputDataSocket: any) => {
       console.log("escuchando newAllProducts");
       setDataProducts((prev) => [
         ...prev,
@@ -97,7 +99,7 @@ const usePrincipal = () => {
         })),
       ]);
     });
-    io.on("updateAllProducts", (inputDataSocket: any[]) => {
+    io.current?.on("updateAllProducts", (inputDataSocket: any[]) => {
       // console.log("escuchando updateAllProducts");
       // console.log(inputDataSocket);
       setDataProducts((prev) =>
@@ -129,8 +131,8 @@ const usePrincipal = () => {
     });
 
     return () => {
-      io.off("newAllProducts");
-      io.off("updateAllProducts");
+      io.current?.off("newAllProducts");
+      io.current?.off("updateAllProducts");
     };
 
     // try {

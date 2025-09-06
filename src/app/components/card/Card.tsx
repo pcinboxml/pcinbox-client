@@ -84,6 +84,9 @@ const Card = ({ product }: { product: ProductI }) => {
                             readOnly
                             size="small"
                             precision={0.5}
+                            sx={{
+                              color: "#BB3D4B",
+                            }}
                           />
                           <Typography variant="body2" sx={{ mt: 0.5 }}>
                             <span className="break-words">
@@ -97,7 +100,8 @@ const Card = ({ product }: { product: ProductI }) => {
                     <Box>
                       <div className="w-full">
                         <a
-                          href="#"
+                          role="button"
+                          onClick={() => onRouterLink("/review")}
                           style={{
                             color: "#bb3d4b",
                             fontSize: "16px",

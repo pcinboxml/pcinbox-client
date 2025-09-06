@@ -42,7 +42,7 @@ const useCard = () => {
         type: "success",
       });
 
-      setDataCart(JSON.parse(localStorage.getItem("dataCart") || ""));
+      setDataCart(JSON.parse(localStorage.getItem("dataCart") || "") || []);
       return;
     }
 
@@ -73,13 +73,13 @@ const useCard = () => {
           type: "success",
         });
 
-        setDataCart((prev: any) => {
+        setDataCart((prev) => {
           const existingProductIndex = prev.findIndex(
-            (item: any) => item.idProduct === product.idProduct
+            (item) => item.idProduct === product.idProduct
           );
 
           if (existingProductIndex !== -1) {
-            return prev.map((item: any, index: number) =>
+            return prev.map((item, index) =>
               index === existingProductIndex
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
                 : item
@@ -89,15 +89,17 @@ const useCard = () => {
           return [
             ...prev,
             {
-              categoryId: Number(product.categoryId),
+              categoryId: product.categoryId,
               createdAt: product.createdAt,
               description: product.description,
-              idProduct: Number(product.idProduct),
+              idProduct: product.idProduct,
               image_url: product.image_url,
               name: product.name,
-              price: Number(product.price),
-              providerId: Number(product.providerId),
-              stock: Number(product.stock),
+              price: product.price,
+              providerId: product.providerId,
+              stock: product.stock,
+              rating: product.rating,
+              reviews: product.reviews,
               quantity: 1,
             },
           ];
