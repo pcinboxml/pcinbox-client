@@ -1,15 +1,30 @@
 "use client";
 
-import { useMediaQuery } from "@mui/material";
 import useService from "../../services/useService";
 import { useTheContext } from "@/app/services/globalContext";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 const useDetallesPedido = () => {
   const { formatCurrency } = useService();
 
-  const isSmallScreen = useMediaQuery("(max-width: 1550px)");
   const { dataCart } = useTheContext();
+
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const match = window.matchMedia("(max-width: 1550px)");
+    setIsSmallScreen(match.matches);
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsSmallScreen(e.matches);
+    };
+
+    match.addEventListener("change", handler);
+
+    return () => {
+      match.removeEventListener("change", handler);
+    };
+  }, []);
 
   const subTotal = useMemo(() => {
     const total = dataCart

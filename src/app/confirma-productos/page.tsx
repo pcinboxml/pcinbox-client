@@ -2,8 +2,10 @@
 
 import Table from "../components/table/Table";
 import TimelineComponent from "../components/timeline/TimelineComponent";
+import useConfirmaProductos from "./useConfirmaProductos";
 
 const ConfirmaProducts = () => {
+  const { columns, rows } = useConfirmaProductos();
   return (
     <section className="w-[80%] mx-auto my-5">
       <TimelineComponent activeStep={1} />
@@ -23,31 +25,7 @@ const ConfirmaProducts = () => {
           />
         </div>
         <div className="content-tabla-confirma-productos">
-          <Table
-            rowsDataGrid={[
-              {
-                id: 1,
-                img: "valor 1",
-              },
-            ]}
-            columnsDataGrid={[
-              {
-                field: "img",
-                headerName: "Imagen",
-                renderCell: (params: any) => {
-                  if (params.value) {
-                    return (
-                      <div className="pb-2 h-[80px]">
-                        <span>valor 1</span>
-                      </div>
-                    );
-                  } else {
-                    return <span>{params.value}</span>;
-                  }
-                },
-              },
-            ]}
-          />
+          <Table rowsDataGrid={rows} columnsDataGrid={columns} />
         </div>
       </div>
     </section>

@@ -1,12 +1,28 @@
 "use client";
 
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import { useMediaQuery } from "@mui/material";
 import useService from "../services/useService";
+import { useEffect, useState } from "react";
 
 const useMisPedidos = () => {
-  const isSmallScreen = useMediaQuery("(max-width: 1550px)");
   const { formatCurrency, onRouterLink } = useService();
+
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const match = window.matchMedia("(max-width: 1550px)");
+    setIsSmallScreen(match.matches);
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsSmallScreen(e.matches);
+    };
+
+    match.addEventListener("change", handler);
+
+    return () => {
+      match.removeEventListener("change", handler);
+    };
+  }, []);
 
   const rows: GridRowsProp = [
     {

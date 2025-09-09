@@ -11,7 +11,6 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-// PASOS
 const steps = [
   { label: "Confirma tus productos" },
   { label: "Opciones de entrega" },
@@ -19,26 +18,24 @@ const steps = [
   { label: "Finaliza tu orden" },
 ];
 
-// CONECTOR PERSONALIZADO
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 22, // alineación vertical
+    top: 22,
   },
   [`& .${stepConnectorClasses.line}`]: {
-    height: 4,
+    height: 5,
     border: 0,
     borderRadius: 1,
     backgroundColor: theme.palette.mode === "dark" ? "#444" : "#e0e0e0",
   },
   [`&.${stepConnectorClasses.active} .${stepConnectorClasses.line}`]: {
-    backgroundColor: "#990000", // línea activa
+    backgroundColor: "#990000",
   },
   [`&.${stepConnectorClasses.completed} .${stepConnectorClasses.line}`]: {
-    backgroundColor: "#990000", // línea completada
+    backgroundColor: "#990000",
   },
 }));
 
-// ICONO PERSONALIZADO DEL PASO
 const StepIconComponent = ({
   active,
   completed,
