@@ -43,18 +43,6 @@ const handler = NextAuth({
         const data = await resp.json();
 
         if (status == 200) {
-          // const token = sign(
-          //   {
-          //     email: user.email,
-          //     idUser: data.idUser,
-          //     rol: "customer",
-          //   },
-          //   process.env.NEXT_PUBLIC_KEY_JWT || "",
-          //   {
-          //     expiresIn: "3d",
-          //   }
-          // );
-
           const isValidToken = verify(
             data.data.token,
             process.env.NEXT_PUBLIC_KEY_JWT || ""

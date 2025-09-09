@@ -48,22 +48,24 @@ const useLogin = () => {
       if (res && res.status == 200) {
         const data = await res.data;
 
-        localStorage.setItem("email", formData.email);
+        localStorage.setItem("email", formData?.email || "");
         localStorage.setItem("authGoogle", "false");
-        localStorage.setItem("token", data.data.token || data.token);
-        localStorage.setItem("name", data.data.name || data.user.name);
-        localStorage.setItem(
-          "lastname",
-          data.data.lastname || data.user.lastname
-        );
-        localStorage.setItem("idUser", data.data.idUser || data.idUser);
+        localStorage.setItem("token", data?.data?.token || data?.token || "");
+        localStorage.setItem("name", data?.data?.name || "");
+        localStorage.setItem("lastname", data?.data?.lastname || "");
+        localStorage.setItem("idUser", data?.data?.idUser || data?.idUser);
         window.location.href = "/principal";
       }
     } catch (error: any) {
+      console.log(error);
       setShowAlert(true);
 
       setLoadingLogin(false);
-      setMessageError(error.response.data.message);
+      setMessageError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Error interno del servidor"
+      );
     }
   };
 

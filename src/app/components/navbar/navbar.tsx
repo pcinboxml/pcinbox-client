@@ -96,6 +96,12 @@ const Navbar = () => {
           setHasToken(false);
         }
       }
+    } else if (authGoogle == "false") {
+      if (localStorage.getItem("token")) {
+        setHasToken(true);
+      } else {
+        setHasToken(false);
+      }
     }
   }, [session, status]);
 
@@ -322,190 +328,188 @@ const Navbar = () => {
             ) : null}
             {/*Fin Sub menu responsivo para celulares */}
           </div>
+          {/* {console.log(hasToken)}
+          {hasToken != null ? ( */}
+          <div className="submenu">
+            <ul>
+              <li
+                className="relative"
+                onMouseEnter={() => onMouseEnterSubmenu("1")}
+                onMouseLeave={() => onMouseLeaveSubMenu("1")}
+              >
+                <a href="#">
+                  {hasToken ? "Mi cuenta" : "Ingresar"}
+                  <MdArrowDropDown size={22} color="gray" />
+                </a>
 
-          {hasToken != null ? (
-            <div className="submenu">
-              <ul>
-                <li
-                  className="relative"
-                  onMouseEnter={() => onMouseEnterSubmenu("1")}
-                  onMouseLeave={() => onMouseLeaveSubMenu("1")}
+                <div
+                  id="1"
+                  style={{ display: "none", left: "-50px" }}
+                  className="absolute bg-white container-sub-menu shadow"
                 >
-                  <a href="#">
-                    {hasToken ? "Mi cuenta" : "Ingresar"}
-                    <MdArrowDropDown size={22} color="gray" />
-                  </a>
-
-                  <div
-                    id="1"
-                    style={{ display: "none", left: "-50px" }}
-                    className="absolute bg-white container-sub-menu shadow"
-                  >
-                    <ul className="list-options-cuenta cursor-default">
-                      {!hasToken ? (
-                        <>
-                          <form className="formLogin" onSubmit={onSubmit}>
-                            <div className="form-group">
-                              <label htmlFor="1">Email</label>
-                              <input
-                                type="email"
-                                placeholder="Email"
-                                className="border"
-                                value={formData.email}
-                                onChange={(
-                                  event: ChangeEvent<HTMLInputElement>
-                                ) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    email: event.target.value,
-                                  }))
-                                }
-                              />
-                            </div>
-
-                            <div className="form-group">
-                              <label htmlFor="2">Contraseña</label>
-                              <input
-                                type="password"
-                                placeholder="Contraseña"
-                                className="border"
-                                value={formData.password}
-                                onChange={(
-                                  event: ChangeEvent<HTMLInputElement>
-                                ) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    password: event.target.value,
-                                  }))
-                                }
-                              />
-                            </div>
-                            <br />
-                            {showAlert ? (
-                              <Alert
-                                color="error"
-                                icon
-                                className="mb-1 mt-1"
-                                action={
-                                  <button
-                                    onClick={(e) => [
-                                      e.preventDefault(),
-                                      closeAlert(),
-                                    ]}
-                                  >
-                                    {" "}
-                                    <MdClose />
-                                  </button>
-                                }
-                              >
-                                <span>{messageError}</span>
-                              </Alert>
-                            ) : null}
-
-                            <div className="linea"></div>
-                            <br />
-                            <a href="/forgotpassword">Olvidé mi contraseña</a>
-                            <br />
-                            <div className="group-btn">
-                              <button
-                                type="submit"
-                                className="cursor-pointer"
-                                disabled={loadingLogin}
-                              >
-                                {loadingLogin ? (
-                                  <MdAutorenew
-                                    size={20}
-                                    className="m-auto the-spinner"
-                                  />
-                                ) : (
-                                  "Iniciar Sesión"
-                                )}
-                              </button>
-                              <button
-                                type="button"
-                                className="cursor-pointer"
-                                onClick={() => onRouterLink("/register")}
-                              >
-                                Registrarse
-                              </button>
-                            </div>
-
-                            <div className="containerLineaDivisora flex w-full mt-3 justify-center items-center gap-2">
-                              <div
-                                style={{
-                                  width: "40%",
-                                  height: "4px",
-                                  background: "#ccc",
-                                  border: "1px solid #ccc",
-                                }}
-                              ></div>
-                              <span style={{ color: "gray", fontSize: "18px" }}>
-                                o
-                              </span>
-                              <div
-                                style={{
-                                  width: "40%",
-                                  height: "4px",
-                                  border: "1px solid #ccc",
-                                  background: "#ccc",
-                                }}
-                              ></div>
-                            </div>
-
-                            <div className="mt-2 flex w-full justify-center p-1">
-                              <button
-                                type="button"
-                                className="border w-full flex justify-center gap-2 items-center p-2"
-                                onClick={onLoginGoogle}
-                              >
-                                {loadingLoginGoogle ? (
-                                  <MdAutorenew
-                                    size={20}
-                                    className="m-auto the-spinner"
-                                  />
-                                ) : (
-                                  <>
-                                    <FcGoogle size={22} />
-                                    Iniciar Sesion con Google
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </form>
-                        </>
-                      ) : (
-                        <div
-                          className="flex w-auto container-mi-cuenta"
-                          style={{ zIndex: "120" }}
-                        >
-                          <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
-                            <img
-                              src={
-                                rutaImgPerfil == ""
-                                  ? "/user.jpeg"
-                                  : rutaImgPerfil
+                  <ul className="list-options-cuenta cursor-default">
+                    {!hasToken ? (
+                      <>
+                        <form className="formLogin" onSubmit={onSubmit}>
+                          <div className="form-group">
+                            <label htmlFor="1">Email</label>
+                            <input
+                              type="email"
+                              placeholder="Email"
+                              className="border"
+                              value={formData.email}
+                              onChange={(
+                                event: ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  email: event.target.value,
+                                }))
                               }
-                              style={{
-                                width: "120px",
-                                height: "120px",
-                                objectFit: "contain",
-                                margin: "auto",
-                              }}
                             />
+                          </div>
 
-                            <span
-                              className="text-[#A67845] text-center"
-                              style={{
-                                fontSize: "18px",
-                                fontWeight: "600",
-                                marginTop: "10px",
-                              }}
-                            >
-                              {`${
-                                localStorage.getItem("name")
-                                  ? localStorage.getItem("name")
-                                  : ""
+                          <div className="form-group">
+                            <label htmlFor="2">Contraseña</label>
+                            <input
+                              type="password"
+                              placeholder="Contraseña"
+                              className="border"
+                              value={formData.password}
+                              onChange={(
+                                event: ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  password: event.target.value,
+                                }))
                               }
+                            />
+                          </div>
+                          <br />
+                          {showAlert ? (
+                            <Alert
+                              color="error"
+                              icon
+                              className="mb-1 mt-1"
+                              action={
+                                <button
+                                  onClick={(e) => [
+                                    e.preventDefault(),
+                                    closeAlert(),
+                                  ]}
+                                >
+                                  {" "}
+                                  <MdClose />
+                                </button>
+                              }
+                            >
+                              <span>{messageError}</span>
+                            </Alert>
+                          ) : null}
+
+                          <div className="linea"></div>
+                          <br />
+                          <a href="/forgotpassword">Olvidé mi contraseña</a>
+                          <br />
+                          <div className="group-btn">
+                            <button
+                              type="submit"
+                              className="cursor-pointer"
+                              disabled={loadingLogin}
+                            >
+                              {loadingLogin ? (
+                                <MdAutorenew
+                                  size={20}
+                                  className="m-auto the-spinner"
+                                />
+                              ) : (
+                                "Iniciar Sesión"
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              className="cursor-pointer"
+                              onClick={() => onRouterLink("/register")}
+                            >
+                              Registrarse
+                            </button>
+                          </div>
+
+                          <div className="containerLineaDivisora flex w-full mt-3 justify-center items-center gap-2">
+                            <div
+                              style={{
+                                width: "40%",
+                                height: "4px",
+                                background: "#ccc",
+                                border: "1px solid #ccc",
+                              }}
+                            ></div>
+                            <span style={{ color: "gray", fontSize: "18px" }}>
+                              o
+                            </span>
+                            <div
+                              style={{
+                                width: "40%",
+                                height: "4px",
+                                border: "1px solid #ccc",
+                                background: "#ccc",
+                              }}
+                            ></div>
+                          </div>
+
+                          <div className="mt-2 flex w-full justify-center p-1">
+                            <button
+                              type="button"
+                              className="border w-full flex justify-center gap-2 items-center p-2"
+                              onClick={onLoginGoogle}
+                            >
+                              {loadingLoginGoogle ? (
+                                <MdAutorenew
+                                  size={20}
+                                  className="m-auto the-spinner"
+                                />
+                              ) : (
+                                <>
+                                  <FcGoogle size={22} />
+                                  Iniciar Sesion con Google
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </form>
+                      </>
+                    ) : (
+                      <div
+                        className="flex w-auto container-mi-cuenta"
+                        style={{ zIndex: "120" }}
+                      >
+                        <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
+                          <img
+                            src={
+                              rutaImgPerfil == "" ? "/user.jpeg" : rutaImgPerfil
+                            }
+                            style={{
+                              width: "120px",
+                              height: "120px",
+                              objectFit: "contain",
+                              margin: "auto",
+                            }}
+                          />
+
+                          <span
+                            className="text-[#A67845] text-center"
+                            style={{
+                              fontSize: "18px",
+                              fontWeight: "600",
+                              marginTop: "10px",
+                            }}
+                          >
+                            {`${
+                              localStorage.getItem("name")
+                                ? localStorage.getItem("name")
+                                : ""
+                            }
                               
                               ${
                                 localStorage.getItem("lastname")
@@ -514,107 +518,107 @@ const Navbar = () => {
                               }
                               
                               `}
-                            </span>
-                          </div>
+                          </span>
+                        </div>
 
-                          <div className="ml-2 flex flex-col justify-center min-w-[150px]">
-                            <ul className="pl-0 pr-2">
-                              {[
-                                {
-                                  path: "/perfil",
-                                  name: "Mi perfil",
-                                },
-                                {
-                                  path: "/cambiar-contrasena",
-                                  name: "Cambiar contraseña",
-                                },
-                                {
-                                  path: "/mis-pedidos",
-                                  name: "Mis pedidos",
-                                },
-                                {
-                                  path: "/ordenes",
-                                  name: "Carrito",
-                                },
-                              ].map((item: any) => {
-                                return (
-                                  <li key={item.path}>
-                                    <a
-                                      role="button"
-                                      className="
+                        <div className="ml-2 flex flex-col justify-center min-w-[150px]">
+                          <ul className="pl-0 pr-2">
+                            {[
+                              {
+                                path: "/perfil",
+                                name: "Mi perfil",
+                              },
+                              {
+                                path: "/cambiar-contrasena",
+                                name: "Cambiar contraseña",
+                              },
+                              {
+                                path: "/mis-pedidos",
+                                name: "Mis pedidos",
+                              },
+                              {
+                                path: "/ordenes",
+                                name: "Carrito",
+                              },
+                            ].map((item: any) => {
+                              return (
+                                <li key={item.path}>
+                                  <a
+                                    role="button"
+                                    className="
                               hover:!text-[#bb3d4b] 
                               hover:!font-semibold 
                               hover:!underline 
                               hover:!decoration-[#a67845] 
                               hover:!decoration-[3px]"
-                                      onClick={() => onRouterLink(item.path)}
-                                    >
-                                      {item.name}
-                                    </a>
-                                  </li>
-                                );
-                              })}
-                            </ul>
+                                    onClick={() => onRouterLink(item.path)}
+                                  >
+                                    {item.name}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
 
-                            <button className="btn-logout" onClick={Logout}>
-                              Salir de la cuenta
-                            </button>
-                          </div>
+                          <button className="btn-logout" onClick={Logout}>
+                            Salir de la cuenta
+                          </button>
                         </div>
-                      )}
-                    </ul>
-                  </div>
-                </li>
-                <li
-                  className="relative"
-                  onMouseEnter={() => onMouseEnterSubmenu("2")}
-                  onMouseLeave={() => onMouseLeaveSubMenu("2")}
-                >
-                  <a href="#">
-                    Favoritos (0)
-                    <MdArrowDropDown size={22} color="gray" />
-                  </a>
-
-                  <div
-                    id="2"
-                    className="absolute w-auto  bg-white p-1"
-                    style={{ top: "100%", zIndex: "60", display: "none" }}
-                  >
-                    <div
-                      className="w-[300px] flex justify-center items-center p-2 gap-1 shadow"
-                      style={{ borderRadius: "10px" }}
-                    >
-                      <span
-                        className="text-[#bb3d4b]"
-                        style={{ fontSize: "15px", fontWeight: "600" }}
-                      >
-                        No tienes productos favoritos
-                      </span>
-                      <MdFavorite size={20} color="#bb3d4b" />
-                    </div>
-                  </div>
-                </li>
-
-                <li>
-                  <a href="#">Configurador de PC</a>
+                      </div>
+                    )}
+                  </ul>
+                </div>
+              </li>
+              <li
+                className="relative"
+                onMouseEnter={() => onMouseEnterSubmenu("2")}
+                onMouseLeave={() => onMouseLeaveSubMenu("2")}
+              >
+                <a href="#">
+                  Favoritos (0)
                   <MdArrowDropDown size={22} color="gray" />
-                </li>
-                {!hasToken ? (
-                  <li>
-                    <a
-                      role="button"
-                      onClick={() => {
-                        onRouterLink("/register");
-                      }}
-                      style={{ color: "#BB3D4B", fontWeight: "600" }}
+                </a>
+
+                <div
+                  id="2"
+                  className="absolute w-auto  bg-white p-1"
+                  style={{ top: "100%", zIndex: "60", display: "none" }}
+                >
+                  <div
+                    className="w-[300px] flex justify-center items-center p-2 gap-1 shadow"
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <span
+                      className="text-[#bb3d4b]"
+                      style={{ fontSize: "15px", fontWeight: "600" }}
                     >
-                      ¿Eres nuevo? ¡Registrate!
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ) : null}
+                      No tienes productos favoritos
+                    </span>
+                    <MdFavorite size={20} color="#bb3d4b" />
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <a href="#">Configurador de PC</a>
+                <MdArrowDropDown size={22} color="gray" />
+              </li>
+              {!hasToken ? (
+                <li>
+                  <a
+                    role="button"
+                    onClick={() => {
+                      onRouterLink("/register");
+                    }}
+                    style={{ color: "#BB3D4B", fontWeight: "600" }}
+                  >
+                    ¿Eres nuevo? ¡Registrate!
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </div>
+          {/* // ) : null} */}
         </div>
       </div>
     </header>
