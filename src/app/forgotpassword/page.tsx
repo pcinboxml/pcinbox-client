@@ -9,7 +9,7 @@ const ForgotPassword = () => {
 
   return (
     <div className=" bg-gradient-to-b from-white via-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      <div className="w-full max-w-md bg-white  overflow-hidden">
         <div className="p-8">
           <div className="space-y-6">
             <div className={styles.container}>

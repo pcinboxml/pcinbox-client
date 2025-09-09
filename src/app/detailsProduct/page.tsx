@@ -15,6 +15,8 @@ const DetailsProduct = () => {
     handleAdd,
     handleSubstract,
     handleAddProductCart,
+    handleOnChange,
+    handleKeyBoard,
   } = useDetailsProduct();
   const { formatCurrency } = useService();
 
@@ -58,7 +60,8 @@ const DetailsProduct = () => {
 
           <span className="costo-envio-product">Costo de envío: $155.00</span>
           <span className="fecha-entrega-product">
-            Fecha de entrega tentativa: <span>{dataProduct.createdAt}</span>
+            Fecha de entrega tentativa:{" "}
+            <span>{new Date(dataProduct.createdAt).toLocaleString()}</span>
           </span>
           <span className="stock-product">
             En stock: {dataProduct.stock} pzas.
@@ -72,7 +75,8 @@ const DetailsProduct = () => {
               type="number"
               className="border text-center"
               value={quantity}
-              readOnly
+              onChange={handleOnChange}
+              onKeyUp={(event) => handleKeyBoard(event, dataProduct)}
             />
             <button className="border" onClick={handleSubstract}>
               -
@@ -81,7 +85,7 @@ const DetailsProduct = () => {
 
           <button
             className="btnAgregar"
-            onClick={() => handleAddProductCart(dataProduct, quantity)}
+            onClick={() => handleAddProductCart(dataProduct, Number(quantity))}
           >
             {loadingAddProduct ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
@@ -95,10 +99,6 @@ const DetailsProduct = () => {
             Agregar a favoritos
             <MdFavorite size={20} />
           </button>
-
-          <div className="w-full  p-2 flex items-center">
-            <FormControlLabel control={<Checkbox />} label="Comparar" />
-          </div>
         </div>
         <div className="container-img border p-3">
           {dataProduct.image_url && (

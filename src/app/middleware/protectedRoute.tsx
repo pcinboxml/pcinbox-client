@@ -8,9 +8,9 @@ export default function useProtectedRoute(pathname: string) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
+    if (!token && pathname == "/register") {
       // si no hay token, redirige a login
-      router.replace("/principal");
+      router.replace("/register");
     } else {
       // si hay token y estás en login o register, redirige a home
       if (pathname === "/principal" || pathname === "/register") {

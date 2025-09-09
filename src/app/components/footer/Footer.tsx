@@ -5,90 +5,118 @@ import "./footer.css";
 
 const Footer = () => {
   return (
-    <footer className="border">
-      <div className="container-footer">
-        <span>Horarios de contacto</span>
-        <p>Lunes a Viernes de 10:00 am a 6:00 pm</p>
-        <p>Sábado de 10:00 am a 2:00 pm</p>
+    <section className="relative">
+      <div className="fondo-rojo absolute bottom-0 left-5 right-5 h-[180px] bg-[#BA2B3D]"></div>
+      <footer className="border">
+        <div className="container-footer">
+          <span>Horarios de atención</span>
+          <p>Lunes a Viernes | 10am a 6pm</p>
+          <p>Sábado | 10am a 2pm</p>
+          <p>Domingo cerrado</p>
+          <br />
+          <br />
 
-        <br />
-        <br />
-
-        <span>Correo Electrónico</span>
-        <p>contacto@pcinbox.com.mx</p>
-      </div>
-
-      <div className="container-footer">
-        <span>Formas de pago</span>
-        <div className="iconos-formas-de-pago">
-          <img src="/spei.png" />
-          <img src="/bbva.png" />
-          <img src="/mastercard.png" />
-          <img src="/visa.png" />
+          <span>Correo Electrónico</span>
+          <p>contacto@pcinbox.com.mx</p>
         </div>
 
-        <br />
-        <span>Envios por</span>
-        <div className="iconos-envios">
-          <img src="/estafeta.png" />
-          <img src="/paqueteexpress.png" />
-          <img src="/dhl.png" />
-        </div>
-      </div>
-
-      <div className="container-footer">
-        <span className="block text-center">Redes sociales</span>
-
-        <div className="iconos-redes">
-          <img src="/google.jpg" alt="" />
-          <span>Verified Reviews</span>
-        </div>
-
-        <div className="flex justify-center mt-2">
-          <Rating
-            name="simple-controlled"
-            defaultValue={5}
-            max={5}
-            readOnly
-            size="medium"
-            sx={{
-              "& .MuiRating-iconFilled": {
-                color: "#EDEC3B",
-              },
+        <div className="container-footer">
+          <span
+            className="text-center block"
+            style={{
+              color: "#646464",
+              fontSize: "15px",
+              fontWeight: "600",
             }}
-          />
-        </div>
-        <div className="redes">
-          <img src="/facebook.png" />
-          <img src="/youtube.png" />
-          <img src="/instagram.png" />
-          <img src="/tiktok.png" />
-        </div>
-      </div>
+          >
+            Formas de pago
+          </span>
+          <div className="iconos-formas-de-pago">
+            <div>
+              <img src="/spei.png" />
+              <img src="/bbva.png" />
+            </div>
+            <div>
+              <img src="/mastercard.png" />
+              <img src="/visa.png" />
+            </div>
+          </div>
 
-      <div className="container-footer">
-        <span>Ubicación</span>
-
-        <p>
-          Blvd. Juan Alonso de Torres Pte. No. 1917 Local 1 Colonia Unión
-          Comunitaria de León C.P 37239 Ciudad de León, Guanajuato, México
-        </p>
-        <br />
-        <span>Tel. Oficina</span>
-        <br />
-        <span>(+52) 477 330 04 37</span>
-        <br />
-        <span>WhatsApp</span>
-        <br />
-        <div className="flex items-center" style={{ height: "15px" }}>
-          <span>(+52) 477 533 41 27</span>
-          <img
-            src="/whatsapp.png"
-            style={{ width: "50px", height: "50px", objectFit: "contain" }}
-          />
+          <br />
+          <span
+            className="text-center block"
+            style={{
+              color: "#646464",
+              fontSize: "15px",
+              fontWeight: "600",
+            }}
+          >
+            Envíos
+          </span>
+          <div className="iconos-envios">
+            <img src="/estafeta.png" />
+            <img src="/paqueteexpress.png" />
+            <img src="/dhl.png" />
+          </div>
         </div>
-      </div>
-    </footer>
+
+        <div className="container-footer">
+          <span className="block text-center">Siguenos</span>
+
+          <div className="iconos-redes">
+            <img src="/google.jpg" alt="" />
+            <span
+              style={{
+                color: "#646464",
+                fontSize: "15px",
+                fontWeight: "600",
+              }}
+            >
+              Verified Reviews
+            </span>
+          </div>
+
+          <div className="flex justify-center mt-2">
+            <Rating
+              name="simple-controlled"
+              defaultValue={5}
+              max={5}
+              readOnly
+              size="medium"
+              sx={{
+                "& .MuiRating-iconFilled": {
+                  color: "#EDEC3B",
+                },
+              }}
+            />
+          </div>
+          <div className="redes">
+            <img src="/facebook.png" />
+            <img src="/youtube.png" />
+            <img src="/instagram.png" />
+            <img src="/tiktok.png" />
+          </div>
+        </div>
+
+        <div className="container-footer">
+          <span className="block text-center">Ubicación</span>
+
+          <p
+            style={{
+              lineHeight: "15px",
+            }}
+          >
+            Blvd. Juan Alonso de Torres Pte. No. 1917 Local 1 Colonia Unión
+            Comunitaria de León C.P 37239 Ciudad de León, Guanajuato, México
+          </p>
+          <br />
+          <span className="text-center block">Contacto</span>
+
+          <p>Teléfono oficina: +52 (477) 330 04 37</p>
+          <p>Atención Vía Whatsapp: +52 (477) 533 41 27</p>
+        </div>
+      </footer>
+    </section>
   );
 };
 

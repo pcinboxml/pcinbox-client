@@ -1,37 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 
 const useDetailsProduct = () => {
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity, setQuantity] = useState<number | string>(1);
   const { requestPost } = useService();
   const { setDataCart, setDataModal, setDataNotification } = useTheContext();
   const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const productStorage = localStorage.getItem("product");
-  //   if (productStorage) {
-  //     const convertJSON = JSON.parse(productStorage);
-  //     const storedQuantity = Number(convertJSON.quantity);
-
-  //     // Solo actualizar si storedQuantity es un número válido y mayor a 0
-  //     if (!isNaN(storedQuantity) && storedQuantity > 0) {
-  //       setQuantity(storedQuantity || 1);
-  //     }
-  //   }
-  // }, []);
-
   const handleAdd = () => {
-    const newQuantity = quantity + 1;
+    const newQuantity = Number(quantity) + 1;
     setQuantity(newQuantity);
     updateLocalStorageQuantity(newQuantity);
   };
 
   const handleSubstract = () => {
-    const newQuantity = quantity > 1 ? quantity - 1 : 1;
+    const newQuantity = Number(quantity) > 1 ? Number(quantity) - 1 : 1;
     setQuantity(newQuantity);
     updateLocalStorageQuantity(newQuantity);
   };
@@ -121,12 +108,32 @@ const useDetailsProduct = () => {
     }
   };
 
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if (value == "") {
+      setQuantity("");
+    } else {
+      setQuantity(Number(value));
+    }
+  };
+
+  const handleKeyBoard = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    dataProduct: ProductI
+  ) => {
+    if (quantity != "" && quantity != 0 && event.key == "Enter") {
+      handleAddProductCart(dataProduct, Number(quantity));
+    }
+  };
+
   return {
     quantity,
     loadingAddProduct,
     handleAdd,
     handleSubstract,
     handleAddProductCart,
+    handleOnChange,
+    handleKeyBoard,
   };
 };
 

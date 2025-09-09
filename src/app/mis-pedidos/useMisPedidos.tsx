@@ -2,9 +2,11 @@
 
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useMediaQuery } from "@mui/material";
+import useService from "../services/useService";
 
 const useMisPedidos = () => {
   const isSmallScreen = useMediaQuery("(max-width: 1550px)");
+  const { formatCurrency, onRouterLink } = useService();
 
   const rows: GridRowsProp = [
     {
@@ -89,7 +91,7 @@ const useMisPedidos = () => {
               style={{ fontSize: "16px" }}
               className="text-center text-[#808080] whitespace-normal leading-snug break-words"
             >
-              {params.value}
+              {formatCurrency(Number(params.value))}
             </span>
           </div>
         );
@@ -123,7 +125,10 @@ const useMisPedidos = () => {
       renderCell: (params) => {
         return (
           <div className="w-[100%] h-[100%] flex justify-center items-center">
-            <button className="bg-[#BB3D4B] text-white font-bold text-center px-2 rounded h-[45px] flex justify-center items-center">
+            <button
+              onClick={() => onRouterLink(`/detalles-pedido/${params.id}`)}
+              className="bg-[#BB3D4B] text-white font-bold text-center px-2 rounded h-[45px] flex justify-center items-center"
+            >
               Detalles
             </button>
           </div>

@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { cookies } from "next/headers";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 
 const handler = NextAuth({
   providers: [
@@ -43,24 +43,31 @@ const handler = NextAuth({
         const data = await resp.json();
 
         if (status == 200) {
-          const token = sign(
-            {
-              email: user.email,
-              idUser: data.idUser,
-              rol: "customer",
-            },
-            process.env.NEXT_PUBLIC_KEY_JWT || "",
-            {
-              expiresIn: "3d",
-            }
+          // const token = sign(
+          //   {
+          //     email: user.email,
+          //     idUser: data.idUser,
+          //     rol: "customer",
+          //   },
+          //   process.env.NEXT_PUBLIC_KEY_JWT || "",
+          //   {
+          //     expiresIn: "3d",
+          //   }
+          // );
+
+          const isValidToken = verify(
+            data.data.token,
+            process.env.NEXT_PUBLIC_KEY_JWT || ""
           );
-          (user as any).idUser = data.idUser;
-          (user as any).jwt = token;
-          (user as any).idUser = data.idUser;
+
+          (user as any).idUser = Number(data.data.idUser.toString());
+          // (user as any).jwt = token;
+          (user as any).token = data.data.token;
           (user as any).rol = "customer";
+          (user as any).idValidToken = isValidToken;
           return true;
         } else {
-          throw new Error(data?.message);
+          throw new Error(data?.data.message || "Error interno del servidor");
         }
       }
 
@@ -76,7 +83,8 @@ const handler = NextAuth({
         token.sub = token.sub;
         token.idUser = (user as any).idUser;
         token.rol = (user as any).rol;
-        token.jwt = (user as any).jwt;
+        token.token = (user as any).token;
+        token.isValidToken = (user as any).idValidToken;
       }
       return token;
     },
@@ -88,7 +96,8 @@ const handler = NextAuth({
         session.user!.image = token.picture;
         (session as any).idUser = token.idUser;
         (session as any).rol = token.rol;
-        (session as any).token = token.jwt;
+        (session as any).token = token.token;
+        (session as any).isValidToken = token.isValidToken;
       }
       return session;
     },

@@ -74,7 +74,7 @@ const SidebarMiCuenta = () => {
             role="button"
             className={`${styles.tagA} ${isRouteActive("/ordenes")[0]}`}
           >
-            Ordenes
+            Carrito
           </a>
         </li>
 

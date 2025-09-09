@@ -15,6 +15,7 @@ const useProveedores = () => {
       if (
         pathName != "/" &&
         pathName != "/principal" &&
+        pathName != "/forgotpassword" &&
         er.response?.status == 401
       ) {
         setDataModal({
@@ -37,21 +38,7 @@ const useProveedores = () => {
       } else if (er.response?.status != 401) {
         setDataModal({
           isOpen: true,
-          message: er.response?.message || er?.message,
-          title: "Error",
-          onClose: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "error",
-        });
-      } else {
-        setDataModal({
-          isOpen: true,
-          message:
-            er.response?.message || er?.message || "Error interno del servidor",
+          message: er.response?.data.message || er?.message,
           title: "Error",
           onClose: () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
@@ -62,6 +49,21 @@ const useProveedores = () => {
           type: "error",
         });
       }
+      // else {
+      //   setDataModal({
+      //     isOpen: true,
+      //     message:
+      //       er.response?.message || er?.message || "Error interno del servidor",
+      //     title: "Error",
+      //     onClose: () => {
+      //       setDataModal((prev) => ({ ...prev, isOpen: false }));
+      //     },
+      //     onConfirm: async () => {
+      //       setDataModal((prev) => ({ ...prev, isOpen: false }));
+      //     },
+      //     type: "error",
+      //   });
+      // }
     }
   );
 

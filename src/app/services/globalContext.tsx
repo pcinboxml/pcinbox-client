@@ -38,8 +38,8 @@ interface ContextProps {
   priceCart: number;
   setPriceCart: Dispatch<SetStateAction<number>>;
 
-  hasToken: boolean;
-  setHasToken: Dispatch<SetStateAction<boolean>>;
+  hasToken: boolean | null;
+  setHasToken: Dispatch<SetStateAction<boolean | null>>;
 
   dataNotification: NotificationData;
   setDataNotification: Dispatch<SetStateAction<NotificationData>>;
@@ -62,7 +62,7 @@ const CreateContext = createContext<ContextProps>({
   setDataCart: () => {},
   priceCart: 0,
   setPriceCart: () => {},
-  hasToken: false,
+  hasToken: null,
   setHasToken: () => {},
   dataNotification: {
     open: false,
@@ -87,7 +87,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     children: "",
   });
 
-  const [hasToken, setHasToken] = useState<boolean>(false);
+  const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
   const [priceCart, setPriceCart] = useState<number>(0);
   const [dataNotification, setDataNotification] = useState<NotificationData>({

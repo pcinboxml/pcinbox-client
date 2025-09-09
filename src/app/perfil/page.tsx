@@ -42,8 +42,8 @@ const MiCuenta = () => {
     getPhotoUser();
 
     if (
-      localStorage.getItem("email") &&
-      localStorage.getItem("name") &&
+      localStorage.getItem("email") ||
+      localStorage.getItem("name") ||
       localStorage.getItem("lastname")
     ) {
       setDataPerfil({

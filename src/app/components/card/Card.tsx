@@ -70,8 +70,8 @@ const Card = ({ product }: { product: ProductI }) => {
                 <div className="w-full  flex justify-center">
                   <Box>
                     {product.reviews &&
-                      product.reviews.length > 2 &&
-                      product.reviews.map((review, index) => (
+                      product.reviews.length >= 3 &&
+                      product.reviews.slice(0, 2).map((review, index) => (
                         <Box key={index} sx={{ mb: 1 }}>
                           <Typography variant="subtitle2" fontWeight={600}>
                             <span className="break-words">
@@ -97,22 +97,24 @@ const Card = ({ product }: { product: ProductI }) => {
                         </Box>
                       ))}
 
-                    <Box>
-                      <div className="w-full">
-                        <a
-                          role="button"
-                          onClick={() => onRouterLink("/review")}
-                          style={{
-                            color: "#bb3d4b",
-                            fontSize: "16px",
-                            fontWeight: "500",
-                          }}
-                          className="text-center block text-[#bb3d4b]"
-                        >
-                          Ver todas las opiniones
-                        </a>
-                      </div>
-                    </Box>
+                    {product.reviews.length > 3 ? (
+                      <Box>
+                        <div className="w-full">
+                          <a
+                            role="button"
+                            onClick={() => onRouterLink("/review")}
+                            style={{
+                              color: "#bb3d4b",
+                              fontSize: "16px",
+                              fontWeight: "500",
+                            }}
+                            className="text-center block text-[#bb3d4b]"
+                          >
+                            Ver todas las opiniones
+                          </a>
+                        </div>
+                      </Box>
+                    ) : null}
                   </Box>
                 </div>
               }
@@ -162,10 +164,6 @@ const Card = ({ product }: { product: ProductI }) => {
           <span className="costoEnvio">Costo de envío desde $155.00.</span>
           <span className="stock">Disponible: {product.stock} pzas.</span>
         </div>
-      </div>
-
-      <div className="w-full  p-2 flex items-center">
-        <FormControlLabel control={<Checkbox />} label="Comparar" />
       </div>
     </div>
   );
