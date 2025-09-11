@@ -5,6 +5,7 @@ import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import useProveedores from "../services/proveedores/useProveedores";
 import useSocket from "./../services/ioClient";
+
 const usePrincipal = () => {
   const io = useSocket();
 
