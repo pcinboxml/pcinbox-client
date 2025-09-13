@@ -8,7 +8,7 @@ import styles from "./ordenes.module.css";
 import useOrdenes from "./useOrdenes";
 
 const Ordenes = () => {
-  const { formatCurrency } = useService();
+  const { formatCurrency, onRouterLink } = useService();
   const { rows, columns, subTotal } = useOrdenes();
   const { dataCart } = useTheContext();
 
@@ -51,7 +51,10 @@ const Ordenes = () => {
             </div>
 
             <div className="w-full mt-3 p-2 flex justify-end items-center">
-              <button className="rounded bg-[#BB3D4B] text-white font-bold p-3 hover:bg-red-600">
+              <button
+                onClick={() => onRouterLink("/confirma-productos")}
+                className="rounded bg-[#BB3D4B] text-white font-bold p-3 hover:bg-red-600"
+              >
                 Proceder con el pago
               </button>
             </div>

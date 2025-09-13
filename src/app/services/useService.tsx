@@ -171,6 +171,25 @@ const useService = () => {
     });
   };
 
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const payloadBase64 = token.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payloadBase64)) as {
+        email: string;
+        idUser: string;
+        rol: string;
+        iat: number;
+        exp: number;
+      };
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decodedPayload.exp < currentTime;
+    } catch (error) {
+      console.log("error al detectar expiracion del token");
+      return true;
+    }
+  };
+
   return {
     requestGet,
     requestPost,
@@ -180,6 +199,7 @@ const useService = () => {
     formatCurrency,
     Logout,
     handleGetAuth,
+    isTokenExpired,
   };
 };
 

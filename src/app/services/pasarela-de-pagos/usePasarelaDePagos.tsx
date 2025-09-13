@@ -3,10 +3,12 @@ import axios from "axios";
 import { useTheContext } from "../globalContext";
 import { usePathname } from "next/navigation";
 
-const useProveedores = () => {
+const usePasarelaDePagos = () => {
+  const { setDataModal } = useTheContext();
   const pathName = usePathname();
+
   const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL_PROVEEDOR,
+    baseURL: process.env.NEXT_PUBLIC_API_URL_PAGOS,
   });
 
   api.interceptors.response.use(
@@ -52,31 +54,16 @@ const useProveedores = () => {
     }
   );
 
-  const { setDataModal } = useTheContext();
-
-  const requestGetProducts = async (showErrorSesion: boolean = false) => {
+  const requestGetPagos = async (endpoint: string) => {
     try {
-      const res = await api.get("/getAllProduct");
-
-      return res;
-    } catch (error: any) {
-      throw error;
-    }
-  };
-
-  const requestPostProveedor = async (data: any, endPoint: string) => {
-    try {
-      const res = await api.post(endPoint, data);
-      return res;
-    } catch (error: any) {
-      throw error;
-    }
+      const resp = await api.get(endpoint);
+      return resp;
+    } catch (error) {}
   };
 
   return {
-    requestGetProducts,
-    requestPostProveedor,
+    requestGetPagos,
   };
 };
 
-export default useProveedores;
+export default usePasarelaDePagos;

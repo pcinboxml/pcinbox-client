@@ -36,7 +36,7 @@ const Navbar = () => {
     setNavRefResponsive,
   } = useNavbar();
 
-  const { onRouterLink, formatCurrency, Logout } = useService();
+  const { onRouterLink, formatCurrency, Logout, isTokenExpired } = useService();
   const {
     messageError,
     showAlert,
@@ -98,7 +98,10 @@ const Navbar = () => {
       }
     } else if (authGoogle == "false") {
       if (localStorage.getItem("token")) {
-        setHasToken(true);
+        const validToken = isTokenExpired(localStorage.getItem("token")!);
+
+        setHasToken(validToken == true ? false : true);
+        // setHasToken(true);
       } else {
         setHasToken(false);
       }

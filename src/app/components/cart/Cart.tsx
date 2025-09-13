@@ -249,7 +249,10 @@ export const ModalCart = ({
               >
                 Seguir comprando
               </button>
-              <button className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors">
+              <button
+                onClick={() => onRouterLink("/confirma-productos")}
+                className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"
+              >
                 Proceder al pago
               </button>
             </div>
