@@ -8,6 +8,7 @@ import {
   SetStateAction,
 } from "react";
 import ProductI from "../interfaces/products/product.interface";
+import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -45,6 +46,8 @@ interface ContextProps {
   setDataNotification: Dispatch<SetStateAction<NotificationData>>;
   rutaImgPerfil: string;
   setRutaImgPerfil: Dispatch<SetStateAction<string>>;
+  dataFavorites: FavoritesI[];
+  setDataFavorites: Dispatch<SetStateAction<FavoritesI[]>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -73,6 +76,8 @@ const CreateContext = createContext<ContextProps>({
   setDataNotification: () => {},
   rutaImgPerfil: "",
   setRutaImgPerfil: () => {},
+  dataFavorites: [],
+  setDataFavorites: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -89,6 +94,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
+  const [dataFavorites, setDataFavorites] = useState<FavoritesI[]>([]);
   const [priceCart, setPriceCart] = useState<number>(0);
   const [dataNotification, setDataNotification] = useState<NotificationData>({
     open: false,
@@ -114,6 +120,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataNotification,
         rutaImgPerfil,
         setRutaImgPerfil,
+        dataFavorites,
+        setDataFavorites,
       }}
     >
       {children}

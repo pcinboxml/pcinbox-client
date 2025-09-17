@@ -44,11 +44,10 @@ const useMisPedidos = () => {
       width: isSmallScreen ? 150 : undefined,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center h-[100%]">
+          <div className="flex justify-center items-center min-h-[100%] p-1">
             <span
-              title={params.value}
-              style={{ fontSize: "16px" }}
-              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
             >
               {params.value}
             </span>
@@ -63,7 +62,7 @@ const useMisPedidos = () => {
       width: isSmallScreen ? 150 : undefined,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center h-[100%]">
+          <div className="flex justify-center items-center h-[100%] p-1">
             <span
               title={params.value}
               style={{ fontSize: "16px" }}
@@ -82,11 +81,10 @@ const useMisPedidos = () => {
       width: isSmallScreen ? 150 : undefined,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center h-[100%]">
+          <div className="flex justify-center items-center h-[100%] p-1">
             <span
-              title={params.value}
-              style={{ fontSize: "16px" }}
-              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
             >
               {params.value}
             </span>
@@ -101,13 +99,12 @@ const useMisPedidos = () => {
       width: isSmallScreen ? 150 : undefined,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center h-[100%]">
+          <div className="flex justify-center items-center h-[100%] p-1">
             <span
-              title={params.value}
-              style={{ fontSize: "16px" }}
-              className="text-center text-[#808080] whitespace-normal leading-snug break-words"
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
             >
-              {formatCurrency(Number(params.value))}
+              {formatCurrency(params.value)}
             </span>
           </div>
         );
@@ -120,7 +117,7 @@ const useMisPedidos = () => {
       width: isSmallScreen ? 150 : undefined,
       renderCell: (params) => {
         return (
-          <div className="flex justify-center items-center h-[100%]">
+          <div className="flex justify-center items-center h-[100%] p-1">
             <span
               title={params.value}
               style={{ fontSize: "16px" }}
@@ -140,7 +137,7 @@ const useMisPedidos = () => {
 
       renderCell: (params) => {
         return (
-          <div className="w-[100%] h-[100%] flex justify-center items-center">
+          <div className="w-[100%] h-[100%] flex justify-center items-center p-1">
             <button
               onClick={() => onRouterLink(`/detalles-pedido/${params.id}`)}
               className="bg-[#BB3D4B] text-white font-bold text-center px-2 rounded h-[45px] flex justify-center items-center"

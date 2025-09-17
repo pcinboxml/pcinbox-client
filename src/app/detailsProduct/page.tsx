@@ -1,12 +1,11 @@
 "use client";
 import "./detailsProduct.css";
-import Card from "../components/card/Card";
 import useDetailsProduct from "./useDetailsProducts";
 import { useEffect, useState } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import useService from "../services/useService";
 import { MdAutorenew, MdCheck, MdFavorite } from "react-icons/md";
-import { Checkbox, FormControlLabel } from "@mui/material";
+import useFavorites from "../services/useFavorites";
 
 const DetailsProduct = () => {
   const {
@@ -34,6 +33,8 @@ const DetailsProduct = () => {
     reviews: [],
     rating: 0,
   });
+
+  const { handleAddFavorites, loadingFavorite } = useFavorites();
 
   useEffect(() => {
     let productStorage = localStorage.getItem("product");
@@ -85,6 +86,7 @@ const DetailsProduct = () => {
 
           <button
             className="btnAgregar"
+            disabled={loadingAddProduct}
             onClick={() => handleAddProductCart(dataProduct, Number(quantity))}
           >
             {loadingAddProduct ? (
@@ -95,9 +97,19 @@ const DetailsProduct = () => {
           </button>
           <br />
 
-          <button className="btnAgregarFavoritos">
-            Agregar a favoritos
-            <MdFavorite size={20} />
+          <button
+            className="btnAgregarFavoritos"
+            disabled={loadingFavorite}
+            onClick={() => handleAddFavorites(dataProduct)}
+          >
+            {loadingFavorite ? (
+              <MdAutorenew size={20} className="m-auto the-spinner" />
+            ) : (
+              <div className="flex gap-2">
+                Agregar a favoritos
+                <MdFavorite size={20} />
+              </div>
+            )}
           </button>
         </div>
         <div className="container-img border p-3">

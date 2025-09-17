@@ -9,7 +9,7 @@ import { useState } from "react";
 const useConfirmaProductos = () => {
   const { dataCart, setDataCart, setDataModal } = useTheContext();
   const { requestPost, formatCurrency } = useService();
-  const isSmallScreen = useMediaQuery("(max-width: 1550px)", {
+  const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
   });
 
@@ -44,7 +44,7 @@ const useConfirmaProductos = () => {
     id: itemCart.idProduct,
     products: itemCart.description,
     quantity: Number(itemCart.quantity),
-    sucursal: "Leon",
+    sucursal: "León",
     totalSinIva: Number(itemCart.price),
     totalConIva: Number(itemCart.quantity) * Number(itemCart.price),
     importConIva: 1,
@@ -89,7 +89,10 @@ const useConfirmaProductos = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span className="inline-block text-center w-full">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
                 {params.value}
               </span>
             </div>
@@ -107,7 +110,12 @@ const useConfirmaProductos = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span className="inline-block text-center w-full">León</span>
+              <span
+                className="text-[#666666] block text-center"
+                style={{ fontSize: "18px", fontWeight: "500" }}
+              >
+                {params.value}
+              </span>
             </div>
           );
         }
@@ -122,7 +130,10 @@ const useConfirmaProductos = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span className="inline-block text-center w-full">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
                 {formatCurrency(Number(params.value))}
               </span>
             </div>
@@ -140,7 +151,10 @@ const useConfirmaProductos = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span className="inline-block text-center w-full">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
                 {formatCurrency(Number(params.value))}
               </span>
             </div>
@@ -157,7 +171,10 @@ const useConfirmaProductos = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span className="inline-block text-center w-full">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
                 {formatCurrency(Number(params.value))}
               </span>
             </div>

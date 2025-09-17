@@ -52,14 +52,8 @@ const useOrdenes = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <div className="pb-2 h-[80px]">
-              <img
-                src={params.value}
-                alt="User"
-                width={50}
-                height={50}
-                className="mx-auto my-2"
-              />
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <img src={params.value} alt="User" width={50} height={50} />
             </div>
           );
         } else {
@@ -75,7 +69,7 @@ const useOrdenes = () => {
       renderCell: (params: any) => {
         if (params) {
           return (
-            <div className="h-[80px] w-full p-2 overflow-hidden">
+            <div className="flex justify-center items-center min-h-[100%] p-1">
               <p
                 className="break-words text-[#808080] whitespace-normal text-sm leading-snug"
                 title={params.value}
@@ -98,12 +92,14 @@ const useOrdenes = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {params.value}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {params.value}
+              </span>
+            </div>
           );
         }
       },
@@ -116,12 +112,14 @@ const useOrdenes = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {formatCurrency(params.value)}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {formatCurrency(params.value)}
+              </span>
+            </div>
           );
         }
       },
@@ -134,12 +132,14 @@ const useOrdenes = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {formatCurrency(params.value)}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {formatCurrency(params.value)}
+              </span>
+            </div>
           );
         }
       },

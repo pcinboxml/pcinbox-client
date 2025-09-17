@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert } from "@mui/material";
 import SidebarMiCuenta from "../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import Table from "../components/table/Table";
 import { useTheContext } from "../services/globalContext";
@@ -19,9 +20,16 @@ const Ordenes = () => {
       </div>
 
       <div className="w-[80%] border p-3">
-        <div>
-          <Table rowsDataGrid={rows} columnsDataGrid={columns} />
-        </div>
+        <span className="text-[#BB3D4B] font-[600] text-[22px] mb-3 block">
+          Carrito de compras
+        </span>
+        {dataCart && dataCart.length > 0 ? (
+          <div>
+            <Table rowsDataGrid={rows} columnsDataGrid={columns} />
+          </div>
+        ) : (
+          <Alert severity="info">No hay datos para mostrar</Alert>
+        )}
         {dataCart && dataCart.length > 0 ? (
           <>
             <div className="w-full p-2 flex justify-end items-center">

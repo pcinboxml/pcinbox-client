@@ -26,11 +26,12 @@ const usePasarelaDePagos = () => {
           title: "Sesión expirada",
           onClose: () => {
             location.href = "/principal";
+            localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
             location.href = "/principal";
-
+            localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           type: "info",
@@ -56,7 +57,11 @@ const usePasarelaDePagos = () => {
 
   const requestGetPagos = async (endpoint: string) => {
     try {
-      const resp = await api.get(endpoint);
+      const resp = await api.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return resp;
     } catch (error) {}
   };

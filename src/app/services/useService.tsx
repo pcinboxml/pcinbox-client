@@ -30,11 +30,12 @@ const useService = () => {
           title: "Sesión expirada",
           onClose: () => {
             location.href = "/principal";
-
+            localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
             location.href = "/principal";
+            localStorage.clear();
 
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },

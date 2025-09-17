@@ -6,6 +6,7 @@ import TimelineComponent from "../components/timeline/TimelineComponent";
 import useConfirmaProductos from "./useConfirmaProductos";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
+import { Alert } from "@mui/material";
 
 const ConfirmaProducts = () => {
   const { formatCurrency, onRouterLink } = useService();
@@ -14,7 +15,7 @@ const ConfirmaProducts = () => {
   const { dataCart } = useTheContext();
 
   return (
-    <section className="w-[80%] mx-auto my-5">
+    <section className="w-[90%] mx-auto my-5">
       <TimelineComponent activeStep={0} />
       <div className="container-tabla  w-[90%] mx-auto my-3">
         <div
@@ -31,39 +32,51 @@ const ConfirmaProducts = () => {
             style={{ objectFit: "contain", marginLeft: "10px" }}
           />
         </div>
-        <div className="content-tabla-confirma-productos">
-          <Table rowsDataGrid={rows} columnsDataGrid={columns} />
-        </div>
-
-        <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
-          <div className="grid grid-cols-[2fr_1fr]">
-            <span
-              className="block text-end mx-3"
-              style={{
-                fontWeight: "bold",
-                color: "#666666",
-              }}
-            >
-              Sub total:
-            </span>
-            <span className="text[#808080] block">{formatCurrency(1200)}</span>
+        {dataCart && dataCart.length > 0 ? (
+          <div className="content-tabla-confirma-productos">
+            <Table rowsDataGrid={rows} columnsDataGrid={columns} />
           </div>
-        </div>
+        ) : (
+          <Alert severity="info">No hay datos para mostrar</Alert>
+        )}
 
-        <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
-          <div className="grid grid-cols-[2fr_1fr]">
-            <span
-              className="block text-end mx-3"
-              style={{
-                fontWeight: "bold",
-                color: "#B92B3D",
-              }}
-            >
-              Total:
-            </span>
-            <span className="text[#808080] block">{formatCurrency(1200)}</span>
+        {dataCart && dataCart.length > 0 ? (
+          <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
+            <div className="grid grid-cols-[2fr_1fr]">
+              <span
+                className="block text-end mx-3"
+                style={{
+                  fontWeight: "bold",
+                  color: "#666666",
+                }}
+              >
+                Sub total:
+              </span>
+              <span className="text[#808080] block">
+                {formatCurrency(1200)}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : null}
+
+        {dataCart && dataCart.length > 0 ? (
+          <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
+            <div className="grid grid-cols-[2fr_1fr]">
+              <span
+                className="block text-end mx-3"
+                style={{
+                  fontWeight: "bold",
+                  color: "#B92B3D",
+                }}
+              >
+                Total:
+              </span>
+              <span className="text[#808080] block">
+                {formatCurrency(1200)}
+              </span>
+            </div>
+          </div>
+        ) : null}
 
         {dataCart && dataCart.length > 0 && (
           <div className="w-full flex justify-end items-center  gap-5 mt-4">

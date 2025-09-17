@@ -11,6 +11,7 @@ import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
+import useFavorites from "./services/useFavorites";
 
 export default function AppWrapper({
   children,
@@ -25,6 +26,8 @@ export default function AppWrapper({
   const { addProductFromStorage } = useCart();
   const { handleGetDataCart } = useNavbar();
 
+  const { handleGetDataFavorites } = useFavorites();
+
   useEffect(() => {
     if (localStorage.getItem("dataCart") && hasToken == false) {
       const productsStorage = JSON.parse(
@@ -38,6 +41,10 @@ export default function AppWrapper({
       });
     }
   }, [hasToken]);
+
+  useEffect(() => {
+    handleGetDataFavorites();
+  }, []);
 
   ProtectedRoute(pathName);
 

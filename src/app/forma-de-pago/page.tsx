@@ -9,7 +9,13 @@ import { useEffect } from "react";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 
 const FormaDePago = () => {
-  const { optionsPago, setDataCard } = useFormaDePago();
+  const {
+    optionsPago,
+    idMethodPay,
+    methodsPay,
+    setDataCard,
+    handleSelectOptionPay,
+  } = useFormaDePago();
   const { dataCart } = useTheContext();
   const { onRouterLink } = useService();
 
@@ -42,8 +48,14 @@ const FormaDePago = () => {
           />
         </div>
 
-        <div className="grid grid-cols-[1fr]">
-          <div className="flex items-center flex-col p-3 my-3">
+        <div
+          className={`grid ${
+            idMethodPay == 1 || idMethodPay == 2
+              ? "grid-cols-[2fr_1fr]"
+              : "grid-cols-[1fr]"
+          }`}
+        >
+          <div className="flex items-center flex-col p-3 my-3 ">
             <div>
               <h5
                 style={{
@@ -56,7 +68,7 @@ const FormaDePago = () => {
               </h5>
             </div>
 
-            <div className="border rounded w-[550px] mt-3">
+            <div className="border rounded w-full  mt-3">
               {optionsPago &&
                 optionsPago.map((pago, index) => {
                   return (
@@ -67,10 +79,11 @@ const FormaDePago = () => {
                     >
                       <input
                         type="radio"
-                        value={pago.value}
+                        value={pago.id}
                         name="pago"
                         id={pago.value}
                         className="mx-2"
+                        onChange={handleSelectOptionPay}
                       />
 
                       <label className="form-check-label" htmlFor={pago.value}>
@@ -127,6 +140,70 @@ const FormaDePago = () => {
                 })}
             </div>
           </div>
+
+          {idMethodPay != 0 && (
+            <div style={{ marginTop: "50px" }}>
+              <div>
+                <h5
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "17px",
+                    color: "#666666",
+                  }}
+                >
+                  {idMethodPay == 1
+                    ? "Registro de tarjeta"
+                    : idMethodPay == 2
+                    ? "Transferencia bancaria"
+                    : ""}
+                </h5>
+              </div>
+              <form action="">
+                {methodsPay
+                  .filter((pay) => pay.id == idMethodPay)
+                  .map((item) => {
+                    return item.form.map((f, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="flex flex-col gap-2 items-center mt-4 relative"
+                        >
+                          <label
+                            htmlFor=""
+                            className="text-[#808080] text-base text-left block w-full"
+                          >
+                            {f.label}
+                          </label>
+                          {f.input == "text" ? (
+                            <input
+                              type={f.input}
+                              className="form-control"
+                              name={f.name}
+                            />
+                          ) : f.input == "textarea" ? (
+                            <textarea
+                              className="form-control"
+                              style={{ resize: "none" }}
+                            ></textarea>
+                          ) : (
+                            <input
+                              type={f.input}
+                              className="form-control"
+                              name={f.name}
+                            />
+                          )}
+                          {/* <input
+                            type={f.input}
+                            className="form-control"
+                            name={f.name}
+                          /> */}
+                        </div>
+                      );
+                    });
+                  })}
+              </form>
+            </div>
+          )}
         </div>
 
         {dataCart && dataCart.length > 0 && (
@@ -139,7 +216,9 @@ const FormaDePago = () => {
             </button>
             <button
               className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-              onClick={() => {}}
+              onClick={() => {
+                onRouterLink("/resumen");
+              }}
             >
               Continuar
             </button>

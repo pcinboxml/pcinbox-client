@@ -487,7 +487,7 @@ const MiCuenta = () => {
                   onChange={handleOnSelect2}
                   value={dataFacturacion.methodPay ?? ""}
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled>
                     Selecciona una opción
                   </option>
                   <option value="Efectivo">Efectivo</option>
