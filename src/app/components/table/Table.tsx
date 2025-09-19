@@ -19,7 +19,14 @@ const Table = ({
           noRowsLabel: "Sin datos para mostrar",
           paginationRowsPerPage: "Número de pagina",
         }}
-        pageSizeOptions={[5]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 4,
+              page: 0,
+            },
+          },
+        }}
         rowHeight={80}
         sx={{
           "& .MuiDataGrid-cell": {
