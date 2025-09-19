@@ -104,9 +104,9 @@ export const ModalCart = ({
           ) : (
             <div className="space-y-4">
               {dataCart &&
-                dataCart.map((product: ProductI) => (
+                dataCart.map((product: ProductI, index: number) => (
                   <div
-                    key={product.idProduct}
+                    key={product.idProduct + index}
                     className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                   >
                     {product.image_url ? (

@@ -151,7 +151,11 @@ const PrincipalComponent = () => {
                   .sort((a, b) => Number(b.idProduct) - Number(a.idProduct))
                   .slice(0, 6)
                   .map((product) => (
-                    <Card key={product.idProduct} product={product} />
+                    <Card
+                      key={product.idProduct}
+                      product={product}
+                      dataProducts={dataProducts}
+                    />
                   ))}
               </div>
 
@@ -172,7 +176,11 @@ const PrincipalComponent = () => {
               </div>
               <div className="container-destacado">
                 {dataProducts.slice(0, 6).map((product) => (
-                  <Card key={product.idProduct} product={product} />
+                  <Card
+                    key={product.idProduct}
+                    product={product}
+                    dataProducts={dataProducts}
+                  />
                 ))}
               </div>
             </>
@@ -188,7 +196,11 @@ const PrincipalComponent = () => {
 
               <div className="container-destacado">
                 {dataProducts.slice(0, 6).map((product) => (
-                  <Card key={product.idProduct} product={product} />
+                  <Card
+                    key={product.idProduct}
+                    product={product}
+                    dataProducts={dataProducts}
+                  />
                 ))}
               </div>
             </>

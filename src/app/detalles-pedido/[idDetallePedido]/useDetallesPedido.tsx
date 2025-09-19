@@ -54,7 +54,7 @@ const useDetallesPedido = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <div className="pb-2 h-[80px]">
+            <div className="flex justify-center items-center min-h-[100%] p-1">
               <img
                 src={params.value}
                 alt="User"
@@ -64,8 +64,6 @@ const useDetallesPedido = () => {
               />
             </div>
           );
-        } else {
-          return <span>{params.value}</span>;
         }
       },
     },
@@ -73,20 +71,24 @@ const useDetallesPedido = () => {
       field: "description",
       headerName: "Descripción",
       flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
+      width: isSmallScreen ? 350 : undefined,
       renderCell: (params: any) => {
         if (params) {
           return (
-            <div className="h-[80px] w-full p-2 overflow-hidden">
-              <p
-                className="break-words text-[#808080] whitespace-normal text-sm leading-snug"
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
                 title={params.value}
-                style={{ fontSize: "15px" }}
+                className="inline-block text-center text-sm leading-snug w-full text-[#808080]"
+                style={{
+                  display: "inline-block",
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
+                }}
               >
-                {params.value && params.value.length > 50
-                  ? `${params.value.slice(0, 50)}...`
+                {params?.value?.length > 150
+                  ? `${params.value.slice(0, 150)}...`
                   : params.value}
-              </p>
+              </span>
             </div>
           );
         }
@@ -100,12 +102,14 @@ const useDetallesPedido = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {params.value}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {params.value}
+              </span>
+            </div>
           );
         }
       },
@@ -118,12 +122,14 @@ const useDetallesPedido = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {formatCurrency(params.value)}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {params.value}
+              </span>
+            </div>
           );
         }
       },
@@ -136,12 +142,14 @@ const useDetallesPedido = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <span
-              className="text-[#808080] block text-center"
-              style={{ fontSize: "18px", fontWeight: "600" }}
-            >
-              {formatCurrency(params.value)}
-            </span>
+            <div className="flex justify-center items-center min-h-[100%] p-1">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {params.value}
+              </span>
+            </div>
           );
         }
       },

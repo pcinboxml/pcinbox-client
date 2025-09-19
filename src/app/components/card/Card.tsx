@@ -3,11 +3,18 @@ import "./card.css";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Rating from "@mui/material/Rating";
-import { MdArrowDropDown, MdAutorenew } from "react-icons/md";
+import { MdArrowDropDown, MdAutorenew, MdStar } from "react-icons/md";
 import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
-import { Box, Tooltip, Typography, styled } from "@mui/material";
+import {
+  Box,
+  LinearProgress,
+  Tooltip,
+  Typography,
+  styled,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -26,9 +33,20 @@ const StyledTooltip = styled(({ className, ...props }: any) => (
   },
 }));
 
-const Card = ({ product }: { product: ProductI }) => {
+const Card = ({
+  product,
+  dataProducts,
+}: {
+  product: ProductI;
+  dataProducts: ProductI[];
+}) => {
   const { onRouterLink, formatCurrency } = useService();
-  const { handleAddProductCart, loadingAgregar } = useCard();
+  const {
+    handleAddProductCart,
+    calcPorcentaje,
+    loadingAgregar,
+    ratingProgress,
+  } = useCard();
 
   return (
     <div className="mi-card border">
@@ -64,57 +82,112 @@ const Card = ({ product }: { product: ProductI }) => {
           />
         </div>
         {product.reviews && product.reviews.length > 0 && (
-          <div className="comments flex">
+          <div className="comments flex p-4">
             <StyledTooltip
               title={
                 <div className="w-full  flex justify-center">
                   <Box>
-                    {product.reviews &&
-                      product.reviews.length >= 3 &&
-                      product.reviews.slice(0, 2).map((review, index) => (
-                        <Box key={index} sx={{ mb: 1 }}>
-                          <Typography variant="subtitle2" fontWeight={600}>
-                            <span className="break-words">
-                              {" "}
-                              {review.reviewerName}
-                            </span>
-                          </Typography>
-                          <Rating
-                            value={review.rating}
-                            readOnly
-                            size="small"
-                            precision={0.5}
-                            sx={{
-                              color: "#BB3D4B",
-                            }}
-                          />
-                          <Typography variant="body2" sx={{ mt: 0.5 }}>
-                            <span className="break-words">
-                              {review.description}
-                            </span>
-                          </Typography>
-                          <br />
-                        </Box>
-                      ))}
+                    <div className="w-full flex items-center">
+                      <Rating
+                        value={product.rating}
+                        readOnly
+                        size="medium"
+                        precision={0.5}
+                        sx={{
+                          color: "#BB3D4B",
+                        }}
+                      />
 
-                    {product.reviews.length > 3 ? (
-                      <Box>
-                        <div className="w-full">
-                          <a
-                            role="button"
-                            onClick={() => onRouterLink("/review")}
-                            style={{
-                              color: "#bb3d4b",
-                              fontSize: "16px",
-                              fontWeight: "500",
-                            }}
-                            className="text-center block text-[#bb3d4b]"
-                          >
-                            Ver todas las opiniones
-                          </a>
-                        </div>
-                      </Box>
-                    ) : null}
+                      <span className="text-[#666666] font-bold text-[18px] block mx-2">
+                        {product.reviews.length.toLocaleString()} Opiniones
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      <span className="text-[#808080] text-[16px] ">
+                        {product.rating} estrellas
+                      </span>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols[1fr_auto] w-full">
+                      {ratingProgress &&
+                        ratingProgress.map((progressRating) => {
+                          return (
+                            <div
+                              className="flex items-center mb-2"
+                              key={progressRating.id}
+                            >
+                              <div
+                                className="barProgress"
+                                style={{
+                                  width: "200px",
+                                  height: "15px",
+                                  borderRadius: "5px",
+                                  background: "#E7E7E7",
+                                  position: "relative",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: calcPorcentaje(
+                                      product,
+                                      dataProducts,
+                                      progressRating
+                                    ).percentage,
+                                    height: "15px",
+                                    top: "0",
+                                    left: "0",
+                                    bottom: "0",
+                                    background: "#BB3D4B",
+                                    borderRadius: "5px",
+                                  }}
+                                ></div>
+                              </div>
+                              <div className="text-[15px] text-[#606060] font-bold mx-2">
+                                {
+                                  calcPorcentaje(
+                                    product,
+                                    dataProducts,
+                                    progressRating
+                                  ).rating
+                                }
+                              </div>
+                              <div>
+                                <MdStar color="#ccc" size={20} />
+                              </div>
+
+                              <div>
+                                <span className="text-[#ccc] text-[13px] mx-1">
+                                  (
+                                  {product.reviews.reduce((acc, item) => {
+                                    if (item.rating === progressRating.rating) {
+                                      return acc + 1;
+                                    }
+                                    return acc;
+                                  }, 0)}
+                                  )
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                      <a
+                        role="button"
+                        onClick={() =>
+                          onRouterLink(`/review?idProduct=${product.idProduct}`)
+                        }
+                        style={{
+                          display: "block",
+                          color: "#BB3D4B",
+                          textAlign: "center",
+                          fontSize: "17px",
+                          textDecoration: "none",
+                        }}
+                      >
+                        Ver todas las ({product.reviews.length.toLocaleString()}
+                        ) opiniones
+                      </a>
+                    </div>
                   </Box>
                 </div>
               }

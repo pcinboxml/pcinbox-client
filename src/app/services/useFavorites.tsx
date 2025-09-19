@@ -17,6 +17,11 @@ const useFavorites = () => {
   const { requestPost, requestGet } = useService();
 
   const [loadingFavorite, setLoadingFavorite] = useState<boolean>(false);
+  const [loadingRemoveFavorite, setLoadingRemoveFavorite] =
+    useState<boolean>(false);
+
+  const [loadingAddCartFavorite, setLoadingAddCartFavorite] =
+    useState<boolean>(false);
 
   const handleGetDataFavorites = async () => {
     try {
@@ -45,41 +50,20 @@ const useFavorites = () => {
       setLoadingFavorite(false);
 
       if (resp.status == 200) {
-        let findFavorite = dataFavorites.find(
-          (item) => Number(item.productId) == Number(favorite.idProduct)
-        );
-        if (!findFavorite) {
-          setDataFavorites((prev) => [
-            ...prev,
-            {
-              idFavorite: Number(findFavorite!.idFavorite),
-              image_url: favorite.image_url,
-              productId: Number(favorite.idProduct),
-              userId: Number(findFavorite!.userId),
-            },
-          ]);
-          setDataNotification({
-            open: true,
-            handleClose: () =>
-              setDataNotification((prevNoti) => ({
-                ...prevNoti,
-                open: false,
-              })),
-            message: "Producto agregado a favoritos correctamente",
-            type: "success",
-          });
-        } else {
-          setDataNotification({
-            open: true,
-            handleClose: () =>
-              setDataNotification((prevNoti) => ({
-                ...prevNoti,
-                open: false,
-              })),
-            message: `Ya existe ${favorite.name} en favoritos`,
-            type: "info",
-          });
-        }
+        const data = await resp.data;
+
+        setDataFavorites(data.data.data);
+
+        setDataNotification({
+          open: true,
+          handleClose: () =>
+            setDataNotification((prevNoti) => ({
+              ...prevNoti,
+              open: false,
+            })),
+          message: "Producto agregado a favoritos correctamente",
+          type: "success",
+        });
       }
     } catch (error) {
       setLoadingFavorite(false);
@@ -87,17 +71,58 @@ const useFavorites = () => {
     }
   };
 
-  const handleAddFavoriteCart = (product: FavoritesI) => {
-    const updateItems = dataCart.map((item) => {
-      if (Number(item.idProduct) === Number(product.productId)) {
-        const newQuantity =
-          Number(item.quantity) > 1 ? Number(item.quantity) - Number(1) : 1;
-        return { ...item, quantity: newQuantity };
-      }
-      return { ...item };
-    });
+  const handleAddFavoriteCart = async (product: FavoritesI) => {
+    try {
+      setLoadingAddCartFavorite(true);
 
-    setDataCart(updateItems);
+      const resp = await requestPost(
+        {
+          product: product.products,
+          quantity: 1,
+          price: product.products?.price,
+          isDetails: false,
+        },
+        "/cart/addProduct"
+      );
+
+      setLoadingAddCartFavorite(false);
+
+      if (resp.status == 200) {
+        setDataCart((prev) => {
+          const existingProduct = prev.find(
+            (item) =>
+              Number(item.idProduct) === Number(product.products?.idProduct)
+          );
+          if (existingProduct) {
+            return prev.map((item) =>
+              Number(item.idProduct) == Number(existingProduct.idProduct)
+                ? { ...item, quantity: Number(item.quantity) + Number(1) }
+                : item
+            );
+          } else {
+            return [
+              ...prev,
+              {
+                categoryId: product.products?.categoryId || "",
+                createdAt: product.products?.createdAt || "",
+                description: product.products?.description || "",
+                idProduct: product.products?.idProduct || "",
+                image_url: product.products?.image_url || "",
+                name: product.products?.name || "",
+                price: product.products?.price || "0",
+                providerId: product.products?.providerId || "",
+                stock: product.products?.stock || 0,
+                rating: product.products?.rating || 0,
+                reviews: product.products?.reviews || [],
+                quantity: 1,
+              },
+            ];
+          }
+        });
+      }
+    } catch (error) {
+      setLoadingAddCartFavorite(false);
+    }
   };
 
   const handleSelectOrden = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -113,12 +138,46 @@ const useFavorites = () => {
     }
   };
 
+  const handleRemoveFavorite = async (favorite: FavoritesI) => {
+    try {
+      setLoadingRemoveFavorite(true);
+
+      const resp = await requestPost(
+        {
+          idFavorite: favorite.idFavorite,
+        },
+        "/favorites/removeFavorites"
+      );
+
+      if (resp.status == 200) {
+        const data = await resp.data;
+        setDataFavorites(data.data.data);
+        setLoadingRemoveFavorite(false);
+        setDataNotification({
+          open: true,
+          handleClose: () =>
+            setDataNotification((prevNoti) => ({
+              ...prevNoti,
+              open: false,
+            })),
+          message: `${favorite.products?.name} eliminado de favoritos correctamente`,
+          type: "success",
+        });
+      }
+    } catch (error) {
+      setLoadingRemoveFavorite(false);
+    }
+  };
+
   return {
     handleAddFavorites,
     handleGetDataFavorites,
     handleAddFavoriteCart,
     handleSelectOrden,
+    handleRemoveFavorite,
     loadingFavorite,
+    loadingRemoveFavorite,
+    loadingAddCartFavorite,
   };
 };
 

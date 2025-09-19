@@ -65,6 +65,16 @@ const useProveedores = () => {
     }
   };
 
+  const requestGetProveedor = async (endpoint: string) => {
+    try {
+      const res = await api.get(endpoint);
+
+      return res;
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
   const requestPostProveedor = async (data: any, endPoint: string) => {
     try {
       const res = await api.post(endPoint, data);
@@ -77,6 +87,7 @@ const useProveedores = () => {
   return {
     requestGetProducts,
     requestPostProveedor,
+    requestGetProveedor,
   };
 };
 

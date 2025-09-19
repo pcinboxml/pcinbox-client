@@ -12,6 +12,29 @@ const useCard = () => {
 
   const [loadingAgregar, setLoadingAgregar] = useState<boolean>(false);
 
+  const ratingProgress = [
+    {
+      id: 1,
+      rating: 5,
+    },
+    {
+      id: 2,
+      rating: 4,
+    },
+    {
+      id: 3,
+      rating: 3,
+    },
+    {
+      id: 4,
+      rating: 2,
+    },
+    {
+      id: 5,
+      rating: 1,
+    },
+  ];
+
   const handleAddProductCart = async (product: ProductI) => {
     if (!hasToken) {
       const stored = localStorage.getItem("dataCart");
@@ -74,35 +97,34 @@ const useCard = () => {
         });
 
         setDataCart((prev) => {
-          const existingProductIndex = prev.findIndex(
-            (item) => item.idProduct === product.idProduct
+          const existingProduct = prev.find(
+            (item) => Number(item.idProduct) === Number(product.idProduct)
           );
-
-          if (existingProductIndex !== -1) {
-            return prev.map((item, index) =>
-              index === existingProductIndex
+          if (existingProduct) {
+            return prev.map((item) =>
+              Number(item.idProduct) == Number(existingProduct.idProduct)
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
                 : item
             );
+          } else {
+            return [
+              ...prev,
+              {
+                categoryId: product.categoryId,
+                createdAt: product.createdAt,
+                description: product.description,
+                idProduct: product.idProduct,
+                image_url: product.image_url,
+                name: product.name,
+                price: product.price,
+                providerId: product.providerId,
+                stock: product.stock,
+                rating: product.rating,
+                reviews: product.reviews,
+                quantity: 1,
+              },
+            ];
           }
-
-          return [
-            ...prev,
-            {
-              categoryId: product.categoryId,
-              createdAt: product.createdAt,
-              description: product.description,
-              idProduct: product.idProduct,
-              image_url: product.image_url,
-              name: product.name,
-              price: product.price,
-              providerId: product.providerId,
-              stock: product.stock,
-              rating: product.rating,
-              reviews: product.reviews,
-              quantity: 1,
-            },
-          ];
         });
       }
     } catch (error: any) {
@@ -119,9 +141,43 @@ const useCard = () => {
     }
   };
 
+  const calcPorcentaje = (
+    product: ProductI,
+    dataProducts: ProductI[],
+    progressRating: any
+  ) => {
+    const ratingCount = product.reviews.reduce((acc, item) => {
+      if (item.rating === progressRating.rating) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+
+    const totalRatingCount = dataProducts.reduce((acc, item) => {
+      return (
+        acc +
+        item.reviews.filter(
+          (r) =>
+            r.rating === progressRating.rating &&
+            item.idProduct == product.idProduct
+        ).length
+      );
+    }, 0);
+
+    const percentage =
+      totalRatingCount > 0 ? (ratingCount / totalRatingCount) * 100 : 0;
+
+    return {
+      percentage,
+      rating: progressRating.rating,
+    };
+  };
+
   return {
     handleAddProductCart,
+    calcPorcentaje,
     loadingAgregar,
+    ratingProgress,
   };
 };
 

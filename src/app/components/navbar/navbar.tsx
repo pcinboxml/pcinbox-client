@@ -585,74 +585,86 @@ const Navbar = () => {
 
                 <div
                   id="2"
-                  className="absolute w-auto  bg-white p-1 cursor-default"
+                  className="absolute w-auto  bg-white p-1 cursor-default shadow-2xl rounded"
                   style={{ top: "100%", zIndex: "60", display: "none" }}
                 >
-                  <div className="grid grid-cols-[1fr_1fr] w-[450px] border">
-                    <div className="p-3 flex flex-col">
-                      <span
-                        className="text-[#bb3d4b] text-center"
-                        style={{ fontSize: "18px", fontWeight: "bold" }}
-                      >
-                        Mis favoritos
-                      </span>
-                      <a
-                        className="text-[#606060] text-sm text-center underline decoration-[#a67845] decoration-[3px]"
+                  {dataFavorites && dataFavorites.length > 0 ? (
+                    <div className="grid grid-cols-[1fr_1fr] w-[450px] border">
+                      <div className="p-3 flex flex-col">
+                        <span
+                          className="text-[#bb3d4b] text-center"
+                          style={{ fontSize: "18px", fontWeight: "bold" }}
+                        >
+                          Mis favoritos
+                        </span>
+                        <a
+                          className="text-[#606060] text-sm text-center underline decoration-[#a67845] decoration-[3px]"
+                          style={{
+                            fontSize: "10px",
+                            borderBottom: "3px solid #a67845",
+                          }}
+                        >
+                          {dataFavorites.length.toLocaleString()} Articulos
+                          (predeterminada)
+                        </a>
+                      </div>
+
+                      <div
+                        className="flex flex-col justify-center items-center"
                         style={{
-                          fontSize: "10px",
-                          borderBottom: "3px solid #a67845",
+                          boxShadow:
+                            "inset 10px 0px 20px -10px rgba(0, 0, 0, 0.3)",
                         }}
                       >
-                        {dataFavorites.length.toLocaleString()} Articulos
-                        (predeterminada)
-                      </a>
+                        <div className="w-full flex justify-center flex-wrap mb-3 mt-3">
+                          {dataFavorites &&
+                            dataFavorites.length > 0 &&
+                            dataFavorites.slice(0, 3).map((item, index) => {
+                              return (
+                                <img
+                                  key={index}
+                                  src={item.image_url}
+                                  width={50}
+                                  height={50}
+                                  style={{ objectFit: "contain" }}
+                                />
+                              );
+                            })}
+                        </div>
+                        <div className="w-full flex justify-center mb-2">
+                          <button
+                            className="border px-4 py-1 bg-white"
+                            onClick={() => onRouterLink("/favorites")}
+                          >
+                            Ver lista
+                          </button>
+                        </div>
+                      </div>
                     </div>
-
+                  ) : (
                     <div
-                      className="flex flex-col justify-center items-center"
-                      style={{
-                        boxShadow:
-                          "inset 10px 0px 20px -10px rgba(0, 0, 0, 0.3)",
-                      }}
+                      className="w-[200px] flex justify-center items-center p-2"
+                      style={{ borderRadius: "10px" }}
                     >
-                      <div className="w-full flex justify-center flex-wrap mb-3 mt-3">
-                        {dataFavorites &&
-                          dataFavorites.length > 0 &&
-                          dataFavorites.slice(0, 3).map((item, index) => {
-                            return (
-                              <img
-                                key={index}
-                                src={item.image_url}
-                                width={50}
-                                height={50}
-                                style={{ objectFit: "contain" }}
-                              />
-                            );
-                          })}
-                      </div>
-                      <div className="w-full flex justify-center mb-2">
-                        <button
-                          className="border px-4 py-1 bg-white"
-                          onClick={() => onRouterLink("/favorites")}
-                        >
-                          Ver lista
-                        </button>
-                      </div>
+                      <span
+                        className="text-[#bb3d4b]"
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          textAlign: "center",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        No tienes productos favoritos
+                        <MdFavorite
+                          size={20}
+                          color="#bb3d4b"
+                          className="mx-2"
+                        />
+                      </span>
                     </div>
-                  </div>
-
-                  {/* <div
-                    className="w-[300px] flex justify-center items-center p-2 gap-1 shadow"
-                    style={{ borderRadius: "10px" }}
-                  >
-                    <span
-                      className="text-[#bb3d4b]"
-                      style={{ fontSize: "15px", fontWeight: "600" }}
-                    >
-                      No tienes productos favoritos
-                    </span>
-                    <MdFavorite size={20} color="#bb3d4b" />
-                  </div> */}
+                  )}
                 </div>
               </li>
 

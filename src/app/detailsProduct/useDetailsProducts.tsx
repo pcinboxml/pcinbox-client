@@ -63,35 +63,34 @@ const useDetailsProduct = () => {
         });
 
         setDataCart((prev) => {
-          const existingProductIndex = prev.findIndex(
-            (item) => item.idProduct === dataProduct.idProduct
+          const existingProduct = prev.find(
+            (item) => Number(item.idProduct) === Number(dataProduct.idProduct)
           );
-
-          if (existingProductIndex !== -1) {
-            return prev.map((item, index) =>
-              index === existingProductIndex
-                ? { ...item, quantity: quantityProp }
+          if (existingProduct) {
+            return prev.map((item) =>
+              Number(item.idProduct) == Number(existingProduct.idProduct)
+                ? { ...item, quantity: Number(item.quantity) + Number(1) }
                 : item
             );
+          } else {
+            return [
+              ...prev,
+              {
+                categoryId: dataProduct.categoryId,
+                createdAt: dataProduct.createdAt,
+                description: dataProduct.description,
+                idProduct: dataProduct.idProduct,
+                image_url: dataProduct.image_url,
+                name: dataProduct.name,
+                price: dataProduct.price,
+                providerId: dataProduct.providerId,
+                stock: dataProduct.stock,
+                rating: dataProduct.rating,
+                reviews: dataProduct.reviews,
+                quantity: 1,
+              },
+            ];
           }
-
-          return [
-            ...prev,
-            {
-              quantity: quantityProp,
-              categoryId: dataProduct.categoryId,
-              createdAt: dataProduct.createdAt,
-              description: dataProduct.description,
-              idProduct: dataProduct.idProduct,
-              image_url: dataProduct.image_url,
-              name: dataProduct.name,
-              price: dataProduct.price,
-              providerId: dataProduct.providerId,
-              stock: dataProduct.stock,
-              rating: dataProduct.rating,
-              reviews: dataProduct.reviews,
-            },
-          ];
         });
       }
     } catch (error: any) {
