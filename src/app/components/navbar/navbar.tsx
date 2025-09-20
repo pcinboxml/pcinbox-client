@@ -544,6 +544,14 @@ const Navbar = () => {
                                 path: "/ordenes",
                                 name: "Carrito",
                               },
+                              {
+                                path: "/historial-de-compras",
+                                name: "Historial de compras",
+                              },
+                              {
+                                path: "/mis-compras",
+                                name: "Mis compras",
+                              },
                             ].map((item: any) => {
                               return (
                                 <li key={item.path}>

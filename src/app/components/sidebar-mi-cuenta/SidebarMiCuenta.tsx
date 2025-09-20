@@ -66,6 +66,21 @@ const SidebarMiCuenta = () => {
           </a>
         </li>
 
+        {/* <li
+          className={`${styles.tagA} ${
+            isRouteActive("/historial-de-compras")[1]
+          }`}
+        >
+          <a
+            role="button"
+            className={`${styles.tagA} ${
+              isRouteActive("/historial-de-compras")[0]
+            }`}
+          >
+            Historial de compras
+          </a>
+        </li> */}
+
         <li
           onClick={() => onRouterLink("/ordenes")}
           className={`${styles.li} ${isRouteActive("/ordenes")[1]}`}
@@ -75,6 +90,34 @@ const SidebarMiCuenta = () => {
             className={`${styles.tagA} ${isRouteActive("/ordenes")[0]}`}
           >
             Carrito
+          </a>
+        </li>
+
+        <li
+          onClick={() => onRouterLink("/historial-de-compras")}
+          className={`${styles.li} ${
+            isRouteActive("/historial-de-compras")[1]
+          }`}
+        >
+          <a
+            role="button"
+            className={`${styles.tagA} ${
+              isRouteActive("/historial-de-compras")[0]
+            }`}
+          >
+            Historial de compras
+          </a>
+        </li>
+
+        <li
+          onClick={() => onRouterLink("/mis-compras")}
+          className={`${styles.li} ${isRouteActive("/mis-compras")[1]}`}
+        >
+          <a
+            role="button"
+            className={`${styles.tagA} ${isRouteActive("/mis-compras")[0]}`}
+          >
+            Mis compras
           </a>
         </li>
 
