@@ -22,7 +22,12 @@ const Register = () => {
   } = useRegister();
 
   return (
-    <section className={`${styles.section} border flex`}>
+    <section
+      className={`${styles.section} border flex`}
+      style={{
+        marginBottom: "80px",
+      }}
+    >
       <div className="w-[50%]">
         <img className={styles.img} src="/pc_gamer.jpeg" alt="" />
       </div>
