@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { MdCheckCircle, MdError, MdInfo, MdWarningAmber } from "react-icons/md";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -59,6 +60,7 @@ const ModalComponent = ({
         iconColor: "text-green-500",
         borderColor: "border-green-200",
         buttonColor: "bg-green-600 hover:bg-green-700",
+        type: "success",
       },
       error: {
         icon: AlertCircle,
@@ -66,6 +68,7 @@ const ModalComponent = ({
         iconColor: "text-red-500",
         borderColor: "border-red-200",
         buttonColor: "bg-red-600 hover:bg-red-700",
+        type: "error",
       },
       warning: {
         icon: AlertTriangle,
@@ -73,6 +76,7 @@ const ModalComponent = ({
         iconColor: "text-yellow-500",
         borderColor: "border-yellow-200",
         buttonColor: "bg-yellow-600 hover:bg-yellow-700",
+        type: "warning",
       },
       info: {
         icon: Info,
@@ -80,6 +84,7 @@ const ModalComponent = ({
         iconColor: "text-blue-500",
         borderColor: "border-blue-200",
         buttonColor: "bg-blue-600 hover:bg-blue-700",
+        type: "info",
       },
     };
     return configs[type] || configs.info;
@@ -102,7 +107,7 @@ const ModalComponent = ({
       />
 
       <div
-        className={`relative bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 p-8 transform transition-all duration-300 ${
+        className={`relative bg-[#E6E6E6] rounded shadow-2xl max-w-lg w-full mx-4 p-8 transform transition-all duration-300 ${
           isVisible
             ? "scale-100 opacity-100"
             : "scale-95 opacity-0 pointer-events-none"
@@ -114,11 +119,79 @@ const ModalComponent = ({
       >
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="absolute p-2 bg-[#bb3d4b]"
+          style={{
+            right: "-18px",
+            top: "-15px",
+            borderRadius: "50%",
+          }}
           aria-label="Cerrar modal"
         >
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="w-5 h-5 text-[white] font-bold" />
         </button>
+
+        <div className="bg-[#E6E6E6] min-h-[200px] flex items-end p-3 mt-5 relative">
+          <div
+            className="absolute"
+            style={{
+              transform: "translateX(225px)",
+              top: "-17px",
+            }}
+          >
+            {config.type == "info" ? (
+              <MdInfo size={55} color="#bb3d4b" />
+            ) : config.type == "success" ? (
+              <MdCheckCircle size={55} />
+            ) : config.type == "warning" ? (
+              <MdWarningAmber size={55} color="#bb3d4b" />
+            ) : config.type == "error" ? (
+              <MdError size={55} color="#bb3d4b" />
+            ) : (
+              ""
+            )}
+          </div>
+          <div className="bg-[white] w-full py-4 px-2 rounded">
+            {title && (
+              <h3
+                id="modal-title"
+                className="text-2xl text-center font-bold text-[#606060]"
+                style={{
+                  color: "#606060",
+                  fontWeight: "bold",
+                }}
+              >
+                {title}
+              </h3>
+            )}
+
+            {message && (
+              <p
+                id="modal-description"
+                className="text-[#808080] text-center mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
+              >
+                {message}
+              </p>
+            )}
+
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={handleClose}
+                className="border text-[#808080] rounded px-2 py-1"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleConfirm}
+                className={` text-white font-bold bg-[#bb3d4b] px-2 py-1 rounded`}
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/*
 
         <div className="text-center" style={{ padding: "25px" }}>
           <div
@@ -145,7 +218,7 @@ const ModalComponent = ({
             </p>
           )}
 
-          {/* {children} */}
+         
           {children && (
             <div className="flex gap-4 justify-center pb-2">{children}</div>
           )}
@@ -167,7 +240,7 @@ const ModalComponent = ({
               Aceptar
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

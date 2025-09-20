@@ -2,24 +2,33 @@
 
 import { Rating } from "@mui/material";
 import { useEffect } from "react";
-import { MdAutorenew, MdStar } from "react-icons/md";
+import { MdAutorenew, MdShoppingCart, MdStar } from "react-icons/md";
 import useReview from "./useReview";
 import useService from "../services/useService";
+import usePaginationComponent from "../components/pagination/usePaginationComponent";
+import PaginationComponent from "../components/pagination/PaginationComponent";
 
 const Reviews = () => {
   const {
+    handleChangeOrdenar,
     handleGetProduct,
     handleAddProductCart,
+    calcPorcentaje,
     dataProduct,
     loadingAddProductCar,
+    ReviewsRating,
   } = useReview();
-  const { formatCurrency } = useService();
+
+  const { formatCurrency, onRouterLink } = useService();
+  const { startIndex, endIndex, page, handleChangePage } =
+    usePaginationComponent();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
 
     handleGetProduct(Number(urlParams.get("idProduct")));
   }, []);
+
   return (
     <section className="mx-auto my-5" style={{ width: "80%" }}>
       <span className="text-[#bb3d4b] text-[17px] font-bold block my-5 text-center">
@@ -69,7 +78,10 @@ const Reviews = () => {
               {loadingAddProductCar ? (
                 <MdAutorenew size={20} className="m-auto the-spinner" />
               ) : (
-                "Agregar al carrito"
+                <div className="flex items-center gap-2">
+                  Agregar al carrito
+                  <MdShoppingCart size={20} color="white" />
+                </div>
               )}
             </button>
           </div>
@@ -96,48 +108,48 @@ const Reviews = () => {
               <span className="text-black text-[13px]">4.90 estrellas</span>
             </div>
 
-            <div className="flex items-center mb-2">
-              <div
-                className="barProgress"
-                style={{
-                  width: "200px",
-                  height: "15px",
-                  borderRadius: "5px",
-                  background: "#E7E7E7",
-                  position: "relative",
-                }}
-              >
-                <div
-                  style={{
-                    width: 25,
-                    height: "15px",
-                    top: "0",
-                    left: "0",
-                    bottom: "0",
-                    background: "#BB3D4B",
-                    borderRadius: "5px",
-                  }}
-                ></div>
-              </div>
-              <div className="text-[15px] text-[#606060] font-bold mx-2">5</div>
-              <div>
-                <MdStar color="#ccc" size={20} />
-              </div>
+            {ReviewsRating &&
+              ReviewsRating.map((rr) => {
+                return (
+                  <div className="flex items-center mb-2" key={rr.id}>
+                    <div
+                      className="barProgress"
+                      style={{
+                        width: "200px",
+                        height: "15px",
+                        borderRadius: "5px",
+                        background: "#E7E7E7",
+                        position: "relative",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: calcPorcentaje(dataProduct!, rr.rating)
+                            .percentage,
+                          height: "15px",
+                          top: "0",
+                          left: "0",
+                          bottom: "0",
+                          background: "#BB3D4B",
+                          borderRadius: "5px",
+                        }}
+                      ></div>
+                    </div>
+                    <div className="text-[15px] text-[#606060] font-bold mx-2">
+                      {rr.rating}
+                    </div>
+                    <div>
+                      <MdStar color="#ccc" size={20} />
+                    </div>
 
-              <div>
-                <span className="text-[#ccc] text-[13px] mx-1">
-                  12
-                  {/* (
-                                              {product.reviews.reduce((acc, item) => {
-                                                if (item.rating === progressRating.rating) {
-                                                  return acc + 1;
-                                                }
-                                                return acc;
-                                              }, 0)}
-                                              ) */}
-                </span>
-              </div>
-            </div>
+                    <div>
+                      <span className="text-[#ccc] text-[13px] mx-1">
+                        {calcPorcentaje(dataProduct!, rr.rating).ratingCount}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
 
           <div className="container-experiencia border p-2 h-[150px] mx-3">
@@ -146,7 +158,16 @@ const Reviews = () => {
             </span>
 
             <button className="p-2 block my-2 mx-auto bg-[#bb3d4b] text-white rounded font-bold">
-              <span className="text-[13px]">Escribir mi opinión</span>
+              <span
+                className="text-[13px]"
+                onClick={() =>
+                  onRouterLink(
+                    `/write-review?idProduct=${dataProduct?.idProduct}&image_url=${dataProduct?.image_url}&description=${dataProduct?.description}`
+                  )
+                }
+              >
+                Escribir mi opinión
+              </span>
             </button>
           </div>
         </div>
@@ -168,18 +189,19 @@ const Reviews = () => {
               id=""
               defaultValue={""}
               className="form-select ml-2"
+              onChange={handleChangeOrdenar}
             >
-              <option value="" disabled>
-                Selecciona una opción
-              </option>
-              <option value="1">Mejor valorado</option>
+              <option value="1">Mas reciente</option>
+              <option value="2">Más antiguo</option>
+              <option value="3">Mejor calificación</option>
+              <option value="4">Peor calificación</option>
             </select>
           </div>
         </div>
         <hr />
 
         {dataProduct?.reviews &&
-          dataProduct.reviews.map((review) => {
+          dataProduct.reviews.slice(startIndex, endIndex).map((review) => {
             return (
               <div className="w-full p-2 flex" key={Number(review.idReview)}>
                 <div className="w-[150px]  flex flex-col items-center gap-2">
@@ -210,6 +232,15 @@ const Reviews = () => {
               </div>
             );
           })}
+      </div>
+      <div className="mt-2 flex justify-end">
+        {dataProduct?.reviews && (
+          <PaginationComponent
+            onChange={handleChangePage}
+            page={page}
+            count={Math.ceil(dataProduct!.reviews.length / 4)}
+          />
+        )}
       </div>
     </section>
   );
