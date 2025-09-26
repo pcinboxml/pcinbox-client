@@ -1,15 +1,19 @@
 "use client";
 
+import { MdAutorenew } from "react-icons/md";
 import Table from "../components/table/Table";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
+import useStorage from "../services/useStorage";
 import useResumen from "./useResumen";
 
 const Resumen = () => {
   const { dataCart } = useTheContext();
   const { onRouterLink, formatCurrency } = useService();
-  const { rows, columns } = useResumen();
+  const { rows, columns, loadingCreateOrder, totalPrice, handleCreateOrder } =
+    useResumen();
+  const { progressPay } = useStorage();
 
   return (
     <section className="w-[80%] mx-auto my-5">
@@ -43,21 +47,19 @@ const Resumen = () => {
             <span className="text-[#808080] text-sm">Envió: </span>
 
             <span className="text-[#808080] text-sm">
-              Tipo de pago: TRansferencia bancaria
+              Tipo de pago: {progressPay.methodPay.typeMethod}
             </span>
 
             <span className="text-[#808080] text-sm">IVA: </span>
           </div>
 
           <div className="flex flex-col justify-end items-center gap-2">
+            <span className="text-[#808080] text-sm">{formatCurrency(0)}</span>
             <span className="text-[#808080] text-sm">
-              {formatCurrency(4590)}
+              {formatCurrency(totalPrice)}
             </span>
             <span className="text-[#808080] text-sm">
-              {formatCurrency(120)}
-            </span>
-            <span className="text-[#808080] text-sm">
-              {formatCurrency(120)}
+              {formatCurrency(Math.floor(totalPrice * 0.16))}
             </span>
           </div>
         </div>
@@ -72,7 +74,7 @@ const Resumen = () => {
 
           <div className="flex flex-col justify-center items-center pr-2 gap-2">
             <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-              {formatCurrency(27321)}
+              {formatCurrency(totalPrice + Math.floor(totalPrice * 0.16))}
             </span>
           </div>
         </div>
@@ -86,10 +88,15 @@ const Resumen = () => {
               Atrás
             </button>
             <button
+              disabled={loadingCreateOrder}
               className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-              onClick={() => {}}
+              onClick={handleCreateOrder}
             >
-              Confirmar orden
+              {loadingCreateOrder ? (
+                <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : (
+                <>Confirmar orden</>
+              )}
             </button>
           </div>
         )}

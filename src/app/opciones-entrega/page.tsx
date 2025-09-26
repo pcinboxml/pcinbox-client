@@ -7,7 +7,8 @@ import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import useOpcionesEntrega from "./useOpcionesEntrega";
 import styles from "./opciones-entrega.module.css";
-import usePerfil from "../perfil/usePerfil";
+import { useEffect } from "react";
+import useStorage from "../services/useStorage";
 
 const OpcionesEntrega = () => {
   const { formatCurrency, onRouterLink } = useService();
@@ -15,14 +16,35 @@ const OpcionesEntrega = () => {
     handleOnChangeOptionEnvio,
     registerAddress,
     setIdAddressEnvio,
+    handleOnChange,
+    handleOnSelect,
+    handleRemoveAddress,
+    setShowFormAddress,
+    handleEditAddress,
+    showFormAddress,
+    setIsEditAddress,
+    getValuesStorage,
+    postalCodes,
     idAddressEnvio,
     optionEnvio,
     dataUserAddress,
     loadingRegisterAddress,
+    dataAddress,
   } = useOpcionesEntrega();
+
+  const { handleWriteStorageProgressPay } = useStorage();
+
   const { dataCart, setDataModal } = useTheContext();
-  const { onSubmit, handleOnChange, dataAddress, postalCodes, handleOnSelect } =
-    usePerfil();
+
+  useEffect(() => {
+    if (dataUserAddress.length === 1) {
+      setIdAddressEnvio(Number(dataUserAddress[0].idAddress));
+    }
+  }, [dataUserAddress]);
+
+  useEffect(() => {
+    getValuesStorage();
+  }, []);
 
   return (
     <section className="w-[80%] mx-auto my-5">
@@ -68,6 +90,7 @@ const OpcionesEntrega = () => {
                     id="sucursal"
                     className="mx-2"
                     value="sucursal"
+                    checked={optionEnvio === "sucursal"}
                     onChange={handleOnChangeOptionEnvio}
                   />
                   <MdStore size={26} color="gray" />
@@ -93,6 +116,7 @@ const OpcionesEntrega = () => {
                     id="paqueteexpress"
                     className="mx-2"
                     value="paqueteexpress"
+                    checked={optionEnvio === "paqueteexpress"}
                     onChange={handleOnChangeOptionEnvio}
                   />
 
@@ -132,6 +156,7 @@ const OpcionesEntrega = () => {
                     name="envio"
                     id="dhl"
                     className="mx-2"
+                    checked={optionEnvio === "dhl"}
                     onChange={handleOnChangeOptionEnvio}
                   />
 
@@ -169,6 +194,7 @@ const OpcionesEntrega = () => {
                     id="estafeta"
                     className="mx-2"
                     value="estafeta"
+                    checked={optionEnvio === "estafeta"}
                     onChange={handleOnChangeOptionEnvio}
                   />
 
@@ -206,18 +232,20 @@ const OpcionesEntrega = () => {
                 optionEnvio != "sucursal" ? (
                   <form className={styles.formContainer}>
                     <h2>Selecciona tu domicilio</h2>
-                    <div className="radio-group">
-                      {dataUserAddress.map((address) => {
-                        return (
-                          <label key={address.idAddress} className="my-3">
+
+                    {dataUserAddress.map((address) => {
+                      console.log(idAddressEnvio, address.idAddress);
+                      return (
+                        <div key={address.idAddress} className="radio-group">
+                          <label className="my-3">
                             <input
                               type="radio"
                               name="domicilio"
                               value={address.idAddress}
+                              checked={idAddressEnvio == address.idAddress}
                               onChange={(event) =>
                                 setIdAddressEnvio(Number(event.target.value))
                               }
-                              defaultChecked={dataUserAddress.length == 1}
                               required
                             />
                             <div className="flex items-center  flex-wrap">
@@ -249,9 +277,45 @@ const OpcionesEntrega = () => {
                               </span>
                             </div>
                           </label>
-                        );
-                      })}
-                    </div>
+
+                          <a
+                            role="button"
+                            style={{
+                              display: "inline-block",
+                              marginLeft: "10px",
+                              color: "#606060",
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                            }}
+                            onClick={() => [
+                              setIsEditAddress({
+                                edit: true,
+                                idAddress: address.idAddress,
+                              }),
+                              setShowFormAddress(true),
+                              handleEditAddress(address),
+                            ]}
+                          >
+                            Editar
+                          </a>
+                          <a
+                            role="button"
+                            style={{
+                              display: "inline-block",
+                              marginLeft: "10px",
+                              color: "#BB3D4B",
+                              fontWeight: "bold",
+                              textDecoration: "none",
+                            }}
+                            onClick={() => handleRemoveAddress(address)}
+                          >
+                            Eliminar
+                          </a>
+
+                          <hr />
+                        </div>
+                      );
+                    })}
                   </form>
                 ) : (
                   optionEnvio != "" &&
@@ -264,13 +328,7 @@ const OpcionesEntrega = () => {
                         Datos de Envío
                       </span>
 
-                      <form
-                        className="w-[100%] my-3 mx-auto"
-                        onSubmit={() => [
-                          onSubmit,
-                          onRouterLink("/forma-de-pago"),
-                        ]}
-                      >
+                      <form className="w-[100%] my-3 mx-auto">
                         <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                           <label
                             htmlFor=""
@@ -493,6 +551,245 @@ const OpcionesEntrega = () => {
             </div>
           </div>
 
+          {showFormAddress && (
+            <div className="w-full flex justify-end">
+              <div className="w-[600px] px-3">
+                <span className="text-[#BB3D4B] text-xl font-bold">
+                  Datos de Envío
+                </span>
+
+                <form className="w-[100%] my-3 mx-auto">
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Calle:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="street"
+                      value={dataAddress?.street}
+                      onChange={handleOnChange}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-[auto_auto] gap-2 items-end justify-end mt-4 relative">
+                    <div
+                      className="flex justify-center"
+                      style={{ alignItems: "flex-end" }}
+                    >
+                      <label
+                        htmlFor=""
+                        className="text-[#808080] text-base mx-2 block"
+                      >
+                        Número Ext:
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="noExt"
+                        value={dataAddress?.noExt}
+                        onChange={handleOnChange}
+                      />
+                    </div>
+                    <div
+                      className="flex justify-center"
+                      style={{ alignItems: "flex-end" }}
+                    >
+                      <label
+                        htmlFor=""
+                        className="text-[#808080] text-base mx-2"
+                      >
+                        Interior: (opcional)
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="noInt"
+                        value={dataAddress?.noInt}
+                        onChange={handleOnChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Código Postal:
+                    </label>
+
+                    <input
+                      type="number"
+                      name="codePostal"
+                      className="form-control"
+                      onChange={handleOnChange}
+                      value={
+                        dataAddress?.codePostal == 0
+                          ? ""
+                          : dataAddress?.codePostal
+                      }
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Colonia:
+                    </label>
+
+                    <select
+                      name="cologne"
+                      className="form-select"
+                      disabled={postalCodes.length == 0}
+                      onChange={handleOnSelect}
+                      value={dataAddress.cologne ?? ""}
+                    >
+                      {postalCodes && postalCodes.length > 0 ? (
+                        <>
+                          <option value="">Selecciona una colonia</option>
+                          {postalCodes.map((pCodes) => (
+                            <option
+                              key={pCodes.placeName}
+                              value={pCodes.placeName}
+                            >
+                              {pCodes.placeName}
+                            </option>
+                          ))}
+                        </>
+                      ) : (
+                        <option value="">Selecciona una colonia</option>
+                      )}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Estado:
+                    </label>
+
+                    <select
+                      name="state"
+                      className="form-select"
+                      disabled={postalCodes.length === 0}
+                      onChange={handleOnSelect}
+                      value={dataAddress.state ?? ""}
+                    >
+                      <option value="">
+                        {postalCodes.length > 0
+                          ? postalCodes[0].adminName1
+                          : "Selecciona un estado"}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Ciudad:
+                    </label>
+                    <select
+                      name="city"
+                      className="form-select"
+                      disabled={postalCodes.length === 0}
+                      onChange={handleOnSelect}
+                      value={dataAddress.city ?? ""}
+                    >
+                      {postalCodes.length > 0 ? (
+                        <option value={postalCodes[0].adminName3}>
+                          {postalCodes[0].adminName3}
+                        </option>
+                      ) : (
+                        <option value="">Selecciona una ciudad</option>
+                      )}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Teléfono 1:
+                    </label>
+
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="phone1"
+                      onChange={handleOnChange}
+                      value={dataAddress?.phone1}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+                    <label
+                      htmlFor=""
+                      className="text-[#808080] text-base text-end"
+                    >
+                      Teléfono 2: <br /> (opcional)
+                    </label>
+
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="phone2"
+                      onChange={handleOnChange}
+                      value={dataAddress?.phone2}
+                    />
+                  </div>
+
+                  <div
+                    className={`grid grid-cols-[auto] gap-2 items-center mt-4 relative ${styles.containerBtnGuardar1}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        registerAddress(dataAddress);
+                      }}
+                      disabled={loadingRegisterAddress}
+                      className="p-2 bg-[#BB3D4B] text-white font-bold mt-4"
+                      style={{ borderRadius: "10px" }}
+                    >
+                      {loadingRegisterAddress ? (
+                        <MdAutorenew size={20} className="m-auto the-spinner" />
+                      ) : (
+                        "Guardar y continuar"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <div className="w-full flex justify-end my-4">
+            <button
+              onClick={() => {
+                setIsEditAddress({
+                  edit: false,
+                  idAddress: 0,
+                }),
+                  setShowFormAddress(!showFormAddress);
+              }}
+              className="border py-2 px-5 text-black rounded"
+            >
+              {showFormAddress == false
+                ? "Agregar otro domicilio"
+                : "Cerrar formulario"}
+            </button>
+          </div>
+
           <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
             <div className="grid grid-cols-[2fr_1fr]">
               <span
@@ -565,6 +862,12 @@ const OpcionesEntrega = () => {
                       },
                     });
                   } else {
+                    handleWriteStorageProgressPay({
+                      optionSend: {
+                        name: optionEnvio,
+                        address: idAddressEnvio,
+                      },
+                    });
                     onRouterLink("/forma-de-pago");
                   }
                 }}

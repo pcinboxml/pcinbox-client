@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { MdAccountBalance, MdCreditCard, MdStore } from "react-icons/md";
-import { CardI } from "../interfaces/card/card.interface";
+import { CardDataI, CardI } from "../interfaces/card/card.interface";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 const optionsPago = [
   {
@@ -59,11 +59,17 @@ const optionsPago = [
     color: "#666666",
   },
 ];
+declare global {
+  interface Window {
+    MercadoPago: any;
+  }
+}
+
 const useFormaDePago = () => {
   const methodsPay = [
     {
       id: 1,
-      method: "cardSucursal",
+      method: "card",
       form: [
         {
           label: "Nombre del titular:",
@@ -126,10 +132,67 @@ const useFormaDePago = () => {
   ];
   const [dataCard, setDataCard] = useState<CardI[]>([]);
   const [idMethodPay, setIdMethodPay] = useState<number>(0);
+  const [saveCard, setSaveCard] = useState<CardDataI>({
+    cardNumber: "",
+    cardholderName: "",
+    cardExpirationMonth: "",
+    cardExpirationYear: "",
+    securityCode: "",
+    identificationType: "DNI",
+    identificationNumber: "",
+  });
 
   const handleSelectOptionPay = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setIdMethodPay(Number(value));
+  };
+
+  const handleSelectOptionPayById = (value: number) => {
+    setIdMethodPay(value);
+  };
+
+  const handleRegisterCard = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(saveCard);
+    // if (!window.MercadoPago) {
+    //   console.log("sdk de mercado pago no cargado");
+    //   return;
+    // }
+    // const mp = new window.MercadoPago(
+    //   process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY!
+    // );
+  };
+
+  const handleOnChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setSaveCard((prev) => {
+      switch (name) {
+        case "card":
+          return { ...prev, cardNumber: value.replace(/\s+/g, "").trim() };
+        case "dataExpired":
+          const [year, month] = value.split("-");
+          return {
+            ...prev,
+            cardExpirationMonth: month,
+            cardExpirationYear: year,
+          };
+        case "titular":
+          return { ...prev, cardholderName: value };
+        case "cvv":
+          return { ...prev, securityCode: value };
+        default:
+          return prev;
+      }
+    });
+  };
+
+  const getValuesStorage = () => {
+    const stored = localStorage.getItem("progressPay");
+    if (stored) {
+      const store = JSON.parse(stored);
+      setIdMethodPay(store.methodPay.name);
+    }
   };
 
   return {
@@ -138,6 +201,11 @@ const useFormaDePago = () => {
     idMethodPay,
     setDataCard,
     handleSelectOptionPay,
+    handleSelectOptionPayById,
+    handleOnChange,
+    handleRegisterCard,
+    setSaveCard,
+    getValuesStorage,
   };
 };
 

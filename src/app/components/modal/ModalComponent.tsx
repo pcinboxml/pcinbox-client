@@ -19,7 +19,7 @@ const ModalComponent = ({
   onClose: () => void;
   type: ModalType;
   title: string;
-  message: string;
+  message: any;
   children: React.ReactNode;
   onConfirm: () => void;
 }) => {

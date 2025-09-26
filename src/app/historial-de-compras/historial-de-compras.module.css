@@ -1,0 +1,145 @@
+.orderCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.orderCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.orderHeader {
+  background: #f8f9fa;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.orderNumber {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.orderDate {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.orderStatus {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusDelivered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.statusShipped {
+  background: #cce7ff;
+  color: #0056b3;
+}
+
+.statusProcessing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.statusCancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.orderTotal {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c5530;
+}
+
+.orderItems {
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 20px;
+  align-items: center;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.itemDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.itemName {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.itemVariant {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.itemMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.itemQuantity {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.itemPrice {
+  font-weight: 700;
+  color: #2c5530;
+  font-size: 1.1rem;
+}
+
+.orderActions {
+  padding: 20px;
+  background: #f8f9fa;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}

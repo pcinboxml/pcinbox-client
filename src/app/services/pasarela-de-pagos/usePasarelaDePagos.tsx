@@ -63,11 +63,27 @@ const usePasarelaDePagos = () => {
         },
       });
       return resp;
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const requestPostPagos = async (data: any, endpoint: string) => {
+    try {
+      const resp = await api.post(endpoint, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      return resp;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return {
     requestGetPagos,
+    requestPostPagos,
   };
 };
 

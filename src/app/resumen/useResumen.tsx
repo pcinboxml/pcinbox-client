@@ -2,140 +2,71 @@
 
 import { useMediaQuery } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
+import GridResumen from "./gridResumen";
+import useStorage from "../services/useStorage";
+import { useMemo, useState } from "react";
 import useService from "../services/useService";
+import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 
 const useResumen = () => {
+  const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
   const { dataCart } = useTheContext();
-  const { formatCurrency } = useService();
 
   const isSmallScreen = useMediaQuery("(max-width: 1550px)", {
     noSsr: true,
   });
 
-  const rows = dataCart.map((itemCart) => ({
-    id: itemCart.idProduct,
-    products: itemCart.description,
-    quantity: Number(itemCart.quantity),
-    sucursal: "Leon",
-    price: Number(itemCart.price),
-    import: Number(itemCart.quantity) * Number(itemCart.price),
-  }));
+  const { onRouterLink } = useService();
 
-  const columns = [
-    {
-      field: "quantity",
-      headerName: "Cantidad",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 100 : 90,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "products",
-      headerName: "Productos",
-      // flex: isSmallScreen ? undefined : 1,
-      width: 350,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                title={params.value}
-                className="inline-block text-center text-sm leading-snug w-full text-[#808080]"
-                style={{
-                  display: "inline-block",
-                  wordBreak: "break-word",
-                  whiteSpace: "normal",
-                }}
-              >
-                {params?.value?.length > 150
-                  ? `${params.value.slice(0, 150)}...`
-                  : params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
 
-    {
-      field: "sucursal",
-      headerName: "Sucursal",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 100 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                León
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "price",
-      headerName: "Precio",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 130 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
 
-    {
-      field: "import",
-      headerName: "Importe",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 130 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
+  const { progressPay } = useStorage();
+  const { requestPostPagos } = usePasarelaDePagos();
+
+  const { columns, rows } = GridResumen({ dataCart, isSmallScreen });
+
+  const handleCreateOrder = async () => {
+    if (progressPay.methodPay.typeMethod == "efectivo") {
+      try {
+        setLoadingCreateOrder(true);
+
+        const resp = await requestPostPagos(
+          {
+            totalAmount: totalPrice,
+            userId: localStorage.getItem("idUser"),
+            shipping_method: progressPay.optionSend.name,
+          },
+          "/stripe/createOrderCash"
+        );
+
+        setLoadingCreateOrder(false);
+
+        if (resp.status == 200) {
+          const data = await resp.data;
+          onRouterLink(
+            `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
           );
         }
-      },
-    },
-  ];
+      } catch (error) {
+        setLoadingCreateOrder(false);
+      }
+    }
+  };
 
   return {
-    rows,
+    loadingCreateOrder,
     columns,
+    rows,
+    totalPrice,
+    handleCreateOrder,
   };
 };
 

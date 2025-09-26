@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
 import useFavorites from "./services/useFavorites";
+import Script from "next/script";
 
 export default function AppWrapper({
   children,
@@ -75,6 +76,10 @@ export default function AppWrapper({
         </main>
         <Footer />
       </div>
+      <Script
+        src="https://sdk.mercadopago.com/js/v2"
+        strategy="beforeInteractive"
+      />
     </SessionProvider>
   );
 }

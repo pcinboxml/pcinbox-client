@@ -52,7 +52,7 @@ const PrincipalComponent = () => {
   }, []);
 
   return (
-    <section>
+    <section className="mb-4">
       <div className="content-main">
         {dataProducts && dataProducts.length > 0 ? (
           <div className="list-products">

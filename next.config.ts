@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     NEXT_PUBLIC_KEY_JWT: process.env.NEXT_PUBLIC_KEY_JWT,
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
+    NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY:
+      process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
   },
 
   // async headers() {

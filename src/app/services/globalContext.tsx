@@ -19,7 +19,7 @@ interface ModalData {
   onClose: () => void;
   type: ModalType;
   title: string;
-  message: string;
+  message: any;
   onConfirm: () => void;
   children?: any;
 }
