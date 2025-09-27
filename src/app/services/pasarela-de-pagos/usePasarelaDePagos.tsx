@@ -55,12 +55,13 @@ const usePasarelaDePagos = () => {
     }
   );
 
-  const requestGetPagos = async (endpoint: string) => {
+  const requestGetPagos = async (endpoint: string, blob: boolean = false) => {
     try {
       const resp = await api.get(endpoint, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
+        responseType: blob ? "blob" : undefined,
       });
       return resp;
     } catch (error) {

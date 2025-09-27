@@ -10,14 +10,13 @@ import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos
 
 const useResumen = () => {
   const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
-  const { dataCart } = useTheContext();
+  const { dataCart, setDataCart } = useTheContext();
 
   const isSmallScreen = useMediaQuery("(max-width: 1550px)", {
     noSsr: true,
   });
 
-  const { onRouterLink } = useService();
-
+  const { onRouterLink, requestPost } = useService();
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
@@ -40,20 +39,35 @@ const useResumen = () => {
 
         const resp = await requestPostPagos(
           {
-            totalAmount: totalPrice,
+            totalAmount: totalPrice + totalPrice * 0.16,
             userId: localStorage.getItem("idUser"),
             shipping_method: progressPay.optionSend.name,
           },
           "/stripe/createOrderCash"
         );
 
-        setLoadingCreateOrder(false);
-
         if (resp.status == 200) {
           const data = await resp.data;
-          onRouterLink(
-            `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
-          );
+
+          try {
+            const respRemoveCart = await requestPost(
+              {
+                dataCart,
+              },
+              "/cart/removeAllCart"
+            );
+            setLoadingCreateOrder(false);
+
+            if (respRemoveCart.status == 200) {
+              // localStorage.removeItem("progressPay");
+              onRouterLink(
+                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
+              );
+              setDataCart([]);
+            }
+          } catch (error) {
+            setLoadingCreateOrder(false);
+          }
         }
       } catch (error) {
         setLoadingCreateOrder(false);

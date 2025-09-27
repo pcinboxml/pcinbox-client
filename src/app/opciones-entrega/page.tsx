@@ -48,7 +48,9 @@ const OpcionesEntrega = () => {
 
   return (
     <section className="w-[80%] mx-auto my-5">
-      <TimelineComponent activeStep={1} />
+      {dataCart && dataCart.length > 0 ? (
+        <TimelineComponent activeStep={1} />
+      ) : null}
       {dataCart && dataCart.length > 0 ? (
         <div className="container-tabla  w-[90%] mx-auto my-3">
           <div

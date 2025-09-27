@@ -4,17 +4,23 @@ import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
 const useSocket = () => {
-  const socket = useRef<typeof Socket | null>(null);
+  const socketServer = useRef<typeof Socket | null>(null);
+  const socketPagos = useRef<typeof Socket | null>(null);
 
   useEffect(() => {
-    socket.current = io(process.env.NEXT_PUBLIC_SOCKET || "");
+    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET || "");
+    socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "");
 
     return () => {
-      socket.current?.disconnect();
+      socketServer.current?.disconnect();
+      socketPagos.current?.disconnect();
     };
   }, []);
 
-  return socket;
+  return {
+    socketServer,
+    socketPagos,
+  };
 };
 
 export default useSocket;

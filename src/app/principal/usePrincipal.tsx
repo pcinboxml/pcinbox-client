@@ -7,7 +7,7 @@ import useProveedores from "../services/proveedores/useProveedores";
 import useSocket from "./../services/ioClient";
 
 const usePrincipal = () => {
-  const io = useSocket();
+  const { socketServer } = useSocket();
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [dataProducts, setDataProducts] = useState<ProductI[]>([]);
@@ -78,7 +78,7 @@ const usePrincipal = () => {
       }
     );
 
-    io.current?.on("newAllProducts", (inputDataSocket: any) => {
+    socketServer.current?.on("newAllProducts", (inputDataSocket: any) => {
       console.log("escuchando newAllProducts");
       setDataProducts((prev) => [
         ...prev,
@@ -100,7 +100,7 @@ const usePrincipal = () => {
         })),
       ]);
     });
-    io.current?.on("updateAllProducts", (inputDataSocket: any[]) => {
+    socketServer.current?.on("updateAllProducts", (inputDataSocket: any[]) => {
       // console.log("escuchando updateAllProducts");
       // console.log(inputDataSocket);
       setDataProducts((prev) =>
@@ -132,8 +132,8 @@ const usePrincipal = () => {
     });
 
     return () => {
-      io.current?.off("newAllProducts");
-      io.current?.off("updateAllProducts");
+      socketServer.current?.off("newAllProducts");
+      socketServer.current?.off("updateAllProducts");
     };
 
     // try {

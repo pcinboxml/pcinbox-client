@@ -10,7 +10,7 @@ import useSocket from "./../services/ioClient";
 import ProductI from "../interfaces/products/product.interface";
 
 const PrincipalComponent = () => {
-  const io = useSocket();
+  const { socketServer } = useSocket();
 
   const {
     getListProducts,
@@ -23,7 +23,7 @@ const PrincipalComponent = () => {
   useEffect(() => {
     getListProducts();
 
-    io.current?.on("newProduct", (data: ProductI) => {
+    socketServer.current?.on("newProduct", (data: ProductI) => {
       setDataProducts((prev) => [
         ...prev,
         {
@@ -47,7 +47,7 @@ const PrincipalComponent = () => {
     });
 
     return () => {
-      io.current?.off("newProduct");
+      socketServer.current?.off("newProduct");
     };
   }, []);
 
