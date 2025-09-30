@@ -3,13 +3,14 @@ export default interface ProductI {
   createdAt: string;
   description: string;
   idProduct: string;
-  image_url: string;
+  imageUrl: any;
   name: string;
   price: string;
   providerId: string;
   stock: number;
   quantity: number;
   rating: number;
+  sku: string;
   reviews: {
     idReview: string;
     productId: string;

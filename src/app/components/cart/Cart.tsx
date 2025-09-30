@@ -3,7 +3,7 @@
 import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
@@ -109,9 +109,9 @@ export const ModalCart = ({
                     key={product.idProduct + index}
                     className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                   >
-                    {product.image_url ? (
+                    {(product as any).image_url ? (
                       <img
-                        src={product.image_url}
+                        src={(product as any).image_url[0]}
                         alt={"Imagen"}
                         className="w-16 h-16 object-cover rounded-md cursor-pointer"
                         onClick={() => {
@@ -122,7 +122,20 @@ export const ModalCart = ({
                           onRouterLink("/detailsProduct");
                         }}
                       />
-                    ) : null}
+                    ) : (
+                      <img
+                        src={(product as any).imageUrl[0]}
+                        alt={"Imagen"}
+                        className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                        onClick={() => {
+                          localStorage.setItem(
+                            "product",
+                            JSON.stringify(product)
+                          );
+                          onRouterLink("/detailsProduct");
+                        }}
+                      />
+                    )}
 
                     <div className="flex-1">
                       <h3

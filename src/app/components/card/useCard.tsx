@@ -4,6 +4,7 @@ import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import { useState } from "react";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
 const useCard = () => {
   const { setDataCart, setDataModal, setDataNotification, hasToken } =
@@ -114,13 +115,14 @@ const useCard = () => {
                 createdAt: product.createdAt,
                 description: product.description,
                 idProduct: product.idProduct,
-                image_url: product.image_url,
+                imageUrl: product.imageUrl,
                 name: product.name,
                 price: product.price,
                 providerId: product.providerId,
                 stock: product.stock,
                 rating: product.rating,
                 reviews: product.reviews,
+                sku: product.sku,
                 quantity: 1,
               },
             ];
@@ -154,14 +156,18 @@ const useCard = () => {
     }, 0);
 
     const totalRatingCount = dataProducts.reduce((acc, item) => {
-      return (
-        acc +
-        item.reviews.filter(
-          (r) =>
-            r.rating === progressRating.rating &&
-            item.idProduct == product.idProduct
-        ).length
-      );
+      if (item.reviews) {
+        return (
+          acc +
+          item.reviews.filter(
+            (r) =>
+              r.rating === progressRating.rating &&
+              item.idProduct == product.idProduct
+          ).length
+        );
+      } else {
+        return 0;
+      }
     }, 0);
 
     const percentage =
@@ -173,9 +179,51 @@ const useCard = () => {
     };
   };
 
+  const CustomPrevArrow = (props: any) => {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        onClick={onClick}
+        style={{
+          ...style,
+          left: 5,
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <MdArrowBackIosNew size={20} color="#BB3D4B" />
+      </div>
+    );
+  };
+
+  const CustomNextArrow = (props: any) => {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        onClick={onClick}
+        style={{
+          ...style,
+          right: 5,
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <MdArrowForwardIos size={20} color="#BB3D4B" />
+      </div>
+    );
+  };
+
   return {
     handleAddProductCart,
     calcPorcentaje,
+    CustomPrevArrow,
+    CustomNextArrow,
     loadingAgregar,
     ratingProgress,
   };

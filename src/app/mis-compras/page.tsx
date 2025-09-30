@@ -18,12 +18,18 @@ const MisCompras = () => {
       </div>
 
       <main className="w-full p-3">
-        <h2
-          className="text-2xl font-bold text-[#bb3d4b] mb-2"
-          style={{ color: "#bb3d4b" }}
+        <span
+          className="text-[#bb3d4b]"
+          style={{
+            fontWeight: "bold",
+            fontSize: "20px",
+            marginBottom: "10px",
+            marginTop: "10px",
+            display: "block",
+          }}
         >
           Mis compras
-        </h2>
+        </span>
         <p className="text-gray-600 mb-6">Compras en curso (1)</p>
 
         {/* Seguimiento de pedido */}

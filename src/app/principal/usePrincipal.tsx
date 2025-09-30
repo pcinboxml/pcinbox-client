@@ -88,14 +88,17 @@ const usePrincipal = () => {
           name: item.name,
           price: item.price,
           stock: item.stock,
-          image_url: item.image_url,
+          sku: item.sku,
+          imageUrl: item.imageUrl,
           idProduct: item.idProduct,
           providerId: item.providerId,
           rating: item.rating,
           quantity: item.stock,
-          reviews: item.reviews.filter(
-            (item2: any) => item2.productId == item.idProduct
-          ),
+          reviews: !item.reviews
+            ? []
+            : item.reviews.filter(
+                (item2: any) => item2.productId == item.idProduct
+              ),
           createdAt: "",
         })),
       ]);
@@ -113,17 +116,20 @@ const usePrincipal = () => {
             ? {
                 categoryId: updated.categoryId,
                 description: updated.description,
+                sku: updated.sku,
                 name: updated.name,
                 price: updated.price,
                 stock: updated.stock,
-                image_url: updated.image_url,
+                imageUrl: updated.image_url,
                 idProduct: updated.idProduct,
                 providerId: updated.providerId,
                 quantity: updated.stock,
                 rating: updated.rating,
-                reviews: updated.reviews.filter(
-                  (item: any) => item.productId == updated.idProduct
-                ),
+                reviews: !updated.reviews
+                  ? []
+                  : updated.reviews.filter(
+                      (item: any) => item.productId == updated.idProduct
+                    ),
                 createdAt: "",
               }
             : itemProduct;

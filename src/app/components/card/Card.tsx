@@ -1,20 +1,12 @@
 "use client";
 import "./card.css";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Rating from "@mui/material/Rating";
 import { MdArrowDropDown, MdAutorenew, MdStar } from "react-icons/md";
 import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
-import {
-  Box,
-  LinearProgress,
-  Tooltip,
-  Typography,
-  styled,
-} from "@mui/material";
-import { useEffect, useState } from "react";
+import Slider from "react-slick";
+import { Box, Tooltip, styled } from "@mui/material";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -44,29 +36,52 @@ const Card = ({
   const {
     handleAddProductCart,
     calcPorcentaje,
+    CustomNextArrow,
+    CustomPrevArrow,
     loadingAgregar,
     ratingProgress,
   } = useCard();
 
   return (
     <div className="mi-card border">
-      <div
-        className="container-img"
-        onClick={() => {
-          localStorage.setItem(
-            "product",
-            JSON.stringify({
-              ...product,
-            })
-          );
-          onRouterLink("/detailsProduct");
-        }}
-      >
-        <img
-          src={product.image_url}
-          alt=""
-          style={{ backgroundColor: "transparent" }}
-        />
+      <div className="container-img">
+        <div
+          className="relative w-full overflow-hidden"
+          style={{
+            maxWidth: "100%",
+            position: "relative",
+          }}
+        >
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={500}
+            slidesToShow={1}
+            slidesToScroll={1}
+            arrows={true}
+            prevArrow={<CustomPrevArrow />}
+            nextArrow={<CustomNextArrow />}
+          >
+            {product.imageUrl.map((img: string, index: number) => (
+              <div key={index}>
+                <img
+                  src={img}
+                  alt={`Imagen ${index + 1}`}
+                  className="w-full h-auto object-contain"
+                  onClick={() => {
+                    localStorage.setItem(
+                      "product",
+                      JSON.stringify({
+                        ...product,
+                      })
+                    );
+                    onRouterLink("/detailsProduct");
+                  }}
+                />
+              </div>
+            ))}
+          </Slider>
+        </div>
       </div>
       <div className="container-rating">
         <div className="rating">
@@ -213,7 +228,7 @@ const Card = ({
 
       <div className="container-description">
         <span className="name-product">{product.name}</span>
-        <span className="code">COD 100-100001404WOF</span>
+        <span className="code">{product.sku}</span>
       </div>
 
       <div className="actions-product">

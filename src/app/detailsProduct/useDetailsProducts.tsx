@@ -10,6 +10,8 @@ const useDetailsProduct = () => {
   const { requestPost } = useService();
   const { setDataCart, setDataModal, setDataNotification } = useTheContext();
   const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [changeImg, setChangeImg] = useState<string>("");
 
   const handleAdd = () => {
     const newQuantity = Number(quantity) + 1;
@@ -80,7 +82,7 @@ const useDetailsProduct = () => {
                 createdAt: dataProduct.createdAt,
                 description: dataProduct.description,
                 idProduct: dataProduct.idProduct,
-                image_url: dataProduct.image_url,
+                imageUrl: dataProduct.imageUrl,
                 name: dataProduct.name,
                 price: dataProduct.price,
                 providerId: dataProduct.providerId,
@@ -88,6 +90,7 @@ const useDetailsProduct = () => {
                 rating: dataProduct.rating,
                 reviews: dataProduct.reviews,
                 quantity: 1,
+                sku: dataProduct.sku,
               },
             ];
           }
@@ -128,6 +131,10 @@ const useDetailsProduct = () => {
   return {
     quantity,
     loadingAddProduct,
+    openModal,
+    changeImg,
+    setOpenModal,
+    setChangeImg,
     handleAdd,
     handleSubstract,
     handleAddProductCart,
