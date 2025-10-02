@@ -792,7 +792,7 @@ const OpcionesEntrega = () => {
             </button>
           </div>
 
-          <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
+          {/* <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
             <div className="grid grid-cols-[2fr_1fr]">
               <span
                 className="block text-end mx-3"
@@ -824,7 +824,7 @@ const OpcionesEntrega = () => {
                 {formatCurrency(1200)}
               </span>
             </div>
-          </div>
+          </div> */}
 
           {dataCart && dataCart.length > 0 && (
             <div className="w-full flex justify-end items-center  gap-5 mt-4">

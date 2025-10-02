@@ -23,26 +23,8 @@ const PrincipalComponent = () => {
   useEffect(() => {
     getListProducts();
 
-    socketServer.current?.on("newProduct", (data: ProductI) => {
-      setDataProducts((prev) => [
-        ...prev,
-        {
-          idProduct: data.idProduct,
-          categoryId: data.categoryId,
-          description: data.description,
-          name: data.name,
-          price: data.price,
-          quantity: 0,
-          image_url: data.image_url,
-          stock: data.stock,
-          rating: data.rating,
-          providerId: data.providerId,
-          createdAt: data.createdAt,
-          reviews: data.reviews.filter(
-            (item) => item.productId == data.idProduct
-          ),
-        },
-      ]);
+    socketServer.current?.on("newProduct", (data: ProductI[]) => {
+      setDataProducts(data);
       //Llamar a funcion setDataProducts para actualizar la vista del usuario
     });
 

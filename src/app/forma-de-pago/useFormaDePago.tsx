@@ -1,135 +1,20 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { MdAccountBalance, MdCreditCard, MdStore } from "react-icons/md";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { CardDataI, CardI } from "../interfaces/card/card.interface";
+import GridFormaDePago from "./gridFormaDePago";
+import { initMercadoPago } from "@mercadopago/sdk-react";
+import { createCardToken } from "@mercadopago/sdk-react/esm/coreMethods";
+import { useTheContext } from "../services/globalContext";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
-const optionsPago = [
-  {
-    id: 1,
-    value: "tarjeta_debito_credito",
-    label: " Tarjeta de Débito | Crédito",
-    icon: <MdCreditCard size={40} style={{ filter: "grayscale(100%)" }} />,
-    cargoBancario: "166",
-    color: "#666666",
-  },
 
-  {
-    id: 2,
-    value: "transferencia",
-    label: "Transferencia o Deposito bancario",
-    icon: <MdAccountBalance size={40} style={{ filter: "grayscale(100%)" }} />,
-    cargoBancario: "0",
-    color: "#BA2B3D",
-  },
-  {
-    id: 3,
-    value: "efectivo_al_recoger",
-    label: "Pago en efectivo al recoger",
-    subLabel: "(No hay apartado de mercancia)",
-    icon: <MdStore size={40} style={{ filter: "grayscale(100%)" }} />,
-    cargoBancario: "166",
-    color: "#BA2B3D",
-  },
-
-  {
-    id: 4,
-    value: "tarjeta_al_recoger",
-    label: "Pago con tarjeta al recoger",
-    subLabel: "(No hay apartado de mercancia)",
-    icon: <MdCreditCard size={40} style={{ filter: "grayscale(100%)" }} />,
-    cargoBancario: "166",
-    color: "#666666",
-  },
-  {
-    id: 5,
-    value: "efectivo",
-    label: "OXXO | Pay",
-    icon: (
-      <img
-        src="/oxxo.png"
-        style={{
-          objectFit: "contain",
-          width: "50px",
-          height: "50px",
-        }}
-      />
-    ),
-    cargoBancario: "0",
-    color: "#666666",
-  },
-];
-declare global {
-  interface Window {
-    MercadoPago: any;
-  }
-}
+initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "");
 
 const useFormaDePago = () => {
-  const methodsPay = [
-    {
-      id: 1,
-      method: "card",
-      form: [
-        {
-          label: "Nombre del titular:",
-          input: "text",
-          name: "titular",
-        },
-        {
-          label: "Número de tarjeta (16 digitos):",
-          input: "number",
-          name: "card",
-        },
-        {
-          label: "Fecha de vencimiento:",
-          input: "month",
-          name: "dataExpired",
-        },
-        {
-          label: "CVV:",
-          input: "number",
-          name: "cvv",
-        },
-      ],
-    },
-    {
-      id: 2,
-      method: "transferenciaBancaria",
-      form: [
-        {
-          label: "Nombre completo:",
-          input: "text",
-          name: "name",
-        },
-        {
-          label: "Correo electrónico:",
-          input: "email",
-          name: "email",
-        },
-        {
-          label: "Monto transferido:",
-          input: "number",
-          name: "monto",
-        },
-        {
-          label: "Banco desde el cual se realizo la transferencia:",
-          input: "text",
-          name: "banco",
-        },
-        {
-          label: "Número de referencia o comprobante:",
-          input: "number",
-          name: "number",
-        },
-        {
-          label: "comentario (opcional):",
-          input: "textarea",
-          name: "comentario",
-        },
-      ],
-    },
-  ];
+  const { setDataModal } = useTheContext();
+  const { requestPostPagos } = usePasarelaDePagos();
+
+  const { methodsPay, optionsPago } = GridFormaDePago();
   const [dataCard, setDataCard] = useState<CardI[]>([]);
   const [idMethodPay, setIdMethodPay] = useState<number>(0);
   const [saveCard, setSaveCard] = useState<CardDataI>({
@@ -142,6 +27,9 @@ const useFormaDePago = () => {
     identificationNumber: "",
   });
 
+  const [loadingRegisterCard, setLoadingRegisterCard] =
+    useState<boolean>(false);
+
   const handleSelectOptionPay = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setIdMethodPay(Number(value));
@@ -151,16 +39,69 @@ const useFormaDePago = () => {
     setIdMethodPay(value);
   };
 
-  const handleRegisterCard = (event: FormEvent<HTMLFormElement>) => {
+  const handleRegisterCard = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(saveCard);
-    // if (!window.MercadoPago) {
-    //   console.log("sdk de mercado pago no cargado");
-    //   return;
-    // }
-    // const mp = new window.MercadoPago(
-    //   process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY!
-    // );
+    setLoadingRegisterCard(true);
+
+    try {
+      const cardTokenResponse = await createCardToken({
+        cardholderName: saveCard.cardholderName,
+        cardExpirationMonth: saveCard.cardExpirationMonth,
+        cardNumber: saveCard.cardNumber,
+        cardExpirationYear: saveCard.cardExpirationYear,
+        securityCode: saveCard.securityCode,
+      });
+
+      if (cardTokenResponse && cardTokenResponse.id) {
+        const response = await requestPostPagos(
+          {
+            cardToken: cardTokenResponse.id,
+            email: localStorage.getItem("email"),
+            userId: localStorage.getItem("idUser"),
+            lastFourDigits: cardTokenResponse.last_four_digits,
+            expMonth: cardTokenResponse.expiration_month,
+            expYear: cardTokenResponse.expiration_year,
+          },
+          "/mp/saveCard"
+        );
+        setLoadingRegisterCard(false);
+        if (response.status == 200) {
+          const data = await response.data;
+          event.currentTarget.reset();
+
+          setDataCard(data.data.data);
+          setDataModal({
+            isOpen: true,
+            message: "Se registró tu tarjeta exitosamente",
+            title: "Correcto",
+            type: "success",
+            onClose: () => {
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+            onConfirm: () => {
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+          });
+        }
+      }
+
+      // Aquí puedes enviar cardTokenResponse.id a tu backend para crear el pago, etc.
+    } catch (error) {
+      setLoadingRegisterCard(false);
+      setDataModal({
+        isOpen: true,
+        message:
+          "Ocurrió un error inesperado al registrar la tarjeta, intentelo de nuevo.",
+        title: "Error",
+        type: "error",
+        onClose: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+    }
   };
 
   const handleOnChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -199,6 +140,8 @@ const useFormaDePago = () => {
     optionsPago,
     methodsPay,
     idMethodPay,
+    loadingRegisterCard,
+    dataCard,
     setDataCard,
     handleSelectOptionPay,
     handleSelectOptionPayById,

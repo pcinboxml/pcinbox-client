@@ -8,12 +8,16 @@ import { ChangeEvent, useEffect } from "react";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
+import { MdAutorenew } from "react-icons/md";
+import ListCardsSave from "../components/listCardsSave/ListCardsSave";
 
 const FormaDePago = () => {
   const {
     optionsPago,
     idMethodPay,
     methodsPay,
+    loadingRegisterCard,
+    dataCard,
     setDataCard,
     handleSelectOptionPay,
     handleSelectOptionPayById,
@@ -22,16 +26,19 @@ const FormaDePago = () => {
     setSaveCard,
     getValuesStorage,
   } = useFormaDePago();
-  const { dataCart, setDataModal } = useTheContext();
+  const { selectedCard, dataCart, setDataModal } = useTheContext();
   const { onRouterLink } = useService();
 
-  const { requestGetPagos } = usePasarelaDePagos();
+  const { requestPostPagos } = usePasarelaDePagos();
 
   const { progressPay, handleWriteStorageProgressPay } = useStorage();
 
   useEffect(() => {
-    requestGetPagos(
-      `/card/getAllCardUser?idUser=${localStorage.getItem("idUser")}`
+    requestPostPagos(
+      {
+        userId: localStorage.getItem("idUser"),
+      },
+      "/mp/getCardByUser"
     ).then((resp) => {
       if (resp?.status == 200) {
         setDataCard(resp.data.data.data);
@@ -173,7 +180,29 @@ const FormaDePago = () => {
 
               {idMethodPay != 0 && (
                 <div style={{ marginTop: "50px" }}>
-                  <div>
+                  {idMethodPay == 1 ? (
+                    <>
+                      <h5
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "17px",
+                          color: "#666666",
+                        }}
+                      >
+                        Selecciona el metodo de pago
+                      </h5>
+                      <div
+                        className="h-[300px] max-h-[300px] border py-2 px-3 rounded"
+                        style={{
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                        }}
+                      >
+                        <ListCardsSave dataCard={dataCard} />
+                      </div>
+                    </>
+                  ) : null}
+                  <div className="mt-3">
                     <h5
                       style={{
                         fontWeight: "bold",
@@ -257,11 +286,6 @@ const FormaDePago = () => {
                                   }
                                 />
                               )}
-                              {/* <input
-                            type={f.input}
-                            className="form-control"
-                            name={f.name}
-                          /> */}
                             </div>
                           );
                         });
@@ -270,9 +294,17 @@ const FormaDePago = () => {
                       {idMethodPay == 1 ? (
                         <button
                           type="submit"
+                          disabled={loadingRegisterCard}
                           className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
                         >
-                          Guardar tarjeta
+                          {loadingRegisterCard ? (
+                            <MdAutorenew
+                              size={20}
+                              className="m-auto the-spinner"
+                            />
+                          ) : (
+                            "Registrar tarjeta"
+                          )}
                         </button>
                       ) : idMethodPay == 2 ? (
                         <button
@@ -302,22 +334,38 @@ const FormaDePago = () => {
                     if (!idMethodPay) {
                       setDataModal({
                         isOpen: true,
-                        type: "error",
                         message: "Elige un metodo de pago",
                         title: "Error",
+                        type: "error",
                         onClose: () => {
                           setDataModal((prev) => ({ ...prev, isOpen: false }));
                         },
                         onConfirm: () => {
-                          {
-                            setDataModal((prev) => ({
-                              ...prev,
-                              isOpen: false,
-                            }));
-                          }
+                          setDataModal((prev) => ({ ...prev, isOpen: false }));
                         },
                       });
+                      return;
                     }
+                    if (
+                      idMethodPay == 1 &&
+                      dataCard.length > 0 &&
+                      selectedCard == ""
+                    ) {
+                      setDataModal({
+                        isOpen: true,
+                        message: "Selecciona el metodo de pago",
+                        title: "Error",
+                        type: "error",
+                        onClose: () => {
+                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                        },
+                        onConfirm: () => {
+                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                        },
+                      });
+                      return;
+                    }
+
                     handleWriteStorageProgressPay({
                       methodPay: {
                         name: idMethodPay.toString(),
@@ -331,6 +379,7 @@ const FormaDePago = () => {
                             : idMethodPay == 4
                             ? "tarjeta_al_recoger"
                             : "efectivo",
+                        idCard: selectedCard,
                       },
                     });
                     onRouterLink("/resumen");

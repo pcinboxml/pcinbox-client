@@ -12,8 +12,15 @@ import { Alert } from "@mui/material";
 const Resumen = () => {
   const { dataCart } = useTheContext();
   const { onRouterLink, formatCurrency } = useService();
-  const { rows, columns, loadingCreateOrder, totalPrice, handleCreateOrder } =
-    useResumen();
+  const {
+    rows,
+    columns,
+    loadingCreateOrder,
+    totalPrice,
+    totalIVA,
+    totalPagar,
+    handleCreateOrder,
+  } = useResumen();
   const { progressPay } = useStorage();
 
   return (
@@ -45,13 +52,9 @@ const Resumen = () => {
 
             <div className="w-full mt-2 grid grid-cols-[4fr_1fr]">
               <div className="flex flex-col justify-center items-end pr-2 gap-2">
-                <span className="text-[#808080] text-sm">Productos</span>
-
                 <span className="text-[#808080] text-sm">Envió: </span>
 
-                <span className="text-[#808080] text-sm">
-                  Tipo de pago: {progressPay.methodPay.typeMethod}
-                </span>
+                <span className="text-[#808080] text-sm">Tipo de pago:</span>
 
                 <span className="text-[#808080] text-sm">IVA: </span>
               </div>
@@ -61,10 +64,20 @@ const Resumen = () => {
                   {formatCurrency(0)}
                 </span>
                 <span className="text-[#808080] text-sm">
-                  {formatCurrency(totalPrice)}
+                  {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
+                    ? "Tarjeta Crédito/Débito"
+                    : progressPay.methodPay.typeMethod == "transferencia"
+                    ? "Transferencia"
+                    : progressPay.methodPay.typeMethod == "efectivo_al_recoger"
+                    ? "Efectivo en sucursal"
+                    : progressPay.methodPay.typeMethod == "tarjeta_al_recoger"
+                    ? "Tarjeta Crédito/Débito en sucursal"
+                    : progressPay.methodPay.typeMethod == "efectivo"
+                    ? "Efectivo (OXXO)"
+                    : ""}
                 </span>
                 <span className="text-[#808080] text-sm">
-                  {formatCurrency(Math.floor(totalPrice * 0.16))}
+                  {formatCurrency(Number(totalIVA))}
                 </span>
               </div>
             </div>
@@ -79,7 +92,7 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {formatCurrency(totalPrice + totalPrice * 0.16)}
+                  {formatCurrency(totalPagar)}
                 </span>
               </div>
             </div>

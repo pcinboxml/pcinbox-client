@@ -7,12 +7,16 @@ import useStorage from "../services/useStorage";
 import { useMemo, useState } from "react";
 import useService from "../services/useService";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import { initMercadoPago } from "@mercadopago/sdk-react";
+import { createCardToken } from "@mercadopago/sdk-react/esm/coreMethods";
+
+initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "");
 
 const useResumen = () => {
   const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
   const { dataCart, setDataCart } = useTheContext();
 
-  const isSmallScreen = useMediaQuery("(max-width: 1550px)", {
+  const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
   });
 
@@ -30,7 +34,10 @@ const useResumen = () => {
   const { progressPay } = useStorage();
   const { requestPostPagos } = usePasarelaDePagos();
 
-  const { columns, rows } = GridResumen({ dataCart, isSmallScreen });
+  const { columns, rows, totalIVA, totalPagar } = GridResumen({
+    dataCart,
+    isSmallScreen,
+  });
 
   const handleCreateOrder = async () => {
     if (progressPay.methodPay.typeMethod == "efectivo") {
@@ -39,9 +46,10 @@ const useResumen = () => {
 
         const resp = await requestPostPagos(
           {
-            totalAmount: totalPrice + totalPrice * 0.16,
+            totalAmount: totalPagar,
             userId: localStorage.getItem("idUser"),
             shipping_method: progressPay.optionSend.name,
+            dataProduct: dataCart,
           },
           "/stripe/createOrderCash"
         );
@@ -72,6 +80,42 @@ const useResumen = () => {
       } catch (error) {
         setLoadingCreateOrder(false);
       }
+    } else if (progressPay.methodPay.typeMethod == "tarjeta_debito_credito") {
+      const respCustomer = await requestPostPagos(
+        {
+          userId: localStorage.getItem("idUser"),
+        },
+        "/mp/getCustomerId/"
+      );
+
+      if (respCustomer.status == 200) {
+        let obj = {
+          cardId: progressPay.methodPay.idCard,
+          securityCode: "123",
+          customerId: respCustomer.data.data,
+        };
+
+        const cardTokenResponse = await requestPostPagos(obj, "mp/createToken");
+
+        if (cardTokenResponse && cardTokenResponse.status == 200) {
+          try {
+            const response = await requestPostPagos(
+              {
+                amount: totalPagar,
+                userId: localStorage.getItem("idUser"),
+                cardId: progressPay.methodPay.idCard,
+                token: cardTokenResponse.data.data.token,
+              },
+              "/mp/payment"
+            );
+
+            const status = await response.status;
+            const data = await response.data;
+            console.log(status);
+            console.log(data);
+          } catch (error: any) {}
+        }
+      }
     }
   };
 
@@ -80,6 +124,8 @@ const useResumen = () => {
     columns,
     rows,
     totalPrice,
+    totalIVA,
+    totalPagar,
     handleCreateOrder,
   };
 };

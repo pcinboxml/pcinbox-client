@@ -6,6 +6,7 @@ import {
   useState,
   Dispatch,
   SetStateAction,
+  ChangeEvent,
 } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
@@ -48,6 +49,9 @@ interface ContextProps {
   setRutaImgPerfil: Dispatch<SetStateAction<string>>;
   dataFavorites: FavoritesI[];
   setDataFavorites: Dispatch<SetStateAction<FavoritesI[]>>;
+  selectedCard: string;
+  setSelectedCard: Dispatch<SetStateAction<string>>;
+  handleSelectedCard: any;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -78,6 +82,9 @@ const CreateContext = createContext<ContextProps>({
   setRutaImgPerfil: () => {},
   dataFavorites: [],
   setDataFavorites: () => {},
+  selectedCard: "",
+  setSelectedCard: () => {},
+  handleSelectedCard: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -104,6 +111,11 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   });
 
   const [rutaImgPerfil, setRutaImgPerfil] = useState<string>("");
+  const [selectedCard, setSelectedCard] = useState<string>("");
+
+  const handleSelectedCard = (event: ChangeEvent<HTMLInputElement>) => {
+    setSelectedCard(event.target.value);
+  };
 
   return (
     <CreateContext.Provider
@@ -122,6 +134,9 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setRutaImgPerfil,
         dataFavorites,
         setDataFavorites,
+        selectedCard,
+        setSelectedCard,
+        handleSelectedCard,
       }}
     >
       {children}

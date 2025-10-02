@@ -14,11 +14,11 @@ const GridResumen = ({
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,
-    products: itemCart.description,
+    products: `${itemCart.name} ${itemCart.description}`,
     quantity: Number(itemCart.quantity),
     sucursal: "Leon",
     price: Number(itemCart.price),
-    import: Number(itemCart.quantity) * Number(itemCart.price),
+    import: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
   }));
 
   const columns = [
@@ -133,9 +133,19 @@ const GridResumen = ({
     },
   ];
 
+  const subtotal = rows.reduce((sum, row) => sum + row.price * row.quantity, 0);
+
+  // Calcular IVA total (16% del subtotal)
+  const totalIVA = subtotal * 0.16;
+
+  // Calcular total a pagar (ya incluye IVA)
+  const totalPagar = rows.reduce((sum, row) => sum + row.import, 0);
+
   return {
     rows,
     columns,
+    totalIVA,
+    totalPagar,
   };
 };
 

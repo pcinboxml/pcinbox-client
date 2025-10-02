@@ -55,13 +55,17 @@ const ConfirmaProducts = () => {
                     Sub total:
                   </span>
                   <span className="text[#808080] block">
-                    {formatCurrency(1200)}
+                    {formatCurrency(
+                      Number(
+                        rows.reduce((sum, row) => sum + row.totalConIva, 0)
+                      )
+                    )}
                   </span>
                 </div>
               </div>
             ) : null}
 
-            {dataCart && dataCart.length > 0 ? (
+            {/* {dataCart && dataCart.length > 0 ? (
               <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
                 <div className="grid grid-cols-[2fr_1fr]">
                   <span
@@ -78,7 +82,7 @@ const ConfirmaProducts = () => {
                   </span>
                 </div>
               </div>
-            ) : null}
+            ) : null} */}
 
             {dataCart && dataCart.length > 0 && (
               <div className="w-full flex justify-end items-center  gap-5 mt-4">

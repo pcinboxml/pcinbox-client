@@ -315,6 +315,7 @@ const Navbar = () => {
                         padding: "10px",
                         gap: "10px",
                       }}
+                      disabled={loadingLoginGoogle}
                       onClick={onLoginGoogle}
                     >
                       {loadingLoginGoogle ? (
@@ -322,7 +323,7 @@ const Navbar = () => {
                       ) : (
                         <>
                           <FcGoogle size={20} />
-                          Iniciar Sesion con Google
+                          Iniciar Sesión con Google
                         </>
                       )}
                     </button>

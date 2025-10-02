@@ -10,6 +10,7 @@ interface progressPayI {
   methodPay: {
     name: string;
     typeMethod?: string;
+    idCard?: any;
   };
 }
 
@@ -22,6 +23,7 @@ const useStorage = () => {
     methodPay: {
       name: "",
       typeMethod: "",
+      idCard: "",
     },
   });
 

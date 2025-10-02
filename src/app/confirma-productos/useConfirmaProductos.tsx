@@ -42,12 +42,12 @@ const useConfirmaProductos = () => {
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,
-    products: itemCart.description,
+    products: `${itemCart.name} ${itemCart.description}`,
     quantity: Number(itemCart.quantity),
     sucursal: "León",
-    totalSinIva: Number(itemCart.price),
-    totalConIva: Number(itemCart.quantity) * Number(itemCart.price),
-    importConIva: 1,
+    totalSinIva: Number(itemCart.price) * Number(itemCart.quantity),
+    totalConIva: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
+    importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
     action: 1,
   }));
 
