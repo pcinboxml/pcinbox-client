@@ -49,7 +49,13 @@ const Reviews = () => {
           </span>
           <div className="container-product flex justify-between mt-4">
             <img
-              src={dataProduct?.image_url}
+              src={
+                dataProduct?.imageUrl &&
+                Array.isArray(dataProduct?.imageUrl) &&
+                dataProduct?.imageUrl.length > 0
+                  ? dataProduct?.imageUrl[0]
+                  : dataProduct?.imageUrl
+              }
               alt=""
               width={200}
               height={200}
@@ -162,7 +168,15 @@ const Reviews = () => {
                 className="text-[13px]"
                 onClick={() =>
                   onRouterLink(
-                    `/write-review?idProduct=${dataProduct?.idProduct}&image_url=${dataProduct?.image_url}&description=${dataProduct?.description}`
+                    `/write-review?idProduct=${
+                      dataProduct?.idProduct
+                    }&image_url=${
+                      dataProduct?.imageUrl &&
+                      Array.isArray(dataProduct?.imageUrl) &&
+                      dataProduct?.imageUrl.length > 0
+                        ? dataProduct?.imageUrl[0]
+                        : dataProduct?.imageUrl
+                    }&description=${dataProduct?.description}`
                   )
                 }
               >
