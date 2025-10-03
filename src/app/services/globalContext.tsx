@@ -10,6 +10,7 @@ import {
 } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
+import { CardI } from "../interfaces/card/card.interface";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -52,6 +53,8 @@ interface ContextProps {
   selectedCard: string;
   setSelectedCard: Dispatch<SetStateAction<string>>;
   handleSelectedCard: any;
+  dataCard: CardI[];
+  setDataCard: Dispatch<SetStateAction<CardI[]>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -85,6 +88,8 @@ const CreateContext = createContext<ContextProps>({
   selectedCard: "",
   setSelectedCard: () => {},
   handleSelectedCard: () => {},
+  dataCard: [],
+  setDataCard: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -112,6 +117,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const [rutaImgPerfil, setRutaImgPerfil] = useState<string>("");
   const [selectedCard, setSelectedCard] = useState<string>("");
+  const [dataCard, setDataCard] = useState<CardI[]>([]);
 
   const handleSelectedCard = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectedCard(event.target.value);
@@ -137,6 +143,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         selectedCard,
         setSelectedCard,
         handleSelectedCard,
+        dataCard,
+        setDataCard,
       }}
     >
       {children}

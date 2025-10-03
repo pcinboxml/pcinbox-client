@@ -38,7 +38,7 @@ const useDetallesPedido = () => {
 
   const rows = dataCart.map((item) => ({
     id: item.idProduct,
-    img: item.image_url,
+    img: item.imageUrl,
     description: item.description,
     quantity: Number(item.quantity),
     unitPrice: Number(item.price),

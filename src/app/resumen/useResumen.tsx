@@ -7,14 +7,10 @@ import useStorage from "../services/useStorage";
 import { useMemo, useState } from "react";
 import useService from "../services/useService";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
-import { initMercadoPago } from "@mercadopago/sdk-react";
-import { createCardToken } from "@mercadopago/sdk-react/esm/coreMethods";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "");
 
 const useResumen = () => {
   const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
-  const { dataCart, setDataCart } = useTheContext();
+  const { dataCart, setDataCart, setDataModal } = useTheContext();
 
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
@@ -81,40 +77,74 @@ const useResumen = () => {
         setLoadingCreateOrder(false);
       }
     } else if (progressPay.methodPay.typeMethod == "tarjeta_debito_credito") {
-      const respCustomer = await requestPostPagos(
-        {
-          userId: localStorage.getItem("idUser"),
-        },
-        "/mp/getCustomerId/"
-      );
+      try {
+        setLoadingCreateOrder(true);
 
-      if (respCustomer.status == 200) {
-        let obj = {
-          cardId: progressPay.methodPay.idCard,
-          securityCode: "123",
-          customerId: respCustomer.data.data,
-        };
+        const resp = await requestPostPagos(
+          {
+            userId: Number(localStorage.getItem("idUser")),
+            paymentMethodId: progressPay.methodPay.idCard,
+            amount: Math.round(totalPagar * 100),
+          },
+          "/stripe/paymentWithCard"
+        );
 
-        const cardTokenResponse = await requestPostPagos(obj, "mp/createToken");
+        if (resp.status == 200) {
+          setLoadingCreateOrder(true);
 
-        if (cardTokenResponse && cardTokenResponse.status == 200) {
           try {
-            const response = await requestPostPagos(
+            const respRemoveCart = await requestPost(
               {
-                amount: totalPagar,
-                userId: localStorage.getItem("idUser"),
-                cardId: progressPay.methodPay.idCard,
-                token: cardTokenResponse.data.data.token,
+                dataCart,
               },
-              "/mp/payment"
+              "/cart/removeAllCart"
             );
+            setLoadingCreateOrder(false);
 
-            const status = await response.status;
-            const data = await response.data;
-            console.log(status);
-            console.log(data);
-          } catch (error: any) {}
+            if (respRemoveCart.status == 200) {
+              localStorage.removeItem("progressPay");
+
+              setDataCart([]);
+              const data = await resp.data;
+              setDataModal({
+                isOpen: true,
+                type: "success",
+                title: "Correcto",
+                message: "Pago realizado correctamente",
+                onClose: () => {
+                  onRouterLink(
+                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`
+                  );
+                  setDataCart([]);
+                  setDataModal((prev) => ({ ...prev, isOpen: false }));
+                },
+                onConfirm: () => {
+                  onRouterLink(
+                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`
+                  );
+                  setDataCart([]);
+                  setDataModal((prev) => ({ ...prev, isOpen: false }));
+                },
+              });
+            }
+          } catch (error) {
+            setLoadingCreateOrder(false);
+          }
         }
+      } catch (error) {
+        setLoadingCreateOrder(false);
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "Ocurrió un error al procesar el pago, intentalo de nuevo",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
       }
     }
   };

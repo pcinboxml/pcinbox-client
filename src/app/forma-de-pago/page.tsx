@@ -4,29 +4,30 @@ import TimelineComponent from "../components/timeline/TimelineComponent";
 import useFormaDePago from "./useFormaDePago";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { ChangeEvent, useEffect } from "react";
+import { useEffect } from "react";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
-import { MdAutorenew } from "react-icons/md";
 import ListCardsSave from "../components/listCardsSave/ListCardsSave";
+
+import CardForm from "../components/cardForm/CardForm";
+import StripeProviderClient from "../components/stripeClient/StripeClientProvider";
 
 const FormaDePago = () => {
   const {
     optionsPago,
     idMethodPay,
     methodsPay,
-    loadingRegisterCard,
-    dataCard,
-    setDataCard,
+    loadingTransferBank,
+    handleOnChange,
     handleSelectOptionPay,
     handleSelectOptionPayById,
-    handleOnChange,
-    handleRegisterCard,
-    setSaveCard,
+    handleRegisterTransferBank,
     getValuesStorage,
+    handleOnChangeTextArea,
   } = useFormaDePago();
-  const { selectedCard, dataCart, setDataModal } = useTheContext();
+  const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
+    useTheContext();
   const { onRouterLink } = useService();
 
   const { requestPostPagos } = usePasarelaDePagos();
@@ -38,7 +39,7 @@ const FormaDePago = () => {
       {
         userId: localStorage.getItem("idUser"),
       },
-      "/mp/getCardByUser"
+      "/stripe/getCardByUser"
     ).then((resp) => {
       if (resp?.status == 200) {
         setDataCard(resp.data.data.data);
@@ -182,26 +183,79 @@ const FormaDePago = () => {
                 <div style={{ marginTop: "50px" }}>
                   {idMethodPay == 1 ? (
                     <>
-                      <h5
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                          color: "#666666",
-                        }}
-                      >
-                        Selecciona el metodo de pago
-                      </h5>
-                      <div
-                        className="h-[300px] max-h-[300px] border py-2 px-3 rounded"
-                        style={{
-                          overflowY: "auto",
-                          overflowX: "hidden",
-                        }}
-                      >
-                        <ListCardsSave dataCard={dataCard} />
-                      </div>
+                      {dataCard && dataCard.length > 0 ? (
+                        <>
+                          <h5
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "17px",
+                              color: "#666666",
+                            }}
+                          >
+                            Selecciona el metodo de pago
+                          </h5>
+                          <div
+                            className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
+                            style={{
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                            }}
+                          >
+                            <ListCardsSave dataCard={dataCard} />
+                          </div>
+                        </>
+                      ) : null}
                     </>
-                  ) : null}
+                  ) : (
+                    <form onSubmit={handleRegisterTransferBank}>
+                      {methodsPay
+                        .filter((pay) => pay.id == idMethodPay)
+                        .map((item) => {
+                          return item.form.map((f, index) => {
+                            if (idMethodPay == 2) {
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex flex-col gap-2 items-center mt-4 relative"
+                                >
+                                  <label
+                                    htmlFor=""
+                                    className="text-[#808080] text-base text-left block w-full"
+                                  >
+                                    {f.label}
+                                  </label>
+                                  {f.input == "text" ? (
+                                    <input
+                                      type={f.input}
+                                      className="form-control"
+                                      name={f.name}
+                                      onChange={handleOnChange}
+                                    />
+                                  ) : f.input == "textarea" ? (
+                                    <textarea
+                                      className="form-control"
+                                      style={{ resize: "none" }}
+                                      onChange={handleOnChangeTextArea}
+                                    ></textarea>
+                                  ) : null}
+                                </div>
+                              );
+                            }
+                          });
+                        })}
+                      <div className="mt-4 flex justify-center">
+                        {idMethodPay == 2 ? (
+                          <button
+                            disabled={loadingTransferBank}
+                            type="button"
+                            className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
+                          >
+                            Hacer transferencia
+                          </button>
+                        ) : null}
+                      </div>
+                    </form>
+                  )}
                   <div className="mt-3">
                     <h5
                       style={{
@@ -217,105 +271,13 @@ const FormaDePago = () => {
                         : ""}
                     </h5>
                   </div>
-                  <form onSubmit={handleRegisterCard}>
-                    {methodsPay
-                      .filter((pay) => pay.id == idMethodPay)
-                      .map((item) => {
-                        return item.form.map((f, index) => {
-                          return (
-                            <div
-                              key={index}
-                              className="flex flex-col gap-2 items-center mt-4 relative"
-                            >
-                              <label
-                                htmlFor=""
-                                className="text-[#808080] text-base text-left block w-full"
-                              >
-                                {f.label}
-                              </label>
-                              {f.input == "text" ? (
-                                <input
-                                  type={f.input}
-                                  className="form-control"
-                                  name={f.name}
-                                  onChange={handleOnChange}
-                                />
-                              ) : f.input == "textarea" ? (
-                                <textarea
-                                  className="form-control"
-                                  style={{ resize: "none" }}
-                                ></textarea>
-                              ) : (
-                                <input
-                                  type={f.name === "card" ? "text" : f.input}
-                                  className="form-control"
-                                  name={f.name}
-                                  onChange={handleOnChange}
-                                  onInput={(
-                                    e: React.FormEvent<HTMLInputElement>
-                                  ) => {
-                                    if (f.name === "card") {
-                                      let value = e.currentTarget.value;
-
-                                      // 🔹 Solo números
-                                      value = value.replace(/\D/g, "");
-
-                                      // 🔹 Limitar a 16 dígitos
-                                      value = value.slice(0, 16);
-
-                                      // 🔹 Agrupar en bloques de 4
-                                      value = value
-                                        .replace(/(.{4})/g, "$1 ")
-                                        .trim();
-
-                                      e.currentTarget.value = value;
-
-                                      setSaveCard((prev) => ({
-                                        ...prev,
-                                        cardNumber: value
-                                          .replace(/\s+/g, "")
-                                          .trim(),
-                                      }));
-                                    }
-                                  }}
-                                  maxLength={f.name === "card" ? 19 : undefined}
-                                  placeholder={
-                                    f.name === "card"
-                                      ? "1234 5678 9012 3456"
-                                      : ""
-                                  }
-                                />
-                              )}
-                            </div>
-                          );
-                        });
-                      })}
-                    <div className="mt-4 flex justify-center">
-                      {idMethodPay == 1 ? (
-                        <button
-                          type="submit"
-                          disabled={loadingRegisterCard}
-                          className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
-                        >
-                          {loadingRegisterCard ? (
-                            <MdAutorenew
-                              size={20}
-                              className="m-auto the-spinner"
-                            />
-                          ) : (
-                            "Registrar tarjeta"
-                          )}
-                        </button>
-                      ) : idMethodPay == 2 ? (
-                        <button
-                          type="button"
-                          className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
-                        >
-                          Hacer transferencia
-                        </button>
-                      ) : null}
-                    </div>
-                  </form>
+                  {idMethodPay == 1 ? (
+                    <StripeProviderClient>
+                      <CardForm
+                        userId={Number(localStorage.getItem("idUser"))}
+                      />
+                    </StripeProviderClient>
+                  ) : null}
                 </div>
               )}
             </div>
@@ -338,10 +300,16 @@ const FormaDePago = () => {
                         title: "Error",
                         type: "error",
                         onClose: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
                         },
                         onConfirm: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
                         },
                       });
                       return;
@@ -357,10 +325,16 @@ const FormaDePago = () => {
                         title: "Error",
                         type: "error",
                         onClose: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
                         },
                         onConfirm: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
                         },
                       });
                       return;

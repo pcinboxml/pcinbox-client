@@ -113,7 +113,7 @@ const Resumen = () => {
                   {loadingCreateOrder ? (
                     <MdAutorenew size={20} className="m-auto the-spinner" />
                   ) : (
-                    <>Confirmar orden</>
+                    <>Confirmar compra</>
                   )}
                 </button>
               </div>

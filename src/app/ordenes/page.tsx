@@ -34,27 +34,10 @@ const Ordenes = () => {
           <>
             <div className="w-full p-2 flex justify-end items-center">
               <span className="text-[#BB3D4B] font-[600] text-[18px]  block">
-                Sub Total:
+                Sub Total sin IVA:
               </span>
               <span className="mx-2 block text-[#808080] font-[600] text-[15px]">
                 {formatCurrency(subTotal)}
-              </span>
-            </div>
-            <div className="w-full p-2 flex justify-end items-center">
-              <span className="text-[#BB3D4B] font-[600] text-[18px]  block">
-                Envio:
-              </span>
-              <span className="mx-2 block text-[#808080] font-[600] text-[15px]">
-                {formatCurrency(185)}
-              </span>
-            </div>
-
-            <div className="w-full p-2 flex justify-end items-center">
-              <span className="text-[#BB3D4B] font-[600] text-[18px]  block">
-                Total:
-              </span>
-              <span className="mx-2 block text-[#808080] font-[600] text-[15px]">
-                {formatCurrency(270)}
               </span>
             </div>
 

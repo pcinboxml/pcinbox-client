@@ -86,11 +86,24 @@ const usePayEnd = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleCopy = (idOrder: string) => {
+    navigator.clipboard
+      .writeText(idOrder)
+      .then(() => {
+        console.log("Texto copiado al portapapeles:", idOrder);
+        // Puedes mostrar un toast o mensaje de éxito aquí
+      })
+      .catch((err) => {
+        console.error("Error al copiar:", err);
+        // Manejo de errores
+      });
+  };
   return {
     handleGetOrderCash,
     formatDate,
     handleDownloadBar,
     initDownloadBar,
+    handleCopy,
     dataOrderCash,
     loadingDownloadBar,
   };

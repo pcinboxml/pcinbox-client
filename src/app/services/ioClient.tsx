@@ -8,7 +8,7 @@ const useSocket = () => {
   const socketPagos = useRef<typeof Socket | null>(null);
 
   useEffect(() => {
-    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET || "");
+    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
     socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "");
 
     return () => {

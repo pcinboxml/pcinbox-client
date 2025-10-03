@@ -36,7 +36,12 @@ const useOrdenes = () => {
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,
-    img: itemCart.image_url,
+    img:
+      itemCart.imageUrl &&
+      Array.isArray(itemCart.imageUrl) &&
+      itemCart.imageUrl.length > 0
+        ? itemCart.imageUrl[0]
+        : itemCart.imageUrl,
     description: itemCart.description,
     quantity: Number(itemCart.quantity),
     unitPrice: Number(itemCart.price),

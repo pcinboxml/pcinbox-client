@@ -52,7 +52,7 @@ const ConfirmaProducts = () => {
                       color: "#666666",
                     }}
                   >
-                    Sub total:
+                    Sub total con IVA:
                   </span>
                   <span className="text[#808080] block">
                     {formatCurrency(
