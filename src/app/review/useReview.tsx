@@ -50,10 +50,11 @@ const useReview = () => {
           createdAt: data.data.data.createdAt,
           description: data.data.data.description,
           idProduct: data.data.data.idProduct,
-          image_url: data.data.data.image_url,
+          imageUrl: data.data.data.image_url,
           name: data.data.data.name,
           price: data.data.data.price,
           rating: data.data.data.rating,
+          sku: data.data.data.sku,
           stock: data.data.data.stock,
           reviews: data.data.data.reviews.sort(
             (a: any, b: any) =>
@@ -102,13 +103,14 @@ const useReview = () => {
                 createdAt: productProp.createdAt,
                 description: productProp.description,
                 idProduct: productProp.idProduct,
-                image_url: productProp.image_url,
+                imageUrl: productProp.imageUrl,
                 name: productProp.name,
                 price: productProp.price,
                 providerId: productProp.providerId,
                 stock: productProp.stock,
                 rating: productProp.rating,
                 reviews: productProp.reviews,
+                sku: productProp.sku,
                 quantity: 1,
               },
             ];
