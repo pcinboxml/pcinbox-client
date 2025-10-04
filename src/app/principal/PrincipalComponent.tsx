@@ -8,6 +8,7 @@ import Skeleton from "../components/skeleton/Skeleton";
 import PaginationComponent from "../components/pagination/PaginationComponent";
 import useSocket from "./../services/ioClient";
 import ProductI from "../interfaces/products/product.interface";
+import { Alert } from "@mui/material";
 
 const PrincipalComponent = () => {
   const { socketServer } = useSocket();
@@ -47,7 +48,7 @@ const PrincipalComponent = () => {
         )}
 
         <div className="content-index">
-          <form
+          {/* <form
             style={{ display: "none" }}
             className="flex flex-col items-center mt-1"
             onSubmit={onSubmitNewProduct}
@@ -109,15 +110,16 @@ const PrincipalComponent = () => {
             <button type="submit" className="btn btn-info">
               Guardar Producto
             </button>
-          </form>
+          </form> */}
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
 
             {dataProducts && dataProducts.length > 0 ? (
               <Carousel />
             ) : (
-              <div className="w-full flex justify-center">
-                <Skeleton />
+              <div className="w-full flex justify-end p-2">
+                {/* <Skeleton /> */}
+                <Alert>Sin contenido disponible</Alert>
               </div>
             )}
           </div>

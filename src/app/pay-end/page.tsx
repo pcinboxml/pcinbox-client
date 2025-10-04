@@ -34,7 +34,6 @@ const PayEnd = () => {
     const expiredParam = urlParams.get("expired");
 
     if (idOrderParam) {
-      console.log(idOrderParam);
       setIdOrder(idOrderParam);
     }
 

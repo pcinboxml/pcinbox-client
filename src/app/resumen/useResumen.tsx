@@ -54,15 +54,17 @@ const useResumen = () => {
           const data = await resp.data;
 
           try {
-            const respRemoveCart = await requestPost(
+            const respRegisterSales = await requestPost(
               {
                 dataCart,
+                idOrder: data.data.orderId,
+                total: totalPagar,
               },
-              "/cart/removeAllCart"
+              "/sales/registerSales"
             );
             setLoadingCreateOrder(false);
 
-            if (respRemoveCart.status == 200) {
+            if (respRegisterSales.status == 200) {
               // localStorage.removeItem("progressPay");
               onRouterLink(
                 `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
@@ -90,19 +92,22 @@ const useResumen = () => {
         );
 
         if (resp.status == 200) {
+          const data = await resp.data;
           setLoadingCreateOrder(true);
 
           try {
-            const respRemoveCart = await requestPost(
+            const respRegisterSales = await requestPost(
               {
                 dataCart,
+                idOrder: data.data.orderId,
+                total: totalPagar,
               },
-              "/cart/removeAllCart"
+              "/sales/registerSales"
             );
             setLoadingCreateOrder(false);
 
-            if (respRemoveCart.status == 200) {
-              localStorage.removeItem("progressPay");
+            if (respRegisterSales.status == 200) {
+              // localStorage.removeItem("progressPay");
 
               setDataCart([]);
               const data = await resp.data;
