@@ -10,7 +10,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, use, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
@@ -67,8 +67,6 @@ const Navbar = () => {
   }, [dataCart]);
 
   useEffect(() => {
-    getPhotoUser();
-
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
@@ -108,6 +106,12 @@ const Navbar = () => {
       }
     }
   }, [session, status]);
+
+  useEffect(() => {
+    if (hasToken) {
+      getPhotoUser();
+    }
+  }, [hasToken]);
 
   return (
     <header className="main-header" ref={navRef}>

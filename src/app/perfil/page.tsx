@@ -39,7 +39,6 @@ const MiCuenta = () => {
   useEffect(() => {
     // getAddressAuth();
     getCatalagoCfdi();
-    getPhotoUser();
 
     if (
       localStorage.getItem("email") ||
@@ -51,6 +50,7 @@ const MiCuenta = () => {
         name: localStorage.getItem("name") || "",
         lastname: localStorage.getItem("lastname") || "",
       });
+      getPhotoUser();
     }
   }, []);
 
