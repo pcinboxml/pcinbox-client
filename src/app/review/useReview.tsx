@@ -50,7 +50,7 @@ const useReview = () => {
           createdAt: data.data.data.createdAt,
           description: data.data.data.description,
           idProduct: data.data.data.idProduct,
-          imageUrl: data.data.data.image_url,
+          imageUrl: data.data.data.imageUrl,
           name: data.data.data.name,
           price: data.data.data.price,
           rating: data.data.data.rating,

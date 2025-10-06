@@ -48,6 +48,7 @@ const Reviews = () => {
             {dataProduct?.description}
           </span>
           <div className="container-product flex justify-between mt-4">
+            {console.log(dataProduct?.imageUrl)}
             <img
               src={
                 dataProduct?.imageUrl &&

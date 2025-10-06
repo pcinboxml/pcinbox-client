@@ -103,159 +103,162 @@ const FormaDePago = () => {
                         return true;
                       })
                       .map((pago, index) => {
-                        return (
-                          <div
-                            className="flex items-center relative p-4"
-                            style={{ borderBottom: "1px solid #ccc" }}
-                            key={index}
-                            onClick={() => handleSelectOptionPayById(pago.id)}
-                          >
-                            <input
-                              type="radio"
-                              value={pago.id}
-                              name="pago"
-                              id={pago.value}
-                              className="mx-2"
-                              checked={idMethodPay == pago.id}
-                              onChange={handleSelectOptionPay}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-
-                            <label
-                              className="form-check-label"
-                              htmlFor={pago.value}
+                        if (pago.id != 2) {
+                          return (
+                            <div
+                              className="flex items-center relative p-4"
+                              style={{ borderBottom: "1px solid #ccc" }}
+                              key={index}
+                              onClick={() => handleSelectOptionPayById(pago.id)}
                             >
-                              <div className="w-full flex items-center">
-                                {pago.icon}
-                                <span
-                                  className="text-[#666666] mx-2"
-                                  style={{ fontWeight: "100" }}
-                                >
-                                  {pago.label}
+                              <input
+                                type="radio"
+                                value={pago.id}
+                                name="pago"
+                                id={pago.value}
+                                className="mx-2"
+                                checked={idMethodPay == pago.id}
+                                onChange={handleSelectOptionPay}
+                                onClick={(e) => e.stopPropagation()}
+                              />
 
-                                  {pago?.subLabel && (
-                                    <>
-                                      <br />
-                                      <span
-                                        className="text-[#666666] mx-2"
-                                        style={{
-                                          fontWeight: "100",
-                                          fontSize: "13px",
-                                        }}
-                                      >
-                                        {pago.subLabel}
-                                      </span>
-                                    </>
-                                  )}
+                              <label
+                                className="form-check-label"
+                                htmlFor={pago.value}
+                              >
+                                <div className="w-full flex items-center">
+                                  {pago.icon}
+                                  <span
+                                    className="text-[#666666] mx-2"
+                                    style={{ fontWeight: "100" }}
+                                  >
+                                    {pago.label}
+
+                                    {pago?.subLabel && (
+                                      <>
+                                        <br />
+                                        <span
+                                          className="text-[#666666] mx-2"
+                                          style={{
+                                            fontWeight: "100",
+                                            fontSize: "13px",
+                                          }}
+                                        >
+                                          {pago.subLabel}
+                                        </span>
+                                      </>
+                                    )}
+                                  </span>
+                                </div>
+                              </label>
+
+                              <div
+                                className={`info-cargo flex flex-col items-center justify-center mx-3 p-2 absolute right-0 bg-[${pago.color}] rounded`}
+                              >
+                                <span
+                                  style={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: "17px",
+                                  }}
+                                >
+                                  $166.09
+                                </span>
+                                <span
+                                  style={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: "17px",
+                                  }}
+                                >
+                                  Cargo Bancario
                                 </span>
                               </div>
-                            </label>
-
-                            <div
-                              className={`info-cargo flex flex-col items-center justify-center mx-3 p-2 absolute right-0 bg-[${pago.color}] rounded`}
-                            >
-                              <span
-                                style={{
-                                  color: "white",
-                                  fontWeight: "bold",
-                                  fontSize: "17px",
-                                }}
-                              >
-                                $166.09
-                              </span>
-                              <span
-                                style={{
-                                  color: "white",
-                                  fontWeight: "bold",
-                                  fontSize: "17px",
-                                }}
-                              >
-                                Cargo Bancario
-                              </span>
                             </div>
-                          </div>
-                        );
+                          );
+                        }
                       })}
                 </div>
               </div>
 
               {idMethodPay != 0 && (
                 <div style={{ marginTop: "50px" }}>
-                  {idMethodPay == 1 ? (
-                    <>
-                      {dataCard && dataCard.length > 0 ? (
-                        <>
-                          <h5
-                            style={{
-                              fontWeight: "bold",
-                              fontSize: "17px",
-                              color: "#666666",
-                            }}
-                          >
-                            Selecciona el metodo de pago
-                          </h5>
-                          <div
-                            className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
-                            style={{
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                            }}
-                          >
-                            <ListCardsSave dataCard={dataCard} />
-                          </div>
-                        </>
-                      ) : null}
-                    </>
-                  ) : (
-                    <form onSubmit={handleRegisterTransferBank}>
-                      {methodsPay
-                        .filter((pay) => pay.id == idMethodPay)
-                        .map((item) => {
-                          return item.form.map((f, index) => {
-                            if (idMethodPay == 2) {
-                              return (
-                                <div
-                                  key={index}
-                                  className="flex flex-col gap-2 items-center mt-4 relative"
-                                >
-                                  <label
-                                    htmlFor=""
-                                    className="text-[#808080] text-base text-left block w-full"
-                                  >
-                                    {f.label}
-                                  </label>
-                                  {f.input == "text" ? (
-                                    <input
-                                      type={f.input}
-                                      className="form-control"
-                                      name={f.name}
-                                      onChange={handleOnChange}
-                                    />
-                                  ) : f.input == "textarea" ? (
-                                    <textarea
-                                      className="form-control"
-                                      style={{ resize: "none" }}
-                                      onChange={handleOnChangeTextArea}
-                                    ></textarea>
-                                  ) : null}
-                                </div>
-                              );
-                            }
-                          });
-                        })}
-                      <div className="mt-4 flex justify-center">
-                        {idMethodPay == 2 ? (
-                          <button
-                            disabled={loadingTransferBank}
-                            type="button"
-                            className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
-                          >
-                            Hacer transferencia
-                          </button>
+                  {
+                    idMethodPay == 1 ? (
+                      <>
+                        {dataCard && dataCard.length > 0 ? (
+                          <>
+                            <h5
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "17px",
+                                color: "#666666",
+                              }}
+                            >
+                              Selecciona el metodo de pago
+                            </h5>
+                            <div
+                              className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
+                              style={{
+                                overflowY: "auto",
+                                overflowX: "hidden",
+                              }}
+                            >
+                              <ListCardsSave dataCard={dataCard} />
+                            </div>
+                          </>
                         ) : null}
-                      </div>
-                    </form>
-                  )}
+                      </>
+                    ) : null
+                    // <form onSubmit={handleRegisterTransferBank}>
+                    //   {methodsPay
+                    //     .filter((pay) => pay.id == idMethodPay)
+                    //     .map((item) => {
+                    //       return item.form.map((f, index) => {
+                    //         if (idMethodPay == 2) {
+                    //           return (
+                    //             <div
+                    //               key={index}
+                    //               className="flex flex-col gap-2 items-center mt-4 relative"
+                    //             >
+                    //               <label
+                    //                 htmlFor=""
+                    //                 className="text-[#808080] text-base text-left block w-full"
+                    //               >
+                    //                 {f.label}
+                    //               </label>
+                    //               {f.input == "text" ? (
+                    //                 <input
+                    //                   type={f.input}
+                    //                   className="form-control"
+                    //                   name={f.name}
+                    //                   onChange={handleOnChange}
+                    //                 />
+                    //               ) : f.input == "textarea" ? (
+                    //                 <textarea
+                    //                   className="form-control"
+                    //                   style={{ resize: "none" }}
+                    //                   onChange={handleOnChangeTextArea}
+                    //                 ></textarea>
+                    //               ) : null}
+                    //             </div>
+                    //           );
+                    //         }
+                    //       });
+                    //     })}
+                    //   <div className="mt-4 flex justify-center">
+                    //     {idMethodPay == 2 ? (
+                    //       <button
+                    //         disabled={loadingTransferBank}
+                    //         type="button"
+                    //         className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
+                    //       >
+                    //         Hacer transferencia
+                    //       </button>
+                    //     ) : null}
+                    //   </div>
+                    // </form>
+                  }
                   <div className="mt-3">
                     <h5
                       style={{

@@ -5,7 +5,6 @@ import usePasarelaDePagos from "@/app/services/pasarela-de-pagos/usePasarelaDePa
 import {
   useStripe,
   useElements,
-  CardElement,
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
@@ -26,6 +25,8 @@ const CardForm = ({ userId }: { userId: number }) => {
   const handleRegisterCard = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const form = event.currentTarget; // ✅ Guardar referencia temprana al form
+
     try {
       const cardNumberElement = elements?.getElement(CardNumberElement);
 
@@ -40,12 +41,10 @@ const CardForm = ({ userId }: { userId: number }) => {
         type: "card",
         card: cardNumberElement,
         billing_details: {
-          name: `${localStorage.getItem("name")} ${
-            !localStorage.getItem("lastname")
-              ? ""
-              : localStorage.getItem("lastname")
+          name: `${localStorage.getItem("name") || ""} ${
+            localStorage.getItem("lastname") || ""
           }`,
-          email: localStorage.getItem("email"),
+          email: localStorage.getItem("email") || "",
         },
       });
 
@@ -58,41 +57,28 @@ const CardForm = ({ userId }: { userId: number }) => {
           "/stripe/saveCard"
         );
 
-        setLoadingRegisterCard(false);
-        if (response.status == 200) {
-          event.currentTarget.reset();
-          const dataResponse = await response.data;
-          setDataCard(dataResponse.data.data);
+        if (response.status === 200) {
+          form.reset(); // ✅ Usar la referencia guardada
+
+          const dataResponse = response.data;
+          const tarjetas = dataResponse?.data?.data ?? [];
+
+          setDataCard(tarjetas);
 
           setDataModal({
             isOpen: true,
             message: "Se registró tu tarjeta exitosamente",
             title: "Correcto",
             type: "success",
-            onClose: () => {
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
-            onConfirm: () => {
-              setDataModal((prev) => ({ ...prev, isOpen: false }));
-            },
+            onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+            onConfirm: () =>
+              setDataModal((prev) => ({ ...prev, isOpen: false })),
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+    } finally {
       setLoadingRegisterCard(false);
-      setDataModal({
-        isOpen: true,
-        message:
-          "Ocurrió un error inesperado al registrar la tarjeta, intentelo de nuevo.",
-        title: "Error",
-        type: "error",
-        onClose: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-        onConfirm: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-      });
     }
   };
 

@@ -119,7 +119,7 @@ const PrincipalComponent = () => {
             ) : (
               <div className="w-full flex justify-end p-2">
                 {/* <Skeleton /> */}
-                <Alert>Sin contenido disponible</Alert>
+                <Alert severity="info">Sin contenido disponible</Alert>
               </div>
             )}
           </div>

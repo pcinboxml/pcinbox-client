@@ -151,6 +151,70 @@ const useResumen = () => {
           },
         });
       }
+    } else if (
+      progressPay.methodPay.typeMethod == "efectivo_al_recoger" ||
+      progressPay.methodPay.typeMethod == "tarjeta_al_recoger"
+    ) {
+      try {
+        setLoadingCreateOrder(true);
+
+        try {
+          const respRegisterSales = await requestPostPagos(
+            {
+              dataCart,
+              amount: totalPagar,
+              methodPay: progressPay.methodPay.typeMethod,
+              userId: localStorage.getItem("idUser"),
+            },
+            "/stripe/paymentInSucursal"
+          );
+          setLoadingCreateOrder(false);
+
+          if (respRegisterSales.status == 200) {
+            // localStorage.removeItem("progressPay");
+
+            setDataCart([]);
+            const data = await respRegisterSales.data;
+            setDataModal({
+              isOpen: true,
+              type: "success",
+              title: "Correcto",
+              message: "Pago realizado correctamente",
+              onClose: () => {
+                onRouterLink(
+                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`
+                );
+                setDataCart([]);
+                setDataModal((prev) => ({ ...prev, isOpen: false }));
+              },
+              onConfirm: () => {
+                onRouterLink(
+                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`
+                );
+                setDataCart([]);
+                setDataModal((prev) => ({ ...prev, isOpen: false }));
+              },
+            });
+          }
+        } catch (error) {
+          setLoadingCreateOrder(false);
+        }
+      } catch (error) {
+        setLoadingCreateOrder(false);
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "Ocurrió un error al procesar el pago, intentalo de nuevo",
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+      }
+    } else if (progressPay.methodPay.typeMethod == "tarjeta_al_recoger") {
     }
   };
 
