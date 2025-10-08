@@ -10,8 +10,14 @@ import { Alert } from "@mui/material";
 
 const ConfirmaProducts = () => {
   const { formatCurrency, onRouterLink } = useService();
-  const { columns, rows, loadingClearCar, handleShowModalVaciarCarrito } =
-    useConfirmaProductos();
+  const {
+    columns,
+    rows,
+    loadingClearCar,
+    loadingCotizacion,
+    handleGenerateCotizacion,
+    handleShowModalVaciarCarrito,
+  } = useConfirmaProductos();
   const { dataCart } = useTheContext();
 
   return (
@@ -97,8 +103,16 @@ const ConfirmaProducts = () => {
                     "Vaciar carrito"
                   )}
                 </button>
-                <button className="bg-[#666666] py-2 px-4 text-white rounded">
-                  Generar cotización
+                <button
+                  disabled={loadingCotizacion}
+                  onClick={handleGenerateCotizacion}
+                  className="bg-[#666666] py-2 px-4 text-white rounded"
+                >
+                  {loadingCotizacion ? (
+                    <MdAutorenew size={20} className="m-auto the-spinner" />
+                  ) : (
+                    "Generar cotización"
+                  )}
                 </button>
                 <button
                   onClick={() => onRouterLink("/opciones-entrega")}

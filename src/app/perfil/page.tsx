@@ -77,12 +77,14 @@ const MiCuenta = () => {
           <div
             className={`containerCar border flex p-2  min-h-[150px]`}
             style={{
-              width: !dataAddress.street ? "500px" : "100%",
+              // width: !dataAddress.street ? "500px" : "100%",
+              width: "500px",
             }}
           >
             <div
               className={`containerPhoto w-[150px] h-[150px] ${
-                dataPerfil.email ? "m-auto" : ""
+                // dataPerfil.email ? "m-auto" : ""
+                ""
               }`}
             >
               <div className="border p-2 relative h-[150px]">
@@ -111,28 +113,28 @@ const MiCuenta = () => {
                 />
               </div>
             </div>
+            {/* 
+            {!dataAddress.street ? ( */}
+            <div className="containerData flex flex-col items-center p-2 w-[300px]">
+              <span
+                className="block text-center"
+                style={{ fontWeight: "bold", color: "#BB3D4B" }}
+              >
+                ¡Termina tu perfil!
+              </span>
 
-            {!dataAddress.street ? (
-              <div className="containerData flex flex-col items-center p-2 w-[300px]">
-                <span
-                  className="block text-center"
-                  style={{ fontWeight: "bold", color: "#BB3D4B" }}
-                >
-                  ¡Termina tu perfil!
-                </span>
+              <p className="text-center mt-2">
+                Por favor completa tus datos para empezar
+              </p>
 
-                <p className="text-center mt-2">
-                  Por favor completa tus datos para empezar
-                </p>
-
-                <div
-                  className="p-2 bg-[#A67845] text-[white] w-[150px]"
-                  style={{ fontWeight: "bold" }}
-                >
-                  <span className="block text-center">Perfil</span>
-                </div>
+              <div
+                className="p-2 bg-[#A67845] text-[white] w-[150px]"
+                style={{ fontWeight: "bold" }}
+              >
+                <span className="block text-center">Perfil</span>
               </div>
-            ) : null}
+            </div>
+            {/* ) : null} */}
           </div>
         )}
 

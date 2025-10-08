@@ -58,7 +58,7 @@ export default function AppWrapper({
         }}
       >
         <Navbar />
-        <main style={{ flex: 1 }}>
+        <main style={{ flex: 1, marginTop: "100px" }}>
           {children}
 
           <ModalComponent

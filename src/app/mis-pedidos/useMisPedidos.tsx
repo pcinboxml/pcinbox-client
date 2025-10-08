@@ -4,10 +4,21 @@ import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import useService from "../services/useService";
 import { useEffect, useState } from "react";
 
+interface PedidosI {
+  idOrder: number;
+  userId: number;
+  totalSales: number;
+  totalAmount: number;
+  pay_method: string;
+  createdAt: string;
+}
+
 const useMisPedidos = () => {
-  const { formatCurrency, onRouterLink } = useService();
+  const [dataPedidos, setDataPedidos] = useState<PedidosI[]>([]);
+  const { formatCurrency, onRouterLink, requestGet } = useService();
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [rows, setRows] = useState<GridRowsProp>([]);
 
   useEffect(() => {
     const match = window.matchMedia("(max-width: 1550px)");
@@ -23,18 +34,6 @@ const useMisPedidos = () => {
       match.removeEventListener("change", handler);
     };
   }, []);
-
-  const rows: GridRowsProp = [
-    {
-      id: 1,
-      noDePedido: "000001",
-      fecha: new Date("2025-04-30T09:41:02Z").toLocaleString(),
-      cantidad: 1,
-      total: 123,
-      methodPay: "Tarjeta de debito",
-      opciones: "",
-    },
-  ];
 
   const columns: GridColDef[] = [
     {
@@ -150,9 +149,37 @@ const useMisPedidos = () => {
     },
   ];
 
+  const handleGetPedidosByUser = async () => {
+    try {
+      const resp = await requestGet("/sales/getPedidosByUser");
+      if (resp.status == 200) {
+        const data = await resp.data;
+        setDataPedidos(data.data.data);
+
+        let dataRows = data.data.data
+          .filter((f: any) => f.status == "paid")
+          .map((pedido: any) => ({
+            id: pedido.idOrder,
+            noDePedido: pedido.idOrder,
+            fecha: new Date(pedido.createdAt).toLocaleString(),
+            cantidad: pedido.totalSales,
+            methodPay: pedido.pay_method,
+            total: pedido.totalAmount,
+            opciones: "",
+          }));
+
+        setRows(dataRows);
+      }
+    } catch (error) {
+      setDataPedidos([]);
+    }
+  };
+
   return {
     rows,
     columns,
+    dataPedidos,
+    handleGetPedidosByUser,
   };
 };
 

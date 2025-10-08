@@ -227,7 +227,11 @@ const Card = ({
       </div>
 
       <div className="container-description">
-        <span className="name-product">{product.name}</span>
+        <span className="name-product" title={product.name}>
+          {product.name && product.name.length > 20
+            ? `${product.name.slice(0, 20)}...`
+            : product.name}
+        </span>
         <span className="code">{product.sku}</span>
       </div>
 

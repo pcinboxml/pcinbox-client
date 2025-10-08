@@ -6,13 +6,25 @@ import PurchaseCard from "../components/purchaseCard/PurchaseCard";
 import SidebarMiCuenta from "../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import { pastPurchases, trackingSteps, producto } from "./gridMisCompras";
 import useSocket from "../services/ioClient";
+import useMisCompras from "./useMisCompras";
 
 const MisCompras = () => {
   const { socketPagos } = useSocket();
+  const { handleMisCompras, handleCancelledCompra, dataHistoryCompras } =
+    useMisCompras();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    handleMisCompras();
+  }, []);
   return (
-    <section className="w-[80%] mx-auto my-3 flex border">
+    <section
+      className="w-[80%] mx-auto flex border"
+      style={{
+        width: "80% !important",
+        margin: "auto",
+        display: "flex",
+      }}
+    >
       <div className="w-[280px] border ">
         <SidebarMiCuenta />
       </div>
@@ -30,26 +42,27 @@ const MisCompras = () => {
         >
           Mis compras
         </span>
-        <p className="text-gray-600 mb-6">Compras en curso (1)</p>
+        <p className="text-gray-600 mb-6">
+          Compras en curso (
+          {dataHistoryCompras &&
+            dataHistoryCompras.filter((c) => c.status == "paid").length}
+          )
+        </p>
 
         {/* Seguimiento de pedido */}
         <div className="bg-white mb-10">
-          <OrderTimeLine
-            steps={trackingSteps}
-            product={producto}
-            onCancel={() => {}}
-          />
+          <OrderTimeLine steps={trackingSteps} product={dataHistoryCompras} />
         </div>
 
         {/* Compras pasadas */}
-        <div className="my-5">
+        {/* <div className="my-5">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Compras anteriores
           </h3>
           {pastPurchases.map((purchase, i) => (
             <PurchaseCard key={i} {...purchase} />
           ))}
-        </div>
+        </div> */}
       </main>
     </section>
   );

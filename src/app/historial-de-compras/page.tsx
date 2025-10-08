@@ -1,9 +1,28 @@
 "use client";
 
+import { useEffect } from "react";
 import SidebarMiCuenta from "../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import style from "./historial-de-compras.module.css";
+import useHistorialDeCompras from "./useHistorialCompras";
+import { Alert } from "@mui/material";
+import useService from "../services/useService";
+import { MdAutorenew } from "react-icons/md";
 
 const HistoryShop = () => {
+  const {
+    dataHistoryCompras,
+    loadingCancelledCompra,
+    handleHistoryByUser,
+    handleOnSelectStatus,
+    showModal,
+    handleOnSearch,
+    handleOnPeriodo,
+  } = useHistorialDeCompras();
+  const { formatCurrency, onRouterLink } = useService();
+
+  useEffect(() => {
+    handleHistoryByUser();
+  }, []);
   return (
     <section
       style={{
@@ -26,11 +45,11 @@ const HistoryShop = () => {
             display: "block",
           }}
         >
-          Historial de compras
+          Mis compras
         </span>
 
-        <div className="w-full flex justify-center items-center gap-3 flex-wrap">
-          <div className="flex gap-1 items-center">
+        <div className="w-full flex justify-center items-center gap-2 flex-wrap">
+          <div className="flex  items-center">
             <label htmlFor="state" className="flex shrink-0 text-[#808080]">
               Estado del pedido:
             </label>
@@ -38,6 +57,7 @@ const HistoryShop = () => {
               className="form-select"
               id="state"
               defaultValue={"allState"}
+              onChange={handleOnSelectStatus}
             >
               <option value="allState">Todos los estados</option>
               <option value="entregado">Entregado</option>
@@ -51,69 +71,170 @@ const HistoryShop = () => {
             <label htmlFor="periodo" className="flex shrink-0 text-[#808080]">
               Período:
             </label>
-            <select
-              className="form-select"
+            <input
+              type="date"
               id="periodo"
-              defaultValue={"todoTiempo"}
-            >
-              <option value="todoTiempo">Todo el tiempo</option>
-              <option value="1">Ultimos 30 días</option>
-              <option value="2">Ultimos 3 meses</option>
-              <option value="3">Ultimo año</option>
-            </select>
+              className="form-control"
+              onChange={handleOnPeriodo}
+            />
           </div>
 
           <div className="flex gap-1 items-center">
             <label htmlFor="state" className="flex shrink-0 text-[#808080]">
               Buscar producto:
             </label>
-            <input type="text" className="form-control" />
+            <input
+              type="text"
+              className="form-control"
+              onInput={(e) => handleOnSearch(e.currentTarget.value)}
+            />
           </div>
         </div>
 
         <div className="my-5 flex flex-col">
-          <div className={style.orderCard} data-status="delivered">
-            <div className={style.orderHeader}>
-              <div className={style.orderInfo}>
-                <div className={style.orderNumber}>Pedido #ML-2024-001234</div>
-                <div className={style.orderDate}>
-                  Realizado el 15 de septiembre, 2024
+          {dataHistoryCompras && dataHistoryCompras.length > 0 ? (
+            dataHistoryCompras.map((historyCompra, index) => {
+              return (
+                <div
+                  className={`${style.orderCard} my-3`}
+                  data-status="delivered"
+                  key={index}
+                >
+                  <div className={style.orderHeader}>
+                    <div className={style.orderInfo}>
+                      <div className={style.orderNumber}>
+                        Pedido #{historyCompra.idOrder}
+                      </div>
+                      <div className={style.orderDate}>
+                        {
+                          <>
+                            Compra realizada el{" "}
+                            {new Date(historyCompra.createdAt).toLocaleString()}
+                          </>
+                        }
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.status}  ${
+                        historyCompra.statusEnvio == "procesando"
+                          ? style.statusProcessing
+                          : historyCompra.statusEnvio == "enviado"
+                          ? style.statusShipped
+                          : historyCompra.statusEnvio == "cancelado"
+                          ? style.statusCancelled
+                          : historyCompra.statusEnvio == "entregado"
+                          ? style.statusDelivered
+                          : ""
+                      } p-2 rounded`}
+                    >
+                      {historyCompra.statusEnvio}
+                    </div>
+
+                    <div>
+                      {(historyCompra.pay_method == "tarjeta_de_debito" ||
+                        historyCompra.pay_method == "tarjeta_de_credito") &&
+                      historyCompra.statusEnvio == "cancelado" ? (
+                        <p>Tu reembolso se reflejara de 5 a 10 días habiles</p>
+                      ) : historyCompra.pay_method == "oxxo" &&
+                        historyCompra.statusEnvio == "cancelado" &&
+                        historyCompra.paidAtOxxo == 1 ? (
+                        <p>
+                          Comunicate con la sucursal{" "}
+                          <span className="font-bold">PCInbox</span> para
+                          solicitar reembolso de tu pedido. <br />
+                          Envia el numero de Orden{" "}
+                          <span className="font-bold">
+                            #{historyCompra.idOrder}
+                          </span>{" "}
+                          y tu <span className="font-bold">Nombre</span> para
+                          localizarlo en el sistema
+                        </p>
+                      ) : null}
+                    </div>
+
+                    {historyCompra.statusEnvio != "entregado" &&
+                    historyCompra.statusEnvio != "cancelado" ? (
+                      <button
+                        disabled={loadingCancelledCompra}
+                        onClick={() => showModal(historyCompra)}
+                        className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
+                      >
+                        {loadingCancelledCompra ? (
+                          <MdAutorenew
+                            size={20}
+                            className="m-auto the-spinner"
+                          />
+                        ) : (
+                          <>Cancelar compra</>
+                        )}
+                      </button>
+                    ) : null}
+                    {/* <div className={style.orderTotal}>
+                      Total con IVA:{" "}
+                      {formatCurrency(
+                        Number(
+                          historyCompra.products.reduce(
+                            (acc, p) => acc + Number(p.totalAmount),
+                            0
+                          )
+                        )
+                      )}
+                    </div> */}
+                  </div>
+                  <div className={style.orderItems + " flex flex-col"}>
+                    {historyCompra.products.map((d, indexD) => {
+                      return (
+                        <div className={style.item} key={indexD}>
+                          <img
+                            src={
+                              d.image_url && Array.isArray(d.image_url)
+                                ? d.image_url[0]
+                                : d.image_url
+                            }
+                            className={style.itemImage}
+                          />
+                          <div className={style.itemDetails}>
+                            <div className={style.itemName}>{d.name}</div>
+                            <div className={style.itemVariant}>
+                              {d.description}
+                            </div>
+                            <div className={style.itemMeta}>
+                              <div className={style.itemQuantity}>
+                                Cantidad: {d.quantity}
+                              </div>
+                              <div className={style.itemPrice}>
+                                {formatCurrency(
+                                  Number(d.price) * Number(d.quantity)
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {historyCompra.statusEnvio == "entregado" ? (
+                    <div className={style.orderActions}>
+                      <a
+                        role="button"
+                        className="btn btn-secondary"
+                        onClick={() =>
+                          onRouterLink(
+                            `/detalles-pedido/${historyCompra.idOrder}`
+                          )
+                        }
+                      >
+                        Ver detalles
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
-              </div>
-              <div
-                className={`${style.status} ${style.statusDelivered} p-2 rounded`}
-              >
-                Entregado
-              </div>
-              <div className={style.orderTotal}>$1,299.00</div>
-            </div>
-            <div className={style.orderItems}>
-              <div className={style.item}>
-                <img
-                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&crop=center"
-                  alt="Audífonos Bluetooth"
-                  className={style.itemImage}
-                />
-                <div className={style.itemDetails}>
-                  <div className={style.itemName}>
-                    Audífonos Bluetooth Sony WH-1000XM4
-                  </div>
-                  <div className={style.itemVariant}>
-                    Color: Negro, Cancelación de ruido
-                  </div>
-                  <div className={style.itemMeta}>
-                    <div className={style.itemQuantity}>Cantidad: 1</div>
-                    <div className={style.itemPrice}>$1,299.00</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={style.orderActions}>
-              <a href="#" className="btn btn-secondary">
-                Ver detalles
-              </a>
-            </div>
-          </div>
+              );
+            })
+          ) : (
+            <Alert severity="info">Sin contenido disponible</Alert>
+          )}
         </div>
       </div>
     </section>

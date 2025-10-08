@@ -10,7 +10,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, use, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
@@ -551,12 +551,12 @@ const Navbar = () => {
                               },
                               {
                                 path: "/historial-de-compras",
-                                name: "Historial de compras",
-                              },
-                              {
-                                path: "/mis-compras",
                                 name: "Mis compras",
                               },
+                              // {
+                              //   path: "/mis-compras",
+                              //   name: "Mis compras",
+                              // },
                             ].map((item: any) => {
                               return (
                                 <li key={item.path}>

@@ -105,11 +105,11 @@ const SidebarMiCuenta = () => {
               isRouteActive("/historial-de-compras")[0]
             }`}
           >
-            Historial de compras
+            Mis compras
           </a>
         </li>
 
-        <li
+        {/* <li
           onClick={() => onRouterLink("/mis-compras")}
           className={`${styles.li} ${isRouteActive("/mis-compras")[1]}`}
         >
@@ -119,7 +119,7 @@ const SidebarMiCuenta = () => {
           >
             Mis compras
           </a>
-        </li>
+        </li> */}
 
         <li>
           <a

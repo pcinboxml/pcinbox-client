@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import {
+  GroupByIdI,
+  HistoryComprasI,
+} from "../interfaces/compras/historyCompras.interface";
 
 const useService = () => {
   const pathName = usePathname();
@@ -191,7 +195,45 @@ const useService = () => {
     }
   };
 
+  const groupById = (items: any[]): any[] => {
+    const map = new Map<number, any>();
+
+    items.forEach((item) => {
+      const existingGroup = map.get(item.idOrder);
+
+      if (existingGroup) {
+        // Buscar si ya existe ese producto en el grupo
+        const existingProduct = existingGroup.products.find(
+          (p: any) => p.idProduct === item.idProduct
+        );
+
+        if (existingProduct) {
+          existingProduct.quantity += item.quantity;
+        } else {
+          existingGroup.products.push({ ...item });
+        }
+      } else {
+        map.set(item.idOrder, {
+          idOrder: item.idOrder,
+          userId: item.userId,
+          totalSales: item.totalSales,
+          totalAmount: item.totalAmount,
+          pay_method: item.pay_method,
+          createdAt: item.createdAt,
+          status: item.status,
+          statusEnvio: item.statusEnvio,
+          paidAtOxxo: item.paidAtOxxo,
+          stripePaymentIntentId: item.stripePaymentIntentId,
+          products: [{ ...item }],
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  };
+
   return {
+    groupById,
     requestGet,
     requestPost,
     requestDelete,

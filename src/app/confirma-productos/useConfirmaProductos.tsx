@@ -5,6 +5,8 @@ import { useTheContext } from "../services/globalContext";
 import { useMediaQuery } from "@mui/material";
 import useService from "../services/useService";
 import { useState } from "react";
+import GridConfirmaProductos from "./gridConfirmaProductos";
+import axios from "axios";
 
 const useConfirmaProductos = () => {
   const { dataCart, setDataCart, setDataModal } = useTheContext();
@@ -16,6 +18,7 @@ const useConfirmaProductos = () => {
   const [loadingClearCar, setLoadingClearCar] = useState<boolean>(false);
   const [loadingRemoveProduct, setLoadingRemoveProduct] =
     useState<boolean>(false);
+  const [loadingCotizacion, setLoadingCotizacion] = useState<boolean>(false);
 
   const handleRemoveProduct = async (idProduct: string) => {
     try {
@@ -39,6 +42,12 @@ const useConfirmaProductos = () => {
       setLoadingRemoveProduct(false);
     }
   };
+  const { columns } = GridConfirmaProductos({
+    isSmallScreen,
+    formatCurrency,
+    loadingRemoveProduct,
+    handleRemoveProduct,
+  });
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,
@@ -50,165 +59,6 @@ const useConfirmaProductos = () => {
     importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
     action: 1,
   }));
-
-  const columns = [
-    {
-      field: "products",
-      headerName: "Productos",
-      // flex: isSmallScreen ? undefined : 1,
-      width: 350,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                title={params.value}
-                className="inline-block text-center text-sm leading-snug w-full text-[#808080]"
-                style={{
-                  display: "inline-block",
-                  wordBreak: "break-word",
-                  whiteSpace: "normal",
-                }}
-              >
-                {params?.value?.length > 150
-                  ? `${params.value.slice(0, 150)}...`
-                  : params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-
-    {
-      field: "quantity",
-      headerName: "Cantidad",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 100 : 90,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-
-    {
-      field: "sucursal",
-      headerName: "Sucursal",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 100 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#666666] block text-center"
-                style={{ fontSize: "18px", fontWeight: "500" }}
-              >
-                {params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "totalSinIva",
-      headerName: "Precio sin IVA",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 130 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-
-    {
-      field: "totalConIva",
-      headerName: "Precio con IVA",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 130 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "importConIva",
-      headerName: "Importe con IVA",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "action",
-      headerName: "",
-      width: 50,
-      renderCell: (params: any) => {
-        return (
-          <div className="flex justify-center items-center min-h-[100%]">
-            <button
-              disabled={loadingRemoveProduct}
-              onClick={() => handleRemoveProduct(params.id)}
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              {loadingRemoveProduct ? (
-                <MdAutorenew size={20} className="m-auto the-spinner" />
-              ) : (
-                <MdDelete size={25} color="red" />
-              )}
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
 
   const handleShowModalVaciarCarrito = () => {
     setDataModal({
@@ -236,11 +86,75 @@ const useConfirmaProductos = () => {
     });
   };
 
+  const handleGenerateCotizacion = async () => {
+    try {
+      setLoadingCotizacion(true);
+
+      const resp = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/cart/generateCotizacion`,
+        {
+          dataCart,
+          name: localStorage.getItem("name"),
+          lastname: localStorage.getItem("lastname"),
+          email: localStorage.getItem("email"),
+        },
+        {
+          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (resp.status == 200) {
+        const blob = new Blob([resp.data], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "cotizacion.pdf";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setLoadingCotizacion(false);
+        setDataModal({
+          isOpen: true,
+          type: "success",
+          message: "Descarga completada",
+          title: "Cotización",
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+      }
+    } catch (error: any) {
+      setLoadingCotizacion(false);
+      setDataModal({
+        isOpen: true,
+        type: "error",
+        message:
+          "Ocurrió un error al intentar descargar el archivo, itentalo de nuevo",
+        title: "Error",
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onClose: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+    }
+  };
+
   return {
     rows,
     columns,
     loadingClearCar,
+    loadingCotizacion,
     handleShowModalVaciarCarrito,
+    handleGenerateCotizacion,
   };
 };
 

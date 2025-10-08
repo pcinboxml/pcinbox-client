@@ -90,7 +90,7 @@ const FormaDePago = () => {
                   </h5>
                 </div>
 
-                <div className="border rounded w-full  mt-3">
+                <div className="border rounded w-[60%]  mt-3">
                   {optionsPago &&
                     optionsPago
                       .filter((f) => {
@@ -152,7 +152,7 @@ const FormaDePago = () => {
                                 </div>
                               </label>
 
-                              <div
+                              {/* <div
                                 className={`info-cargo flex flex-col items-center justify-center mx-3 p-2 absolute right-0 bg-[${pago.color}] rounded`}
                               >
                                 <span
@@ -173,7 +173,7 @@ const FormaDePago = () => {
                                 >
                                   Cargo Bancario
                                 </span>
-                              </div>
+                              </div> */}
                             </div>
                           );
                         }

@@ -52,28 +52,29 @@ const useResumen = () => {
 
         if (resp.status == 200) {
           const data = await resp.data;
+          setLoadingCreateOrder(false);
+          setDataCart([]);
 
-          try {
-            const respRegisterSales = await requestPost(
-              {
-                dataCart,
-                idOrder: data.data.orderId,
-                total: totalPagar,
-              },
-              "/sales/registerSales"
-            );
-            setLoadingCreateOrder(false);
-
-            if (respRegisterSales.status == 200) {
-              // localStorage.removeItem("progressPay");
+          setDataModal({
+            isOpen: true,
+            type: "success",
+            title: "Correcto",
+            message: "Orden generada correctamente",
+            onClose: () => {
               onRouterLink(
                 `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
               );
               setDataCart([]);
-            }
-          } catch (error) {
-            setLoadingCreateOrder(false);
-          }
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+            onConfirm: () => {
+              onRouterLink(
+                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
+              );
+              setDataCart([]);
+              setDataModal((prev) => ({ ...prev, isOpen: false }));
+            },
+          });
         }
       } catch (error) {
         setLoadingCreateOrder(false);
@@ -87,6 +88,7 @@ const useResumen = () => {
             userId: Number(localStorage.getItem("idUser")),
             paymentMethodId: progressPay.methodPay.idCard,
             amount: Math.round(totalPagar * 100),
+            optionEnvio: progressPay.optionSend.name,
           },
           "/stripe/paymentWithCard"
         );
@@ -115,7 +117,7 @@ const useResumen = () => {
                 isOpen: true,
                 type: "success",
                 title: "Correcto",
-                message: "Pago realizado correctamente",
+                message: "Orden generada correctamente",
                 onClose: () => {
                   onRouterLink(
                     `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`
@@ -179,7 +181,7 @@ const useResumen = () => {
               isOpen: true,
               type: "success",
               title: "Correcto",
-              message: "Pago realizado correctamente",
+              message: "Orden generada correctamente",
               onClose: () => {
                 onRouterLink(
                   `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`
@@ -214,7 +216,6 @@ const useResumen = () => {
           },
         });
       }
-    } else if (progressPay.methodPay.typeMethod == "tarjeta_al_recoger") {
     }
   };
 

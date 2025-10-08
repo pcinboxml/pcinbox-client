@@ -1,6 +1,7 @@
 section {
   width: 100%;
   height: 100%;
+  margin-top: 50px;
 }
 
 .content-main {
@@ -80,5 +81,11 @@ section {
 @media (max-width: 1023px) {
   .content-main .list-products img {
     width: 170px;
+  }
+}
+
+@media (min-width: 1582px) {
+  .content-main .content-index {
+    width: 1300px !important;
   }
 }

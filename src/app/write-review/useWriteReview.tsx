@@ -6,7 +6,7 @@ import { useTheContext } from "../services/globalContext";
 
 const useWriteReview = () => {
   const { setDataModal } = useTheContext();
-  const { requestPost } = useService();
+  const { requestPost, onRouterLink } = useService();
   const [dataAddReview, setDataAddReview] = useState<{
     title: string;
     message: string;
@@ -73,6 +73,7 @@ const useWriteReview = () => {
                 message: "",
                 rating: 0,
               });
+              onRouterLink(`/review?idProduct=${dataAddReview.idProduct}`);
             },
             onConfirm: () => {
               {

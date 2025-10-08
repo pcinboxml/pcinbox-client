@@ -1,15 +1,14 @@
 "use client";
 
 import useService from "../../services/useService";
-import { useTheContext } from "@/app/services/globalContext";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const useDetallesPedido = () => {
-  const { formatCurrency } = useService();
-
-  const { dataCart } = useTheContext();
+  const { formatCurrency, requestPost } = useService();
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     const match = window.matchMedia("(max-width: 1550px)");
@@ -25,25 +24,6 @@ const useDetallesPedido = () => {
       match.removeEventListener("change", handler);
     };
   }, []);
-
-  const subTotal = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
-  const rows = dataCart.map((item) => ({
-    id: item.idProduct,
-    img: item.imageUrl,
-    description: item.description,
-    quantity: Number(item.quantity),
-    unitPrice: Number(item.price),
-    totalPrice: Number(item.quantity) * Number(item.price),
-  }));
 
   const columns = [
     {
@@ -127,7 +107,7 @@ const useDetallesPedido = () => {
                 className="text-[#808080] block text-center"
                 style={{ fontSize: "18px", fontWeight: "600" }}
               >
-                {params.value}
+                {formatCurrency(Number(params.value))}
               </span>
             </div>
           );
@@ -147,7 +127,7 @@ const useDetallesPedido = () => {
                 className="text-[#808080] block text-center"
                 style={{ fontSize: "18px", fontWeight: "600" }}
               >
-                {params.value}
+                {formatCurrency(Number(params.value))}
               </span>
             </div>
           );
@@ -156,10 +136,36 @@ const useDetallesPedido = () => {
     },
   ];
 
+  const handleGetSalesByUser = async (idOrder: any) => {
+    try {
+      const resp = await requestPost(
+        { idOrder: idOrder },
+        "/sales/getSalesByUser"
+      );
+      if (resp.status == 200) {
+        const data = resp.data;
+
+        let dataRow = data.data.data.map((item: any) => {
+          return {
+            id: item.idOrder,
+            img: item.image_url,
+            description: item.description,
+            quantity: Number(item.quantity),
+            unitPrice: Number(item.price),
+            totalPrice: Number(item.totalAmount),
+          };
+        });
+
+        setRows(dataRow);
+      }
+    } catch (error) {
+      setRows([]);
+    }
+  };
   return {
     columns,
     rows,
-    subTotal,
+    handleGetSalesByUser,
   };
 };
 
