@@ -61,7 +61,9 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
-                  {formatCurrency(0)}
+                  {progressPay.optionSend.name == "envioLeon"
+                    ? "Gratis"
+                    : formatCurrency(120)}
                 </span>
                 <span className="text-[#808080] text-sm">
                   {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"

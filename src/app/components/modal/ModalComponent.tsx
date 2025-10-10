@@ -164,13 +164,15 @@ const ModalComponent = ({
               </h3>
             )}
 
-            {message && (
+            {typeof message == "string" ? (
               <p
                 id="modal-description"
                 className="text-[#808080] text-center mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
               >
                 {message}
               </p>
+            ) : (
+              message
             )}
 
             <div className="flex gap-4 justify-center">

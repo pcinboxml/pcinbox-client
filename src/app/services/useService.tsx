@@ -223,7 +223,15 @@ const useService = () => {
           status: item.status,
           statusEnvio: item.statusEnvio,
           paidAtOxxo: item.paidAtOxxo,
+          shipping_method: item.shipping_method,
           stripePaymentIntentId: item.stripePaymentIntentId,
+          street: item.street,
+          noExt: item.noExt,
+          noInt: item.noInt,
+          cologne: item.cologne,
+          city: item.city,
+          state: item.state,
+          country: item.country,
           products: [{ ...item }],
         });
       }

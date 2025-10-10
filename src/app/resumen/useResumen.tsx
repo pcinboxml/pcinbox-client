@@ -46,6 +46,7 @@ const useResumen = () => {
             userId: localStorage.getItem("idUser"),
             shipping_method: progressPay.optionSend.name,
             dataProduct: dataCart,
+            idAddress: progressPay.optionSend.address,
           },
           "/stripe/createOrderCash"
         );
@@ -89,6 +90,7 @@ const useResumen = () => {
             paymentMethodId: progressPay.methodPay.idCard,
             amount: Math.round(totalPagar * 100),
             optionEnvio: progressPay.optionSend.name,
+            idAddress: progressPay.optionSend.address,
           },
           "/stripe/paymentWithCard"
         );

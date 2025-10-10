@@ -51,16 +51,16 @@ const useOpcionesEntrega = () => {
       },
     });
 
-    try {
-      const resp = await requestGet("/address/hasAddressUser");
-      const status = await resp.status;
-      if (status == 200) {
-        const data: AddressI[] = await resp.data.data.data;
-        setDataUserAddress(data);
-      }
-    } catch (error: any) {
-      setDataUserAddress([]);
-    }
+    // try {
+    //   const resp = await requestGet("/address/hasAddressUser");
+    //   const status = await resp.status;
+    //   if (status == 200) {
+    //     const data: AddressI[] = await resp.data.data.data;
+    //     setDataUserAddress(data);
+    //   }
+    // } catch (error: any) {
+    //   setDataUserAddress([]);
+    // }
   };
 
   const handleOnChangeOptionEnvio2 = async (name: string) => {
@@ -71,16 +71,16 @@ const useOpcionesEntrega = () => {
       },
     });
 
-    try {
-      const resp = await requestGet("/address/hasAddressUser");
-      const status = await resp.status;
-      if (status == 200) {
-        const data: AddressI[] = await resp.data.data.data;
-        setDataUserAddress(data);
-      }
-    } catch (error: any) {
-      setDataUserAddress([]);
-    }
+    // try {
+    //   const resp = await requestGet("/address/hasAddressUser");
+    //   const status = await resp.status;
+    //   if (status == 200) {
+    //     const data: AddressI[] = await resp.data.data.data;
+    //     setDataUserAddress(data);
+    //   }
+    // } catch (error: any) {
+    //   setDataUserAddress([]);
+    // }
   };
 
   const registerAddress = async (dataAddress: DataSendI) => {
@@ -132,13 +132,39 @@ const useOpcionesEntrega = () => {
               : "Tu domicilio se actualizo correctamente",
           title: "Correcto",
           type: "success",
-          onClose: () => {
+          onClose: async () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
-            onRouterLink("/forma-de-pago");
+            const data: AddressI[] = await resp.data.data.data;
+            setDataUserAddress(data);
+            setDataAddress({
+              city: "",
+              codePostal: 0,
+              cologne: "",
+              country: "",
+              noExt: "",
+              phone1: "",
+              phone2: "",
+              state: "",
+              street: "",
+              noInt: "",
+            });
           },
-          onConfirm: () => {
+          onConfirm: async () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
-            onRouterLink("/forma-de-pago");
+            const data: AddressI[] = await resp.data.data.data;
+            setDataUserAddress(data);
+            setDataAddress({
+              city: "",
+              codePostal: 0,
+              cologne: "",
+              country: "",
+              noExt: "",
+              phone1: "",
+              phone2: "",
+              state: "",
+              street: "",
+              noInt: "",
+            });
           },
         });
 
@@ -204,26 +230,37 @@ const useOpcionesEntrega = () => {
       type: "info",
       title: "Cuidado",
       message: (
-        <div>
-          <span className="text-[#808080] font-bold">
+        <div className="flex flex-col p-1 items-start justify-center w-full">
+          <span className="text-[#808080] font-bold block text-center w-full mb-2">
             ¿Seguro que deseas eliminar el domicilio?
-          </span>{" "}
-          <br />
-          <div className="flex justify-start px-5 my-1">
-            <span className="text-[#808080] font-bold">Calle:</span>
-            <span className="text-[#606060] mx-2">{address.street}</span>
+          </span>
+
+          <div className="flex flex-row items-center my-1 w-full">
+            <span className="text-[#808080] font-bold min-w-[80px]">
+              Calle:
+            </span>
+            <span className="text-[#606060]">{address.street}</span>
           </div>
-          <div className="flex justify-start px-5">
-            <span className="text-[#808080] font-bold">Colonia:</span>
-            <span className="text-[#606060] mx-2">{address.cologne}</span>
+
+          <div className="flex flex-row items-center my-1 w-full">
+            <span className="text-[#808080] font-bold min-w-[80px]">
+              Colonia:
+            </span>
+            <span className="text-[#606060]">{address.cologne}</span>
           </div>
-          <div className="flex justify-start px-5">
-            <span className="text-[#808080] font-bold">No.Ext:</span>
-            <span className="text-[#606060] mx-2">{address.noExt}</span>
+
+          <div className="flex flex-row items-center my-1 w-full">
+            <span className="text-[#808080] font-bold min-w-[80px]">
+              No.Ext:
+            </span>
+            <span className="text-[#606060]">{address.noExt}</span>
           </div>
-          <div className="flex justify-start px-5">
-            <span className="text-[#808080] font-bold">No.Int:</span>
-            <span className="text-[#606060] mx-2">{address.noInt}</span>
+
+          <div className="flex flex-row items-center my-1 w-full">
+            <span className="text-[#808080] font-bold min-w-[80px]">
+              No.Int:
+            </span>
+            <span className="text-[#606060]">{address.noInt}</span>
           </div>
         </div>
       ),
@@ -244,18 +281,6 @@ const useOpcionesEntrega = () => {
           if (resp.status == 200) {
             const data = await resp.data;
             setDataUserAddress(data.data.data);
-            setDataModal({
-              isOpen: true,
-              type: "success",
-              title: "Bien",
-              message: "Domicilio eliminado correctamente",
-              onClose: () => {
-                setDataModal((prev) => ({ ...prev, isOpen: false }));
-              },
-              onConfirm: () => {
-                setDataModal((prev) => ({ ...prev, isOpen: false }));
-              },
-            });
           }
         } catch (error) {}
       },
@@ -290,6 +315,19 @@ const useOpcionesEntrega = () => {
     }
   };
 
+  const loadingAddressUser = async () => {
+    try {
+      const resp = await requestGet("/address/hasAddressUser");
+      const status = await resp.status;
+      if (status == 200) {
+        const data: AddressI[] = await resp.data.data.data;
+        setDataUserAddress(data);
+      }
+    } catch (error: any) {
+      setDataUserAddress([]);
+    }
+  };
+
   return {
     handleOnChangeOptionEnvio,
     registerAddress,
@@ -301,6 +339,7 @@ const useOpcionesEntrega = () => {
     setShowFormAddress,
     setIsEditAddress,
     getValuesStorage,
+    loadingAddressUser,
     showFormAddress,
     idAddressEnvio,
     optionEnvio,

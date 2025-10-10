@@ -21,7 +21,7 @@ interface ModalData {
   onClose: () => void;
   type: ModalType;
   title: string;
-  message: any;
+  message: string | React.ReactNode;
   onConfirm: () => void;
   children?: any;
 }

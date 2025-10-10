@@ -157,7 +157,7 @@ const PayEnd = () => {
                     </span>
 
                     <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
-                      {dataOrderCash?.idOrder}
+                      # {dataOrderCash?.idOrder}
                     </span>
                   </div>
                 ) : null}

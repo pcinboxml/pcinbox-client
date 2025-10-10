@@ -168,7 +168,11 @@ const useMisPedidos = () => {
             opciones: "",
           }));
 
-        setRows(dataRows);
+        const uniqueRows: any = Array.from(
+          new Map(dataRows.map((item: any) => [item.id, item])).values()
+        );
+
+        setRows(uniqueRows);
       }
     } catch (error) {
       setDataPedidos([]);

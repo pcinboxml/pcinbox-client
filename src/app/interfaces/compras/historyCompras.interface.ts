@@ -22,6 +22,14 @@ export interface GroupByIdI {
   pay_method: any;
   price: number;
   paidAtOxxo: number;
+  shipping_method: any;
   stripePaymentIntentId: string;
+  street: string;
+  noExt: any;
+  noInt: any;
+  cologne: any;
+  city: any;
+  state: any;
+  country: any;
   products: HistoryComprasI[];
 }

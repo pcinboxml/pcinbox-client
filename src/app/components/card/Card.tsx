@@ -75,7 +75,7 @@ const Card = ({
                         ...product,
                       })
                     );
-                    onRouterLink("/detailsProduct");
+                    onRouterLink(`/detailsProduct/${product.idProduct}`);
                   }}
                 />
               </div>

@@ -34,19 +34,22 @@ const useOrdenes = () => {
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
 
-  const rows = dataCart.map((itemCart) => ({
-    id: itemCart.idProduct,
-    img:
-      itemCart.imageUrl &&
-      Array.isArray(itemCart.imageUrl) &&
-      itemCart.imageUrl.length > 0
-        ? itemCart.imageUrl[0]
-        : itemCart.imageUrl,
-    description: itemCart.description,
-    quantity: Number(itemCart.quantity),
-    unitPrice: Number(itemCart.price),
-    totalPrice: Number(itemCart.quantity) * Number(itemCart.price),
-  }));
+  const rows = dataCart.map((itemCart) => {
+    return {
+      id: itemCart.idProduct,
+      img:
+        (itemCart as any).image_url ||
+        (itemCart.imageUrl &&
+          Array.isArray((itemCart as any).image_url || itemCart.imageUrl) &&
+          itemCart.imageUrl.length > 0)
+          ? (itemCart as any).image_url[0] || itemCart.imageUrl[0]
+          : (itemCart as any).image_url || itemCart.imageUrl,
+      description: itemCart.description,
+      quantity: Number(itemCart.quantity),
+      unitPrice: Number(itemCart.price),
+      totalPrice: Number(itemCart.quantity) * Number(itemCart.price),
+    };
+  });
 
   const columns = [
     {

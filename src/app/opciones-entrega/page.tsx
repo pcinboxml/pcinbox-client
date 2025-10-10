@@ -1,13 +1,13 @@
 "use client";
 
-import { MdAutorenew, MdStore } from "react-icons/md";
+import { MdAutorenew, MdDirectionsCar, MdStore } from "react-icons/md";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import useOpcionesEntrega from "./useOpcionesEntrega";
 import styles from "./opciones-entrega.module.css";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import useStorage from "../services/useStorage";
 
 const OpcionesEntrega = () => {
@@ -30,6 +30,7 @@ const OpcionesEntrega = () => {
     dataUserAddress,
     loadingRegisterAddress,
     dataAddress,
+    loadingAddressUser,
   } = useOpcionesEntrega();
 
   const { handleWriteStorageProgressPay } = useStorage();
@@ -43,6 +44,7 @@ const OpcionesEntrega = () => {
   }, [dataUserAddress]);
 
   useEffect(() => {
+    loadingAddressUser();
     getValuesStorage();
   }, []);
 
@@ -111,123 +113,170 @@ const OpcionesEntrega = () => {
                   algunos casos. Esto es totalmente ajeno a nuestra empresa.
                 </Alert>
 
-                <div className="flex items-center relative">
-                  <input
-                    type="radio"
-                    name="envio"
-                    id="paqueteexpress"
-                    className="mx-2"
-                    value="paqueteexpress"
-                    checked={optionEnvio === "paqueteexpress"}
-                    onChange={handleOnChangeOptionEnvio}
-                  />
-
-                  <label className="form-check-label" htmlFor="paqueteexpress">
-                    <div className="w-full flex items-center">
-                      <img
-                        src="/paqueteexpress.png"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "contain",
-                          filter: "grayscale(100%)",
-                        }}
+                {dataUserAddress &&
+                  dataUserAddress.some(
+                    (d) => d.city === "León de los Aldama"
+                  ) && (
+                    <div className="flex items-center relative my-4">
+                      <input
+                        type="radio"
+                        name="envioLeon"
+                        id="envioLeon"
+                        className="mx-2"
+                        value={"envioLeon"}
+                        checked={optionEnvio === "envioLeon"}
+                        onChange={handleOnChangeOptionEnvio}
                       />
+
+                      <label className="form-check-label" htmlFor="envioLeon">
+                        <div className="w-full flex items-center">
+                          <MdDirectionsCar size={26} />
+                          <span
+                            className="text-[#666666] text-sm mx-2"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            <span style={{ fontWeight: "bold" }}>|</span> Envío
+                            en carro (sólo en Léon)
+                          </span>
+                        </div>
+                      </label>
+
                       <span
-                        className="text-[#666666] text-sm mx-2"
-                        style={{ fontWeight: "bold" }}
+                        className="absolute right-5 to-5 text-[#808080]"
+                        style={{ fontSize: "14px" }}
                       >
-                        <span style={{ fontWeight: "bold" }}>|</span>{" "}
-                        PaqueteExpress
+                        Gratis
                       </span>
                     </div>
-                  </label>
+                  )}
+                {dataUserAddress &&
+                  dataUserAddress.some(
+                    (d) => d.city != "León de los Aldama"
+                  ) && (
+                    <>
+                      <div className="flex items-center relative">
+                        <input
+                          type="radio"
+                          name="envio"
+                          id="paqueteexpress"
+                          className="mx-2"
+                          value="paqueteexpress"
+                          checked={optionEnvio === "paqueteexpress"}
+                          onChange={handleOnChangeOptionEnvio}
+                        />
 
-                  <span
+                        <label
+                          className="form-check-label"
+                          htmlFor="paqueteexpress"
+                        >
+                          <div className="w-full flex items-center">
+                            <img
+                              src="/paqueteexpress.png"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "contain",
+                                filter: "grayscale(100%)",
+                              }}
+                            />
+                            <span
+                              className="text-[#666666] text-sm mx-2"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              <span style={{ fontWeight: "bold" }}>|</span>{" "}
+                              PaqueteExpress
+                            </span>
+                          </div>
+                        </label>
+
+                        {/* <span
                     className="absolute right-5 to-5 text-[#808080]"
                     style={{ fontSize: "14px" }}
                   >
                     {formatCurrency(179)}
-                  </span>
-                </div>
+                  </span> */}
+                      </div>
 
-                <div className="flex items-center relative">
-                  <input
-                    type="radio"
-                    value="dhl"
-                    name="envio"
-                    id="dhl"
-                    className="mx-2"
-                    checked={optionEnvio === "dhl"}
-                    onChange={handleOnChangeOptionEnvio}
-                  />
+                      <div className="flex items-center relative">
+                        <input
+                          type="radio"
+                          value="dhl"
+                          name="envio"
+                          id="dhl"
+                          className="mx-2"
+                          checked={optionEnvio === "dhl"}
+                          onChange={handleOnChangeOptionEnvio}
+                        />
 
-                  <label className="form-check-label" htmlFor="dhl">
-                    <div className="w-full flex items-center">
-                      <img
-                        src="/dhl.png"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "contain",
-                          filter: "grayscale(100%)",
-                        }}
-                      />
-                      <span
-                        className="text-[#666666] text-sm mx-2"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        <span style={{ fontWeight: "bold" }}>|</span> DHL
-                      </span>
-                    </div>
-                  </label>
-                  <span
+                        <label className="form-check-label" htmlFor="dhl">
+                          <div className="w-full flex items-center">
+                            <img
+                              src="/dhl.png"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "contain",
+                                filter: "grayscale(100%)",
+                              }}
+                            />
+                            <span
+                              className="text-[#666666] text-sm mx-2"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              <span style={{ fontWeight: "bold" }}>|</span> DHL
+                            </span>
+                          </div>
+                        </label>
+                        {/* <span
                     className="absolute right-5 to-5 text-[#808080]"
                     style={{ fontSize: "14px" }}
                   >
                     {formatCurrency(279)}
-                  </span>
-                </div>
+                  </span> */}
+                      </div>
 
-                <div className="flex items-center relative ">
-                  <input
-                    type="radio"
-                    name="envio"
-                    id="estafeta"
-                    className="mx-2"
-                    value="estafeta"
-                    checked={optionEnvio === "estafeta"}
-                    onChange={handleOnChangeOptionEnvio}
-                  />
+                      <div className="flex items-center relative ">
+                        <input
+                          type="radio"
+                          name="envio"
+                          id="estafeta"
+                          className="mx-2"
+                          value="estafeta"
+                          checked={optionEnvio === "estafeta"}
+                          onChange={handleOnChangeOptionEnvio}
+                        />
 
-                  <label className="form-check-label" htmlFor="estafeta">
-                    <div className="w-full flex items-center">
-                      <img
-                        src="/estafeta.png"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "contain",
-                          filter: "grayscale(100%)",
-                        }}
-                      />
+                        <label className="form-check-label" htmlFor="estafeta">
+                          <div className="w-full flex items-center">
+                            <img
+                              src="/estafeta.png"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "contain",
+                                filter: "grayscale(100%)",
+                              }}
+                            />
 
-                      <span
-                        className="text-[#666666] text-sm mx-2"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        <span style={{ fontWeight: "bold" }}>|</span> Estafeta
-                      </span>
-                    </div>
-                  </label>
+                            <span
+                              className="text-[#666666] text-sm mx-2"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              <span style={{ fontWeight: "bold" }}>|</span>{" "}
+                              Estafeta
+                            </span>
+                          </div>
+                        </label>
 
-                  <span
+                        {/* <span
                     className="absolute right-5 to-5 text-[#808080]"
                     style={{ fontSize: "14px" }}
                   >
                     {formatCurrency(25.22)}
-                  </span>
-                </div>
+                  </span> */}
+                      </div>
+                    </>
+                  )}
 
                 {dataUserAddress &&
                 dataUserAddress.length > 0 &&
@@ -236,87 +285,267 @@ const OpcionesEntrega = () => {
                     <h2>Selecciona tu domicilio</h2>
 
                     {dataUserAddress.map((address) => {
-                      console.log(idAddressEnvio, address.idAddress);
-                      return (
-                        <div key={address.idAddress} className="radio-group">
-                          <label className="my-3">
-                            <input
-                              type="radio"
-                              name="domicilio"
-                              value={address.idAddress}
-                              checked={idAddressEnvio == address.idAddress}
-                              onChange={(event) =>
-                                setIdAddressEnvio(Number(event.target.value))
-                              }
-                              required
-                            />
-                            <div className="flex items-center  flex-wrap">
-                              <b>Calle: </b>{" "}
-                              <span className="pb-0 mx-2">
-                                {" "}
-                                {address.street}
-                              </span>
-                              <b>Colonia: </b>{" "}
-                              <span className="mx-2">{address.cologne}</span>
-                              <b>No.Ext: </b>
-                              <span className="mx-2">{address.noExt}</span>
-                              <b
+                      if (optionEnvio == "envioLeon") {
+                        if (address.city == "León de los Aldama") {
+                          return (
+                            <div
+                              key={address.idAddress}
+                              className="radio-group"
+                            >
+                              <label className="my-3">
+                                <input
+                                  type="radio"
+                                  name="domicilio"
+                                  value={address.idAddress}
+                                  checked={idAddressEnvio == address.idAddress}
+                                  onChange={(event) =>
+                                    setIdAddressEnvio(
+                                      Number(event.target.value)
+                                    )
+                                  }
+                                  required
+                                />
+                                <div className="flex items-center  flex-wrap">
+                                  <b>Calle: </b>{" "}
+                                  <span className="pb-0 mx-2">
+                                    {" "}
+                                    {address.street}
+                                  </span>
+                                  <b>Colonia: </b>{" "}
+                                  <span className="mx-2">
+                                    {address.cologne}
+                                  </span>
+                                  <b>No.Ext: </b>
+                                  <span className="mx-2">{address.noExt}</span>
+                                  <b
+                                    style={{
+                                      display:
+                                        address.noInt != "" ? "block" : "none",
+                                    }}
+                                  >
+                                    No.Int:{" "}
+                                  </b>
+                                  <span
+                                    style={{
+                                      display:
+                                        address.noInt != "" ? "block" : "none",
+                                    }}
+                                    className="mx-2"
+                                  >
+                                    {address.noExt}
+                                  </span>
+                                </div>
+                              </label>
+
+                              <a
+                                role="button"
                                 style={{
-                                  display:
-                                    address.noInt != "" ? "block" : "none",
+                                  display: "inline-block",
+                                  marginLeft: "10px",
+                                  color: "#606060",
+                                  fontWeight: "bold",
+                                  textDecoration: "none",
                                 }}
+                                onClick={() => [
+                                  setIsEditAddress({
+                                    edit: true,
+                                    idAddress: address.idAddress,
+                                  }),
+                                  setShowFormAddress(true),
+                                  handleEditAddress(address),
+                                ]}
                               >
-                                No.Int:{" "}
-                              </b>
-                              <span
+                                Editar
+                              </a>
+                              <a
+                                role="button"
                                 style={{
-                                  display:
-                                    address.noInt != "" ? "block" : "none",
+                                  display: "inline-block",
+                                  marginLeft: "10px",
+                                  color: "#BB3D4B",
+                                  fontWeight: "bold",
+                                  textDecoration: "none",
                                 }}
-                                className="mx-2"
+                                onClick={() => handleRemoveAddress(address)}
                               >
-                                {address.noExt}
-                              </span>
+                                Eliminar
+                              </a>
+
+                              <hr />
                             </div>
-                          </label>
+                          );
+                        }
+                      } else {
+                        if (address.city != "León de los Aldama") {
+                          return (
+                            <div
+                              key={address.idAddress}
+                              className="radio-group"
+                            >
+                              <label className="my-3">
+                                <input
+                                  type="radio"
+                                  name="domicilio"
+                                  value={address.idAddress}
+                                  checked={idAddressEnvio == address.idAddress}
+                                  onChange={(event) =>
+                                    setIdAddressEnvio(
+                                      Number(event.target.value)
+                                    )
+                                  }
+                                  required
+                                />
+                                <div className="flex items-center  flex-wrap">
+                                  <b>Calle: </b>{" "}
+                                  <span className="pb-0 mx-2">
+                                    {" "}
+                                    {address.street}
+                                  </span>
+                                  <b>Colonia: </b>{" "}
+                                  <span className="mx-2">
+                                    {address.cologne}
+                                  </span>
+                                  <b>No.Ext: </b>
+                                  <span className="mx-2">{address.noExt}</span>
+                                  <b
+                                    style={{
+                                      display:
+                                        address.noInt != "" ? "block" : "none",
+                                    }}
+                                  >
+                                    No.Int:{" "}
+                                  </b>
+                                  <span
+                                    style={{
+                                      display:
+                                        address.noInt != "" ? "block" : "none",
+                                    }}
+                                    className="mx-2"
+                                  >
+                                    {address.noExt}
+                                  </span>
+                                </div>
+                              </label>
 
-                          <a
-                            role="button"
-                            style={{
-                              display: "inline-block",
-                              marginLeft: "10px",
-                              color: "#606060",
-                              fontWeight: "bold",
-                              textDecoration: "none",
-                            }}
-                            onClick={() => [
-                              setIsEditAddress({
-                                edit: true,
-                                idAddress: address.idAddress,
-                              }),
-                              setShowFormAddress(true),
-                              handleEditAddress(address),
-                            ]}
-                          >
-                            Editar
-                          </a>
-                          <a
-                            role="button"
-                            style={{
-                              display: "inline-block",
-                              marginLeft: "10px",
-                              color: "#BB3D4B",
-                              fontWeight: "bold",
-                              textDecoration: "none",
-                            }}
-                            onClick={() => handleRemoveAddress(address)}
-                          >
-                            Eliminar
-                          </a>
+                              <a
+                                role="button"
+                                style={{
+                                  display: "inline-block",
+                                  marginLeft: "10px",
+                                  color: "#606060",
+                                  fontWeight: "bold",
+                                  textDecoration: "none",
+                                }}
+                                onClick={() => [
+                                  setIsEditAddress({
+                                    edit: true,
+                                    idAddress: address.idAddress,
+                                  }),
+                                  setShowFormAddress(true),
+                                  handleEditAddress(address),
+                                ]}
+                              >
+                                Editar
+                              </a>
+                              <a
+                                role="button"
+                                style={{
+                                  display: "inline-block",
+                                  marginLeft: "10px",
+                                  color: "#BB3D4B",
+                                  fontWeight: "bold",
+                                  textDecoration: "none",
+                                }}
+                                onClick={() => handleRemoveAddress(address)}
+                              >
+                                Eliminar
+                              </a>
 
-                          <hr />
-                        </div>
-                      );
+                              <hr />
+                            </div>
+                          );
+                        }
+                        // return (
+                        //   <div key={address.idAddress} className="radio-group">
+                        //     <label className="my-3">
+                        //       <input
+                        //         type="radio"
+                        //         name="domicilio"
+                        //         value={address.idAddress}
+                        //         checked={idAddressEnvio == address.idAddress}
+                        //         onChange={(event) =>
+                        //           setIdAddressEnvio(Number(event.target.value))
+                        //         }
+                        //         required
+                        //       />
+                        //       <div className="flex items-center  flex-wrap">
+                        //         <b>Calle: </b>{" "}
+                        //         <span className="pb-0 mx-2">
+                        //           {" "}
+                        //           {address.street}
+                        //         </span>
+                        //         <b>Colonia: </b>{" "}
+                        //         <span className="mx-2">{address.cologne}</span>
+                        //         <b>No.Ext: </b>
+                        //         <span className="mx-2">{address.noExt}</span>
+                        //         <b
+                        //           style={{
+                        //             display:
+                        //               address.noInt != "" ? "block" : "none",
+                        //           }}
+                        //         >
+                        //           No.Int:{" "}
+                        //         </b>
+                        //         <span
+                        //           style={{
+                        //             display:
+                        //               address.noInt != "" ? "block" : "none",
+                        //           }}
+                        //           className="mx-2"
+                        //         >
+                        //           {address.noExt}
+                        //         </span>
+                        //       </div>
+                        //     </label>
+
+                        //     <a
+                        //       role="button"
+                        //       style={{
+                        //         display: "inline-block",
+                        //         marginLeft: "10px",
+                        //         color: "#606060",
+                        //         fontWeight: "bold",
+                        //         textDecoration: "none",
+                        //       }}
+                        //       onClick={() => [
+                        //         setIsEditAddress({
+                        //           edit: true,
+                        //           idAddress: address.idAddress,
+                        //         }),
+                        //         setShowFormAddress(true),
+                        //         handleEditAddress(address),
+                        //       ]}
+                        //     >
+                        //       Editar
+                        //     </a>
+                        //     <a
+                        //       role="button"
+                        //       style={{
+                        //         display: "inline-block",
+                        //         marginLeft: "10px",
+                        //         color: "#BB3D4B",
+                        //         fontWeight: "bold",
+                        //         textDecoration: "none",
+                        //       }}
+                        //       onClick={() => handleRemoveAddress(address)}
+                        //     >
+                        //       Eliminar
+                        //     </a>
+
+                        //     <hr />
+                        //   </div>
+                        // );
+                      }
                     })}
                   </form>
                 ) : (
@@ -791,40 +1020,6 @@ const OpcionesEntrega = () => {
                 : "Cerrar formulario"}
             </button>
           </div>
-
-          {/* <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
-            <div className="grid grid-cols-[2fr_1fr]">
-              <span
-                className="block text-end mx-3"
-                style={{
-                  fontWeight: "bold",
-                  color: "#666666",
-                }}
-              >
-                Sub total:
-              </span>
-              <span className="text[#808080] block">
-                {formatCurrency(1200)}
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
-            <div className="grid grid-cols-[2fr_1fr]">
-              <span
-                className="block text-end mx-3"
-                style={{
-                  fontWeight: "bold",
-                  color: "#B92B3D",
-                }}
-              >
-                Total:
-              </span>
-              <span className="text[#808080] block">
-                {formatCurrency(1200)}
-              </span>
-            </div>
-          </div> */}
 
           {dataCart && dataCart.length > 0 && (
             <div className="w-full flex justify-end items-center  gap-5 mt-4">

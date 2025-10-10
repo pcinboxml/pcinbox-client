@@ -2,11 +2,12 @@
 import "./detailsProduct.css";
 import useDetailsProduct from "./useDetailsProducts";
 import { useEffect, useState } from "react";
-import ProductI from "../interfaces/products/product.interface";
-import useService from "../services/useService";
+import ProductI from "../../interfaces/products/product.interface";
+import useService from "../../services/useService";
 import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
-import useFavorites from "../services/useFavorites";
+import useFavorites from "../../services/useFavorites";
 import { Box, Modal } from "@mui/material";
+import { useParams } from "next/navigation";
 
 const DetailsProduct = () => {
   const {
@@ -14,6 +15,7 @@ const DetailsProduct = () => {
     loadingAddProduct,
     openModal,
     changeImg,
+    dataProduct,
     setChangeImg,
     setOpenModal,
     handleAdd,
@@ -21,32 +23,20 @@ const DetailsProduct = () => {
     handleAddProductCart,
     handleOnChange,
     handleKeyBoard,
+    handleGetDataProduct,
   } = useDetailsProduct();
-  const { formatCurrency } = useService();
 
-  const [dataProduct, setProduct] = useState<ProductI>({
-    categoryId: "",
-    createdAt: "",
-    description: "",
-    idProduct: "",
-    imageUrl: [],
-    name: "",
-    price: "",
-    providerId: "",
-    quantity: 0,
-    stock: 0,
-    reviews: [],
-    rating: 0,
-    sku: "",
-  });
+  const { formatCurrency } = useService();
+  const router = useParams();
+  const { idProduct } = router;
 
   const { handleAddFavorites, loadingFavorite } = useFavorites();
 
   useEffect(() => {
-    let productStorage = localStorage.getItem("product");
-    if (productStorage) {
-      let convertJSON = JSON.parse(productStorage);
-      setProduct(convertJSON);
+    if (idProduct) {
+      console.log(idProduct);
+      handleGetDataProduct(idProduct);
+      //setProduct(null);
     }
   }, []);
 

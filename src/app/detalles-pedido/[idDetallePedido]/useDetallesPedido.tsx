@@ -156,7 +156,25 @@ const useDetallesPedido = () => {
           };
         });
 
-        setRows(dataRow);
+        const grouped: any = Object.values(
+          dataRow.reduce((acc: any, item: any) => {
+            if (!acc[item.id]) {
+              // Clonar el item para no modificar el original
+              acc[item.id] = { ...item };
+            } else {
+              // Sumar quantity
+              acc[item.id].quantity += item.quantity;
+
+              // (Opcional) combinar arrays de imágenes sin duplicar
+              acc[item.id].img = Array.from(
+                new Set([...acc[item.id].img, ...item.img])
+              );
+            }
+            return acc;
+          }, {})
+        );
+
+        setRows(grouped);
       }
     } catch (error) {
       setRows([]);
