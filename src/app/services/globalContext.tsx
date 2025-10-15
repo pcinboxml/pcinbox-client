@@ -24,6 +24,7 @@ interface ModalData {
   message: string | React.ReactNode;
   onConfirm: () => void;
   children?: any;
+  showActions?: boolean;
 }
 
 interface NotificationData {
@@ -55,6 +56,8 @@ interface ContextProps {
   handleSelectedCard: any;
   dataCard: CardI[];
   setDataCard: Dispatch<SetStateAction<CardI[]>>;
+  dataProducts: ProductI[];
+  setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -66,6 +69,7 @@ const CreateContext = createContext<ContextProps>({
     message: "",
     onConfirm: () => {},
     children: "",
+    showActions: true,
   },
   setDataModal: () => {},
   dataCart: [],
@@ -90,6 +94,8 @@ const CreateContext = createContext<ContextProps>({
   handleSelectedCard: () => {},
   dataCard: [],
   setDataCard: () => {},
+  dataProducts: [],
+  setDataProducts: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -102,6 +108,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     message: "",
     onConfirm: () => {},
     children: "",
+    showActions: true,
   });
 
   const [hasToken, setHasToken] = useState<boolean | null>(null);
@@ -118,6 +125,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   const [rutaImgPerfil, setRutaImgPerfil] = useState<string>("");
   const [selectedCard, setSelectedCard] = useState<string>("");
   const [dataCard, setDataCard] = useState<CardI[]>([]);
+  const [dataProducts, setDataProducts] = useState<ProductI[]>([]);
 
   const handleSelectedCard = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectedCard(event.target.value);
@@ -145,6 +153,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         handleSelectedCard,
         dataCard,
         setDataCard,
+        dataProducts,
+        setDataProducts,
       }}
     >
       {children}

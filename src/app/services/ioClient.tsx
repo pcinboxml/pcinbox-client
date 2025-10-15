@@ -11,6 +11,10 @@ const useSocket = () => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
     socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "");
 
+    if (localStorage.getItem("idUser")) {
+      socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
+    }
+
     return () => {
       socketServer.current?.disconnect();
       socketPagos.current?.disconnect();

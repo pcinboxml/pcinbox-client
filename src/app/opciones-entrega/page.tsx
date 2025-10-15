@@ -768,7 +768,7 @@ const OpcionesEntrega = () => {
                                 className="m-auto the-spinner"
                               />
                             ) : (
-                              "Guardar y continuar"
+                              "Guardar"
                             )}
                           </button>
                         </div>
@@ -995,7 +995,7 @@ const OpcionesEntrega = () => {
                       {loadingRegisterAddress ? (
                         <MdAutorenew size={20} className="m-auto the-spinner" />
                       ) : (
-                        "Guardar y continuar"
+                        "Guardar"
                       )}
                     </button>
                   </div>

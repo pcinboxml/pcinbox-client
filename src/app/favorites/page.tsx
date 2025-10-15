@@ -18,7 +18,7 @@ const Favorites = () => {
 
   return (
     <section
-      className="mx-auto mb-5 mt-4"
+      className="mx-auto mb-5"
       style={{
         width: "80%",
       }}

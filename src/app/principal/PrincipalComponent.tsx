@@ -9,17 +9,13 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import useSocket from "./../services/ioClient";
 import ProductI from "../interfaces/products/product.interface";
 import { Alert } from "@mui/material";
+import { useTheContext } from "../services/globalContext";
 
 const PrincipalComponent = () => {
   const { socketServer } = useSocket();
 
-  const {
-    getListProducts,
-    dataProducts,
-    handleOnChange,
-    onSubmitNewProduct,
-    setDataProducts,
-  } = usePrincipal();
+  const { setDataProducts, dataProducts } = useTheContext();
+  const { getListProducts } = usePrincipal();
 
   useEffect(() => {
     getListProducts();
@@ -48,69 +44,6 @@ const PrincipalComponent = () => {
         )}
 
         <div className="content-index">
-          {/* <form
-            style={{ display: "none" }}
-            className="flex flex-col items-center mt-1"
-            onSubmit={onSubmitNewProduct}
-          >
-            <input
-              type="text"
-              placeholder="Nombre"
-              name="name"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-            <input
-              type="text"
-              placeholder="Descripcion"
-              name="description"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-            <input
-              type="number"
-              placeholder="price"
-              name="price"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-
-            <input
-              type="number"
-              placeholder="rating"
-              name="rating"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-
-            <input
-              type="text"
-              placeholder="imagen url"
-              name="image_url"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-
-            <input
-              type="text"
-              placeholder="categoryId"
-              name="categoryId"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-
-            <input
-              type="text"
-              placeholder="proveedorId"
-              name="providerId"
-              className="form-control"
-              onChange={handleOnChange}
-            />
-
-            <button type="submit" className="btn btn-info">
-              Guardar Producto
-            </button>
-          </form> */}
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
 

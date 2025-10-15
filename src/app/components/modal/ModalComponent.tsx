@@ -14,14 +14,16 @@ const ModalComponent = ({
   message,
   children,
   onConfirm,
+  showActions = true,
 }: {
   isOpen: boolean;
   onClose: () => void;
   type: ModalType;
   title: string;
   message: any;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onConfirm: () => void;
+  showActions?: boolean;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -174,75 +176,27 @@ const ModalComponent = ({
             ) : (
               message
             )}
+            {children}
 
-            <div className="flex gap-4 justify-center">
-              <button
-                onClick={handleClose}
-                className="border text-[#808080] rounded px-2 py-1"
-              >
-                Cancelar
-              </button>
+            {showActions && showActions == true && (
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleClose}
+                  className="border text-[#808080] rounded px-2 py-1"
+                >
+                  Cancelar
+                </button>
 
-              <button
-                onClick={handleConfirm}
-                className={` text-white font-bold bg-[#bb3d4b] px-2 py-1 rounded`}
-              >
-                Aceptar
-              </button>
-            </div>
+                <button
+                  onClick={handleConfirm}
+                  className={` text-white font-bold bg-[#bb3d4b] px-2 py-1 rounded`}
+                >
+                  Aceptar
+                </button>
+              </div>
+            )}
           </div>
         </div>
-
-        {/*
-
-        <div className="text-center" style={{ padding: "25px" }}>
-          <div
-            className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 ${config.bgColor} ${config.borderColor} border-2`}
-          >
-            <IconComponent className={`w-8 h-8 ${config.iconColor}`} />
-          </div>
-
-          {title && (
-            <h3
-              id="modal-title"
-              className="text-2xl font-semibold text-gray-900 mb-3"
-            >
-              {title}
-            </h3>
-          )}
-
-          {message && (
-            <p
-              id="modal-description"
-              className="text-black mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
-            >
-              {message}
-            </p>
-          )}
-
-         
-          {children && (
-            <div className="flex gap-4 justify-center pb-2">{children}</div>
-          )}
-
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={handleClose}
-              style={{ padding: "10px" }}
-              className="border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Cancelar
-            </button>
-
-            <button
-              onClick={handleConfirm}
-              style={{ padding: "10px" }}
-              className={` text-white rounded-lg transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 ${config.buttonColor}`}
-            >
-              Aceptar
-            </button>
-          </div>
-        </div> */}
       </div>
     </div>
   );

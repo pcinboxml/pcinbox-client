@@ -77,18 +77,23 @@ const Footer = () => {
           </div>
 
           <div className="flex justify-center mt-2">
-            <Rating
-              name="simple-controlled"
-              defaultValue={5}
-              max={5}
-              readOnly
-              size="medium"
-              sx={{
-                "& .MuiRating-iconFilled": {
-                  color: "#EDEC3B",
-                },
-              }}
-            />
+            <a
+              target="_blank"
+              href="https://www.google.com/search?q=pcinbox&sca_esv=83beed824cc47635&sxsrf=AE3TifNBEGA5x-KLCGqqedPiofDMOAzh1A%3A1760143660225&source=hp&ei=LKnpaMv2C-DJkPIPuYnZ4AU&iflsig=AOw8s4IAAAAAaOm3PMc656-GPbHeSuNUNLvnLxneKhFP&gs_ssp=eJzj4tVP1zc0zC3LzcowM00zYLRSNaiwMDFKSkozMUlOTkm2MElOsTKoMLZINDQ1TQMKGJlYGBsae7EXJGfmJeVXAABJnxKs&oq=pcin&gs_lp=Egdnd3Mtd2l6IgRwY2luKgIIADITEC4YgAQYxwEYJxiKBRiOBRivATIKECMYgAQYJxiKBTIEECMYJzINEC4YgAQY0QMYxwEYCjINEAAYgAQYsQMYgwEYCjINEC4YgAQY0QMYxwEYCjIHEAAYgAQYCjINEC4YgAQY0QMYxwEYCjIHEAAYgAQYCjIFEAAYgARI8g1QAFitCHAAeACQAQCYAWygAZgDqgEDMi4yuAEDyAEA-AEBmAIEoAKoA8ICEBAuGIAEGLEDGEMYgwEYigXCAgoQABiABBhDGIoFwgIKEC4YgAQYQxiKBcICCxAAGIAEGLEDGIMBwgINEAAYgAQYsQMYQxiKBcICCBAAGIAEGLEDmAMAkgcDMC40oAfeObIHAzAuNLgHqAPCBwUwLjMuMcgHDA&sclient=gws-wiz"
+            >
+              <Rating
+                name="simple-controlled"
+                defaultValue={5}
+                max={5}
+                readOnly
+                size="medium"
+                sx={{
+                  "& .MuiRating-iconFilled": {
+                    color: "#EDEC3B",
+                  },
+                }}
+              />
+            </a>
           </div>
           <div className="redes">
             <img src="/facebook.png" />

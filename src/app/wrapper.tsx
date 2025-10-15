@@ -69,6 +69,7 @@ export default function AppWrapper({
             onClose={() => dataModal.onClose()}
             type={dataModal.type}
             children={dataModal.children}
+            showActions={dataModal.showActions}
           />
 
           <Notification dataNotification={dataNotification} />

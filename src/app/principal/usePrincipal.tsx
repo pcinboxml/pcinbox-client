@@ -5,69 +5,24 @@ import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import useProveedores from "../services/proveedores/useProveedores";
 import useSocket from "./../services/ioClient";
+import { useTheContext } from "../services/globalContext";
 
 const usePrincipal = () => {
   const { socketServer } = useSocket();
+  const { setDataProducts, dataProducts } = useTheContext();
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
-  const [dataProducts, setDataProducts] = useState<ProductI[]>([]);
-  const [newProduct, setNewProduct] = useState({
-    categoryId: "",
-    description: "",
-    image_url: "",
-    name: "",
-    price: "",
-    providerId: "",
-    stock: 150,
-    quantity: 2,
-    rating: 0,
-  });
-
-  // const [pagination, setPagination] = useState(() => {
-  //   const initialPagination = [
-  //     {
-  //       id: 1,
-  //       currentPage: 1,
-  //     },
-  //     {
-  //       id: 2,
-  //       currentPage: 1,
-  //     },
-  //     {
-  //       id: 3,
-  //       currentPage: 1,
-  //     },
-  //   ];
-  //   const itemsPerPage = 6;
-
-  //   return initialPagination.map((item) => {
-  //     const starIndex = (item.currentPage - 1) * itemsPerPage;
-  //     const endIndex = starIndex + itemsPerPage;
-  //     const paginatedProducts = dataProducts.slice(starIndex, endIndex);
-  //     // const pageCount = Math.ceil(dataProducts.length / itemsPerPage);
-  //     return {
-  //       ...item,
-  //       startIndex: starIndex,
-  //       endIndex: endIndex,
-  //       paginatedProduct: paginatedProducts,
-  //       // pageCount: pageCount,
-  //     };
-  //   });
+  // const [newProduct, setNewProduct] = useState({
+  //   categoryId: "",
+  //   description: "",
+  //   image_url: "",
+  //   name: "",
+  //   price: "",
+  //   providerId: "",
+  //   stock: 150,
+  //   quantity: 2,
+  //   rating: 0,
   // });
-
-  const { requestGet } = useService();
-  const { requestGetProducts, requestPostProveedor } = useProveedores();
-
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-  // const endIndex = startIndex + itemsPerPage;
-  // const paginatedProducts = dataProducts.slice(startIndex, endIndex);
-  // const pageCount = Math.ceil(dataProducts.length / itemsPerPage);
-
-  const handleClick = async () => {
-    try {
-      const res = await requestGet("/categories/list");
-    } catch (error: any) {}
-  };
 
   const getListProducts = async () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
@@ -141,63 +96,33 @@ const usePrincipal = () => {
       socketServer.current?.off("newAllProducts");
       socketServer.current?.off("updateAllProducts");
     };
-
-    // try {
-    //   setLoadingProducts(false);
-    //   const resp = await requestGetProducts();
-
-    //   setLoadingProducts(true);
-
-    //   if (resp && resp.status == 200) {
-    //     setDataProducts(resp.data.data);
-    //   }
-    // } catch (error) {
-    //   setLoadingProducts(false);
-    // }
-  };
-
-  const changePagination = (
-    event: React.ChangeEvent<any>,
-    page: number,
-    id: number
-  ) => {
-    //setCurrentPage(page);
-    // setPagination((prev) => {
-    //   let findId = prev.find((item) => item.id == id);
-    //   if (findId) {
-    //     findId.currentPage = page;
-    //   }
-    //   return prev;
-    // });
-    //sectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setNewProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    // setNewProduct((prev) => ({
+    //   ...prev,
+    //   [name]: value,
+    // }));
   };
 
   const onSubmitNewProduct = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const resp = await requestPostProveedor(newProduct, "/newProduct");
-    const data = await resp.data;
-    const status = await resp.status;
+    // const resp = await requestPostProveedor(newProduct, "/newProduct");
+    // const data = await resp.data;
+    // const status = await resp.status;
 
-    console.log(newProduct);
-    console.log(data);
-    console.log(status);
+    // console.log(newProduct);
+    // console.log(data);
+    // console.log(status);
   };
 
   return {
-    handleClick,
+    // handleClick,
     getListProducts,
     dataProducts,
     loadingProducts,
-    changePagination,
     handleOnChange,
     onSubmitNewProduct,
     setDataProducts,

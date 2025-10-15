@@ -126,8 +126,25 @@ const useService = () => {
     }
   };
 
-  const onRouterLink = (route: string): void => {
-    router.push(route);
+  const onRouterLink = async (route: string): Promise<void> => {
+    try {
+      await router.prefetch(route);
+      router.push(route);
+    } catch (error) {
+      setDataModal({
+        isOpen: true,
+        title: "Error",
+        type: "error",
+        message: "Error navegando a la ruta " + route,
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onClose: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+      console.error("Error navegando a la ruta:", error);
+    }
   };
 
   const onRouterHref = (route: string, blank: boolean): void => {
@@ -232,6 +249,7 @@ const useService = () => {
           city: item.city,
           state: item.state,
           country: item.country,
+          idShipment: item.idShipment,
           products: [{ ...item }],
         });
       }

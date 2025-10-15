@@ -10,8 +10,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect, useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
 import { FcGoogle } from "react-icons/fc";
@@ -20,6 +19,9 @@ import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
 import { useSession } from "next-auth/react";
 import usePerfil from "@/app/perfil/usePerfil";
+import useSocket from "@/app/services/ioClient";
+import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
+import SearchProduct from "../searchProduct/SearchProduct";
 
 const Navbar = () => {
   const {
@@ -51,10 +53,11 @@ const Navbar = () => {
 
   const { dataCart, setHasToken, hasToken, rutaImgPerfil, dataFavorites } =
     useTheContext();
-  const pathname = usePathname();
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
   const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
+  const { socketPagos } = useSocket();
+  const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -88,6 +91,7 @@ const Navbar = () => {
         localStorage.setItem("name", session.user?.name!);
         localStorage.setItem("idUser", idUser);
         localStorage.setItem("lastname", "");
+        socketPagos.current?.emit("idUser", idUser);
 
         if (isValidToken.idUser) {
           setHasToken(true);
@@ -98,6 +102,7 @@ const Navbar = () => {
     } else if (authGoogle == "false") {
       if (localStorage.getItem("token")) {
         const validToken = isTokenExpired(localStorage.getItem("token")!);
+        socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
 
         setHasToken(validToken == true ? false : true);
         // setHasToken(true);
@@ -120,12 +125,14 @@ const Navbar = () => {
           <img src="/logo.png" />
         </div>
         <div className="search">
-          <form action="" className="flex">
-            <input type="search" placeholder="¿Qué articulo buscas?" />
-            <button>
-              <span className="px-2">Buscar</span>
-            </button>
-          </form>
+          {isFocusedSearch && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-19"
+              onClick={() => setIsFocusedSearch(false)}
+            />
+          )}
+
+          <SearchProduct setIsFocusedSearch={setIsFocusedSearch} />
         </div>
         <div className="container-car container-car-first">
           <div className="icon-car relative cursor-pointer">
@@ -154,13 +161,14 @@ const Navbar = () => {
         </div>
       </div>
       <div className="flex w-full">
-        <div
+        <SubMenuProductos />
+        {/* <div
           className="container-products"
-          onMouseLeave={
-            pathname == "/principal" || pathname == "/"
-              ? () => {}
-              : onMouseLeaveProducts
-          }
+          // onMouseLeave={
+          //   pathname == "/principal" || pathname == "/"
+          //     ? () => {}
+          //     : onMouseLeaveProducts
+          // }
         >
           <button
             className="btn-products"
@@ -181,52 +189,12 @@ const Navbar = () => {
                 pathname == "/principal" || pathname == "/" ? "block" : "none",
             }}
           >
-            <ul>
-              <li>
-                <a href="#">Procesadores</a>
-              </li>
-              <li>
-                <a href="#">Tarjetas de video</a>
-              </li>
-              <li>
-                <a href="#">Placas madre</a>
-              </li>
-              <li>
-                <a href="#">Memoria Ram</a>
-              </li>
-              <li>
-                <a href="#">Almacenamiento</a>
-              </li>
-              <li>
-                <a href="#">Gabinetes para PC</a>
-              </li>
-              <li>
-                <a href="#">Fuentes de Poder</a>
-              </li>
-              <li>
-                <a href="#">Enfriamientos</a>
-              </li>
-              <li>
-                <a href="#">Monitores</a>
-              </li>
-              <li>
-                <a href="#">Teclados</a>
-              </li>
-              <li>
-                <a href="#">Mouse</a>
-              </li>
-              <li>
-                <a href="#">Energia</a>
-              </li>
-              <li>
-                <a href="#">Redes</a>
-              </li>
-            </ul>
+            <SubMenuProductos />
           </div>
-        </div>
+        </div> */}
 
         <div className="container-submenu">
-          <div className="icon-hamburguer relative">
+          {/* <div className="icon-hamburguer relative">
             <div className="flex p-0">
               <button
                 onClick={handleToggleNav}
@@ -250,10 +218,10 @@ const Navbar = () => {
                   <b style={{ color: "#BB3D4B" }}>{formatCurrency(0)}</b>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {/* Sub menu responsivo para tablets */}
-            {navRefResponsive ? (
+          {/* Sub menu responsivo para tablets */}
+          {/* {navRefResponsive ? (
               <div
                 id="container-submenu-responsive"
                 className="absolute flex flex-col justify-center shadow container-submenu-responsive bg-white rounded-2xl"
@@ -334,9 +302,9 @@ const Navbar = () => {
                   </li>
                 </ul>
               </div>
-            ) : null}
-            {/*Fin Sub menu responsivo para celulares */}
-          </div>
+            ) : null} */}
+          {/*Fin Sub menu responsivo para celulares */}
+          {/* </div> */}
           {/* {console.log(hasToken)}
           {hasToken != null ? ( */}
           <div className="submenu">

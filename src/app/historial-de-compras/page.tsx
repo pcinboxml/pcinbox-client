@@ -7,6 +7,7 @@ import useHistorialDeCompras from "./useHistorialCompras";
 import { Alert } from "@mui/material";
 import useService from "../services/useService";
 import { MdAutorenew } from "react-icons/md";
+import useSocket from "../services/ioClient";
 
 const HistoryShop = () => {
   const {
@@ -16,13 +17,38 @@ const HistoryShop = () => {
     handleOnSelectStatus,
     showModal,
     handleOnSearch,
+    setDataHistoryCompras,
     handleOnPeriodo,
   } = useHistorialDeCompras();
   const { formatCurrency, onRouterLink } = useService();
+  const { socketPagos } = useSocket();
 
   useEffect(() => {
     handleHistoryByUser();
   }, []);
+
+  useEffect(() => {
+    if (!socketPagos.current) return;
+
+    const socket = socketPagos.current;
+
+    const handler = (data: any) => {
+      setDataHistoryCompras((prev) => {
+        return prev.map((item) => {
+          if (item.idShipment === data.idShipment) {
+            return { ...item, statusEnvio: data.status };
+          }
+          return item;
+        });
+      });
+    };
+
+    socket.on("changeStatusShipment", handler);
+
+    return () => {
+      socket.off("changeStatusShipment", handler);
+    };
+  }, [socketPagos.current]);
   return (
     <section
       style={{

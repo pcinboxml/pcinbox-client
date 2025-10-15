@@ -1,0 +1,42 @@
+.dropdownSubmenu {
+  position: relative;
+}
+
+.dropdownMenu {
+  /* position: absolute; */
+  /* top: -10%; o top: 0; left: 100% si quieres a la derecha */
+  /* left: 130px; */
+  min-width: 250px;
+  min-height: auto;
+  margin-left: 30px;
+  flex-shrink: 0;
+  box-shadow: inset 10px 0px 5px rgba(0, 0, 0, 0.2);
+  background: white;
+  z-index: 1000;
+}
+
+.tagA {
+  color: #5f5f5f !important;
+  text-decoration: none !important;
+  font-weight: 100 !important;
+}
+
+.tagLi:hover .tagA {
+  color: #bb3d4b;
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-color: #a67845;
+  text-decoration-thickness: 3px;
+}
+
+.dropdownMenu li a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+}
+
+/* Mostrar el submenú al hacer hover sobre el item */
+.dropdownSubmenu:hover .dropdownMenu {
+  display: block;
+}

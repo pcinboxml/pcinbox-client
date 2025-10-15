@@ -158,6 +158,7 @@ const useHistorialDeCompras = () => {
     handleHistoryByUser,
     handleOnSelectStatus,
     handleOnSearch,
+    setDataHistoryCompras,
   };
 };
 

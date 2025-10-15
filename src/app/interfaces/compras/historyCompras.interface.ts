@@ -16,6 +16,7 @@ export interface HistoryComprasI {
 }
 
 export interface GroupByIdI {
+  idShipment: number;
   idOrder: number;
   statusEnvio: any;
   createdAt: any;

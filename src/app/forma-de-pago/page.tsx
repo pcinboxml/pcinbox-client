@@ -12,19 +12,21 @@ import ListCardsSave from "../components/listCardsSave/ListCardsSave";
 
 import CardForm from "../components/cardForm/CardForm";
 import StripeProviderClient from "../components/stripeClient/StripeClientProvider";
+import { MdAdd } from "react-icons/md";
 
 const FormaDePago = () => {
   const {
     optionsPago,
     idMethodPay,
     methodsPay,
-    loadingTransferBank,
-    handleOnChange,
+    // loadingTransferBank,
+    // handleOnChange,
     handleSelectOptionPay,
     handleSelectOptionPayById,
-    handleRegisterTransferBank,
+    handleRegisterCard,
+    // handleRegisterTransferBank,
     getValuesStorage,
-    handleOnChangeTextArea,
+    // handleOnChangeTextArea,
   } = useFormaDePago();
   const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
     useTheContext();
@@ -183,83 +185,39 @@ const FormaDePago = () => {
 
               {idMethodPay != 0 && (
                 <div style={{ marginTop: "50px" }}>
-                  {
-                    idMethodPay == 1 ? (
-                      <>
-                        {dataCard && dataCard.length > 0 ? (
-                          <>
-                            <h5
-                              style={{
-                                fontWeight: "bold",
-                                fontSize: "17px",
-                                color: "#666666",
-                              }}
-                            >
-                              Selecciona el metodo de pago
-                            </h5>
-                            <div
-                              className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
-                              style={{
-                                overflowY: "auto",
-                                overflowX: "hidden",
-                              }}
-                            >
-                              <ListCardsSave dataCard={dataCard} />
-                            </div>
-                          </>
-                        ) : null}
-                      </>
-                    ) : null
-                    // <form onSubmit={handleRegisterTransferBank}>
-                    //   {methodsPay
-                    //     .filter((pay) => pay.id == idMethodPay)
-                    //     .map((item) => {
-                    //       return item.form.map((f, index) => {
-                    //         if (idMethodPay == 2) {
-                    //           return (
-                    //             <div
-                    //               key={index}
-                    //               className="flex flex-col gap-2 items-center mt-4 relative"
-                    //             >
-                    //               <label
-                    //                 htmlFor=""
-                    //                 className="text-[#808080] text-base text-left block w-full"
-                    //               >
-                    //                 {f.label}
-                    //               </label>
-                    //               {f.input == "text" ? (
-                    //                 <input
-                    //                   type={f.input}
-                    //                   className="form-control"
-                    //                   name={f.name}
-                    //                   onChange={handleOnChange}
-                    //                 />
-                    //               ) : f.input == "textarea" ? (
-                    //                 <textarea
-                    //                   className="form-control"
-                    //                   style={{ resize: "none" }}
-                    //                   onChange={handleOnChangeTextArea}
-                    //                 ></textarea>
-                    //               ) : null}
-                    //             </div>
-                    //           );
-                    //         }
-                    //       });
-                    //     })}
-                    //   <div className="mt-4 flex justify-center">
-                    //     {idMethodPay == 2 ? (
-                    //       <button
-                    //         disabled={loadingTransferBank}
-                    //         type="button"
-                    //         className="rounded p-2 bg-[#BA2B3D] text-white font-bold"
-                    //       >
-                    //         Hacer transferencia
-                    //       </button>
-                    //     ) : null}
-                    //   </div>
-                    // </form>
-                  }
-                  <div className="mt-3">
+                  {idMethodPay == 1 ? (
+                    <>
+                      {dataCard && dataCard.length > 0 ? (
+                        <>
+                          <h5
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "17px",
+                              color: "#666666",
+                            }}
+                          >
+                            Selecciona el metodo de pago
+                          </h5>
+                          <div
+                            className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
+                            style={{
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                            }}
+                          >
+                            <ListCardsSave dataCard={dataCard} />
+                          </div>
+                          <button
+                            onClick={handleRegisterCard}
+                            className="cursor-pointer border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#990000] text-white font-bold"
+                          >
+                            <MdAdd /> Agregar tarjeta
+                          </button>
+                        </>
+                      ) : null}
+                    </>
+                  ) : null}
+                  {/* <div className="mt-3">
                     <h5
                       style={{
                         fontWeight: "bold",
@@ -273,14 +231,14 @@ const FormaDePago = () => {
                         ? "Transferencia bancaria"
                         : ""}
                     </h5>
-                  </div>
-                  {idMethodPay == 1 ? (
+                  </div> */}
+                  {/* {idMethodPay == 1 ? (
                     <StripeProviderClient>
                       <CardForm
                         userId={Number(localStorage.getItem("idUser"))}
                       />
                     </StripeProviderClient>
-                  ) : null}
+                  ) : null} */}
                 </div>
               )}
             </div>

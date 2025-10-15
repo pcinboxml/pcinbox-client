@@ -9,7 +9,7 @@ const useNavbar = () => {
   const { requestGet } = useService();
   const navRef = useRef<HTMLDivElement>(null);
   const optionProducts = useRef<HTMLDivElement>(null);
-  const { hasToken, setDataCart, setDataModal } = useTheContext();
+  const { hasToken, setDataCart } = useTheContext();
 
   const onMouseEnterSubmenu = (idSubmenu: string) => {
     const idSub = document.getElementById(idSubmenu);
