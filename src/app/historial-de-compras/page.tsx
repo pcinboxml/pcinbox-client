@@ -7,7 +7,7 @@ import useHistorialDeCompras from "./useHistorialCompras";
 import { Alert } from "@mui/material";
 import useService from "../services/useService";
 import { MdAutorenew } from "react-icons/md";
-import useSocket from "../services/ioClient";
+import { useTheContext } from "../services/globalContext";
 
 const HistoryShop = () => {
   const {
@@ -21,7 +21,8 @@ const HistoryShop = () => {
     handleOnPeriodo,
   } = useHistorialDeCompras();
   const { formatCurrency, onRouterLink } = useService();
-  const { socketPagos } = useSocket();
+
+  const { socketPagos } = useTheContext();
 
   useEffect(() => {
     handleHistoryByUser();

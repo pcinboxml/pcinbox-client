@@ -7,10 +7,15 @@ import {
   Dispatch,
   SetStateAction,
   ChangeEvent,
+  RefObject,
+  useRef,
+  useEffect,
 } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 import { CardI } from "../interfaces/card/card.interface";
+import type { Socket } from "socket.io-client";
+import io from "socket.io-client";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -58,6 +63,8 @@ interface ContextProps {
   setDataCard: Dispatch<SetStateAction<CardI[]>>;
   dataProducts: ProductI[];
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
+  socketPagos: RefObject<typeof Socket | null>;
+  socketServer: RefObject<typeof Socket | null>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -96,6 +103,8 @@ const CreateContext = createContext<ContextProps>({
   setDataCard: () => {},
   dataProducts: [],
   setDataProducts: () => {},
+  socketPagos: { current: null },
+  socketServer: { current: null },
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -131,6 +140,18 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     setSelectedCard(event.target.value);
   };
 
+  const socketServer = useRef<typeof Socket | null>(null);
+  const socketPagos = useRef<typeof Socket | null>(null);
+
+  useEffect(() => {
+    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
+    socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "");
+
+    return () => {
+      socketServer.current?.disconnect();
+      socketPagos.current?.disconnect();
+    };
+  }, []);
   return (
     <CreateContext.Provider
       value={{
@@ -155,6 +176,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataCard,
         dataProducts,
         setDataProducts,
+        socketPagos,
+        socketServer,
       }}
     >
       {children}

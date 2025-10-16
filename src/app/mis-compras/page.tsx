@@ -2,16 +2,12 @@
 
 import { useEffect } from "react";
 import OrderTimeLine from "../components/orderTimeLine/OrderTimeLine";
-import PurchaseCard from "../components/purchaseCard/PurchaseCard";
 import SidebarMiCuenta from "../components/sidebar-mi-cuenta/SidebarMiCuenta";
-import { pastPurchases, trackingSteps, producto } from "./gridMisCompras";
-import useSocket from "../services/ioClient";
+import { trackingSteps } from "./gridMisCompras";
 import useMisCompras from "./useMisCompras";
 
 const MisCompras = () => {
-  const { socketPagos } = useSocket();
-  const { handleMisCompras, handleCancelledCompra, dataHistoryCompras } =
-    useMisCompras();
+  const { handleMisCompras, dataHistoryCompras } = useMisCompras();
 
   useEffect(() => {
     handleMisCompras();

@@ -21,6 +21,7 @@ const usePayEnd = () => {
 
       if (resp.status == 200) {
         const data = await resp.data;
+
         setDataOrderCash(data.data.data);
       }
     } catch (error) {

@@ -109,8 +109,7 @@ const PayEnd = () => {
                       Total a pagar:{" "}
                       <span className="text-black font-bold">
                         {formatCurrency(
-                          dataOrderCash?.amount / 100 +
-                            (dataOrderCash?.amount / 100) * 0.16
+                          Number((dataOrderCash.amount / 100).toFixed(2))
                         )}{" "}
                         pesos
                       </span>

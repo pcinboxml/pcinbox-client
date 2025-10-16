@@ -19,7 +19,6 @@ import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
 import { useSession } from "next-auth/react";
 import usePerfil from "@/app/perfil/usePerfil";
-import useSocket from "@/app/services/ioClient";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 
@@ -51,12 +50,17 @@ const Navbar = () => {
     onLoginGoogle,
   } = useLogin();
 
-  const { dataCart, setHasToken, hasToken, rutaImgPerfil, dataFavorites } =
-    useTheContext();
+  const {
+    dataCart,
+    setHasToken,
+    hasToken,
+    rutaImgPerfil,
+    dataFavorites,
+    socketPagos,
+  } = useTheContext();
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
   const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
-  const { socketPagos } = useSocket();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
 
   const totalPrice = useMemo(() => {

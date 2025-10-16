@@ -6,13 +6,12 @@ import Card from "../components/card/Card";
 import { useEffect } from "react";
 import Skeleton from "../components/skeleton/Skeleton";
 import PaginationComponent from "../components/pagination/PaginationComponent";
-import useSocket from "./../services/ioClient";
 import ProductI from "../interfaces/products/product.interface";
 import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
 
 const PrincipalComponent = () => {
-  const { socketServer } = useSocket();
+  const { socketServer } = useTheContext();
 
   const { setDataProducts, dataProducts } = useTheContext();
   const { getListProducts } = usePrincipal();

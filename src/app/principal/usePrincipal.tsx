@@ -4,11 +4,10 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import useProveedores from "../services/proveedores/useProveedores";
-import useSocket from "./../services/ioClient";
 import { useTheContext } from "../services/globalContext";
 
 const usePrincipal = () => {
-  const { socketServer } = useSocket();
+  const { socketServer } = useTheContext();
   const { setDataProducts, dataProducts } = useTheContext();
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
