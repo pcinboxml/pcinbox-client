@@ -64,6 +64,16 @@ section {
   display: none !important;
 }
 
+.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedEnd.MuiAutocomplete-input.MuiAutocomplete-inputFocused.css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input {
+  border: none !important;
+}
+.css-1oubvyo .MuiAutocomplete-inputRoot .MuiAutocomplete-input {
+  border: none !important;
+}
+
+.css-1oubvyo .MuiOutlinedInput-root .MuiAutocomplete-endAdornment {
+  display: none !important;
+}
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
