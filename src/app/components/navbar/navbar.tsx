@@ -21,17 +21,19 @@ import { useSession } from "next-auth/react";
 import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const {
     navRefResponsive,
     navRef,
-    optionProducts,
+
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
     handleToggleNav,
     handleDOM,
     handleDetectedScroll,
+    handleClickTopScroll,
     onMouseEnterProducts,
     onMouseLeaveProducts,
     setNavRefResponsive,
@@ -62,6 +64,7 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
+  const pathname = usePathname();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -124,7 +127,7 @@ const Navbar = () => {
 
   return (
     <header className="main-header" ref={navRef}>
-      <div className="container-header flex w-full justify-center p-2 items-center">
+      <div className="container-header container flex w-full justify-center p-2 items-center">
         <div className="logo" onClick={() => onRouterLink("/principal")}>
           <img src="/logo.png" />
         </div>
@@ -164,38 +167,35 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      <div className="flex w-full">
-        <SubMenuProductos />
-        {/* <div
+      <div className="flex container">
+        <div
           className="container-products"
-          // onMouseLeave={
-          //   pathname == "/principal" || pathname == "/"
-          //     ? () => {}
-          //     : onMouseLeaveProducts
-          // }
+          onMouseLeave={() => {
+            pathname == "/principal" || pathname == "/"
+              ? null
+              : onMouseLeaveProducts();
+          }}
         >
           <button
             className="btn-products"
-            onMouseEnter={
+            onClick={() => {
               pathname == "/principal" || pathname == "/"
-                ? () => {}
-                : onMouseEnterProducts
-            }
+                ? handleClickTopScroll()
+                : null;
+            }}
+            onMouseEnter={() => {
+              pathname == "/principal" || pathname == "/"
+                ? null
+                : onMouseEnterProducts();
+            }}
           >
             Productos
           </button>
 
-          <div
-            ref={optionProducts}
-            className="container-list-products absolute bg-white shadow"
-            style={{
-              display:
-                pathname == "/principal" || pathname == "/" ? "block" : "none",
-            }}
-          >
+          {pathname != "/principal" && pathname != "/" ? (
             <SubMenuProductos />
-          </div>
-        </div> */}
+          ) : null}
+        </div>
 
         <div className="container-submenu">
           {/* <div className="icon-hamburguer relative">

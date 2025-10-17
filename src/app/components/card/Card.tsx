@@ -97,7 +97,7 @@ const Card = ({
           />
         </div>
         {/* {product.reviews && product.reviews.length > 0 && ( */}
-        <div className="comments flex p-4">
+        <div className="comments flex">
           <StyledTooltip
             title={
               <div className="w-full  flex justify-center">

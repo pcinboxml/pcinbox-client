@@ -21,7 +21,7 @@ const ConfirmaProducts = () => {
   const { dataCart } = useTheContext();
 
   return (
-    <section className="w-[90%] mx-auto my-5">
+    <section>
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
@@ -49,10 +49,10 @@ const ConfirmaProducts = () => {
             )}
 
             {dataCart && dataCart.length > 0 ? (
-              <div className="w-full flex justify-end items-center gap-3 py-2 px-3">
+              <div className="w-full flex justify-end items-center gap-3 py-2">
                 <div className="grid grid-cols-[2fr_1fr]">
                   <span
-                    className="block text-end mx-3"
+                    className="block text-end"
                     style={{
                       fontWeight: "bold",
                       color: "#666666",

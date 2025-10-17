@@ -32,6 +32,11 @@ body {
   overflow-x: hidden;
 }
 
+section {
+  margin-top: 30px;
+  margin-bottom: 60px;
+}
+
 .slick-prev,
 .slick-next {
   z-index: 10;
@@ -59,9 +64,6 @@ body {
   display: none !important;
 }
 
-section {
-  margin-top: 70px !important;
-}
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

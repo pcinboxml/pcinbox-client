@@ -9,11 +9,13 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
+import { usePathname } from "next/navigation";
+import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
+import useNavbar from "../components/navbar/useNavbar";
 
 const PrincipalComponent = () => {
-  const { socketServer } = useTheContext();
-
-  const { setDataProducts, dataProducts } = useTheContext();
+  const pathName = usePathname();
+  const { setDataProducts, dataProducts, socketServer } = useTheContext();
   const { getListProducts } = usePrincipal();
 
   useEffect(() => {
@@ -42,7 +44,19 @@ const PrincipalComponent = () => {
           ""
         )}
 
-        <div className="content-index">
+        <div className="content-index relative">
+          {(dataProducts.length > 0 && pathName == "/principal") ||
+          pathName == "/" ? (
+            <SubMenuProductos
+              styles={{
+                left: "-160px",
+                top: "-43px",
+                paddingLeft: "2px",
+                paddingTop: "3px",
+                paddingRight: "3px",
+              }}
+            />
+          ) : null}
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
 

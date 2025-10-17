@@ -52,7 +52,7 @@ const FormaDePago = () => {
   }, []);
 
   return (
-    <section className="w-[80%] mx-auto my-5">
+    <section>
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={2} />

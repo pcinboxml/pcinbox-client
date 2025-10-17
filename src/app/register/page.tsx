@@ -23,7 +23,7 @@ const Register = () => {
 
   return (
     <section
-      className={`${styles.section} border flex`}
+      className={`border flex`}
       style={{
         marginBottom: "80px",
       }}

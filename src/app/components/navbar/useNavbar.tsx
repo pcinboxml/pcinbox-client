@@ -2,14 +2,13 @@
 
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const useNavbar = () => {
   const [navRefResponsive, setNavRefResponsive] = useState(false);
   const { requestGet } = useService();
   const navRef = useRef<HTMLDivElement>(null);
-  const optionProducts = useRef<HTMLDivElement>(null);
-  const { hasToken, setDataCart } = useTheContext();
+  const { hasToken, setShowProductsMenu, setDataCart } = useTheContext();
 
   const onMouseEnterSubmenu = (idSubmenu: string) => {
     const idSub = document.getElementById(idSubmenu);
@@ -28,15 +27,11 @@ const useNavbar = () => {
   };
 
   const onMouseEnterProducts = () => {
-    if (optionProducts.current) {
-      optionProducts.current.style.display = "block";
-    }
+    setShowProductsMenu(true);
   };
 
   const onMouseLeaveProducts = () => {
-    if (optionProducts.current) {
-      optionProducts.current.style.display = "none";
-    }
+    setShowProductsMenu(false);
   };
 
   const handleToggleNav = () => {
@@ -76,6 +71,13 @@ const useNavbar = () => {
     // }
   };
 
+  const handleClickTopScroll = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return {
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
@@ -87,9 +89,10 @@ const useNavbar = () => {
     navRef,
     onMouseEnterProducts,
     onMouseLeaveProducts,
-    optionProducts,
+
     setNavRefResponsive,
     handleGetDataCart,
+    handleClickTopScroll,
   };
 };
 

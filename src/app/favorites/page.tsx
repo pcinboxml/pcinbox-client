@@ -17,12 +17,7 @@ const Favorites = () => {
   const { formatCurrency } = useService();
 
   return (
-    <section
-      className="mx-auto mb-5"
-      style={{
-        width: "80%",
-      }}
-    >
+    <section>
       <h5
         style={{
           color: "#bb3d4b",
@@ -98,20 +93,42 @@ const Favorites = () => {
                       className="text-[#606060]"
                       style={{ fontWeight: "bold" }}
                     >
+                      <span className="font-bold text-black">Nombre:</span>{" "}
                       {favorite?.products?.name}
                     </p>
 
-                    <span className="text-[#cccccc]">SKU-12-212-21</span>
+                    {favorite.products?.description ? (
+                      <p
+                        className="text-[#606060]"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        <span className="font-bold text-black">
+                          Descripción:
+                        </span>{" "}
+                        {favorite?.products?.description}
+                      </p>
+                    ) : null}
 
-                    <span
-                      className="text-[#606060]"
-                      style={{ fontWeight: "bold" }}
-                    >
-                      Agregado el {""}
-                      {favorite.createdAt != null
-                        ? new Date(favorite?.createdAt || "").toLocaleString()
-                        : ""}
-                    </span>
+                    <p>
+                      <span className="font-bold text-black">SKU: </span>
+                      <span className="text-[#cccccc]">SKU-12-212-21</span>
+                    </p>
+
+                    <p>
+                      <span className="font-bold text-black">
+                        Fecha de agregado:
+                      </span>
+
+                      <span
+                        className="text-[#606060]"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        {" "}
+                        {favorite.createdAt != null
+                          ? new Date(favorite?.createdAt || "").toLocaleString()
+                          : ""}
+                      </span>
+                    </p>
                   </div>
 
                   <div className="flex flex-row items-center justify-center">
@@ -122,12 +139,12 @@ const Favorites = () => {
                       >
                         {formatCurrency(Number(favorite.products?.price))}
                       </span>
-                      <span
+                      {/* <span
                         className="text-[#bb3d4b]"
                         style={{ fontSize: "12px" }}
                       >
                         Costo de envío: $120.00
-                      </span>
+                      </span> */}
 
                       <span
                         className="text-[#606060]"

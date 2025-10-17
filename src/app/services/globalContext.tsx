@@ -65,6 +65,8 @@ interface ContextProps {
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
   socketPagos: RefObject<typeof Socket | null>;
   socketServer: RefObject<typeof Socket | null>;
+  showProductsMenu: boolean;
+  setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -105,6 +107,8 @@ const CreateContext = createContext<ContextProps>({
   setDataProducts: () => {},
   socketPagos: { current: null },
   socketServer: { current: null },
+  showProductsMenu: false,
+  setShowProductsMenu: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -142,6 +146,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
+  const [showProductsMenu, setShowProductsMenu] = useState(false);
 
   useEffect(() => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
@@ -178,6 +183,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataProducts,
         socketPagos,
         socketServer,
+        showProductsMenu,
+        setShowProductsMenu,
       }}
     >
       {children}

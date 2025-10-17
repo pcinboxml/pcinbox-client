@@ -51,13 +51,7 @@ const HistoryShop = () => {
     };
   }, [socketPagos.current]);
   return (
-    <section
-      style={{
-        width: "80%",
-        margin: "30px auto",
-        display: "flex",
-      }}
-    >
+    <section className={style.section}>
       <div className="w-[280px] border ">
         <SidebarMiCuenta />
       </div>
@@ -134,7 +128,7 @@ const HistoryShop = () => {
                       >
                         <span className="shrink-0 p-1">
                           {" "}
-                          Pedido #{historyCompra.idOrder}
+                          No. Orden #{historyCompra.idOrder}
                         </span>
                         <div className="w-[80%] p-1 flex justify-end gap-3 items-center">
                           <div

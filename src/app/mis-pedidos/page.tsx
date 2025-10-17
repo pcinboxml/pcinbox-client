@@ -14,14 +14,7 @@ const MisPedidos = () => {
     handleGetPedidosByUser();
   }, []);
   return (
-    <section
-      className={styles.section}
-      style={{
-        width: "80%",
-        margin: "30px auto",
-        display: "flex",
-      }}
-    >
+    <section className={styles.section}>
       <div className="w-[280px] border">
         <SidebarMiCuenta />
       </div>

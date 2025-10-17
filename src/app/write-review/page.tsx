@@ -39,7 +39,7 @@ const WriteReview = () => {
   }, []);
 
   return image_url && description ? (
-    <section className="mx-auto my-5" style={{ width: "80%" }}>
+    <section>
       <span className="text-[#bb3d4b] text-[17px] font-bold block text-start">
         Escribe tu opinión acerca de este producto:
       </span>
@@ -127,7 +127,7 @@ const WriteReview = () => {
       </div>
     </section>
   ) : (
-    <section className="mx-auto my-5" style={{ width: "80%" }}>
+    <section>
       <Alert severity="info">Contenido no disponible, intentelo de nuevo</Alert>
     </section>
   );

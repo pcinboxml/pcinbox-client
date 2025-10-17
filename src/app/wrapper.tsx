@@ -58,7 +58,7 @@ export default function AppWrapper({
         }}
       >
         <Navbar />
-        <main style={{ flex: 1, marginTop: "100px" }}>
+        <main className="container" style={{ marginTop: "140px" }}>
           {children}
 
           <ModalComponent
@@ -73,8 +73,8 @@ export default function AppWrapper({
           />
 
           <Notification dataNotification={dataNotification} />
+          <Footer />
         </main>
-        <Footer />
       </div>
     </SessionProvider>
   );

@@ -6,7 +6,7 @@ import "./footer.css";
 const Footer = () => {
   return (
     <section className="relative">
-      <div className="fondo-rojo absolute bottom-0 left-5 right-5 h-[180px] bg-[#BA2B3D]"></div>
+      <div className="fondo-rojo w-[102%] absolute bottom-0 left-[-10px] right-[-5px] h-[180px] bg-[#BA2B3D]"></div>
       <footer className="border">
         <div className="container-footer">
           <span>Horarios de atención</span>

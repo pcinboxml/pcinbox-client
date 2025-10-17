@@ -107,7 +107,10 @@ const useFavorites = () => {
                 createdAt: product.products?.createdAt || "",
                 description: product.products?.description || "",
                 idProduct: product.products?.idProduct || "",
-                imageUrl: product.products?.imageUrl || "",
+                imageUrl:
+                  product.products?.imageUrl ||
+                  (product.products as any)?.image_url ||
+                  "",
                 name: product.products?.name || "",
                 price: product.products?.price || "0",
                 providerId: product.products?.providerId || "",

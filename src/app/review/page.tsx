@@ -30,7 +30,7 @@ const Reviews = () => {
   }, []);
 
   return (
-    <section className="mx-auto my-5" style={{ width: "80%" }}>
+    <section>
       <span className="text-[#bb3d4b] text-[17px] font-bold block my-5 text-center">
         Opiniones de clientes sobre{" "}
         <span

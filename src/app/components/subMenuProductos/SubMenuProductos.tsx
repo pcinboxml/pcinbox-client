@@ -1,106 +1,78 @@
 "use client";
-import { useState } from "react";
-import useNavbar from "../navbar/useNavbar";
-import style from "./submenuproducts.module.css";
+import { useTheContext } from "@/app/services/globalContext";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const SubMenuProductos = () => {
-  const [showSubmenu, setShowSubmenu] = useState(false);
-
+const SubMenuProductos = ({ styles }: { styles?: any }) => {
+  const { showProductsMenu } = useTheContext();
   const pathname = usePathname();
+  const [hasMounted, setHasMounted] = useState(false);
 
-  const { onMouseEnterProducts, onMouseLeaveProducts, optionProducts } =
-    useNavbar();
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
+
+  const isVisible =
+    pathname === "/principal" || pathname === "/" || showProductsMenu;
+
   return (
     <div
-      className="container-products z-10"
-      onMouseLeave={
-        pathname == "/principal" || pathname == "/"
-          ? () => {}
-          : onMouseLeaveProducts
-      }
+      className={`container-list-products absolute bg-white shadow ${
+        isVisible ? "block" : "hidden"
+      }`}
+      style={styles ? styles : undefined}
     >
-      <button
-        className="btn-products"
-        onMouseEnter={
-          pathname == "/principal" || pathname == "/"
-            ? () => {}
-            : onMouseEnterProducts
-        }
-      >
-        Productos
-      </button>
-
       <div
-        ref={optionProducts}
-        className="container-list-products absolute bg-white shadow"
         style={{
-          display:
-            pathname == "/principal" || pathname == "/" ? "block" : "none",
+          position: "relative",
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "nowrap",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "nowrap",
-          }}
-        >
-          <ul>
-            <li>
-              <a href="#">Procesadores</a>
-            </li>
-
-            <li>
-              <a href="#">Tarjetas de video</a>
-            </li>
-
-            <li>
-              <a href="#">Placas madre</a>
-            </li>
-
-            <li>
-              <a href="#">Memoria Ram</a>
-            </li>
-
-            <li>
-              <a href="#">Almacenamiento</a>
-            </li>
-
-            <li>
-              <a href="#">Gabinetes para PC</a>
-            </li>
-
-            <li>
-              <a href="#">Fuentes de Poder</a>
-            </li>
-
-            <li>
-              <a href="#">Enfriamientos</a>
-            </li>
-
-            <li>
-              <a href="#">Monitores</a>
-            </li>
-
-            <li>
-              <a href="#">Teclados</a>
-            </li>
-
-            <li>
-              <a href="#">Mouse</a>
-            </li>
-
-            <li>
-              <a href="#">Energia</a>
-            </li>
-
-            <li>
-              <a href="#">Redes</a>
-            </li>
-          </ul>
-        </div>
+        <ul>
+          <li>
+            <a href="#">Procesadores</a>
+          </li>
+          <li>
+            <a href="#">Tarjetas de video</a>
+          </li>
+          <li>
+            <a href="#">Placas madre</a>
+          </li>
+          <li>
+            <a href="#">Memoria Ram</a>
+          </li>
+          <li>
+            <a href="#">Almacenamiento</a>
+          </li>
+          <li>
+            <a href="#">Gabinetes para PC</a>
+          </li>
+          <li>
+            <a href="#">Fuentes de Poder</a>
+          </li>
+          <li>
+            <a href="#">Enfriamientos</a>
+          </li>
+          <li>
+            <a href="#">Monitores</a>
+          </li>
+          <li>
+            <a href="#">Teclados</a>
+          </li>
+          <li>
+            <a href="#">Mouse</a>
+          </li>
+          <li>
+            <a href="#">Energia</a>
+          </li>
+          <li>
+            <a href="#">Redes</a>
+          </li>
+        </ul>
       </div>
     </div>
   );
