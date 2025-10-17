@@ -40,9 +40,7 @@ const useReview = () => {
 
   const handleGetProduct = async (idProduct: number) => {
     try {
-      const resp = await requestGetProveedor(
-        `/getProduct?idProduct=${idProduct}`
-      );
+      const resp = await requestGetProveedor(`/getProduct/${idProduct}`);
       const status = await resp.status;
       const data = await resp.data;
       if (status == 200) {

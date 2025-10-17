@@ -22,7 +22,10 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
       className={`container-list-products absolute bg-white shadow ${
         isVisible ? "block" : "hidden"
       }`}
-      style={styles ? styles : undefined}
+      style={{
+        zIndex: 999, // Asegura visibilidad
+        ...styles,
+      }}
     >
       <div
         style={{

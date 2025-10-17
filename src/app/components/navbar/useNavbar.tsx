@@ -8,7 +8,8 @@ const useNavbar = () => {
   const [navRefResponsive, setNavRefResponsive] = useState(false);
   const { requestGet } = useService();
   const navRef = useRef<HTMLDivElement>(null);
-  const { hasToken, setShowProductsMenu, setDataCart } = useTheContext();
+  const { hasToken, showProductsMenu, setShowProductsMenu, setDataCart } =
+    useTheContext();
 
   const onMouseEnterSubmenu = (idSubmenu: string) => {
     const idSub = document.getElementById(idSubmenu);

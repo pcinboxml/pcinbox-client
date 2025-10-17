@@ -112,9 +112,10 @@
   border-bottom-right-radius: 10px;
   width: 150px;
   min-height: 544px;
-  top: 130px;
+  top: 100%;
+  left: 27% !important;
   padding: 9px;
-  z-index: 2000;
+  z-index: 999;
 }
 
 .container-list-products ul {

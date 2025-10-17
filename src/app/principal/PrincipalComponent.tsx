@@ -45,8 +45,7 @@ const PrincipalComponent = () => {
         )}
 
         <div className="content-index relative">
-          {(dataProducts.length > 0 && pathName == "/principal") ||
-          pathName == "/" ? (
+          {pathName == "/principal" || pathName == "/" ? (
             <SubMenuProductos
               styles={{
                 left: "-160px",

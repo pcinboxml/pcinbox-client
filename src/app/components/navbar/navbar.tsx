@@ -132,13 +132,12 @@ const Navbar = () => {
           <img src="/logo.png" />
         </div>
         <div className="search">
-          {/* {isFocusedSearch && (
+          {isFocusedSearch && (
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-19"
               onClick={() => setIsFocusedSearch(false)}
-              style={{ pointerEvents: "none" }}
             />
-          )} */}
+          )}
 
           <SearchProduct setIsFocusedSearch={setIsFocusedSearch} />
         </div>
@@ -171,10 +170,32 @@ const Navbar = () => {
       <div className="flex container">
         <div
           className="container-products"
+          onMouseLeave={onMouseLeaveProducts}
+          style={{ position: "relative", zIndex: 100 }} // Asegúrate del zIndex
+        >
+          <button
+            className="btn-products"
+            onMouseEnter={onMouseEnterProducts}
+            onClick={() => {
+              pathname === "/principal" || pathname === "/"
+                ? handleClickTopScroll()
+                : null;
+            }}
+          >
+            Productos
+          </button>
+
+          {pathname != "/principal" && pathname != "/" ? (
+            <SubMenuProductos />
+          ) : null}
+        </div>
+        {/* <div
+          className="container-products"
           onMouseLeave={() => {
-            pathname == "/principal" || pathname == "/"
-              ? null
-              : onMouseLeaveProducts();
+            // pathname == "/principal" || pathname == "/"
+            //   ? null
+            //   :
+            onMouseLeaveProducts();
           }}
         >
           <button
@@ -185,18 +206,19 @@ const Navbar = () => {
                 : null;
             }}
             onMouseEnter={() => {
-              pathname == "/principal" || pathname == "/"
-                ? null
-                : onMouseEnterProducts();
+              // pathname == "/principal" || pathname == "/"
+              //   ? null
+              //   :
+              onMouseEnterProducts();
             }}
           >
             Productos
-          </button>
+          </button> */}
 
-          {pathname != "/principal" && pathname != "/" ? (
-            <SubMenuProductos />
-          ) : null}
-        </div>
+        {/* {pathname != "/principal" && pathname != "/" ? ( */}
+        {/* <SubMenuProductos /> */}
+        {/* // ) : null} */}
+        {/* </div> */}
 
         <div className="container-submenu">
           {/* <div className="icon-hamburguer relative">
