@@ -136,7 +136,7 @@ const FormaDePago = () => {
                                   >
                                     {pago.label}
 
-                                    {pago?.subLabel && (
+                                    {pago?.label && (
                                       <>
                                         <br />
                                         <span
@@ -146,7 +146,7 @@ const FormaDePago = () => {
                                             fontSize: "13px",
                                           }}
                                         >
-                                          {pago.subLabel}
+                                          {pago.label}
                                         </span>
                                       </>
                                     )}
