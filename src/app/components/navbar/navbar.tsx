@@ -136,6 +136,7 @@ const Navbar = () => {
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-19"
               onClick={() => setIsFocusedSearch(false)}
+              style={{ pointerEvents: "none" }}
             />
           )}
 
