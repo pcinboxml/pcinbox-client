@@ -132,13 +132,13 @@ const Navbar = () => {
           <img src="/logo.png" />
         </div>
         <div className="search">
-          {isFocusedSearch && (
+          {/* {isFocusedSearch && (
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-19"
               onClick={() => setIsFocusedSearch(false)}
               style={{ pointerEvents: "none" }}
             />
-          )}
+          )} */}
 
           <SearchProduct setIsFocusedSearch={setIsFocusedSearch} />
         </div>
