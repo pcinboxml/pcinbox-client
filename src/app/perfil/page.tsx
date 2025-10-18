@@ -82,12 +82,12 @@ const MiCuenta = () => {
             }}
           >
             <div
-              className={`containerPhoto w-[150px] h-[150px] ${
+              className={`containerPhoto w-[150px] h-[auto] ${
                 // dataPerfil.email ? "m-auto" : ""
                 ""
               }`}
             >
-              <div className="border p-2 relative h-[150px]">
+              <div className="border p-2 relative h-[auto]">
                 <div
                   className="capa absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
                   style={{ background: "rgba(255,255,255,0.4)" }}

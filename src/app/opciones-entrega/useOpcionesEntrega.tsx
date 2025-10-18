@@ -165,6 +165,7 @@ const useOpcionesEntrega = () => {
               street: "",
               noInt: "",
             });
+            setShowFormAddress(false);
           },
         });
 

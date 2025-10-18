@@ -214,9 +214,17 @@ const FormaDePago = () => {
                             <MdAdd /> Agregar tarjeta
                           </button>
                         </>
-                      ) : null}
+                      ) : (
+                        <button
+                          onClick={handleRegisterCard}
+                          className="cursor-pointer border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#990000] text-white font-bold"
+                        >
+                          <MdAdd /> Agregar tarjeta
+                        </button>
+                      )}
                     </>
                   ) : null}
+
                   {/* <div className="mt-3">
                     <h5
                       style={{
