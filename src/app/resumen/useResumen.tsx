@@ -28,7 +28,7 @@ const useResumen = () => {
   }, [dataCart]);
 
   const { progressPay } = useStorage();
-  const { requestPostPagos } = usePasarelaDePagos();
+  const { requestPostPagos, requestGetPagos } = usePasarelaDePagos();
 
   const { columns, rows, totalIVA, totalPagar } = GridResumen({
     dataCart,
@@ -218,6 +218,41 @@ const useResumen = () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
         });
+      }
+    } else if (progressPay.methodPay.typeMethod == "mercadopago") {
+      try {
+        setLoadingCreateOrder(true);
+
+        const resp = await requestPostPagos(
+          {
+            dataProduct: dataCart,
+            userId: Number(localStorage.getItem("idUser")),
+            totalAmount: totalPagar,
+            shipping_method: progressPay.optionSend.name,
+            idAddress: progressPay.optionSend.address,
+          },
+          "/mercadopago/payMP"
+        );
+        setLoadingCreateOrder(false);
+
+        if (resp.status == 200) {
+          // Prod
+          // if (resp.status == 200) {
+          // Redirige al usuario al checkout de Mercado Pago
+          window.location.href = resp.data.sandbox_init_point;
+          //  }
+
+          //Pruebas
+          // const respFetch = await requestGetPagos(
+          //   `/mercadopago/preference/${resp.data.id}`
+          // );
+          // if (respFetch.status == 200 || respFetch.status == 201) {
+          //   window.location.href =
+          //     "https://alejandro-paredes-soto.github.io/plantillas/successMP.html";
+          // }
+        }
+      } catch (error) {
+        setLoadingCreateOrder(false);
       }
     }
   };

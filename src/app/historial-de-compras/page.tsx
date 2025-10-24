@@ -36,7 +36,9 @@ const HistoryShop = () => {
     const handler = (data: any) => {
       setDataHistoryCompras((prev) => {
         return prev.map((item) => {
-          if (item.idShipment === data.idShipment) {
+          console.log(item);
+          // console.log(data.idShipment, item.idShipment);
+          if (item.idShipment == data.idShipment) {
             return { ...item, statusEnvio: data.status };
           }
           return item;
@@ -196,9 +198,18 @@ const HistoryShop = () => {
                         }
                       </div>
                       <div className={style.orderDate}>
-                        {historyCompra.shipping_method == "envioLeon" ? (
+                        {historyCompra.shipping_method == "envioLeon" ||
+                        historyCompra.shipping_method == "paqueteexpress" ||
+                        historyCompra.shipping_method == "dhl" ||
+                        historyCompra.shipping_method == "estafeta" ? (
                           <div>
-                            <span>Envío en carro a tu domicilio.</span>
+                            <span>
+                              Envío a tu domicilio. (
+                              {historyCompra.shipping_method == "envioLeon"
+                                ? "En Carro"
+                                : historyCompra.shipping_method}
+                              )
+                            </span>
 
                             <div className="my-1 flex flex-col">
                               <span>
@@ -251,84 +262,11 @@ const HistoryShop = () => {
                               PCInbox
                             </span>{" "}
                           </span>
-                        ) : historyCompra.shipping_method ==
-                          "paqueteexpress" ? (
-                          "Envío en paquetería Express"
-                        ) : historyCompra.shipping_method == "dhl" ? (
-                          "Envío en paquetería DHL"
-                        ) : historyCompra.shipping_method == "estafeta" ? (
-                          "Envío en paquetería Estafeta"
                         ) : (
                           ""
                         )}
                       </div>
                     </div>
-                    {/* <div
-                      className={`${style.status}  ${
-                        historyCompra.statusEnvio == "procesando"
-                          ? style.statusProcessing
-                          : historyCompra.statusEnvio == "enviado"
-                          ? style.statusShipped
-                          : historyCompra.statusEnvio == "cancelado"
-                          ? style.statusCancelled
-                          : historyCompra.statusEnvio == "entregado"
-                          ? style.statusDelivered
-                          : ""
-                      } p-2 rounded`}
-                    >
-                      {historyCompra.statusEnvio}
-                    </div> */}
-
-                    {/* <div>
-                      {(historyCompra.pay_method == "tarjeta_de_debito" ||
-                        historyCompra.pay_method == "tarjeta_de_credito") &&
-                      historyCompra.statusEnvio == "cancelado" ? (
-                        <p>Tu reembolso se reflejara de 5 a 10 días habiles</p>
-                      ) : historyCompra.pay_method == "oxxo" &&
-                        historyCompra.statusEnvio == "cancelado" &&
-                        historyCompra.paidAtOxxo == 1 ? (
-                        <p>
-                          Comunicate con la sucursal{" "}
-                          <span className="font-bold">PCInbox</span> para
-                          solicitar reembolso de tu pedido. <br />
-                          Envia el numero de Orden{" "}
-                          <span className="font-bold">
-                            #{historyCompra.idOrder}
-                          </span>{" "}
-                          y tu <span className="font-bold">Nombre</span> para
-                          localizarlo en el sistema
-                        </p>
-                      ) : null}
-                    </div> */}
-
-                    {/* {historyCompra.statusEnvio != "entregado" &&
-                    historyCompra.statusEnvio != "cancelado" ? (
-                      <button
-                        disabled={loadingCancelledCompra}
-                        onClick={() => showModal(historyCompra)}
-                        className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
-                      >
-                        {loadingCancelledCompra ? (
-                          <MdAutorenew
-                            size={20}
-                            className="m-auto the-spinner"
-                          />
-                        ) : (
-                          <>Cancelar compra</>
-                        )}
-                      </button>
-                    ) : null} */}
-                    {/* <div className={style.orderTotal}>
-                      Total con IVA:{" "}
-                      {formatCurrency(
-                        Number(
-                          historyCompra.products.reduce(
-                            (acc, p) => acc + Number(p.totalAmount),
-                            0
-                          )
-                        )
-                      )}
-                    </div> */}
                   </div>
                   <div className={style.orderItems + " flex flex-col"}>
                     {historyCompra.products.map((d, indexD) => {

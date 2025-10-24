@@ -5,7 +5,7 @@ import { MdArrowDropDown, MdAutorenew, MdStar } from "react-icons/md";
 import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
-import Slider from "react-slick";
+import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled } from "@mui/material";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
@@ -45,43 +45,35 @@ const Card = ({
   return (
     <div className="mi-card border">
       <div className="container-img">
-        <div
+        {/* <div
           className="relative w-full overflow-hidden"
           style={{
             maxWidth: "100%",
+            maxHeight: "150px",
             position: "relative",
           }}
+        > */}
+        <Carousel
+          showIndicators={true}
+          showThumbs={false}
+          showStatus={false}
+          showArrows={true}
+          onClickItem={() => {
+            onRouterLink(`/detailsProduct/${product.idProduct}`);
+          }}
         >
-          <Slider
-            dots={true}
-            infinite={true}
-            speed={500}
-            slidesToShow={1}
-            slidesToScroll={1}
-            arrows={true}
-            prevArrow={<CustomPrevArrow />}
-            nextArrow={<CustomNextArrow />}
-          >
-            {product.imageUrl.map((img: string, index: number) => (
-              <div key={index}>
-                <img
-                  src={img}
-                  alt={`Imagen ${index + 1}`}
-                  className="w-full h-auto object-contain"
-                  onClick={() => {
-                    localStorage.setItem(
-                      "product",
-                      JSON.stringify({
-                        ...product,
-                      })
-                    );
-                    onRouterLink(`/detailsProduct/${product.idProduct}`);
-                  }}
-                />
-              </div>
-            ))}
-          </Slider>
-        </div>
+          {product.imageUrl && product.imageUrl.length > 0
+            ? product.imageUrl.map((img: string, i: number) => (
+                <div key={i}>
+                  <img
+                    src={img}
+                    style={{ objectFit: "contain", height: "150px" }}
+                  />
+                </div>
+              ))
+            : [<div key="no-img">Sin imágenes</div>]}
+        </Carousel>
+        {/* </div> */}
       </div>
       <div className="container-rating">
         <div className="rating">
@@ -238,13 +230,15 @@ const Card = ({
       <div className="actions-product">
         <div className="buttons relative">
           <button
-            disabled={loadingAgregar}
+            disabled={loadingAgregar || product.stock <= 0}
             onClick={() => handleAddProductCart(product)}
           >
             {loadingAgregar ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
-            ) : (
+            ) : product.stock > 0 ? (
               "Agregar"
+            ) : (
+              "No disponible"
             )}
           </button>
         </div>
@@ -253,7 +247,7 @@ const Card = ({
           <span className="costoProducto">
             {formatCurrency(Number(product.price))}
           </span>
-          <span className="costoEnvio">Costo de envío desde $155.00.</span>
+          {/* <span className="costoEnvio">Costo de envío desde $155.00.</span> */}
           <span className="stock">Disponible: {product.stock} pzas.</span>
         </div>
       </div>

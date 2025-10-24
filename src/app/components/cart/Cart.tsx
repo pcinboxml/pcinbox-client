@@ -249,7 +249,7 @@ export const ModalCart = ({
                 </p>
               )} */}
               <div className="flex justify-between text-lg font-bold text-[#bb3d4b] border-t border-gray-300 pt-2">
-                <span>Subtotal sin IVA:</span>
+                <span>Subtotal:</span>
 
                 <span>{formatCurrency(Number(totalPrice))}</span>
               </div>
@@ -263,7 +263,10 @@ export const ModalCart = ({
                 Seguir comprando
               </button>
               <button
-                onClick={() => onRouterLink("/confirma-productos")}
+                onClick={async () => {
+                  await onRouterLink("/confirma-productos");
+                  onMouseLeaveCart();
+                }}
                 className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"
               >
                 Proceder al pago

@@ -184,8 +184,7 @@ const PayEnd = () => {
                   </div>
                 </div>
               </div>
-            ) : methodPay == "tarjeta_debito_credito" ||
-              methodPay == "efectivo_al_recoger" ? (
+            ) : (
               <div className="w-full mt-2 mb-5">
                 <p className="text-[24px] text-[#666666] pl-2 font-bold">
                   Guarda el siguiente número de pedido de la sucursal{" "}
@@ -210,7 +209,7 @@ const PayEnd = () => {
                   <Barcode value={idOrder} />
                 </div>
               </div>
-            ) : null}
+            )}
           </div>
 
           <div className="w-full my-4">

@@ -3,6 +3,7 @@ export default interface ProductI {
   createdAt: string;
   description: string;
   idProduct: string;
+  idProductExt?: any;
   imageUrl: any;
   name: string;
   price: string;
@@ -15,6 +16,7 @@ export default interface ProductI {
     idReview: string;
     productId: string;
     rating: number;
+    title: string;
     description: string;
     date: string;
     reviewerName: string;

@@ -56,14 +56,16 @@ const Resumen = () => {
 
                 <span className="text-[#808080] text-sm">Tipo de pago:</span>
 
-                <span className="text-[#808080] text-sm">IVA: </span>
+                {/* <span className="text-[#808080] text-sm">IVA: </span> */}
               </div>
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
                   {progressPay.optionSend.name == "envioLeon"
                     ? "Gratis"
-                    : formatCurrency(120)}
+                    : progressPay.optionSend.name == "sucursal"
+                    ? "Entrega en Sucursal"
+                    : progressPay.optionSend.name}
                 </span>
                 <span className="text-[#808080] text-sm">
                   {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
@@ -76,11 +78,13 @@ const Resumen = () => {
                     ? "Tarjeta Crédito/Débito en sucursal"
                     : progressPay.methodPay.typeMethod == "efectivo"
                     ? "Efectivo (OXXO)"
-                    : ""}
+                    : progressPay.methodPay.typeMethod == "mercadopago"
+                    ? "Mercado Pago"
+                    : progressPay.methodPay.typeMethod}
                 </span>
-                <span className="text-[#808080] text-sm">
-                  {formatCurrency(Number(totalIVA))}
-                </span>
+                {/* <span className="text-[#808080] text-sm">
+                  {formatCurrency(Number(totalIVA))} 
+                </span> */}
               </div>
             </div>
             <hr />

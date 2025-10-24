@@ -7,35 +7,39 @@ import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import useOpcionesEntrega from "./useOpcionesEntrega";
 import styles from "./opciones-entrega.module.css";
-import { use, useEffect } from "react";
+import { use, useEffect, useMemo } from "react";
 import useStorage from "../services/useStorage";
 
 const OpcionesEntrega = () => {
-  const { formatCurrency, onRouterLink } = useService();
+  const { onRouterLink } = useService();
   const {
     handleOnChangeOptionEnvio,
-    registerAddress,
     setIdAddressEnvio,
-    handleOnChange,
-    handleOnSelect,
     handleRemoveAddress,
-    setShowFormAddress,
-    handleEditAddress,
-    showFormAddress,
+    handleFormRegisterAddress,
     setIsEditAddress,
     getValuesStorage,
-    postalCodes,
     idAddressEnvio,
     optionEnvio,
-    dataUserAddress,
-    loadingRegisterAddress,
-    dataAddress,
     loadingAddressUser,
+    handleFormEditAddress,
+    loadingEdit,
   } = useOpcionesEntrega();
 
   const { handleWriteStorageProgressPay } = useStorage();
 
-  const { dataCart, setDataModal } = useTheContext();
+  const { dataCart, dataUserAddress, setDataModal, setDataAddress } =
+    useTheContext();
+
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
 
   useEffect(() => {
     if (dataUserAddress.length === 1) {
@@ -106,14 +110,24 @@ const OpcionesEntrega = () => {
                   <hr />
                 </div>
 
-                <Alert severity="info">
-                  Estimado cliente, le pedimos atentamente considere que las
-                  paqueterías tienen exceso de entregas a nivel nacional, por lo
-                  que puede implicar tiempos de entrega más prolongados en
-                  algunos casos. Esto es totalmente ajeno a nuestra empresa.
-                </Alert>
+                {totalPrice > 1000 && dataUserAddress ? (
+                  <Alert severity="info">
+                    Estimado cliente, le pedimos atentamente considere que las
+                    paqueterías tienen exceso de entregas a nivel nacional, por
+                    lo que puede implicar tiempos de entrega más prolongados en
+                    algunos casos. Esto es totalmente ajeno a nuestra empresa.
+                  </Alert>
+                ) : null}
 
-                {dataUserAddress &&
+                {totalPrice < 1000 ? (
+                  <Alert severity="info" className="mt-3">
+                    Para enviar a tu domicilio el monto minimo de compra debe
+                    ser de $1,000 pesos.
+                  </Alert>
+                ) : null}
+
+                {totalPrice >= 1000 &&
+                  dataUserAddress &&
                   dataUserAddress.some(
                     (d) => d.city === "León de los Aldama"
                   ) && (
@@ -136,7 +150,7 @@ const OpcionesEntrega = () => {
                             style={{ fontWeight: "bold" }}
                           >
                             <span style={{ fontWeight: "bold" }}>|</span> Envío
-                            en carro (sólo en Léon)
+                            local (León) solo en compra mayores de $1,000 pesos
                           </span>
                         </div>
                       </label>
@@ -149,7 +163,8 @@ const OpcionesEntrega = () => {
                       </span>
                     </div>
                   )}
-                {dataUserAddress &&
+                {totalPrice >= 1000 &&
+                  dataUserAddress &&
                   dataUserAddress.some(
                     (d) => d.city != "León de los Aldama"
                   ) && (
@@ -188,13 +203,6 @@ const OpcionesEntrega = () => {
                             </span>
                           </div>
                         </label>
-
-                        {/* <span
-                    className="absolute right-5 to-5 text-[#808080]"
-                    style={{ fontSize: "14px" }}
-                  >
-                    {formatCurrency(179)}
-                  </span> */}
                       </div>
 
                       <div className="flex items-center relative">
@@ -227,12 +235,6 @@ const OpcionesEntrega = () => {
                             </span>
                           </div>
                         </label>
-                        {/* <span
-                    className="absolute right-5 to-5 text-[#808080]"
-                    style={{ fontSize: "14px" }}
-                  >
-                    {formatCurrency(279)}
-                  </span> */}
                       </div>
 
                       <div className="flex items-center relative ">
@@ -267,18 +269,12 @@ const OpcionesEntrega = () => {
                             </span>
                           </div>
                         </label>
-
-                        {/* <span
-                    className="absolute right-5 to-5 text-[#808080]"
-                    style={{ fontSize: "14px" }}
-                  >
-                    {formatCurrency(25.22)}
-                  </span> */}
                       </div>
                     </>
                   )}
 
-                {dataUserAddress &&
+                {totalPrice >= 1000 &&
+                dataUserAddress &&
                 dataUserAddress.length > 0 &&
                 optionEnvio != "sucursal" ? (
                   <form className={styles.formContainer}>
@@ -337,26 +333,42 @@ const OpcionesEntrega = () => {
                                 </div>
                               </label>
 
-                              <a
-                                role="button"
-                                style={{
-                                  display: "inline-block",
-                                  marginLeft: "10px",
-                                  color: "#606060",
-                                  fontWeight: "bold",
-                                  textDecoration: "none",
-                                }}
-                                onClick={() => [
-                                  setIsEditAddress({
-                                    edit: true,
-                                    idAddress: address.idAddress,
-                                  }),
-                                  setShowFormAddress(true),
-                                  handleEditAddress(address),
-                                ]}
-                              >
-                                Editar
-                              </a>
+                              {loadingEdit ? (
+                                <MdAutorenew />
+                              ) : (
+                                <a
+                                  role="button"
+                                  style={{
+                                    display: "inline-block",
+                                    marginLeft: "10px",
+                                    color: "#606060",
+                                    fontWeight: "bold",
+                                    textDecoration: "none",
+                                  }}
+                                  onClick={() => {
+                                    setIsEditAddress({
+                                      edit: true,
+                                      idAddress: address.idAddress,
+                                    });
+                                    setDataAddress({
+                                      city: address.city,
+                                      cologne: address.cologne,
+                                      country: address.country,
+                                      noExt: address.noExt,
+                                      phone1: address.phone1,
+                                      phone2: address.phone2,
+                                      state: address.state,
+                                      street: address.street,
+                                      noInt: address.noInt,
+                                      codePostal: Number(address.postalCode),
+                                    });
+
+                                    handleFormEditAddress(address);
+                                  }}
+                                >
+                                  Editar
+                                </a>
+                              )}
                               <a
                                 role="button"
                                 style={{
@@ -427,26 +439,43 @@ const OpcionesEntrega = () => {
                                 </div>
                               </label>
 
-                              <a
-                                role="button"
-                                style={{
-                                  display: "inline-block",
-                                  marginLeft: "10px",
-                                  color: "#606060",
-                                  fontWeight: "bold",
-                                  textDecoration: "none",
-                                }}
-                                onClick={() => [
-                                  setIsEditAddress({
-                                    edit: true,
-                                    idAddress: address.idAddress,
-                                  }),
-                                  setShowFormAddress(true),
-                                  handleEditAddress(address),
-                                ]}
-                              >
-                                Editar
-                              </a>
+                              {loadingEdit ? (
+                                <MdAutorenew />
+                              ) : (
+                                <a
+                                  role="button"
+                                  style={{
+                                    display: "inline-block",
+                                    marginLeft: "10px",
+                                    color: "#606060",
+                                    fontWeight: "bold",
+                                    textDecoration: "none",
+                                  }}
+                                  onClick={() => {
+                                    setIsEditAddress({
+                                      edit: true,
+                                      idAddress: address.idAddress,
+                                    });
+                                    setDataAddress({
+                                      city: address.city,
+                                      cologne: address.cologne,
+                                      country: address.country,
+                                      noExt: address.noExt,
+                                      phone1: address.phone1,
+                                      phone2: address.phone2,
+                                      state: address.state,
+                                      street: address.street,
+                                      noInt: address.noInt,
+                                      codePostal: Number(address.postalCode),
+                                    });
+
+                                    handleFormEditAddress(address);
+                                  }}
+                                >
+                                  Editar
+                                </a>
+                              )}
+
                               <a
                                 role="button"
                                 style={{
@@ -465,559 +494,24 @@ const OpcionesEntrega = () => {
                             </div>
                           );
                         }
-                        // return (
-                        //   <div key={address.idAddress} className="radio-group">
-                        //     <label className="my-3">
-                        //       <input
-                        //         type="radio"
-                        //         name="domicilio"
-                        //         value={address.idAddress}
-                        //         checked={idAddressEnvio == address.idAddress}
-                        //         onChange={(event) =>
-                        //           setIdAddressEnvio(Number(event.target.value))
-                        //         }
-                        //         required
-                        //       />
-                        //       <div className="flex items-center  flex-wrap">
-                        //         <b>Calle: </b>{" "}
-                        //         <span className="pb-0 mx-2">
-                        //           {" "}
-                        //           {address.street}
-                        //         </span>
-                        //         <b>Colonia: </b>{" "}
-                        //         <span className="mx-2">{address.cologne}</span>
-                        //         <b>No.Ext: </b>
-                        //         <span className="mx-2">{address.noExt}</span>
-                        //         <b
-                        //           style={{
-                        //             display:
-                        //               address.noInt != "" ? "block" : "none",
-                        //           }}
-                        //         >
-                        //           No.Int:{" "}
-                        //         </b>
-                        //         <span
-                        //           style={{
-                        //             display:
-                        //               address.noInt != "" ? "block" : "none",
-                        //           }}
-                        //           className="mx-2"
-                        //         >
-                        //           {address.noExt}
-                        //         </span>
-                        //       </div>
-                        //     </label>
-
-                        //     <a
-                        //       role="button"
-                        //       style={{
-                        //         display: "inline-block",
-                        //         marginLeft: "10px",
-                        //         color: "#606060",
-                        //         fontWeight: "bold",
-                        //         textDecoration: "none",
-                        //       }}
-                        //       onClick={() => [
-                        //         setIsEditAddress({
-                        //           edit: true,
-                        //           idAddress: address.idAddress,
-                        //         }),
-                        //         setShowFormAddress(true),
-                        //         handleEditAddress(address),
-                        //       ]}
-                        //     >
-                        //       Editar
-                        //     </a>
-                        //     <a
-                        //       role="button"
-                        //       style={{
-                        //         display: "inline-block",
-                        //         marginLeft: "10px",
-                        //         color: "#BB3D4B",
-                        //         fontWeight: "bold",
-                        //         textDecoration: "none",
-                        //       }}
-                        //       onClick={() => handleRemoveAddress(address)}
-                        //     >
-                        //       Eliminar
-                        //     </a>
-
-                        //     <hr />
-                        //   </div>
-                        // );
                       }
                     })}
                   </form>
-                ) : null
-                // optionEnvio != "" &&
-                // optionEnvio != "sucursal" && (
-                //   <div
-                //     className="container-datos-envio px-3"
-                //     style={{ marginTop: "70px" }}
-                //   >
-                //     <span className="text-[#BB3D4B] text-xl font-bold">
-                //       Datos de Envío
-                //     </span>
-
-                //     <form className="w-[100%] my-3 mx-auto">
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Calle:
-                //         </label>
-                //         <input
-                //           type="text"
-                //           className="form-control"
-                //           name="street"
-                //           value={dataAddress?.street}
-                //           onChange={handleOnChange}
-                //         />
-                //       </div>
-
-                //       <div className="grid grid-cols-[auto_auto] gap-2 items-end justify-end mt-4 relative">
-                //         <div
-                //           className="flex justify-center"
-                //           style={{ alignItems: "flex-end" }}
-                //         >
-                //           <label
-                //             htmlFor=""
-                //             className="text-[#808080] text-base mx-2 block"
-                //           >
-                //             Número Ext:
-                //           </label>
-                //           <input
-                //             type="text"
-                //             className="form-control"
-                //             name="noExt"
-                //             value={dataAddress?.noExt}
-                //             onChange={handleOnChange}
-                //           />
-                //         </div>
-                //         <div
-                //           className="flex justify-center"
-                //           style={{ alignItems: "flex-end" }}
-                //         >
-                //           <label
-                //             htmlFor=""
-                //             className="text-[#808080] text-base mx-2"
-                //           >
-                //             Interior: (opcional)
-                //           </label>
-                //           <input
-                //             type="text"
-                //             className="form-control"
-                //             name="noInt"
-                //             value={dataAddress?.noInt}
-                //             onChange={handleOnChange}
-                //           />
-                //         </div>
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Código Postal:
-                //         </label>
-
-                //         <input
-                //           type="number"
-                //           name="codePostal"
-                //           className="form-control"
-                //           onChange={handleOnChange}
-                //           value={
-                //             dataAddress?.codePostal == 0
-                //               ? ""
-                //               : dataAddress?.codePostal
-                //           }
-                //         />
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Colonia:
-                //         </label>
-
-                //         <select
-                //           name="cologne"
-                //           className="form-select"
-                //           disabled={postalCodes.length == 0}
-                //           onChange={handleOnSelect}
-                //           value={dataAddress.cologne ?? ""}
-                //         >
-                //           {postalCodes && postalCodes.length > 0 ? (
-                //             <>
-                //               <option value="">Selecciona una colonia</option>
-                //               {postalCodes.map((pCodes) => (
-                //                 <option
-                //                   key={pCodes.placeName}
-                //                   value={pCodes.placeName}
-                //                 >
-                //                   {pCodes.placeName}
-                //                 </option>
-                //               ))}
-                //             </>
-                //           ) : (
-                //             <option value="">Selecciona una colonia</option>
-                //           )}
-                //         </select>
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Estado:
-                //         </label>
-
-                //         <select
-                //           name="state"
-                //           className="form-select"
-                //           disabled={postalCodes.length === 0}
-                //           onChange={handleOnSelect}
-                //           value={dataAddress.state ?? ""}
-                //         >
-                //           <option value="">
-                //             {postalCodes.length > 0
-                //               ? postalCodes[0].adminName1
-                //               : "Selecciona un estado"}
-                //           </option>
-                //         </select>
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Ciudad:
-                //         </label>
-                //         <select
-                //           name="city"
-                //           className="form-select"
-                //           disabled={postalCodes.length === 0}
-                //           onChange={handleOnSelect}
-                //           value={dataAddress.city ?? ""}
-                //         >
-                //           {postalCodes.length > 0 ? (
-                //             <option value={postalCodes[0].adminName3}>
-                //               {postalCodes[0].adminName3}
-                //             </option>
-                //           ) : (
-                //             <option value="">Selecciona una ciudad</option>
-                //           )}
-                //         </select>
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Teléfono 1:
-                //         </label>
-
-                //         <input
-                //           type="text"
-                //           className="form-control"
-                //           name="phone1"
-                //           onChange={handleOnChange}
-                //           value={dataAddress?.phone1}
-                //         />
-                //       </div>
-
-                //       <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                //         <label
-                //           htmlFor=""
-                //           className="text-[#808080] text-base text-end"
-                //         >
-                //           Teléfono 2: <br /> (opcional)
-                //         </label>
-
-                //         <input
-                //           type="text"
-                //           className="form-control"
-                //           name="phone2"
-                //           onChange={handleOnChange}
-                //           value={dataAddress?.phone2}
-                //         />
-                //       </div>
-
-                //       <div
-                //         className={`grid grid-cols-[auto] gap-2 items-center mt-4 relative ${styles.containerBtnGuardar1}`}
-                //       >
-                //         <button
-                //           type="button"
-                //           onClick={() => {
-                //             registerAddress(dataAddress);
-                //           }}
-                //           disabled={loadingRegisterAddress}
-                //           className="p-2 bg-[#BB3D4B] text-white font-bold mt-4"
-                //           style={{ borderRadius: "10px" }}
-                //         >
-                //           {loadingRegisterAddress ? (
-                //             <MdAutorenew
-                //               size={20}
-                //               className="m-auto the-spinner"
-                //             />
-                //           ) : (
-                //             "Guardar"
-                //           )}
-                //         </button>
-                //       </div>
-                //     </form>
-                //   </div>
-                // )
-                }
+                ) : null}
 
                 <hr />
               </div>
             </div>
           </div>
 
-          {showFormAddress && (
-            <div className="w-full flex justify-end">
-              <div className="w-[600px] px-3">
-                <span className="text-[#BB3D4B] text-xl font-bold">
-                  Datos de Envío
-                </span>
-
-                <form className="w-[100%] my-3 mx-auto">
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Calle:
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="street"
-                      value={dataAddress?.street}
-                      onChange={handleOnChange}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-[auto_auto] gap-2 items-end justify-end mt-4 relative">
-                    <div
-                      className="flex justify-center"
-                      style={{ alignItems: "flex-end" }}
-                    >
-                      <label
-                        htmlFor=""
-                        className="text-[#808080] text-base mx-2 block"
-                      >
-                        Número Ext:
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="noExt"
-                        value={dataAddress?.noExt}
-                        onChange={handleOnChange}
-                      />
-                    </div>
-                    <div
-                      className="flex justify-center"
-                      style={{ alignItems: "flex-end" }}
-                    >
-                      <label
-                        htmlFor=""
-                        className="text-[#808080] text-base mx-2"
-                      >
-                        Interior: (opcional)
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="noInt"
-                        value={dataAddress?.noInt}
-                        onChange={handleOnChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Código Postal:
-                    </label>
-
-                    <input
-                      type="number"
-                      name="codePostal"
-                      className="form-control"
-                      onChange={handleOnChange}
-                      value={
-                        dataAddress?.codePostal == 0
-                          ? ""
-                          : dataAddress?.codePostal
-                      }
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Colonia:
-                    </label>
-
-                    <select
-                      name="cologne"
-                      className="form-select"
-                      disabled={postalCodes.length == 0}
-                      onChange={handleOnSelect}
-                      value={dataAddress.cologne ?? ""}
-                    >
-                      {postalCodes && postalCodes.length > 0 ? (
-                        <>
-                          <option value="">Selecciona una colonia</option>
-                          {postalCodes.map((pCodes) => (
-                            <option
-                              key={pCodes.placeName}
-                              value={pCodes.placeName}
-                            >
-                              {pCodes.placeName}
-                            </option>
-                          ))}
-                        </>
-                      ) : (
-                        <option value="">Selecciona una colonia</option>
-                      )}
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Estado:
-                    </label>
-
-                    <select
-                      name="state"
-                      className="form-select"
-                      disabled={postalCodes.length === 0}
-                      onChange={handleOnSelect}
-                      value={dataAddress.state ?? ""}
-                    >
-                      <option value="">
-                        {postalCodes.length > 0
-                          ? postalCodes[0].adminName1
-                          : "Selecciona un estado"}
-                      </option>
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Ciudad:
-                    </label>
-                    <select
-                      name="city"
-                      className="form-select"
-                      disabled={postalCodes.length === 0}
-                      onChange={handleOnSelect}
-                      value={dataAddress.city ?? ""}
-                    >
-                      {postalCodes.length > 0 ? (
-                        <option value={postalCodes[0].adminName3}>
-                          {postalCodes[0].adminName3}
-                        </option>
-                      ) : (
-                        <option value="">Selecciona una ciudad</option>
-                      )}
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Teléfono 1:
-                    </label>
-
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone1"
-                      onChange={handleOnChange}
-                      value={dataAddress?.phone1}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                    <label
-                      htmlFor=""
-                      className="text-[#808080] text-base text-end"
-                    >
-                      Teléfono 2: <br /> (opcional)
-                    </label>
-
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone2"
-                      onChange={handleOnChange}
-                      value={dataAddress?.phone2}
-                    />
-                  </div>
-
-                  <div
-                    className={`grid grid-cols-[auto] gap-2 items-center mt-4 relative ${styles.containerBtnGuardar1}`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        registerAddress(dataAddress);
-                      }}
-                      disabled={loadingRegisterAddress}
-                      className="p-2 bg-[#BB3D4B] text-white font-bold mt-4"
-                      style={{ borderRadius: "10px" }}
-                    >
-                      {loadingRegisterAddress ? (
-                        <MdAutorenew size={20} className="m-auto the-spinner" />
-                      ) : (
-                        "Guardar"
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
           <div className="w-full flex justify-end my-4">
             <button
               onClick={() => {
-                setIsEditAddress({
-                  edit: false,
-                  idAddress: 0,
-                }),
-                  setShowFormAddress(!showFormAddress);
+                handleFormRegisterAddress();
               }}
               className="border py-2 px-5 text-black rounded"
             >
-              {showFormAddress == false
-                ? "Agregar otro domicilio"
-                : "Cerrar formulario"}
+              Agregar domicilio
             </button>
           </div>
 

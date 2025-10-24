@@ -54,9 +54,10 @@ const useConfirmaProductos = () => {
     products: `${itemCart.name} ${itemCart.description}`,
     quantity: Number(itemCart.quantity),
     sucursal: "León",
-    totalSinIva: Number(itemCart.price) * Number(itemCart.quantity),
-    totalConIva: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
-    importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
+    // totalSinIva: Number(itemCart.price) * Number(itemCart.quantity),
+    // totalConIva: Number(itemCart.price) * Number(itemCart.quantity) * 1.16, //antes
+    totalConIva: Number(itemCart.price) * Number(itemCart.quantity),
+    // importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
     action: 1,
   }));
 

@@ -631,7 +631,7 @@ const Navbar = () => {
                               return (
                                 <img
                                   key={index}
-                                  src={item.image_url}
+                                  src={item.image_url[0]}
                                   width={50}
                                   height={50}
                                   style={{ objectFit: "contain" }}

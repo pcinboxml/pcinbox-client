@@ -122,7 +122,14 @@ const useMisPedidos = () => {
               style={{ fontSize: "16px" }}
               className="text-center text-[#808080] whitespace-normal leading-snug break-words"
             >
-              {params.value}
+              {params.value == "tarjeta_de_debito" ||
+              params.value == "tarjeta_de_credito"
+                ? "Tarjeta"
+                : params.value == "efectivo"
+                ? "Efectivo"
+                : params.value == "oxxo"
+                ? "OXXO"
+                : ""}
             </span>
           </div>
         );

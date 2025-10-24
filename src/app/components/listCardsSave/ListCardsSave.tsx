@@ -3,6 +3,14 @@
 import { CardI } from "@/app/interfaces/card/card.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import { CreditCard } from "lucide-react";
+import {
+  FaCcVisa,
+  FaCcMastercard,
+  FaCcAmex,
+  FaCcDiscover,
+  FaCcDinersClub,
+  FaCcJcb,
+} from "react-icons/fa";
 
 const ListCardsSave = ({ dataCard }: { dataCard: CardI[] }) => {
   const { selectedCard, handleSelectedCard } = useTheContext();
@@ -41,7 +49,21 @@ const ListCardsSave = ({ dataCard }: { dataCard: CardI[] }) => {
                   •••• {card.lastFourDigits}
                 </span>
                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                  {card.brand}
+                  {card.brand == "visa" ? (
+                    <FaCcVisa size={30} />
+                  ) : card.brand == "amex" ? (
+                    <FaCcAmex size={30} />
+                  ) : card.brand == "mastercard" ? (
+                    <FaCcMastercard size={30} />
+                  ) : card.brand == "discover" ? (
+                    <FaCcDiscover size={30} />
+                  ) : card.brand == "diners" ? (
+                    <FaCcDinersClub size={30} />
+                  ) : card.brand == "jcb" ? (
+                    <FaCcJcb size={30} />
+                  ) : (
+                    card.brand
+                  )}
                 </span>
               </div>
               <div className="text-sm text-gray-600">

@@ -4,7 +4,7 @@ export interface FavoritesI {
   idFavorite: number;
   productId: number;
   userId: number;
-  image_url: string;
+  image_url: string[];
   createdAt?: string;
   products?: ProductI;
 }

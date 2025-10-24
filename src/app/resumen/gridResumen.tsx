@@ -17,8 +17,8 @@ const GridResumen = ({
     products: `${itemCart.name} ${itemCart.description}`,
     quantity: Number(itemCart.quantity),
     sucursal: "Leon",
-    price: Number(itemCart.price),
-    import: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
+    price: Number(itemCart.price) * Number(itemCart.quantity),
+    // import: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
   }));
 
   const columns = [
@@ -111,26 +111,26 @@ const GridResumen = ({
       },
     },
 
-    {
-      field: "import",
-      headerName: "Importe",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 130 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
+    // {
+    //   field: "import",
+    //   headerName: "Importe",
+    //   flex: isSmallScreen ? undefined : 1,
+    //   width: isSmallScreen ? 130 : undefined,
+    //   renderCell: (params: any) => {
+    //     if (params.value) {
+    //       return (
+    //         <div className="flex justify-center items-center min-h-[100%]">
+    //           <span
+    //             className="text-[#808080] block text-center"
+    //             style={{ fontSize: "18px", fontWeight: "600" }}
+    //           >
+    //             {formatCurrency(Number(params.value))}
+    //           </span>
+    //         </div>
+    //       );
+    //     }
+    //   },
+    // },
   ];
 
   const subtotal = rows.reduce((sum, row) => sum + row.price * row.quantity, 0);
@@ -139,7 +139,7 @@ const GridResumen = ({
   const totalIVA = subtotal * 0.16;
 
   // Calcular total a pagar (ya incluye IVA)
-  const totalPagar = rows.reduce((sum, row) => sum + row.import, 0);
+  const totalPagar = rows.reduce((sum, row) => sum + row.price, 0);
 
   return {
     rows,

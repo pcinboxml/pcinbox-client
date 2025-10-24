@@ -20,16 +20,35 @@ const PrincipalComponent = () => {
 
   useEffect(() => {
     getListProducts();
+  }, []);
 
-    socketServer.current?.on("newProduct", (data: ProductI[]) => {
-      setDataProducts(data);
-      //Llamar a funcion setDataProducts para actualizar la vista del usuario
+  useEffect(() => {
+    socketServer.current?.on("newProduct", (data: ProductI) => {
+      setDataProducts((prev) => [
+        {
+          idProduct: data.idProduct.toString(),
+          idProductExt: data.idProductExt,
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          stock: Number(data.stock),
+          sku: data.sku,
+          rating: Number(data.rating),
+          imageUrl: data.imageUrl || (data as any).image_url,
+          createdAt: data.createdAt,
+          categoryId: data.categoryId.toString(),
+          providerId: data.providerId.toString(),
+          quantity: 0,
+          reviews: [],
+        },
+        ...prev,
+      ]);
     });
 
     return () => {
       socketServer.current?.off("newProduct");
     };
-  }, []);
+  }, [socketServer.current]);
 
   return (
     <section className="mb-4">

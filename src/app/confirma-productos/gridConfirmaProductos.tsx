@@ -107,7 +107,7 @@ const GridConfirmaProductos = ({
 
     {
       field: "totalConIva",
-      headerName: "Precio con IVA",
+      headerName: "Precio Unitario",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 130 : undefined,
       renderCell: (params: any) => {
@@ -125,26 +125,26 @@ const GridConfirmaProductos = ({
         }
       },
     },
-    {
-      field: "importConIva",
-      headerName: "Importe con IVA",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
+    // {
+    //   field: "importConIva",
+    //   headerName: "Importe con IVA",
+    //   flex: isSmallScreen ? undefined : 1,
+    //   width: isSmallScreen ? 170 : undefined,
+    //   renderCell: (params: any) => {
+    //     if (params.value) {
+    //       return (
+    //         <div className="flex justify-center items-center min-h-[100%]">
+    //           <span
+    //             className="text-[#808080] block text-center"
+    //             style={{ fontSize: "18px", fontWeight: "600" }}
+    //           >
+    //             {formatCurrency(Number(params.value))}
+    //           </span>
+    //         </div>
+    //       );
+    //     }
+    //   },
+    // },
     {
       field: "action",
       headerName: "",

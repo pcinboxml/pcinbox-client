@@ -7,13 +7,8 @@ import useService from "./useService";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 
 const useFavorites = () => {
-  const {
-    dataCart,
-    dataFavorites,
-    setDataFavorites,
-    setDataNotification,
-    setDataCart,
-  } = useTheContext();
+  const { dataFavorites, setDataFavorites, setDataNotification, setDataCart } =
+    useTheContext();
   const { requestPost, requestGet } = useService();
 
   const [loadingFavorite, setLoadingFavorite] = useState<boolean>(false);
@@ -132,13 +127,65 @@ const useFavorites = () => {
   const handleSelectOrden = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
 
-    if (value == "date") {
-      let orderDate = dataFavorites.sort(
+    const favoritesCopy = [...dataFavorites];
+
+    if (value === "date") {
+      const orderDate = favoritesCopy.sort(
         (a, b) =>
           new Date(b.createdAt || "").getTime() -
           new Date(a.createdAt || "").getTime()
       );
-      setDataFavorites(orderDate);
+      setDataFavorites([...orderDate]); // Aseguramos una nueva referencia
+    } else if (value === "z_a") {
+      const orderByNameDescription = favoritesCopy.sort((a, b) => {
+        const nameA = a.products?.name ?? "";
+        const nameB = b.products?.name ?? "";
+        const descriptionA = a.products?.description ?? "";
+        const descriptionB = b.products?.description ?? "";
+
+        const nameComparison = nameB.localeCompare(nameA, undefined, {
+          sensitivity: "base",
+        });
+
+        return nameComparison !== 0
+          ? nameComparison
+          : descriptionB.localeCompare(descriptionA, undefined, {
+              sensitivity: "base",
+            });
+      });
+
+      setDataFavorites([...orderByNameDescription]);
+    } else if (value === "a_z") {
+      const orderByNameDescription = favoritesCopy.sort((a, b) => {
+        const nameA = a.products?.name ?? "";
+        const nameB = b.products?.name ?? "";
+        const descriptionA = a.products?.description ?? "";
+        const descriptionB = b.products?.description ?? "";
+
+        const nameComparison = nameA.localeCompare(nameB, undefined, {
+          sensitivity: "base",
+        });
+
+        return nameComparison !== 0
+          ? nameComparison
+          : descriptionA.localeCompare(descriptionB, undefined, {
+              sensitivity: "base",
+            });
+      });
+
+      setDataFavorites([...orderByNameDescription]);
+    } else if (value === "mayor_precio") {
+      const orderByHighPrice = favoritesCopy.sort(
+        (a, b) =>
+          Number(b?.products?.price ?? 0) - Number(a?.products?.price ?? 0)
+      );
+      setDataFavorites([...orderByHighPrice]);
+    } else if (value === "menor_precio") {
+      const orderByLowPrice = favoritesCopy.sort(
+        (a, b) =>
+          Number(a?.products?.price ?? 0) - Number(b?.products?.price ?? 0)
+      );
+      setDataFavorites([...orderByLowPrice]);
     }
   };
 

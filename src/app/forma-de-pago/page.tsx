@@ -10,23 +10,16 @@ import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
 import ListCardsSave from "../components/listCardsSave/ListCardsSave";
 
-import CardForm from "../components/cardForm/CardForm";
-import StripeProviderClient from "../components/stripeClient/StripeClientProvider";
 import { MdAdd } from "react-icons/md";
 
 const FormaDePago = () => {
   const {
     optionsPago,
     idMethodPay,
-    methodsPay,
-    // loadingTransferBank,
-    // handleOnChange,
     handleSelectOptionPay,
     handleSelectOptionPayById,
     handleRegisterCard,
-    // handleRegisterTransferBank,
     getValuesStorage,
-    // handleOnChangeTextArea,
   } = useFormaDePago();
   const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
     useTheContext();
@@ -56,7 +49,7 @@ const FormaDePago = () => {
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={2} />
-          <div className="container-tabla  w-[90%] mx-auto my-3">
+          <div className="container-tabla  w-[90%] mx-auto mt-2">
             <div
               className="header-container-tabla w-[100%] p-2 bg-[#666666]"
               style={{
@@ -79,7 +72,7 @@ const FormaDePago = () => {
                   : "grid-cols-[1fr]"
               }`}
             >
-              <div className="flex items-center flex-col p-3 my-3 ">
+              <div className="flex items-center flex-col p-3">
                 <div>
                   <h5
                     style={{
@@ -108,7 +101,7 @@ const FormaDePago = () => {
                         if (pago.id != 2) {
                           return (
                             <div
-                              className="flex items-center relative p-4"
+                              className="flex items-center relative py-2 px-3"
                               style={{ borderBottom: "1px solid #ccc" }}
                               key={index}
                               onClick={() => handleSelectOptionPayById(pago.id)}
@@ -136,7 +129,7 @@ const FormaDePago = () => {
                                   >
                                     {pago.label}
 
-                                    {pago?.label && (
+                                    {/* {pago?.label && (
                                       <>
                                         <br />
                                         <span
@@ -149,7 +142,7 @@ const FormaDePago = () => {
                                           {pago.label}
                                         </span>
                                       </>
-                                    )}
+                                    )} */}
                                   </span>
                                 </div>
                               </label>
@@ -184,7 +177,7 @@ const FormaDePago = () => {
               </div>
 
               {idMethodPay != 0 && (
-                <div style={{ marginTop: "50px" }}>
+                <div style={{ marginTop: "10px" }}>
                   {idMethodPay == 1 ? (
                     <>
                       {dataCard && dataCard.length > 0 ? (
@@ -199,7 +192,7 @@ const FormaDePago = () => {
                             Selecciona el metodo de pago
                           </h5>
                           <div
-                            className="h-[auto] max-h-[300px] border py-2 px-3 rounded"
+                            className="h-[auto] max-h-[250px] border py-2 px-3 rounded"
                             style={{
                               overflowY: "auto",
                               overflowX: "hidden",
@@ -252,7 +245,7 @@ const FormaDePago = () => {
             </div>
 
             {dataCart && dataCart.length > 0 && (
-              <div className="w-full flex justify-end items-center  gap-5 mt-4">
+              <div className="w-full flex justify-end items-center gap-5">
                 <button
                   onClick={() => onRouterLink("/opciones-entrega")}
                   className="border py-2 px-5 text-black rounded"
@@ -321,7 +314,11 @@ const FormaDePago = () => {
                             ? "efectivo_al_recoger"
                             : idMethodPay == 4
                             ? "tarjeta_al_recoger"
-                            : "efectivo",
+                            : idMethodPay == 6
+                            ? "mercadopago"
+                            : idMethodPay == 5
+                            ? "efectivo"
+                            : "",
                         idCard: selectedCard,
                       },
                     });

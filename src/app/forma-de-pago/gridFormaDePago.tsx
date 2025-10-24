@@ -8,7 +8,7 @@ const GridFormaDePago = () => {
       id: 1,
       value: "tarjeta_debito_credito",
       label: " Tarjeta de Débito | Crédito",
-      icon: <MdCreditCard size={40} style={{ filter: "grayscale(100%)" }} />,
+      icon: <MdCreditCard size={45} style={{ filter: "grayscale(100%)" }} />,
       cargoBancario: "166",
       color: "#666666",
     },
@@ -52,6 +52,23 @@ const GridFormaDePago = () => {
           style={{
             objectFit: "contain",
             width: "50px",
+            height: "50px",
+          }}
+        />
+      ),
+      cargoBancario: "0",
+      color: "#666666",
+    },
+    {
+      id: 6,
+      value: "mercado_pago",
+      label: "Mercado Pago",
+      icon: (
+        <img
+          src="/mercadopago.jpg"
+          style={{
+            objectFit: "contain",
+            width: "100px",
             height: "50px",
           }}
         />

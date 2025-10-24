@@ -16,6 +16,9 @@ import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 import { CardI } from "../interfaces/card/card.interface";
 import type { Socket } from "socket.io-client";
 import io from "socket.io-client";
+import { AddressI } from "../interfaces/address/address.interface";
+import { DataSendI } from "../interfaces/perfil/perfil.interface";
+import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -67,6 +70,22 @@ interface ContextProps {
   socketServer: RefObject<typeof Socket | null>;
   showProductsMenu: boolean;
   setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
+  dataUserAddress: AddressI[];
+  setDataUserAddress: Dispatch<SetStateAction<AddressI[]>>;
+  isEditAddress: {
+    edit: boolean;
+    idAddress: number;
+  };
+  setIsEditAddress: Dispatch<
+    SetStateAction<{
+      edit: boolean;
+      idAddress: number;
+    }>
+  >;
+  dataAddress: DataSendI;
+  setDataAddress: Dispatch<SetStateAction<DataSendI>>;
+  postalCodes: PostalCodeLookupI[];
+  setPostalCodes: Dispatch<SetStateAction<PostalCodeLookupI[]>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -109,6 +128,28 @@ const CreateContext = createContext<ContextProps>({
   socketServer: { current: null },
   showProductsMenu: false,
   setShowProductsMenu: () => {},
+  dataUserAddress: [],
+  setDataUserAddress: () => {},
+  isEditAddress: {
+    edit: false,
+    idAddress: 0,
+  },
+  setIsEditAddress: () => {},
+  dataAddress: {
+    street: "",
+    noExt: "",
+    noInt: "",
+    codePostal: 0,
+    cologne: "",
+    state: "",
+    city: "",
+    phone1: "",
+    phone2: "",
+    country: "México",
+  },
+  setDataAddress: () => {},
+  postalCodes: [],
+  setPostalCodes: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -147,6 +188,26 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
   const [showProductsMenu, setShowProductsMenu] = useState(false);
+  const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
+  const [isEditAddress, setIsEditAddress] = useState({
+    edit: false,
+    idAddress: 0,
+  });
+
+  const [dataAddress, setDataAddress] = useState<DataSendI>({
+    street: "",
+    noExt: "",
+    noInt: "",
+    codePostal: 0,
+    cologne: "",
+    state: "",
+    city: "",
+    phone1: "",
+    phone2: "",
+    country: "México",
+  });
+
+  const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
 
   useEffect(() => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
@@ -185,6 +246,14 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         socketServer,
         showProductsMenu,
         setShowProductsMenu,
+        dataUserAddress,
+        setDataUserAddress,
+        isEditAddress,
+        setIsEditAddress,
+        dataAddress,
+        setDataAddress,
+        postalCodes,
+        setPostalCodes,
       }}
     >
       {children}

@@ -66,9 +66,9 @@ const Reviews = () => {
               <span className="text-[#bb3d4b] text-[19px] font-bold">
                 {formatCurrency(Number(dataProduct?.price))}
               </span>
-              <span className="block my-2 text-[12px] text-[#bb3d4b]">
+              {/* <span className="block my-2 text-[12px] text-[#bb3d4b]">
                 Costo de envío: {formatCurrency(Number(160.0))}
-              </span>
+              </span> */}
 
               <span className="text-[#606060] text-[13px] font-bold">
                 Disponibles: {dataProduct?.stock.toLocaleString()} piezas
@@ -237,7 +237,7 @@ const Reviews = () => {
 
                 <div className="w-full pl-2 mx-4">
                   <span className="text-[#606060] font-bold text-[16px]">
-                    En proceso de instalcion
+                    {review.title}
                   </span>
                   <p className="text-[13px] text-[#808080] mt-2">
                     {review.description}

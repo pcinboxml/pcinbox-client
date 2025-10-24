@@ -1,13 +1,13 @@
 "use client";
 import "./detailsProduct.css";
 import useDetailsProduct from "./useDetailsProducts";
-import { useEffect, useState } from "react";
-import ProductI from "../../interfaces/products/product.interface";
+import { useEffect } from "react";
 import useService from "../../services/useService";
 import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
 import useFavorites from "../../services/useFavorites";
 import { Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
+import { Carousel } from "react-responsive-carousel";
 
 const DetailsProduct = () => {
   const {
@@ -32,6 +32,16 @@ const DetailsProduct = () => {
 
   const { handleAddFavorites, loadingFavorite } = useFavorites();
 
+  const dateCurrent = new Date();
+
+  // Crear nueva fecha sumando 8 días
+  const dateSend = new Date(dateCurrent);
+  dateSend.setDate(dateCurrent.getDate() + 8);
+
+  // Formatear ambas fechas a formato local (ej: dd/mm/yyyy o mm/dd/yyyy según región)
+  const fechaActualFormateada = dateCurrent.toLocaleDateString();
+  const fechaFuturaFormateada = dateSend.toLocaleDateString();
+
   useEffect(() => {
     if (idProduct) {
       console.log(idProduct);
@@ -50,25 +60,37 @@ const DetailsProduct = () => {
     <div className="container-all white p-4">
       <div className="flex justify-center gap-2 mt-4">
         <div className="container-detail border p-3">
-          <h3 className="title-product">
-            {dataProduct.name} {dataProduct.description}
-          </h3>
-          <span className="code-product">{dataProduct.sku}</span>
-          <br />
-          <br />
+          <h3 className="title-product">{dataProduct.name}</h3>
+          {dataProduct.description && dataProduct.description.length > 100 ? (
+            <span
+              title={dataProduct.description}
+              className="text-[#808080] text-[16px] mt-2"
+            >
+              Descripción: {`${dataProduct.description.slice(0, 100)}...`}
+            </span>
+          ) : dataProduct.description &&
+            dataProduct.description.length < 100 ? (
+            <span className="text-[#808080] text-[16px]">
+              Descripción: {dataProduct.description}
+            </span>
+          ) : null}
 
-          <span className="price-product">
+          <span className="code-product mt-2">{dataProduct.sku}</span>
+
+          <span className="price-product mt-2">
             {formatCurrency(Number(dataProduct.price))}
           </span>
-          <span className="plazos-product">Hasta 18 pagos en $125.00</span>
-          <br />
+          {/* <span className="plazos-product">Hasta 18 pagos en $125.00</span>
+          <br /> */}
 
-          <span className="costo-envio-product">Costo de envío: $155.00</span>
-          <span className="fecha-entrega-product">
+          {/* <span className="costo-envio-product">Costo de envío: $155.00</span> */}
+          <span className="fecha-entrega-product mt-2">
             Fecha de entrega tentativa:{" "}
-            <span>{new Date(dataProduct.createdAt).toLocaleString()}</span>
+            <span>
+              del {fechaActualFormateada} al {fechaFuturaFormateada}
+            </span>
           </span>
-          <span className="stock-product">
+          <span className="stock-product mt-2">
             En stock: {dataProduct.stock} pzas.
           </span>
 
@@ -117,18 +139,46 @@ const DetailsProduct = () => {
           </button>
         </div>
         <div
-          className="container-img border p-3"
-          onClick={() => {
-            setOpenModal(true);
-          }}
+          className="container-img border"
+          // onClick={() => {
+          //   setOpenModal(true);
+          // }}
         >
-          {dataProduct.imageUrl && (
+          <Carousel
+            showIndicators={true}
+            showThumbs={false}
+            showStatus={false}
+            showArrows={true}
+            onClickItem={() => {
+              //onRouterLink(`/detailsProduct/${dataProduct.idProduct}`);
+              setOpenModal(true);
+            }}
+          >
+            {dataProduct.imageUrl && dataProduct.imageUrl.length > 0
+              ? dataProduct.imageUrl.map((img: string, i: number) => (
+                  <div
+                    key={i}
+                    className="flex justify-center items-center"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <img
+                      src={img}
+                      style={{ objectFit: "contain", cursor: "pointer" }}
+                    />
+                  </div>
+                ))
+              : [<div key="no-img">Sin imágenes</div>]}
+          </Carousel>
+          {/* {dataProduct.imageUrl && (
             <img
               src={dataProduct.imageUrl[0]}
               alt="Imagen"
               style={{ cursor: "pointer" }}
             />
-          )}
+          )} */}
         </div>
       </div>
 
@@ -207,7 +257,7 @@ const DetailsProduct = () => {
         })}
       </div>
 
-      <div className="content-history">
+      {/* <div className="content-history">
         <div id="container-img">
           <img src="/banner2.png" alt="" />
         </div>
@@ -217,16 +267,17 @@ const DetailsProduct = () => {
           </div>
 
           <div className="items-history">
-            {/* {[1, 2, 3].map((item) => (
-              <Card key={item} />
-            ))} */}
+          
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}
+        sx={{
+          zIndex: "9999",
+        }}
         children={
           <Box
             sx={{
@@ -260,19 +311,21 @@ const DetailsProduct = () => {
               <div className="flex justify-center items-center h-[400px]">
                 <img
                   src={changeImg}
-                  style={{ height: "400px", objectFit: "contain" }}
+                  style={{ height: "90%", objectFit: "contain" }}
                 />
               </div>
-              <div className="flex flex-wrap justify-start items-center p-2">
+              <div className="flex flex-wrap justify-start items-start p-2 gap-2">
                 {dataProduct.imageUrl.length > 0
                   ? dataProduct.imageUrl.map((img: string, index: number) => {
                       return (
-                        <img
-                          src={img}
-                          key={index}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => setChangeImg(img)}
-                        />
+                        <div className="p-3 rounded hover:shadow-2xl hover:rounded">
+                          <img
+                            src={img}
+                            key={index}
+                            style={{ cursor: "pointer", height: "150px" }}
+                            onClick={() => setChangeImg(img)}
+                          />
+                        </div>
                       );
                     })
                   : null}

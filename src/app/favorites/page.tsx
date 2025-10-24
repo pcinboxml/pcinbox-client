@@ -4,6 +4,7 @@ import useFavorites from "../services/useFavorites";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import { Alert } from "@mui/material";
+import { Carousel } from "react-responsive-carousel";
 
 const Favorites = () => {
   const {
@@ -14,7 +15,7 @@ const Favorites = () => {
     loadingAddCartFavorite,
   } = useFavorites();
   const { dataFavorites } = useTheContext();
-  const { formatCurrency } = useService();
+  const { formatCurrency, onRouterLink } = useService();
 
   return (
     <section>
@@ -52,7 +53,7 @@ const Favorites = () => {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-[100px_200px]">
+          {/* <div className="grid grid-cols-[100px_200px]">
             <div className="flex justify-end px-1">
               <label htmlFor="filtro" className="col-form-label">
                 Filtrar:
@@ -63,7 +64,7 @@ const Favorites = () => {
                 <option value="todos_los_productos">Todos los productos</option>
               </select>
             </div>
-          </div>
+          </div> */}
         </div>
       ) : (
         <Alert severity="info">No hay datos para mostrar</Alert>
@@ -78,13 +79,32 @@ const Favorites = () => {
                 className="border grid grid-cols-[250px_1fr] my-3"
                 key={favorite.idFavorite}
               >
-                <div className="container-img-favorite">
-                  <img
-                    src={favorite.image_url}
-                    width={150}
-                    height={150}
-                    style={{ objectFit: "contain", margin: "auto" }}
-                  />
+                <div className="container-img-favorite overflow-hidden">
+                  <Carousel
+                    showIndicators={true}
+                    showThumbs={false}
+                    showStatus={false}
+                    showArrows={true}
+                    onClickItem={() => {
+                      onRouterLink(
+                        `/detailsProduct/${favorite.products?.idProduct}`
+                      );
+                    }}
+                  >
+                    {favorite.image_url && favorite.image_url.length > 0
+                      ? favorite.image_url.map((img: string, i: number) => (
+                          <div key={i} className="cursor-pointer">
+                            <img
+                              src={img}
+                              style={{
+                                objectFit: "contain",
+                                height: "200px",
+                              }}
+                            />
+                          </div>
+                        ))
+                      : [<div key="no-img">Sin imágenes</div>]}
+                  </Carousel>
                 </div>
 
                 <div className="content-favorite grid grid-cols-[5fr_auto]">
@@ -111,7 +131,9 @@ const Favorites = () => {
 
                     <p>
                       <span className="font-bold text-black">SKU: </span>
-                      <span className="text-[#cccccc]">SKU-12-212-21</span>
+                      <span className="text-[#cccccc]">
+                        {favorite.products?.sku}
+                      </span>
                     </p>
 
                     <p>
@@ -139,12 +161,6 @@ const Favorites = () => {
                       >
                         {formatCurrency(Number(favorite.products?.price))}
                       </span>
-                      {/* <span
-                        className="text-[#bb3d4b]"
-                        style={{ fontSize: "12px" }}
-                      >
-                        Costo de envío: $120.00
-                      </span> */}
 
                       <span
                         className="text-[#606060]"
@@ -196,16 +212,6 @@ const Favorites = () => {
             );
           })}
       </div>
-
-      {/* <div className="w-full flex justify-end">
-        <select name="" id="">
-          <option value="">Fecha</option>
-        </select>
-
-        <select name="" id="">
-          <option value="">Todos los productos</option>
-        </select>
-      </div> */}
     </section>
   );
 };

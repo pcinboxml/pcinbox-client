@@ -7,7 +7,7 @@ import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos
 import { GroupByIdI } from "../interfaces/compras/historyCompras.interface";
 
 const useHistorialDeCompras = () => {
-  const { requestGet, requestPost } = useService();
+  const { requestPost } = useService();
   const [loadingCancelledCompra, setLoadingCancelledCompra] =
     useState<boolean>(false);
 
@@ -45,7 +45,13 @@ const useHistorialDeCompras = () => {
 
   const handleHistoryByUser = async () => {
     try {
-      const resp = await requestGet("/sales/historySalesByUser");
+      const resp = await requestPost(
+        {
+          userId: localStorage.getItem("idUser"),
+          status: "allState",
+        },
+        "/sales/filterSales"
+      );
 
       if (resp.status == 200) {
         const data = await resp.data;

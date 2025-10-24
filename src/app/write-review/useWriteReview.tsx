@@ -55,6 +55,7 @@ const useWriteReview = () => {
             reviewerName:
               localStorage.getItem("name")! + localStorage.getItem("lastname")!,
             rating: dataAddReview.rating,
+            title: dataAddReview.title,
           },
           "/review/addReview"
         );

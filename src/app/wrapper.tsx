@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
 import useFavorites from "./services/useFavorites";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function AppWrapper({
   children,
@@ -75,6 +76,21 @@ export default function AppWrapper({
           <Notification dataNotification={dataNotification} />
           <Footer />
         </main>
+
+        <a
+          style={{
+            position: "fixed",
+            bottom: "10px",
+            right: "10px",
+            textDecoration: "none",
+          }}
+          href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
+        >
+          <FaWhatsapp
+            size={45}
+            style={{ color: "#25D366", fontSize: "2rem" }}
+          />
+        </a>
       </div>
     </SessionProvider>
   );

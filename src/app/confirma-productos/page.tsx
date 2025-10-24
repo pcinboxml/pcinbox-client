@@ -58,9 +58,9 @@ const ConfirmaProducts = () => {
                       color: "#666666",
                     }}
                   >
-                    Sub total con IVA:
+                    Sub total:{" "}
                   </span>
-                  <span className="text[#808080] block">
+                  <span className="text[#808080] block mx-1">
                     {formatCurrency(
                       Number(
                         rows.reduce((sum, row) => sum + row.totalConIva, 0)
