@@ -170,10 +170,10 @@ const Navbar = () => {
       <div className="flex container">
         <div
           className="container-products"
-          onMouseLeave={onMouseLeaveProducts}
+          // onMouseLeave={onMouseLeaveProducts}
           style={{ position: "relative", zIndex: 100 }} // Asegúrate del zIndex
         >
-          <button
+          {/* <button
             className="btn-products"
             onMouseEnter={onMouseEnterProducts}
             onClick={() => {
@@ -183,11 +183,11 @@ const Navbar = () => {
             }}
           >
             Productos
-          </button>
+          </button> */}
 
-          {pathname != "/principal" && pathname != "/" ? (
+          {/* {pathname != "/principal" && pathname != "/" ? (
             <SubMenuProductos />
-          ) : null}
+          ) : null} */}
         </div>
         {/* <div
           className="container-products"
@@ -676,10 +676,10 @@ const Navbar = () => {
                 </div>
               </li>
 
-              <li>
+              {/* <li>
                 <a href="#">Configurador de PC</a>
                 <MdArrowDropDown size={22} color="gray" />
-              </li>
+              </li> */}
               {!hasToken ? (
                 <li>
                   <a

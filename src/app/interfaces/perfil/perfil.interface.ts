@@ -18,13 +18,13 @@ export interface FacturacionI {
   taxRegimen: string;
   methodPay: string;
   codePostal: number;
-  cologne: string;
+  // cologne: string;
   state: string;
   city: string;
-  street: string;
-  noExt: string;
-  noInt?: string;
-  observations: string;
+  // street: string;
+  // noExt: string;
+  // noInt?: string;
+  // observations: string;
   country: string;
 }
 

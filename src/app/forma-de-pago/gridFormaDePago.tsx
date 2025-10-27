@@ -13,16 +13,16 @@ const GridFormaDePago = () => {
       color: "#666666",
     },
 
-    {
-      id: 2,
-      value: "transferencia",
-      label: "Transferencia o Deposito bancario",
-      icon: (
-        <MdAccountBalance size={40} style={{ filter: "grayscale(100%)" }} />
-      ),
-      cargoBancario: "0",
-      color: "#BA2B3D",
-    },
+    // {
+    //   id: 2,
+    //   value: "transferencia",
+    //   label: "Transferencia o Deposito bancario",
+    //   icon: (
+    //     <MdAccountBalance size={40} style={{ filter: "grayscale(100%)" }} />
+    //   ),
+    //   cargoBancario: "0",
+    //   color: "#BA2B3D",
+    // },
     // {
     //   id: 3,
     //   value: "efectivo_al_recoger",
@@ -59,23 +59,23 @@ const GridFormaDePago = () => {
       cargoBancario: "0",
       color: "#666666",
     },
-    {
-      id: 6,
-      value: "mercado_pago",
-      label: "Mercado Pago",
-      icon: (
-        <img
-          src="/mercadopago.jpg"
-          style={{
-            objectFit: "contain",
-            width: "100px",
-            height: "50px",
-          }}
-        />
-      ),
-      cargoBancario: "0",
-      color: "#666666",
-    },
+    // {
+    //   id: 6,
+    //   value: "mercado_pago",
+    //   label: "Mercado Pago",
+    //   icon: (
+    //     <img
+    //       src="/mercadopago.jpg"
+    //       style={{
+    //         objectFit: "contain",
+    //         width: "100px",
+    //         height: "50px",
+    //       }}
+    //     />
+    //   ),
+    //   cargoBancario: "0",
+    //   color: "#666666",
+    // },
   ];
 
   const methodsPay = [

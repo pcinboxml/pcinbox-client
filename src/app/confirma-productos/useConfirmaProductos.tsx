@@ -1,6 +1,5 @@
 "use client";
 
-import { MdAutorenew, MdDelete, MdRemove } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
 import { useMediaQuery } from "@mui/material";
 import useService from "../services/useService";
@@ -56,7 +55,8 @@ const useConfirmaProductos = () => {
     sucursal: "León",
     // totalSinIva: Number(itemCart.price) * Number(itemCart.quantity),
     // totalConIva: Number(itemCart.price) * Number(itemCart.quantity) * 1.16, //antes
-    totalConIva: Number(itemCart.price) * Number(itemCart.quantity),
+    totalConIva: Number(itemCart.price),
+    total: Number(itemCart.price) * Number(itemCart.quantity),
     // importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
     action: 1,
   }));
@@ -73,7 +73,8 @@ const useConfirmaProductos = () => {
       onConfirm: async () => {
         try {
           setLoadingClearCar(true);
-          const resp = await requestPost(dataCart, "/cart/removeAllCart");
+
+          const resp = await requestPost({ dataCart }, "/cart/removeAllCart");
           setLoadingClearCar(false);
 
           if (resp.status == 200) {

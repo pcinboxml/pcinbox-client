@@ -125,6 +125,26 @@ const GridConfirmaProductos = ({
         }
       },
     },
+    {
+      field: "total",
+      headerName: "Precio Total",
+      flex: isSmallScreen ? undefined : 1,
+      width: isSmallScreen ? 150 : undefined,
+      renderCell: (params: any) => {
+        if (params.value) {
+          return (
+            <div className="flex justify-center items-center min-h-[100%]">
+              <span
+                className="text-[#808080] block text-center"
+                style={{ fontSize: "18px", fontWeight: "600" }}
+              >
+                {formatCurrency(Number(params.value))}
+              </span>
+            </div>
+          );
+        }
+      },
+    },
     // {
     //   field: "importConIva",
     //   headerName: "Importe con IVA",

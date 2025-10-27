@@ -11,17 +11,6 @@ const usePrincipal = () => {
   const { setDataProducts, dataProducts } = useTheContext();
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
-  // const [newProduct, setNewProduct] = useState({
-  //   categoryId: "",
-  //   description: "",
-  //   image_url: "",
-  //   name: "",
-  //   price: "",
-  //   providerId: "",
-  //   stock: 150,
-  //   quantity: 2,
-  //   rating: 0,
-  // });
 
   const getListProducts = async () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
@@ -58,8 +47,6 @@ const usePrincipal = () => {
       ]);
     });
     socketServer.current?.on("updateAllProducts", (inputDataSocket: any[]) => {
-      // console.log("escuchando updateAllProducts");
-      // console.log(inputDataSocket);
       setDataProducts((prev) =>
         prev.map((itemProduct) => {
           const updated = inputDataSocket.find(

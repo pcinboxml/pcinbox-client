@@ -1,14 +1,40 @@
 "use client";
 import { useTheContext } from "@/app/services/globalContext";
+import useProveedores from "@/app/services/proveedores/useProveedores";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const SubMenuProductos = ({ styles }: { styles?: any }) => {
-  const { showProductsMenu } = useTheContext();
+  const { showProductsMenu, dataProducts } = useTheContext();
   const pathname = usePathname();
   const [hasMounted, setHasMounted] = useState(false);
+  const [dataCategories, setDataCategories] = useState<
+    {
+      idCategorie: number;
+      name: string;
+      providerId: number;
+    }[]
+  >([]);
+
+  const [subMenus, setSubMenus] = useState<{ content: any }[]>([]);
+
+  const { requestGetProveedor } = useProveedores();
+
+  const getDataCategories = async () => {
+    try {
+      const resp = await requestGetProveedor("/getAllCategoriPrincipal");
+      if (resp.status == 200) {
+        const data = resp.data;
+
+        setDataCategories(data.data.data);
+      }
+    } catch (error) {
+      setDataCategories([]);
+    }
+  };
 
   useEffect(() => {
+    getDataCategories();
     setHasMounted(true);
   }, []);
 
@@ -35,47 +61,64 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
           flexWrap: "nowrap",
         }}
       >
-        <ul>
-          <li>
-            <a href="#">Procesadores</a>
-          </li>
-          <li>
-            <a href="#">Tarjetas de video</a>
-          </li>
-          <li>
-            <a href="#">Placas madre</a>
-          </li>
-          <li>
-            <a href="#">Memoria Ram</a>
-          </li>
-          <li>
-            <a href="#">Almacenamiento</a>
-          </li>
-          <li>
-            <a href="#">Gabinetes para PC</a>
-          </li>
-          <li>
-            <a href="#">Fuentes de Poder</a>
-          </li>
-          <li>
-            <a href="#">Enfriamientos</a>
-          </li>
-          <li>
-            <a href="#">Monitores</a>
-          </li>
-          <li>
-            <a href="#">Teclados</a>
-          </li>
-          <li>
-            <a href="#">Mouse</a>
-          </li>
-          <li>
-            <a href="#">Energia</a>
-          </li>
-          <li>
-            <a href="#">Redes</a>
-          </li>
-        </ul>
+        <div className="menu1 h-[100%] max-h-[550px] w-[150px]  overflow-y-auto overflow-x-hidden">
+          <ul>
+            {dataCategories && dataCategories.length > 0
+              ? dataCategories.map((categoria) => {
+                  if (categoria.name != "" && categoria.name != null) {
+                    return (
+                      <li key={categoria.idCategorie}>
+                        <a
+                          href="#"
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            display: "inline-block",
+                            maxWidth: "150px",
+                          }}
+                          onMouseEnter={() => {
+                            if (categoria) {
+                              let findProductByCategori = dataProducts
+                                .filter(
+                                  (product) =>
+                                    Number(product.categoryId) ==
+                                    Number(categoria.idCategorie)
+                                )
+                                .map((mProduct, indexProduct) => {
+                                  return (
+                                    <li
+                                      key={indexProduct}
+                                      className="mt-1 block"
+                                    >
+                                      <a href="#">{mProduct.name}</a>
+                                    </li>
+                                  );
+                                });
+                              setSubMenus((prevSubMenu) => [
+                                {
+                                  content: (
+                                    <div
+                                      key={1}
+                                      className="h-[100%] max-h-[550px] w-[150px]  overflow-y-auto overflow-x-hidden"
+                                    >
+                                      <ul>{findProductByCategori}</ul>
+                                    </div>
+                                  ),
+                                },
+                              ]);
+                            }
+                          }}
+                        >
+                          {categoria.name}
+                        </a>
+                      </li>
+                    );
+                  }
+                })
+              : null}
+          </ul>
+        </div>
+        {subMenus && subMenus.map((mSubMenu) => mSubMenu.content)}
       </div>
     </div>
   );

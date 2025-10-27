@@ -11,12 +11,13 @@ import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
 import { usePathname } from "next/navigation";
 import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
-import useNavbar from "../components/navbar/useNavbar";
+import usePro from "./usePro";
 
 const PrincipalComponent = () => {
   const pathName = usePathname();
   const { setDataProducts, dataProducts, socketServer } = useTheContext();
   const { getListProducts } = usePrincipal();
+  const { pagePro, handlePageChangePro, totalPagesPro } = usePro();
 
   useEffect(() => {
     getListProducts();
@@ -64,17 +65,17 @@ const PrincipalComponent = () => {
         )}
 
         <div className="content-index relative">
-          {pathName == "/principal" || pathName == "/" ? (
+          {/* {pathName == "/principal" || pathName == "/" ? (
             <SubMenuProductos
               styles={{
-                left: "-160px",
+                // left: "-160px",
                 top: "-43px",
                 paddingLeft: "2px",
                 paddingTop: "3px",
                 paddingRight: "3px",
               }}
             />
-          ) : null}
+          ) : null} */}
           <div className="container-carousel">
             {/* <img src="/nintendo.jpg" alt="" /> */}
 
@@ -91,13 +92,33 @@ const PrincipalComponent = () => {
           {dataProducts && dataProducts.length > 0 ? (
             <>
               <div className="head-container">
-                <span>Tenemos lo más destacado en Gaming!</span>
+                <span>Pc Gamer Pro</span>
               </div>
 
               <div className="container-destacado">
                 {dataProducts
-                  .sort((a, b) => Number(b.idProduct) - Number(a.idProduct))
-                  .slice(0, 6)
+                  .filter((item) => {
+                    try {
+                      if (item.caracteristicas) {
+                        // Parsear las características (si vWienen como string)
+                        const caracteristicas =
+                          typeof item.caracteristicas === "string"
+                            ? JSON.parse(item.caracteristicas)
+                            : item.caracteristicas;
+
+                        // Buscar la característica "tipo"
+                        const tipo = caracteristicas.find(
+                          (c: any) => c.prop == "tipo"
+                        );
+
+                        // Verificar si el tipo es "pro"
+                        return tipo?.value == "pro";
+                      }
+                    } catch (error) {
+                      console.error("Error parseando caracteristicas:", error);
+                      return false; // si hay error, no mostrar el producto
+                    }
+                  })
                   .map((product) => (
                     <Card
                       key={product.idProduct}
@@ -107,11 +128,11 @@ const PrincipalComponent = () => {
                   ))}
               </div>
 
-              {/* <PaginationComponent
-                count={pagination[0].pageCount}
-                page={pagination[0].currentPage}
-                onChange={(event, page) => changePagination(event, page, 1)}
-              /> */}
+              <PaginationComponent
+                page={pagePro}
+                count={totalPagesPro}
+                onChange={handlePageChangePro}
+              />
             </>
           ) : (
             <Skeleton />
@@ -120,16 +141,39 @@ const PrincipalComponent = () => {
           {dataProducts && dataProducts.length > 0 ? (
             <>
               <div className="head-container">
-                <span>Lo más buscado!</span>
+                <span>PcGamer intermedio</span>
               </div>
               <div className="container-destacado">
-                {dataProducts.slice(0, 6).map((product) => (
-                  <Card
-                    key={product.idProduct}
-                    product={product}
-                    dataProducts={dataProducts}
-                  />
-                ))}
+                {dataProducts
+                  .filter((item) => {
+                    try {
+                      if (item.caracteristicas) {
+                        // Parsear las características (si vWienen como string)
+                        const caracteristicas =
+                          typeof item.caracteristicas === "string"
+                            ? JSON.parse(item.caracteristicas)
+                            : item.caracteristicas;
+
+                        // Buscar la característica "tipo"
+                        const tipo = caracteristicas.find(
+                          (c: any) => c.prop == "tipo"
+                        );
+
+                        // Verificar si el tipo es "pro"
+                        return tipo?.value == "intermedio";
+                      }
+                    } catch (error) {
+                      console.error("Error parseando caracteristicas:", error);
+                      return false; // si hay error, no mostrar el producto
+                    }
+                  })
+                  .map((product) => (
+                    <Card
+                      key={product.idProduct}
+                      product={product}
+                      dataProducts={dataProducts}
+                    />
+                  ))}
               </div>
             </>
           ) : (
@@ -139,17 +183,40 @@ const PrincipalComponent = () => {
           {dataProducts && dataProducts.length > 0 ? (
             <>
               <div className="head-container">
-                <span>Lo más vendido!</span>
+                <span>PcGamer de entrada</span>
               </div>
 
               <div className="container-destacado">
-                {dataProducts.slice(0, 6).map((product) => (
-                  <Card
-                    key={product.idProduct}
-                    product={product}
-                    dataProducts={dataProducts}
-                  />
-                ))}
+                {dataProducts
+                  .filter((item) => {
+                    try {
+                      if (item.caracteristicas) {
+                        // Parsear las características (si vWienen como string)
+                        const caracteristicas =
+                          typeof item.caracteristicas === "string"
+                            ? JSON.parse(item.caracteristicas)
+                            : item.caracteristicas;
+
+                        // Buscar la característica "tipo"
+                        const tipo = caracteristicas.find(
+                          (c: any) => c.prop == "tipo"
+                        );
+
+                        // Verificar si el tipo es "pro"
+                        return tipo?.value == "entrada";
+                      }
+                    } catch (error) {
+                      console.error("Error parseando caracteristicas:", error);
+                      return false; // si hay error, no mostrar el producto
+                    }
+                  })
+                  .map((product) => (
+                    <Card
+                      key={product.idProduct}
+                      product={product}
+                      dataProducts={dataProducts}
+                    />
+                  ))}
               </div>
             </>
           ) : (

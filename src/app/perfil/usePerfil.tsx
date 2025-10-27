@@ -47,17 +47,17 @@ const usePerfil = () => {
   } | null>();
 
   const [dataFacturacion, setDataFacturacion] = useState<FacturacionI>({
-    street: "",
-    noExt: "",
-    noInt: "",
+    // street: "",
+    // noExt: "",
+    // noInt: "",
     codePostal: 0,
-    cologne: "",
+    // cologne: "",
     state: "",
     city: "",
     CFDI: "",
     companyName: "",
     methodPay: "",
-    observations: "",
+    // observations: "",
     rfc: "",
     taxRegimen: "",
     country: "México",
@@ -183,6 +183,11 @@ const usePerfil = () => {
         const dataResp = await resp.data.data;
 
         setPostalCodes2(dataResp.postalcodes);
+        setDataFacturacion((prev) => ({
+          ...prev,
+          state: dataResp.postalcodes[0].adminName1,
+          city: dataResp.postalcodes[0].adminName3,
+        }));
       }
     } else if (name == "codePostal" && value.length < 5) {
       setPostalCodes2([]);
@@ -288,13 +293,13 @@ const usePerfil = () => {
           taxRegimen: dataFacturacion.taxRegimen,
           methodPay: dataFacturacion.methodPay,
           codePostal: dataFacturacion.codePostal,
-          cologne: dataFacturacion.cologne,
+          // cologne: dataFacturacion.cologne,
           state: dataFacturacion.state,
           city: dataFacturacion.city,
-          street: dataFacturacion.street.trim(),
-          noExt: dataFacturacion.noExt.trim(),
-          noInt: dataFacturacion.noInt?.trim(),
-          observations: dataFacturacion.observations.trim(),
+          // street: dataFacturacion.street.trim(),
+          // noExt: dataFacturacion.noExt.trim(),
+          // noInt: dataFacturacion.noInt?.trim(),
+          // observations: dataFacturacion.observations.trim(),
         },
         "/billing/createBilling"
       );

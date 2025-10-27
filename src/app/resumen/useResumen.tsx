@@ -236,20 +236,8 @@ const useResumen = () => {
         setLoadingCreateOrder(false);
 
         if (resp.status == 200) {
-          // Prod
-          // if (resp.status == 200) {
-          // Redirige al usuario al checkout de Mercado Pago
-          window.location.href = resp.data.sandbox_init_point;
-          //  }
-
           //Pruebas
-          // const respFetch = await requestGetPagos(
-          //   `/mercadopago/preference/${resp.data.id}`
-          // );
-          // if (respFetch.status == 200 || respFetch.status == 201) {
-          //   window.location.href =
-          //     "https://alejandro-paredes-soto.github.io/plantillas/successMP.html";
-          // }
+          window.location.href = resp.data.sandbox_init_point;
         }
       } catch (error) {
         setLoadingCreateOrder(false);

@@ -495,9 +495,7 @@ const MiCuenta = () => {
                   <option value="Efectivo">Efectivo</option>
                   <option value="Tarjeta_de_Credito">Tarjeta de credito</option>
                   <option value="Tarjeta_de_Debito">Tarjeta de debito</option>
-                  <option value="Transferencia_Bancaria">
-                    Transferencia bancaria
-                  </option>
+                  <option value="Mercado_Pago">Mercado Pago</option>
                 </select>
               </div>
               <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
@@ -516,7 +514,7 @@ const MiCuenta = () => {
                   onChange={handleOnChange2}
                 />
               </div>
-              <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
                   Colonia:
                 </label>
@@ -540,7 +538,7 @@ const MiCuenta = () => {
                     <option value="">Selecciona una colonia</option>
                   )}
                 </select>
-              </div>
+              </div> */}
               <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
                   Estado:
@@ -580,7 +578,7 @@ const MiCuenta = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
                   Calle:
                 </label>
@@ -591,8 +589,8 @@ const MiCuenta = () => {
                   value={dataFacturacion?.street}
                   onChange={handleOnChange2}
                 />
-              </div>
-              <div className="grid grid-cols-[auto_auto] gap-2 items-center mt-4 relative">
+              </div> */}
+              {/* <div className="grid grid-cols-[auto_auto] gap-2 items-center mt-4 relative">
                 <div className="flex items-center">
                   <label
                     htmlFor=""
@@ -625,11 +623,11 @@ const MiCuenta = () => {
                     onChange={handleOnChange2}
                   />
                 </div>
-              </div>
+              </div> */}
 
-              <br />
-              <br />
-              <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
+              {/* <br />
+              <br /> */}
+              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
                   Observaciones: <br />
                   (opcional)
@@ -642,7 +640,7 @@ const MiCuenta = () => {
                   style={{ resize: "none" }}
                   onChange={handleOnChange2}
                 ></textarea>
-              </div>
+              </div> */}
 
               <div
                 className={`grid grid-cols-[auto] gap-2  mt-4 relative ${styles.containerBtnGuardar2}`}

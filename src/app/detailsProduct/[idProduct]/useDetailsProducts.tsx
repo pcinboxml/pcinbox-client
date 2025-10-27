@@ -29,6 +29,7 @@ const useDetailsProduct = () => {
     reviews: [],
     rating: 0,
     sku: "",
+    caracteristicas: [],
   });
 
   const handleAdd = () => {
