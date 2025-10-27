@@ -7,7 +7,7 @@ const useCarousel = () => {
   const images = [
     "/banner_prin.png",
     "/banner_prin_02.png",
-    "/banner_prin_03.png",
+    "https://ik.imagekit.io/pcinboxkit/carrusel/banner_prin_03.png?updatedAt=1761598610986",
     "/banner_prin_04.png",
     "/banner_prin_05.png",
   ];
