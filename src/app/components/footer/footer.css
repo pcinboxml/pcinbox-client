@@ -104,6 +104,11 @@ footer {
   height: 30px;
   object-fit: contain;
   filter: grayscale(90%);
+  transition: all 500ms ease-in-out;
+}
+
+.container-footer .redes img:hover {
+  filter: none;
 }
 
 @media (max-width: 1038px) {

@@ -96,10 +96,22 @@ const Footer = () => {
             </a>
           </div>
           <div className="redes">
-            <img src="/facebook.png" />
-            <img src="/youtube.png" />
-            <img src="/instagram.png" />
-            <img src="/tiktok.png" />
+            <a
+              target="_blank"
+              className="cursor-pointer"
+              href="https://www.facebook.com/pcinboxbajio?locale=es_LA"
+            >
+              <img src="/facebook.png" />
+            </a>
+            <a href="https://www.youtube.com/@pcinboxmx" target="_blank">
+              <img src="/youtube.png" />
+            </a>
+            <a href="https://www.instagram.com/pcinbox_bajio/" target="_blank">
+              <img src="/instagram.png" />
+            </a>
+            <a href="https://www.tiktok.com/@pcinboxbajio" target="_blank">
+              <img src="/tiktok.png" />
+            </a>
           </div>
         </div>
 
