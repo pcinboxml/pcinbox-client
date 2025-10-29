@@ -50,7 +50,7 @@ const DetallesPedido = () => {
               Envio:
             </span>
             <span className="mx-2 block text-[#808080] font-[600] text-[15px]">
-              {formatCurrency(185)}
+              {"Gratis"}
             </span>
           </div>
 

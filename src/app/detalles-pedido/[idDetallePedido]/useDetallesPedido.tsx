@@ -2,9 +2,10 @@
 
 import useService from "../../services/useService";
 import { useState, useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
 
 const useDetallesPedido = () => {
-  const { formatCurrency, requestPost } = useService();
+  const { formatCurrency, requestPost, onRouterLink } = useService();
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -31,17 +32,42 @@ const useDetallesPedido = () => {
       headerName: "Imagen",
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 170 : undefined,
+
       renderCell: (params: any) => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%] p-1">
-              <img
-                src={params.value}
+              <Carousel
+                showIndicators={true}
+                showThumbs={false}
+                showStatus={false}
+                showArrows={true}
+                // onClickItem={() => {
+                //   onRouterLink(`/detailsProduct/${params.row.id}`);
+                // }}
+              >
+                {params.value && params.value.length > 0
+                  ? params.value.map((img: string, i: number) => (
+                      <div key={i}>
+                        <img
+                          src={img}
+                          style={{
+                            objectFit: "contain",
+                            height: "150px",
+                            marginTop: "12px",
+                          }}
+                        />
+                      </div>
+                    ))
+                  : [<div key="no-img">Sin imágenes</div>]}
+              </Carousel>
+              {/* <img
+                src={params.value[0]}
                 alt="User"
                 width={50}
                 height={50}
                 className="mx-auto my-2"
-              />
+              /> */}
             </div>
           );
         }
