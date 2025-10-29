@@ -144,7 +144,7 @@
   font-size: 16px;
   font-weight: 800;
   color: #494949;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 .mi-card .actions-product .cantidad-product .costoEnvio {
@@ -155,7 +155,7 @@
 .mi-card .actions-product .cantidad-product .stock {
   font-size: 10px;
   color: #868686;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 .mi-card:has(.container-img:hover) {
