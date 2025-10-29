@@ -50,6 +50,7 @@ const useResumen = () => {
             shipping_method: progressPay.optionSend.name,
             dataProduct: dataCart,
             idAddress: progressPay.optionSend.address,
+            requiredFactura: selectedFactura,
           },
           "/stripe/createOrderCash"
         );
@@ -95,6 +96,7 @@ const useResumen = () => {
             optionEnvio: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
             dataProduct: dataCart,
+            requiredFactura: selectedFactura,
           },
           "/stripe/paymentWithCard"
         );

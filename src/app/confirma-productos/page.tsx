@@ -7,6 +7,7 @@ import useConfirmaProductos from "./useConfirmaProductos";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
+import { useMemo } from "react";
 
 const ConfirmaProducts = () => {
   const { formatCurrency, onRouterLink } = useService();
@@ -19,6 +20,16 @@ const ConfirmaProducts = () => {
     handleShowModalVaciarCarrito,
   } = useConfirmaProductos();
   const { dataCart } = useTheContext();
+
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
 
   return (
     <section>
@@ -61,11 +72,7 @@ const ConfirmaProducts = () => {
                     Sub total:{" "}
                   </span>
                   <span className="text[#808080] block mx-1">
-                    {formatCurrency(
-                      Number(
-                        rows.reduce((sum, row) => sum + row.totalConIva, 0)
-                      )
-                    )}
+                    {formatCurrency(totalPrice)}
                   </span>
                 </div>
               </div>

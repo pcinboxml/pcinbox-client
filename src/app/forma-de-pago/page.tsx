@@ -10,7 +10,7 @@ import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
 import ListCardsSave from "../components/listCardsSave/ListCardsSave";
 
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdDelete, MdRemove } from "react-icons/md";
 
 const FormaDePago = () => {
   const {
@@ -20,6 +20,7 @@ const FormaDePago = () => {
     handleSelectOptionPayById,
     handleRegisterCard,
     getValuesStorage,
+    handleRemoveCard,
   } = useFormaDePago();
   const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
     useTheContext();
@@ -200,12 +201,25 @@ const FormaDePago = () => {
                           >
                             <ListCardsSave dataCard={dataCard} />
                           </div>
-                          <button
-                            onClick={handleRegisterCard}
-                            className="cursor-pointer border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#990000] text-white font-bold"
-                          >
-                            <MdAdd /> Agregar tarjeta
-                          </button>
+                          <div className="flex justify-start gap-2 mb-5">
+                            <button
+                              onClick={handleRegisterCard}
+                              className="cursor-pointer border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#990000] text-white font-bold"
+                            >
+                              <MdAdd /> Agregar tarjeta
+                            </button>
+
+                            {selectedCard == "" ||
+                            selectedCard == null ||
+                            !selectedCard ? null : (
+                              <button
+                                onClick={handleRemoveCard}
+                                className="cursor-pointer text-white border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#808080]"
+                              >
+                                <MdDelete /> Eliminar tarjeta
+                              </button>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <button
@@ -278,8 +292,10 @@ const FormaDePago = () => {
                     }
                     if (
                       idMethodPay == 1 &&
-                      dataCard.length > 0 &&
-                      selectedCard == ""
+                      (dataCard.length == 0 ||
+                        selectedCard == "" ||
+                        selectedCard == null ||
+                        !selectedCard)
                     ) {
                       setDataModal({
                         isOpen: true,

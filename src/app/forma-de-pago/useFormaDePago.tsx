@@ -5,6 +5,7 @@ import GridFormaDePago from "./gridFormaDePago";
 import { useTheContext } from "../services/globalContext";
 import StripeProviderClient from "../components/stripeClient/StripeClientProvider";
 import CardForm from "../components/cardForm/CardForm";
+import CardFormRemove from "../components/cardFormRemove/CardFormRemove";
 
 const useFormaDePago = () => {
   const { setDataModal } = useTheContext();
@@ -52,6 +53,21 @@ const useFormaDePago = () => {
     });
   };
 
+  const handleRemoveCard = () => {
+    setDataModal({
+      isOpen: true,
+      message: "¿Seguro que deseas eliminar ésta tarjeta?",
+      type: "info",
+      title: "Eliminar tarjeta",
+      children: <CardFormRemove />,
+      showActions: false,
+      onConfirm: () => {},
+      onClose: () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
+      },
+    });
+  };
+
   return {
     optionsPago,
     methodsPay,
@@ -60,6 +76,7 @@ const useFormaDePago = () => {
     handleSelectOptionPayById,
     handleRegisterCard,
     getValuesStorage,
+    handleRemoveCard,
   };
 };
 
