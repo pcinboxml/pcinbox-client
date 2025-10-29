@@ -51,7 +51,7 @@ const HistoryShop = () => {
     return () => {
       socket.off("changeStatusShipment", handler);
     };
-  }, [socketPagos.current]);
+  }, []);
   return (
     <section className={style.section}>
       <div className="w-[280px] border ">
@@ -261,6 +261,40 @@ const HistoryShop = () => {
                             <span className="font-bold text-black">
                               PCInbox
                             </span>{" "}
+                            <div className="flex my-2">
+                              <span>Fecha tentativa de entrega:</span>
+                              <span className="block mx-2 font-bold text-black">
+                                {(() => {
+                                  const createdAt = new Date(
+                                    historyCompra.createdAt
+                                  );
+                                  const fechaMas7Dias = new Date(createdAt);
+                                  fechaMas7Dias.setDate(
+                                    createdAt.getDate() + 7
+                                  );
+
+                                  const inicio = createdAt.toLocaleDateString(
+                                    "es-ES",
+                                    {
+                                      year: "numeric",
+                                      month: "2-digit",
+                                      day: "2-digit",
+                                    }
+                                  );
+                                  const fin = fechaMas7Dias.toLocaleDateString(
+                                    "es-ES",
+                                    {
+                                      year: "numeric",
+                                      month: "2-digit",
+                                      day: "2-digit",
+                                    }
+                                  );
+
+                                  return `${inicio} a ${fin}`;
+                                })()}{" "}
+                                de 10:00 AM - 7:00 PM
+                              </span>
+                            </div>
                           </span>
                         ) : (
                           ""

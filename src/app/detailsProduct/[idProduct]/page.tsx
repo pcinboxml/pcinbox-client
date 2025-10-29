@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import useService from "../../services/useService";
 import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
 import useFavorites from "../../services/useFavorites";
-import { Box, Modal } from "@mui/material";
+import { Alert, Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
 import { Carousel } from "react-responsive-carousel";
 
@@ -111,13 +111,15 @@ const DetailsProduct = () => {
 
           <button
             className="btnAgregar"
-            disabled={loadingAddProduct}
+            disabled={loadingAddProduct || dataProduct.stock <= 0}
             onClick={() => handleAddProductCart(dataProduct, Number(quantity))}
           >
             {loadingAddProduct ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
-            ) : (
+            ) : dataProduct.stock > 0 ? (
               "Agregar"
+            ) : (
+              "No disponible"
             )}
           </button>
           <br />
@@ -181,7 +183,7 @@ const DetailsProduct = () => {
         </div>
       </div>
 
-      <div className="container-description w-full border mt-2 flex justify-center flex-wrap p-2">
+      <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
         <h4>Descripción</h4>
         <br />
         <br />
@@ -221,6 +223,13 @@ const DetailsProduct = () => {
             return null; // evita que React crashee
           }
         })()}
+      </div>
+
+      <div className="w-[70%] mt-2 border">
+        <Alert severity="info">
+          Las imágenes publicadas son meramente ilustrativas y no siempre
+          representan el producto final.
+        </Alert>
       </div>
 
       {/* <div className="content-history">

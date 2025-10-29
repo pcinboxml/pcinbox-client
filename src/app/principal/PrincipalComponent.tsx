@@ -12,44 +12,32 @@ import { useTheContext } from "../services/globalContext";
 import { usePathname } from "next/navigation";
 import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
 import usePro from "./usePro";
+import useIntermedio from "./useIntermedio";
+import useEntrada from "./useEntrada";
 
 const PrincipalComponent = () => {
   const pathName = usePathname();
-  const { setDataProducts, dataProducts, socketServer } = useTheContext();
-  const { getListProducts } = usePrincipal();
-  const { pagePro, handlePageChangePro, totalPagesPro } = usePro();
+  const { dataProducts } = useTheContext();
+  const {
+    pagePro,
+    handlePageChangePro,
+    totalPagesPro,
+    currentPageProductsPro,
+  } = usePro();
 
-  useEffect(() => {
-    getListProducts();
-  }, []);
+  const {
+    pageInter,
+    handlePageChangeInter,
+    totalPagesInter,
+    currentPageProductsInter,
+  } = useIntermedio();
 
-  useEffect(() => {
-    socketServer.current?.on("newProduct", (data: ProductI) => {
-      setDataProducts((prev) => [
-        {
-          idProduct: data.idProduct.toString(),
-          idProductExt: data.idProductExt,
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          stock: Number(data.stock),
-          sku: data.sku,
-          rating: Number(data.rating),
-          imageUrl: data.imageUrl || (data as any).image_url,
-          createdAt: data.createdAt,
-          categoryId: data.categoryId.toString(),
-          providerId: data.providerId.toString(),
-          quantity: 0,
-          reviews: [],
-        },
-        ...prev,
-      ]);
-    });
-
-    return () => {
-      socketServer.current?.off("newProduct");
-    };
-  }, [socketServer.current]);
+  const {
+    pageEntrada,
+    handlePageChangeEntrada,
+    totalPagesEntrada,
+    currentPageProductsEntrada,
+  } = useEntrada();
 
   return (
     <section className="mb-4">
@@ -89,135 +77,95 @@ const PrincipalComponent = () => {
             )}
           </div>
 
-          {dataProducts && dataProducts.length > 0 ? (
+          {currentPageProductsPro && currentPageProductsPro.length > 0 ? (
             <>
               <div className="head-container">
                 <span>Pc Gamer Pro</span>
               </div>
 
               <div className="container-destacado">
-                {dataProducts
-                  .filter((item) => {
-                    try {
-                      if (item.caracteristicas) {
-                        // Parsear las características (si vWienen como string)
-                        const caracteristicas =
-                          typeof item.caracteristicas === "string"
-                            ? JSON.parse(item.caracteristicas)
-                            : item.caracteristicas;
-
-                        // Buscar la característica "tipo"
-                        const tipo = caracteristicas.find(
-                          (c: any) => c.prop == "tipo"
-                        );
-
-                        // Verificar si el tipo es "pro"
-                        return tipo?.value == "pro";
-                      }
-                    } catch (error) {
-                      console.error("Error parseando caracteristicas:", error);
-                      return false; // si hay error, no mostrar el producto
-                    }
-                  })
-                  .map((product) => (
-                    <Card
-                      key={product.idProduct}
-                      product={product}
-                      dataProducts={dataProducts}
-                    />
-                  ))}
+                {currentPageProductsPro.map((product, indexproduct) => (
+                  <Card
+                    key={product.idProduct + indexproduct}
+                    product={product}
+                    dataProducts={dataProducts}
+                  />
+                ))}
               </div>
+              <Alert severity="info" className="my-2">
+                Las imágenes publicadas son meramente ilustrativas y no siempre
+                representan el producto final.
+              </Alert>
 
-              <PaginationComponent
-                page={pagePro}
-                count={totalPagesPro}
-                onChange={handlePageChangePro}
-              />
+              {currentPageProductsPro && currentPageProductsPro.length > 0 && (
+                <PaginationComponent
+                  page={pagePro}
+                  count={totalPagesPro}
+                  onChange={handlePageChangePro}
+                />
+              )}
             </>
           ) : (
             <Skeleton />
           )}
 
-          {dataProducts && dataProducts.length > 0 ? (
+          {currentPageProductsInter && currentPageProductsInter.length > 0 ? (
             <>
               <div className="head-container">
-                <span>PcGamer intermedio</span>
+                <span>Pc Gamer Intermedio</span>
               </div>
+
               <div className="container-destacado">
-                {dataProducts
-                  .filter((item) => {
-                    try {
-                      if (item.caracteristicas) {
-                        // Parsear las características (si vWienen como string)
-                        const caracteristicas =
-                          typeof item.caracteristicas === "string"
-                            ? JSON.parse(item.caracteristicas)
-                            : item.caracteristicas;
-
-                        // Buscar la característica "tipo"
-                        const tipo = caracteristicas.find(
-                          (c: any) => c.prop == "tipo"
-                        );
-
-                        // Verificar si el tipo es "pro"
-                        return tipo?.value == "intermedio";
-                      }
-                    } catch (error) {
-                      console.error("Error parseando caracteristicas:", error);
-                      return false; // si hay error, no mostrar el producto
-                    }
-                  })
-                  .map((product) => (
-                    <Card
-                      key={product.idProduct}
-                      product={product}
-                      dataProducts={dataProducts}
-                    />
-                  ))}
+                {currentPageProductsInter.map((product, indexproduct) => (
+                  <Card
+                    key={product.idProduct + indexproduct}
+                    product={product}
+                    dataProducts={dataProducts}
+                  />
+                ))}
               </div>
+              <Alert severity="info" className="my-2">
+                Las imágenes publicadas son meramente ilustrativas y no siempre
+                representan el producto final.
+              </Alert>
+
+              {currentPageProductsInter &&
+                currentPageProductsInter.length > 0 && (
+                  <PaginationComponent
+                    page={pageInter}
+                    count={totalPagesInter}
+                    onChange={handlePageChangeInter}
+                  />
+                )}
             </>
           ) : (
             <Skeleton />
           )}
 
-          {dataProducts && dataProducts.length > 0 ? (
+          {currentPageProductsEntrada &&
+          currentPageProductsEntrada.length > 0 ? (
             <>
               <div className="head-container">
-                <span>PcGamer de entrada</span>
+                <span>Pc Gamer de entrada</span>
               </div>
 
               <div className="container-destacado">
-                {dataProducts
-                  .filter((item) => {
-                    try {
-                      if (item.caracteristicas) {
-                        // Parsear las características (si vWienen como string)
-                        const caracteristicas =
-                          typeof item.caracteristicas === "string"
-                            ? JSON.parse(item.caracteristicas)
-                            : item.caracteristicas;
-
-                        // Buscar la característica "tipo"
-                        const tipo = caracteristicas.find(
-                          (c: any) => c.prop == "tipo"
-                        );
-
-                        // Verificar si el tipo es "pro"
-                        return tipo?.value == "entrada";
-                      }
-                    } catch (error) {
-                      console.error("Error parseando caracteristicas:", error);
-                      return false; // si hay error, no mostrar el producto
-                    }
-                  })
-                  .map((product) => (
-                    <Card
-                      key={product.idProduct}
-                      product={product}
-                      dataProducts={dataProducts}
-                    />
-                  ))}
+                {currentPageProductsEntrada.map((product) => (
+                  <Card
+                    key={product.idProduct}
+                    product={product}
+                    dataProducts={dataProducts}
+                  />
+                ))}
               </div>
+              {currentPageProductsEntrada &&
+                currentPageProductsEntrada.length > 0 && (
+                  <PaginationComponent
+                    page={pageEntrada}
+                    count={totalPagesEntrada}
+                    onChange={handlePageChangeEntrada}
+                  />
+                )}
             </>
           ) : (
             <Skeleton />

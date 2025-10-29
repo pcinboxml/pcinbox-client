@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
 import useFavorites from "./services/useFavorites";
 import { FaWhatsapp } from "react-icons/fa";
+import ProductI from "./interfaces/products/product.interface";
 
 export default function AppWrapper({
   children,
@@ -21,13 +22,17 @@ export default function AppWrapper({
 }) {
   const pathName = usePathname();
 
-  const { dataModal, dataNotification, hasToken, setDataCart } =
-    useTheContext();
+  const {
+    dataModal,
+    dataNotification,
+    hasToken,
+    setDataCart,
+    setDataProducts,
+    socketServer,
+  } = useTheContext();
 
   const { addProductFromStorage } = useCart();
   const { handleGetDataCart } = useNavbar();
-
-  const { handleGetDataFavorites } = useFavorites();
 
   useEffect(() => {
     if (localStorage.getItem("dataCart") && hasToken == false) {
@@ -44,8 +49,36 @@ export default function AppWrapper({
   }, [hasToken]);
 
   useEffect(() => {
-    handleGetDataFavorites();
-  }, []);
+    if (!socketServer.current) return;
+
+    const handler = (data: ProductI) => {
+      setDataProducts((prev) => [
+        {
+          idProduct: data.idProduct.toString(),
+          idProductExt: data.idProductExt,
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          stock: Number(data.stock),
+          sku: data.sku,
+          rating: Number(data.rating),
+          imageUrl: data.imageUrl || (data as any).image_url,
+          createdAt: data.createdAt,
+          categoryId: data?.categoryId ? data.categoryId.toString() : "1",
+          providerId: data.providerId.toString(),
+          quantity: 0,
+          reviews: [],
+        },
+        ...prev,
+      ]);
+    };
+
+    socketServer.current.on("newProduct", handler);
+
+    return () => {
+      socketServer.current?.off("newProduct", handler);
+    };
+  }, [socketServer.current]);
 
   ProtectedRoute(pathName);
 
@@ -59,7 +92,7 @@ export default function AppWrapper({
         }}
       >
         <Navbar />
-        <main className="container" style={{ marginTop: "140px" }}>
+        <main className="container" style={{ marginTop: "180px" }}>
           {children}
 
           <ModalComponent

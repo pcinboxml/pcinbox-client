@@ -7,10 +7,10 @@ import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import useStorage from "../services/useStorage";
 import useResumen from "./useResumen";
-import { Alert } from "@mui/material";
+import { Alert, Checkbox, FormControlLabel } from "@mui/material";
 
 const Resumen = () => {
-  const { dataCart } = useTheContext();
+  const { dataCart, setDataModal } = useTheContext();
   const { onRouterLink, formatCurrency } = useService();
   const {
     rows,
@@ -19,7 +19,9 @@ const Resumen = () => {
     totalPrice,
     totalIVA,
     totalPagar,
+    selectedFactura,
     handleCreateOrder,
+    handleSelectedFactura,
   } = useResumen();
   const { progressPay } = useStorage();
 
@@ -105,6 +107,12 @@ const Resumen = () => {
 
             {dataCart && dataCart.length > 0 && (
               <div className="w-full flex justify-end items-center  gap-5 mt-4">
+                <FormControlLabel
+                  control={<Checkbox checked={selectedFactura} />}
+                  label="Generar Factura"
+                  onChange={handleSelectedFactura}
+                />
+
                 <button
                   onClick={() => onRouterLink("/forma-de-pago")}
                   className="border py-2 px-5 text-black rounded"

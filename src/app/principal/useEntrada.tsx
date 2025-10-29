@@ -3,13 +3,13 @@
 import { useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
 
-const usePro = () => {
+const useEntrada = () => {
   const { dataProducts } = useTheContext();
 
-  const [pagePro, setPagePro] = useState(1);
-  const itemsPerPagePro = 8;
+  const [pageEntrada, setPageEntrada] = useState(1);
+  const itemsPerPageEntrada = 8;
 
-  const proProducts = useMemo(() => {
+  const interProducts = useMemo(() => {
     if (!dataProducts || dataProducts.length === 0) return [];
 
     return dataProducts.filter((item) => {
@@ -21,7 +21,7 @@ const usePro = () => {
               : item.caracteristicas;
 
           const tipo = caracteristicas.find((c: any) => c.prop === "tipo");
-          return tipo?.value === "pro";
+          return tipo?.value === "entrada";
         }
         return false;
       } catch (error) {
@@ -29,27 +29,29 @@ const usePro = () => {
         return false;
       }
     });
-  }, [dataProducts]); // 👈 mantiene dependencia correcta
+  }, [dataProducts]);
 
-  const startIndex = (pagePro - 1) * itemsPerPagePro;
-  const endIndex = startIndex + itemsPerPagePro;
-  const currentPageProductsPro = proProducts.slice(startIndex, endIndex);
+  const startIndex = (pageEntrada - 1) * itemsPerPageEntrada;
+  const endIndex = startIndex + itemsPerPageEntrada;
+  const currentPageProductsEntrada = interProducts.slice(startIndex, endIndex);
 
-  const totalPagesPro = Math.ceil(proProducts.length / itemsPerPagePro);
+  const totalPagesEntrada = Math.ceil(
+    interProducts.length / itemsPerPageEntrada
+  );
 
-  const handlePageChangePro = (
+  const handlePageChangeEntrada = (
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
-    setPagePro(value);
+    setPageEntrada(value);
   };
 
   return {
-    pagePro,
-    totalPagesPro,
-    handlePageChangePro,
-    currentPageProductsPro, // 👈 agrega esto
+    pageEntrada,
+    totalPagesEntrada,
+    handlePageChangeEntrada,
+    currentPageProductsEntrada,
   };
 };
 
-export default usePro;
+export default useEntrada;

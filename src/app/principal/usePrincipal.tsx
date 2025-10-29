@@ -12,17 +12,8 @@ const usePrincipal = () => {
 
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
 
-  const getListProducts = async () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
-      async (res) => {
-        const data = await res.json();
-
-        setDataProducts(data.data);
-      }
-    );
-
+  useEffect(() => {
     socketServer.current?.on("newAllProducts", (inputDataSocket: any) => {
-      console.log("escuchando newAllProducts");
       setDataProducts((prev) => [
         ...prev,
         ...inputDataSocket.map((item: any) => ({
@@ -82,7 +73,7 @@ const usePrincipal = () => {
       socketServer.current?.off("newAllProducts");
       socketServer.current?.off("updateAllProducts");
     };
-  };
+  }, [socketServer.current]);
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -106,7 +97,6 @@ const usePrincipal = () => {
 
   return {
     // handleClick,
-    getListProducts,
     dataProducts,
     loadingProducts,
     handleOnChange,

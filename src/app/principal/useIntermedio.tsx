@@ -3,13 +3,13 @@
 import { useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
 
-const usePro = () => {
+const useIntermedio = () => {
   const { dataProducts } = useTheContext();
 
-  const [pagePro, setPagePro] = useState(1);
-  const itemsPerPagePro = 8;
+  const [pageInter, setPageInter] = useState(1);
+  const itemsPerPageInter = 8;
 
-  const proProducts = useMemo(() => {
+  const interProducts = useMemo(() => {
     if (!dataProducts || dataProducts.length === 0) return [];
 
     return dataProducts.filter((item) => {
@@ -21,7 +21,7 @@ const usePro = () => {
               : item.caracteristicas;
 
           const tipo = caracteristicas.find((c: any) => c.prop === "tipo");
-          return tipo?.value === "pro";
+          return tipo?.value === "intermedia";
         }
         return false;
       } catch (error) {
@@ -29,27 +29,27 @@ const usePro = () => {
         return false;
       }
     });
-  }, [dataProducts]); // 👈 mantiene dependencia correcta
+  }, [dataProducts]);
 
-  const startIndex = (pagePro - 1) * itemsPerPagePro;
-  const endIndex = startIndex + itemsPerPagePro;
-  const currentPageProductsPro = proProducts.slice(startIndex, endIndex);
+  const startIndex = (pageInter - 1) * itemsPerPageInter;
+  const endIndex = startIndex + itemsPerPageInter;
+  const currentPageProductsInter = interProducts.slice(startIndex, endIndex);
 
-  const totalPagesPro = Math.ceil(proProducts.length / itemsPerPagePro);
+  const totalPagesInter = Math.ceil(interProducts.length / itemsPerPageInter);
 
-  const handlePageChangePro = (
+  const handlePageChangeInter = (
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
-    setPagePro(value);
+    setPageInter(value);
   };
 
   return {
-    pagePro,
-    totalPagesPro,
-    handlePageChangePro,
-    currentPageProductsPro, // 👈 agrega esto
+    pageInter,
+    totalPagesInter,
+    handlePageChangeInter,
+    currentPageProductsInter,
   };
 };
 
-export default usePro;
+export default useIntermedio;

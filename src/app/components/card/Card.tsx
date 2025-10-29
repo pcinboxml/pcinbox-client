@@ -7,6 +7,7 @@ import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
 import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled } from "@mui/material";
+import { useMemo } from "react";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -42,6 +43,15 @@ const Card = ({
     ratingProgress,
   } = useCard();
 
+  const ratingTotal = useMemo(() => {
+    const promedio =
+      product.reviews.length > 0
+        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) /
+          product.reviews.length
+        : 0;
+    return promedio;
+  }, [product]);
+
   return (
     <div className="mi-card border">
       <div className="container-img">
@@ -67,7 +77,11 @@ const Card = ({
                 <div key={i}>
                   <img
                     src={img}
-                    style={{ objectFit: "contain", height: "150px" }}
+                    style={{
+                      objectFit: "contain",
+                      height: "150px",
+                      marginTop: "12px",
+                    }}
                   />
                 </div>
               ))
@@ -81,7 +95,7 @@ const Card = ({
             name="simple-controlled"
             max={5}
             readOnly
-            value={product.rating}
+            value={ratingTotal}
             size="medium"
             sx={{
               color: "#BB3D4B",

@@ -19,6 +19,7 @@ import io from "socket.io-client";
 import { AddressI } from "../interfaces/address/address.interface";
 import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
+import useFavorites from "./useFavorites";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -165,6 +166,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     showActions: true,
   });
 
+  const { handleGetDataFavorites } = useFavorites();
   const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
   const [dataFavorites, setDataFavorites] = useState<FavoritesI[]>([]);
@@ -208,6 +210,21 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   });
 
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
+
+  const getListProducts = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
+      async (res) => {
+        const data = await res.json();
+
+        setDataProducts(data.data);
+      }
+    );
+  };
+
+  useEffect(() => {
+    getListProducts();
+    handleGetDataFavorites();
+  }, []);
 
   useEffect(() => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");

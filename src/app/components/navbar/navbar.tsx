@@ -127,6 +127,12 @@ const Navbar = () => {
 
   return (
     <header className="main-header" ref={navRef}>
+      <div className="flex justify-between px-5 py-1 bg-[#bb3d4b]">
+        <span className="text-white font-bold">¡Bienvenido a PCINBOX!</span>
+        <span className="text-white" style={{ fontStyle: "italic" }}>
+          Tenemos lo más destacado en Gaming!
+        </span>
+      </div>
       <div className="container-header container flex w-full justify-center p-2 items-center">
         <div className="logo" onClick={() => onRouterLink("/principal")}>
           <img src="/logo.png" />

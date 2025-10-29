@@ -7,16 +7,19 @@ import useStorage from "../services/useStorage";
 import { useMemo, useState } from "react";
 import useService from "../services/useService";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import FormFactura from "../components/formFactura/FormFactura";
 
 const useResumen = () => {
   const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
   const { dataCart, setDataCart, setDataModal } = useTheContext();
+  const [selectedFactura, setSelectedFactura] = useState<boolean>(false);
+  const [billingData, setBillingData] = useState(null);
 
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
   });
 
-  const { onRouterLink, requestPost } = useService();
+  const { onRouterLink, requestPost, requestGet } = useService();
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
@@ -28,7 +31,7 @@ const useResumen = () => {
   }, [dataCart]);
 
   const { progressPay } = useStorage();
-  const { requestPostPagos, requestGetPagos } = usePasarelaDePagos();
+  const { requestPostPagos } = usePasarelaDePagos();
 
   const { columns, rows, totalIVA, totalPagar } = GridResumen({
     dataCart,
@@ -245,6 +248,45 @@ const useResumen = () => {
     }
   };
 
+  const handleSelectedFactura = async (
+    event: React.SyntheticEvent,
+    checked: boolean
+  ) => {
+    setSelectedFactura(checked);
+
+    if (billingData) {
+      return;
+    }
+
+    if (checked == true) {
+      try {
+        const resp = await requestGet("/billing/getBillingByUser");
+        if (resp.status == 200) {
+          const data = resp.data;
+
+          if (data.data.data == null) {
+            setDataModal({
+              isOpen: true,
+              showActions: false,
+              message: <FormFactura />,
+              title: "Registro de facturación",
+              type: "info",
+              onClose: () => {
+                setDataModal((prev) => ({ ...prev, isOpen: false }));
+                setSelectedFactura(false);
+              },
+              onConfirm: () => {
+                setDataModal((prev) => ({ ...prev, isOpen: false }));
+              },
+            });
+          } else {
+            setBillingData(data.data.data);
+          }
+        }
+      } catch (error) {}
+    }
+  };
+
   return {
     loadingCreateOrder,
     columns,
@@ -252,7 +294,9 @@ const useResumen = () => {
     totalPrice,
     totalIVA,
     totalPagar,
+    selectedFactura,
     handleCreateOrder,
+    handleSelectedFactura,
   };
 };
 

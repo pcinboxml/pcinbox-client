@@ -495,12 +495,12 @@ const MiCuenta = () => {
                   <option value="Efectivo">Efectivo</option>
                   <option value="Tarjeta_de_Credito">Tarjeta de credito</option>
                   <option value="Tarjeta_de_Debito">Tarjeta de debito</option>
-                  <option value="Mercado_Pago">Mercado Pago</option>
+                  {/* <option value="Mercado_Pago">Mercado Pago</option> */}
                 </select>
               </div>
               <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
-                  Código Postal:
+                  Código Postal *:
                 </label>
                 <input
                   type="number"
@@ -514,31 +514,7 @@ const MiCuenta = () => {
                   onChange={handleOnChange2}
                 />
               </div>
-              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                <label htmlFor="" className="text-[#808080] text-base text-end">
-                  Colonia:
-                </label>
-                <select
-                  name="cologne"
-                  disabled={postalCodes2.length === 0}
-                  onChange={handleOnSelect2}
-                  value={dataFacturacion.cologne ?? ""}
-                  className="form-select"
-                >
-                  {postalCodes2 && postalCodes2.length > 0 ? (
-                    <>
-                      <option value="">Selecciona una colonia</option>
-                      {postalCodes2.map((pCodes) => (
-                        <option key={pCodes.placeName} value={pCodes.placeName}>
-                          {pCodes.placeName}
-                        </option>
-                      ))}
-                    </>
-                  ) : (
-                    <option value="">Selecciona una colonia</option>
-                  )}
-                </select>
-              </div> */}
+
               <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
                 <label htmlFor="" className="text-[#808080] text-base text-end">
                   Estado:
@@ -577,70 +553,6 @@ const MiCuenta = () => {
                   )}
                 </select>
               </div>
-
-              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                <label htmlFor="" className="text-[#808080] text-base text-end">
-                  Calle:
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="street"
-                  value={dataFacturacion?.street}
-                  onChange={handleOnChange2}
-                />
-              </div> */}
-              {/* <div className="grid grid-cols-[auto_auto] gap-2 items-center mt-4 relative">
-                <div className="flex items-center">
-                  <label
-                    htmlFor=""
-                    className="text-[#808080] text-base text-end mx-1"
-                  >
-                    Num.Ext:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="noExt"
-                    value={dataFacturacion?.noExt}
-                    onChange={handleOnChange2}
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <label
-                    htmlFor=""
-                    className="text-[#808080] text-base text-end mx-1"
-                  >
-                    Num.Int: <br />
-                    (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="noInt"
-                    value={dataFacturacion?.noInt}
-                    onChange={handleOnChange2}
-                  />
-                </div>
-              </div> */}
-
-              {/* <br />
-              <br /> */}
-              {/* <div className="grid grid-cols-[1fr_2fr] gap-2 items-center mt-4 relative">
-                <label htmlFor="" className="text-[#808080] text-base text-end">
-                  Observaciones: <br />
-                  (opcional)
-                </label>
-                <textarea
-                  name="observations"
-                  id=""
-                  className="form-control resize-none"
-                  value={dataFacturacion.observations}
-                  style={{ resize: "none" }}
-                  onChange={handleOnChange2}
-                ></textarea>
-              </div> */}
 
               <div
                 className={`grid grid-cols-[auto] gap-2  mt-4 relative ${styles.containerBtnGuardar2}`}
