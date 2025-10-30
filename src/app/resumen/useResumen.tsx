@@ -92,7 +92,7 @@ const useResumen = () => {
           {
             userId: Number(localStorage.getItem("idUser")),
             paymentMethodId: progressPay.methodPay.idCard,
-            amount: Math.round(totalPagar * 100),
+            amount: totalPagar,
             optionEnvio: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
             dataProduct: dataCart,
