@@ -56,7 +56,7 @@ const CardForm = ({ userId }: { userId: number }) => {
           },
           "/stripe/saveCard"
         );
-
+        console.log(response);
         if (response.status === 200) {
           form.reset(); // ✅ Usar la referencia guardada
 

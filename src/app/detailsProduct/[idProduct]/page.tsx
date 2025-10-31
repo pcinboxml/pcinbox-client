@@ -8,6 +8,7 @@ import useFavorites from "../../services/useFavorites";
 import { Alert, Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
 import { Carousel } from "react-responsive-carousel";
+import ReactPlayer from "react-player";
 
 const DetailsProduct = () => {
   const {
@@ -183,46 +184,62 @@ const DetailsProduct = () => {
         </div>
       </div>
 
-      <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
-        <h4>Descripción</h4>
-        <br />
-        <br />
+      <div className="w-full flex">
+        <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
+          <h4>Descripción</h4>
+          <br />
+          <br />
 
-        {(() => {
-          try {
-            // 1️⃣ Verificamos que exista
-            if (!dataProduct.caracteristicas) return null;
+          {(() => {
+            try {
+              // 1️⃣ Verificamos que exista
+              if (!dataProduct.caracteristicas) return null;
 
-            // 2️⃣ Si es string, intentamos parsear
-            const caracteristicas =
-              typeof dataProduct.caracteristicas === "string"
-                ? JSON.parse(dataProduct.caracteristicas)
-                : dataProduct.caracteristicas;
+              // 2️⃣ Si es string, intentamos parsear
+              const caracteristicas =
+                typeof dataProduct.caracteristicas === "string"
+                  ? JSON.parse(dataProduct.caracteristicas)
+                  : dataProduct.caracteristicas;
 
-            // 3️⃣ Si no es array o está vacío, no renderizamos nada
-            if (!Array.isArray(caracteristicas) || caracteristicas.length === 0)
-              return null;
+              // 3️⃣ Si no es array o está vacío, no renderizamos nada
+              if (
+                !Array.isArray(caracteristicas) ||
+                caracteristicas.length === 0
+              )
+                return null;
 
-            // 4️⃣ Renderizamos el array
-            return caracteristicas.map((item: any, indexCa: number) => (
-              <div
-                key={indexCa}
-                className="w-full flex justify-center items-center flex-col mb-3"
-              >
-                <label htmlFor="">{item.prop}</label>
-                <div className="content-description flex flex-col items-center justify-start">
-                  {item.value}
+              // 4️⃣ Renderizamos el array
+              return caracteristicas.map((item: any, indexCa: number) => (
+                <div
+                  key={indexCa}
+                  className="w-full flex justify-center items-center flex-col mb-3"
+                >
+                  <label htmlFor="">{item.prop}</label>
+                  <div className="content-description flex flex-col items-center justify-start">
+                    {item.value}
+                  </div>
                 </div>
-              </div>
-            ));
-          } catch (error) {
-            console.error(
-              "❌ Error al parsear dataProduct.caracteristicas:",
-              error
-            );
-            return null; // evita que React crashee
-          }
-        })()}
+              ));
+            } catch (error) {
+              console.error(
+                "❌ Error al parsear dataProduct.caracteristicas:",
+                error
+              );
+              return null; // evita que React crashee
+            }
+          })()}
+        </div>
+        {idProduct?.toString() == "14" ? (
+          <div className="w-[30%] border mt-2 flex justify-center p-2">
+            <ReactPlayer
+              autoPlay={true}
+              src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"
+              width={"100%"}
+              controls
+              height={"100%"}
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="w-[70%] mt-2 border">
