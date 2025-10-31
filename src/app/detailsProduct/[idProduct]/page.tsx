@@ -244,8 +244,10 @@ const DetailsProduct = () => {
 
       <div className="w-[70%] mt-2 border">
         <Alert severity="info">
-          Las imágenes publicadas son meramente ilustrativas y no siempre
-          representan el producto final.
+          <span style={{ fontSize: "12px" }}>
+            Las imágenes publicadas son meramente ilustrativas y puede variar el
+            modelo de acuerdo a nuestro inventario al dia.
+          </span>
         </Alert>
       </div>
 

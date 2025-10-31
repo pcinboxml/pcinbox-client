@@ -92,10 +92,10 @@ const PrincipalComponent = () => {
                   />
                 ))}
               </div>
-              <Alert severity="info" className="my-2">
+              {/* <Alert severity="info" className="my-2">
                 Las imágenes publicadas son meramente ilustrativas y no siempre
                 representan el producto final.
-              </Alert>
+              </Alert> */}
 
               {currentPageProductsPro && currentPageProductsPro.length > 0 && (
                 <PaginationComponent
@@ -124,10 +124,10 @@ const PrincipalComponent = () => {
                   />
                 ))}
               </div>
-              <Alert severity="info" className="my-2">
+              {/* <Alert severity="info" className="my-2">
                 Las imágenes publicadas son meramente ilustrativas y no siempre
                 representan el producto final.
-              </Alert>
+              </Alert> */}
 
               {currentPageProductsInter &&
                 currentPageProductsInter.length > 0 && (
