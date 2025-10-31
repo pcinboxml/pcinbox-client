@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { cookies } from "next/headers";
-import { sign, verify } from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 
 const handler = NextAuth({
   providers: [
@@ -53,9 +53,12 @@ const handler = NextAuth({
           (user as any).token = data.data.token;
           (user as any).rol = "customer";
           (user as any).idValidToken = isValidToken;
+          (user as any).active = data.data.active;
           return true;
         } else {
-          throw new Error(data?.data.message || "Error interno del servidor");
+          throw new Error(
+            data?.message || data?.data?.message || "Error interno del servidor"
+          );
         }
       }
 
@@ -73,6 +76,7 @@ const handler = NextAuth({
         token.rol = (user as any).rol;
         token.token = (user as any).token;
         token.isValidToken = (user as any).idValidToken;
+        token.active = (user as any).active;
       }
       return token;
     },
@@ -86,6 +90,7 @@ const handler = NextAuth({
         (session as any).rol = token.rol;
         (session as any).token = token.token;
         (session as any).isValidToken = token.isValidToken;
+        (session as any).active = token.active;
       }
       return session;
     },

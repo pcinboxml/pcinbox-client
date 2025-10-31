@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SidebarMiCuenta from "./../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import styles from "./perfil.module.css";
 import usePerfil from "./usePerfil";
@@ -8,6 +8,7 @@ import { MdAutorenew } from "react-icons/md";
 import Skeleton from "../components/skeleton/Skeleton";
 import LinearProgressComponent from "../components/linearProgress/LinearProgressComponent";
 import { useTheContext } from "../services/globalContext";
+import { FcGoogle } from "react-icons/fc";
 
 const MiCuenta = () => {
   const {
@@ -20,6 +21,8 @@ const MiCuenta = () => {
     dataFacturacion,
     catalagoCFDi,
     loadingDataFacturacion,
+
+    onRemoveAccount,
     setDataPerfil,
     handleOnChange,
     handleOnSelect,
@@ -35,6 +38,21 @@ const MiCuenta = () => {
   } = usePerfil();
 
   const { rutaImgPerfil } = useTheContext();
+  const [authGoogle, setAuthGoogle] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (
+      localStorage.getItem("authGoogle") &&
+      localStorage.getItem("authGoogle") == "true"
+    ) {
+      setAuthGoogle(true);
+    } else if (
+      localStorage.getItem("authGoogle") &&
+      localStorage.getItem("authGoogle") == "false"
+    ) {
+      setAuthGoogle(false);
+    }
+  }, []);
 
   useEffect(() => {
     // getAddressAuth();
@@ -572,6 +590,39 @@ const MiCuenta = () => {
               </div>
             </form>
           </div>
+        </div>
+
+        <div className="mt-5">
+          {authGoogle == true ? (
+            <button
+              type="button"
+              className="border w-[auto] flex justify-center gap-2 items-center p-2"
+              onClick={onRemoveAccount}
+              // disabled={loadingRemoveAccount}
+            >
+              {/* {loadingRemoveAccount ? (
+                <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : ( */}
+              <>
+                <FcGoogle size={22} />
+                Desvincular cuenta de Google
+              </>
+              {/* )} */}
+            </button>
+          ) : (
+            <button
+              className="cursor-pointer w-[auto] p-2 rounded text-white font-bold bg-[#bb3d4b]"
+              // disabled={loadingRemoveAccount}
+              type="button"
+              onClick={onRemoveAccount}
+            >
+              {/* {loadingRemoveAccount ? (
+                <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : ( */}
+              Eliminar cuenta
+              {/* )} */}
+            </button>
+          )}
         </div>
       </div>
     </section>

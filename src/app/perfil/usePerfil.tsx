@@ -9,6 +9,7 @@ import {
   FacturacionI,
 } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
+import RemoveAccountComponent from "../components/removeAccountComponent/RemoveAccountComponent";
 
 const usePerfil = () => {
   const { setDataModal, setRutaImgPerfil } = useTheContext();
@@ -383,41 +384,40 @@ const usePerfil = () => {
     }
   };
 
-  // const getAddressAuth = async () => {
-  //   try {
-  //     const resp = await requestGet("/auth/getAuth");
-
-  //     if (resp.status == 200) {
-  //       const valueResp = await resp.data;
-  //       setDataAddress((prevAddress) => ({
-  //         ...prevAddress,
-  //         street: valueResp.data.dataAddress[0].street,
-  //         noExt: valueResp.data.dataAddress[0].noExt,
-  //         noInt: valueResp.data.dataAddress[0].noInt,
-  //         codePostal: valueResp.data.dataAddress[0].postalCode,
-  //         cologne: valueResp.data.dataAddress[0].cologne,
-  //         state: valueResp.data.dataAddress[0].state,
-  //         city: valueResp.data.dataAddress[0].city,
-  //         phone1: valueResp.data.dataAddress[0].phone1,
-  //         phone2: valueResp.data.dataAddress[0].phone2,
-  //         country: "México",
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     setDataAddress({
-  //       street: "",
-  //       noExt: "",
-  //       noInt: "",
-  //       codePostal: 0,
-  //       cologne: "",
-  //       state: "",
-  //       city: "",
-  //       phone1: "",
-  //       phone2: "",
-  //       country: "México",
-  //     });
-  //   }
-  // };
+  const onRemoveAccount = async () => {
+    setDataModal({
+      isOpen: true,
+      type: "warning",
+      title: "Eliminación de cuenta",
+      message: (
+        <div>
+          <RemoveAccountComponent />
+        </div>
+      ),
+      showActions: false,
+      onClose: () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
+      },
+      onConfirm: async () => {
+        setDataModal((prev) => ({ ...prev, isOpen: true }));
+        // setDataModal((prev) => ({
+        //   ...prev,
+        //   isOpen: true,
+        //   type: "info",
+        //   title: "Ingresa tu contraseña",
+        //   message: <RemoveAccountComponent />,
+        //   showActions: false,
+        //   onClose: () => {
+        //     // setDataModal((prev) => ({ ...prev, isOpen: false }));
+        //   },
+        //   onConfirm: () => {
+        //     // setDataModal((prev) => ({ ...prev, isOpen: false }));
+        //   },
+        // }));
+        // setLoadingRemoveAccount(true);
+      },
+    });
+  };
 
   return {
     showLoader,
@@ -430,6 +430,7 @@ const usePerfil = () => {
     showLineaProgress,
     catalagoCFDi,
     loadingDataFacturacion,
+    onRemoveAccount,
     setDataPerfil,
     onChangeUploadPhoto,
     getPhotoUser,

@@ -179,7 +179,7 @@ const useService = () => {
       title: "Cerrar Sesión",
       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
-        signOut();
+        await signOut({ redirect: false });
         localStorage.removeItem("email");
         localStorage.removeItem("token");
         localStorage.removeItem("name");
