@@ -242,13 +242,13 @@ const DetailsProduct = () => {
         ) : null}
       </div>
 
-      <div className="w-[70%] mt-2 border">
-        <Alert severity="info">
-          <span style={{ fontSize: "12px" }}>
-            Las imágenes publicadas son meramente ilustrativas y puede variar el
-            modelo de acuerdo a nuestro inventario al dia.
-          </span>
-        </Alert>
+      <div className="w-[70%] mt-2">
+        <span
+          style={{ fontSize: "12px", fontWeight: "bold", fontStyle: "italic" }}
+        >
+          Las imágenes publicadas son meramente ilustrativas y puede variar el
+          modelo de acuerdo a nuestro inventario al dia.
+        </span>
       </div>
 
       {/* <div className="content-history">
