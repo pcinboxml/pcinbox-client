@@ -95,7 +95,10 @@ const DetailsProduct = () => {
           </span>
 
           <div className="textfield flex mt-1">
-            <button className="border" onClick={handleAdd}>
+            <button
+              className="border"
+              onClick={() => handleAdd(dataProduct.stock)}
+            >
               +
             </button>
             <input

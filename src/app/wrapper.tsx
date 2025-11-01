@@ -108,7 +108,7 @@ export default function AppWrapper({
 
           <Notification dataNotification={dataNotification} />
           <Footer />
-          <span className="block mx-auto my-2 text-center">
+          <span className="block mx-auto my-2 text-center text-[13px]">
             © {new Date().getFullYear().toString()} PCinBOX Todos los derechos
             reservados, México.
           </span>

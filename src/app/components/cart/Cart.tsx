@@ -162,6 +162,7 @@ export const ModalCart = ({
                                   Number(item.quantity) > 1
                                     ? Number(item.quantity) - Number(1)
                                     : 1;
+
                                 return { ...item, quantity: newQuantity };
                               }
                               return { ...item };
@@ -190,7 +191,11 @@ export const ModalCart = ({
                               return item.idProduct === product.idProduct
                                 ? {
                                     ...item,
-                                    quantity: Number(item.quantity) + Number(1),
+                                    quantity:
+                                      Number(item.quantity) + Number(1) <=
+                                      product.stock
+                                        ? Number(item.quantity) + Number(1)
+                                        : product.stock,
                                   }
                                 : { ...item };
                             });

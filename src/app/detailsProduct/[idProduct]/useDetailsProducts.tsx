@@ -32,8 +32,12 @@ const useDetailsProduct = () => {
     caracteristicas: [],
   });
 
-  const handleAdd = () => {
+  const handleAdd = (stockProp: number) => {
     const newQuantity = Number(quantity) + 1;
+
+    if (newQuantity > stockProp) {
+      return;
+    }
     setQuantity(newQuantity);
     updateLocalStorageQuantity(newQuantity);
   };
