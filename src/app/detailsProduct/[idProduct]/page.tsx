@@ -58,7 +58,7 @@ const DetailsProduct = () => {
 
   return (
     <div className="container-all white p-4">
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2 mt-4 container-detail1">
         <div className="container-detail border p-3">
           <h3 className="title-product">{dataProduct.name}</h3>
           {dataProduct.description && dataProduct.description.length > 100 ? (
@@ -187,7 +187,7 @@ const DetailsProduct = () => {
         </div>
       </div>
 
-      <div className="w-full flex">
+      <div className="w-full flex container-detail2">
         <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
           <h4>Descripción</h4>
           <br />
@@ -233,7 +233,7 @@ const DetailsProduct = () => {
           })()}
         </div>
         {idProduct?.toString() == "14" ? (
-          <div className="w-[30%] border mt-2 flex justify-center p-2">
+          <div className="w-[30%] border mt-2 flex justify-center p-2 containerTikTok">
             <ReactPlayer
               autoPlay={true}
               src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"

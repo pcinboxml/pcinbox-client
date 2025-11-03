@@ -186,3 +186,33 @@
   display: flex;
   flex-wrap: wrap;
 }
+
+@media (max-width: 1200px) {
+  .container-detail1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container-detail1 .container-detail {
+    width: 100%;
+  }
+
+  .container-detail1 .container-img {
+    width: 60%;
+  }
+
+  .container-detail2 {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container-detail2 .container-description {
+    width: 100% !important;
+  }
+
+  .container-detail2 .containerTikTok {
+    width: 100% !important;
+    height: 1200px;
+  }
+}

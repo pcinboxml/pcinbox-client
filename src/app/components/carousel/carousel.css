@@ -59,3 +59,9 @@
     object-position: center;
   }
 }
+
+@media (max-width: 992px) {
+  .imageContainer .image {
+    object-fit: contain !important;
+  }
+}

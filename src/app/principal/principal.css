@@ -68,15 +68,10 @@
   flex-wrap: wrap;
   justify-content: flex-start;
 }
-/* 
-@media (max-width: 1023px) {
-  .content-main .list-products img {
-    width: 170px;
+
+@media (max-width: 768px) {
+  .container-destacado {
+    display: flex;
+    justify-content: center;
   }
 }
-
-@media (min-width: 1582px) {
-  .content-main .content-index {
-    width: 1300px !important;
-  }
-} */

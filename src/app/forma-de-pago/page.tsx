@@ -4,7 +4,7 @@ import TimelineComponent from "../components/timeline/TimelineComponent";
 import useFormaDePago from "./useFormaDePago";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
@@ -29,6 +29,16 @@ const FormaDePago = () => {
   const { requestPostPagos } = usePasarelaDePagos();
 
   const { progressPay, handleWriteStorageProgressPay } = useStorage();
+
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
 
   useEffect(() => {
     requestPostPagos(
@@ -98,81 +108,48 @@ const FormaDePago = () => {
                         }
                         return true;
                       })
-                      .map((pago, index) => {
-                        if (pago.id != 2) {
-                          return (
-                            <div
-                              className="flex items-center relative py-2 px-3"
-                              style={{ borderBottom: "1px solid #ccc" }}
-                              key={index}
-                              onClick={() => handleSelectOptionPayById(pago.id)}
-                            >
-                              <input
-                                type="radio"
-                                value={pago.id}
-                                name="pago"
-                                id={pago.value}
-                                className="mx-2"
-                                checked={idMethodPay == pago.id}
-                                onChange={handleSelectOptionPay}
-                                onClick={(e) => e.stopPropagation()}
-                              />
-
-                              <label
-                                className="form-check-label"
-                                htmlFor={pago.value}
-                              >
-                                <div className="w-full flex items-center">
-                                  {pago.icon}
-                                  <span
-                                    className="text-[#666666] mx-2"
-                                    style={{ fontWeight: "100" }}
-                                  >
-                                    {pago.label}
-
-                                    {/* {pago?.label && (
-                                      <>
-                                        <br />
-                                        <span
-                                          className="text-[#666666] mx-2"
-                                          style={{
-                                            fontWeight: "100",
-                                            fontSize: "13px",
-                                          }}
-                                        >
-                                          {pago.label}
-                                        </span>
-                                      </>
-                                    )} */}
-                                  </span>
-                                </div>
-                              </label>
-
-                              {/* <div
-                                className={`info-cargo flex flex-col items-center justify-center mx-3 p-2 absolute right-0 bg-[${pago.color}] rounded`}
-                              >
-                                <span
-                                  style={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: "17px",
-                                  }}
-                                >
-                                  $166.09
-                                </span>
-                                <span
-                                  style={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: "17px",
-                                  }}
-                                >
-                                  Cargo Bancario
-                                </span>
-                              </div> */}
-                            </div>
-                          );
+                      .filter((pago) => {
+                        if (totalPrice >= 10000) {
+                          return pago.id == 1;
+                        } else {
+                          return pago.id == 1 || pago.id == 5;
                         }
+                      })
+                      .map((pag_, index) => {
+                        return (
+                          <div
+                            className="flex items-center relative py-2 px-3"
+                            style={{ borderBottom: "1px solid #ccc" }}
+                            key={index}
+                            onClick={() => handleSelectOptionPayById(pag_.id)}
+                          >
+                            <input
+                              type="radio"
+                              value={pag_.id}
+                              name="pago"
+                              id={pag_.value}
+                              className="mx-2"
+                              checked={idMethodPay == pag_.id}
+                              onChange={handleSelectOptionPay}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+
+                            <label
+                              className="form-check-label"
+                              htmlFor={pag_.value}
+                            >
+                              <div className="w-full flex items-center">
+                                {pag_.icon}
+                                <span
+                                  className="text-[#666666] mx-2"
+                                  style={{ fontWeight: "100" }}
+                                >
+                                  {pag_.label}
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        );
                       })}
                 </div>
               </div>
