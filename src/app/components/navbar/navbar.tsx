@@ -163,7 +163,7 @@ const Navbar = () => {
                 className="absolute badge badge-car"
                 style={{ background: "#bb3d4b" }}
               >
-                {dataCart.reduce((acc, item) => acc + item.quantity, 0)}
+                {dataCart.reduce((acc, item) => acc + Number(item.quantity), 0)}
               </span>
             ) : null}
           </div>
