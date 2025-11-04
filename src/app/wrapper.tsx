@@ -29,6 +29,7 @@ export default function AppWrapper({
     setDataCart,
     setDataProducts,
     socketServer,
+    dataProducts,
   } = useTheContext();
 
   const { addProductFromStorage } = useCart();
@@ -49,34 +50,49 @@ export default function AppWrapper({
   }, [hasToken]);
 
   useEffect(() => {
-    if (!socketServer.current) return;
+    if (!socketServer?.current) return;
 
-    const handler = (data: ProductI) => {
+    const socket = socketServer.current;
+
+    const handlerNewProduct = (data: ProductI) => {
       setDataProducts((prev) => [
         {
-          idProduct: data.idProduct.toString(),
+          idProduct: data.idProduct,
           idProductExt: data.idProductExt,
           name: data.name,
           description: data.description,
           price: data.price,
-          stock: Number(data.stock),
+          stock: data.stock,
           sku: data.sku,
-          rating: Number(data.rating),
-          imageUrl: data.imageUrl || (data as any).image_url,
+          rating: data.rating,
+          imageUrl: data.imageUrl,
           createdAt: data.createdAt,
-          categoryId: data?.categoryId ? data.categoryId.toString() : "1",
-          providerId: data.providerId.toString(),
-          quantity: 0,
+          categoryId: data.categoryId,
+          providerId: data.providerId,
+          caracteristicas: data.caracteristicas,
+          quantity: data.quantity,
           reviews: [],
         },
         ...prev,
       ]);
     };
 
-    socketServer.current.on("newProduct", handler);
+    const handlerUpdateProduct = (data: ProductI) => {
+      setDataProducts((prev) =>
+        prev.map((item) =>
+          item.idProduct == data.idProduct
+            ? { ...item, stock: data.stock }
+            : item
+        )
+      );
+    };
+
+    socket.on("newProduct", handlerNewProduct);
+    socket.on("updateProduct", handlerUpdateProduct);
 
     return () => {
-      socketServer.current?.off("newProduct", handler);
+      socket.off("newProduct", handlerNewProduct);
+      socket.off("updateProduct", handlerUpdateProduct);
     };
   }, [socketServer.current]);
 
