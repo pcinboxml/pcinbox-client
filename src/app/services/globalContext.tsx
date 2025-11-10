@@ -227,8 +227,20 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   }, []);
 
   useEffect(() => {
-    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "");
-    socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "");
+    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "", {
+      reconnection: true,
+      reconnectionAttempts: Infinity, // intenta siempre
+      reconnectionDelay: 1000, // empieza con 1s
+      reconnectionDelayMax: 5000, // máximo 5s
+      timeout: 20000,
+    });
+    socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "", {
+      reconnection: true,
+      reconnectionAttempts: Infinity, // intenta siempre
+      reconnectionDelay: 1000, // empieza con 1s
+      reconnectionDelayMax: 5000, // máximo 5s
+      timeout: 20000,
+    });
 
     return () => {
       socketServer.current?.disconnect();

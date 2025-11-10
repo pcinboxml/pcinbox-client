@@ -4,14 +4,14 @@ import { MdAccountBalance, MdCreditCard, MdStore } from "react-icons/md";
 
 const GridFormaDePago = () => {
   const optionsPago = [
-    {
-      id: 1,
-      value: "tarjeta_debito_credito",
-      label: " Tarjeta de Débito | Crédito",
-      icon: <MdCreditCard size={45} style={{ filter: "grayscale(100%)" }} />,
-      cargoBancario: "166",
-      color: "#666666",
-    },
+    // {
+    //   id: 1,
+    //   value: "tarjeta_debito_credito",
+    //   label: " Tarjeta de Débito | Crédito",
+    //   icon: <MdCreditCard size={45} style={{ filter: "grayscale(100%)" }} />,
+    //   cargoBancario: "166",
+    //   color: "#666666",
+    // },
 
     // {
     //   id: 2,
@@ -42,23 +42,23 @@ const GridFormaDePago = () => {
     //   cargoBancario: "166",
     //   color: "#666666",
     // },
-    {
-      id: 5,
-      value: "efectivo",
-      label: "OXXO | Pay",
-      icon: (
-        <img
-          src="/oxxo.png"
-          style={{
-            objectFit: "contain",
-            width: "50px",
-            height: "50px",
-          }}
-        />
-      ),
-      cargoBancario: "0",
-      color: "#666666",
-    },
+    // {
+    //   id: 5,
+    //   value: "efectivo",
+    //   label: "OXXO | Pay",
+    //   icon: (
+    //     <img
+    //       src="/oxxo.png"
+    //       style={{
+    //         objectFit: "contain",
+    //         width: "50px",
+    //         height: "50px",
+    //       }}
+    //     />
+    //   ),
+    //   cargoBancario: "0",
+    //   color: "#666666",
+    // },
     // {
     //   id: 6,
     //   value: "mercado_pago",
