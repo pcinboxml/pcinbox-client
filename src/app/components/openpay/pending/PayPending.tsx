@@ -257,13 +257,13 @@ const PayPending = ({
                     mono
                   />
                 )}
-                {/* {dataPayOpenPay?.payment_method?.name && (
-                  <DetailRow
-                    label="Cuenta"
-                    value={dataPayOpenPay?.payment_method?.name}
-                    mono
-                  />
-                )} */}
+                {/* {dataPayOpenPay?.payment_method?.name && ( */}
+                <DetailRow
+                  label="Beneficiario"
+                  value={"LIZBETH ORDAZ CAMACHO"}
+                  mono
+                />
+                {/* )} */}
                 <DetailRow
                   label="Referencia"
                   value={dataPayOpenPay?.payment_method?.name!}

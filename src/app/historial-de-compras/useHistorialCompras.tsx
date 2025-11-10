@@ -1,12 +1,21 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import { GroupByIdI } from "../interfaces/compras/historyCompras.interface";
 
 const useHistorialDeCompras = () => {
+  const currentDate = new Date();
+
+  const [dataFilter, setDataFilter] = useState({
+    status: "allState",
+    periodo: `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`,
+    searchProduct: "",
+  });
   const { requestPost } = useService();
   const [loadingCancelledCompra, setLoadingCancelledCompra] =
     useState<boolean>(false);
@@ -23,15 +32,51 @@ const useHistorialDeCompras = () => {
     GroupByIdI[]
   >([]);
 
-  const handleOnSelectStatus = async (
-    event: ChangeEvent<HTMLSelectElement>
-  ) => {
-    const { value } = event.target;
+  useEffect(() => {
+    initDataHistory();
+  }, []);
+
+  useEffect(() => {
+    const result = dataHistoryComprasCopy.filter((item) => {
+      // Si status es "allState", no filtramos por estado
+      const statusMatch =
+        dataFilter.status && dataFilter.status !== "allState"
+          ? item.statusEnvio === dataFilter.status
+          : true;
+
+      const dateMatch = dataFilter.periodo
+        ? (() => {
+            const itemDate = new Date(item.createdAt);
+            const localDate =
+              itemDate.getFullYear() +
+              "-" +
+              String(itemDate.getMonth() + 1).padStart(2, "0") +
+              "-" +
+              String(itemDate.getDate()).padStart(2, "0");
+            return localDate === dataFilter.periodo;
+          })()
+        : true;
+
+      const searchTextMatch = dataFilter.searchProduct
+        ? item.products.some((p) =>
+            p.name
+              .toLowerCase()
+              .includes(dataFilter.searchProduct.toLowerCase())
+          )
+        : true;
+
+      return statusMatch && dateMatch && searchTextMatch;
+    });
+
+    setDataHistoryCompras(result);
+  }, [dataFilter, dataHistoryComprasCopy]);
+
+  const initDataHistory = async () => {
     try {
       const resp = await requestPost(
         {
           userId: localStorage.getItem("idUser"),
-          status: value,
+          status: "allState",
         },
         "/sales/filterSales"
       );
@@ -39,9 +84,34 @@ const useHistorialDeCompras = () => {
       if (resp.status == 200) {
         const data = await resp.data;
         setDataHistoryCompras(groupById(data.data.data));
+        setDataHistoryComprasCopy(groupById(data.data.data));
       }
     } catch (error) {}
   };
+
+  // const handleOnFilter = async (
+  //   event: ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   const { value } = event.target;
+
+  // if (dataHistoryComprasCopy.length > 0) {
+  //   // console.log(dataHistoryComprasCopy);
+  //   // console.log(value);
+  //   if (value) {
+  //     if (value != "allState") {
+  //       let result = dataHistoryComprasCopy.filter(
+  //         (item) => item.statusEnvio == value
+  //       );
+  //       setDataHistoryCompras(result.length > 0 ? result : []);
+  //     }
+  //     return;
+  //   } else {
+  //     // Si borras la fecha del input, restablece todos los datos
+  //     setDataHistoryCompras(dataHistoryComprasCopy);
+  //   }
+  // }
+
+  //};
 
   const handleHistoryByUser = async () => {
     try {
@@ -124,66 +194,61 @@ const useHistorialDeCompras = () => {
   };
 
   const handleOnSearch = (product: string) => {
-    if (product.trim().length > 0) {
-      const results = dataHistoryComprasCopy
-        .map((item): GroupByIdI | null => {
-          const matchedProducts = item.products.filter((p) => {
-            return (
-              p.name.toLowerCase().includes(product.toLowerCase()) ||
-              p.description.toLowerCase().includes(product.toLowerCase())
-            );
-          });
-
-          if (matchedProducts.length > 0) {
-            return { ...item, products: matchedProducts };
-          }
-
-          return null;
-        })
-        .filter((item): item is GroupByIdI => item !== null);
-
-      if (results.length === 0) {
-        setDataHistoryCompras(dataHistoryComprasCopy);
-      } else {
-        setDataHistoryCompras(results);
-      }
-    } else {
-      setDataHistoryCompras(dataHistoryComprasCopy);
-    }
+    // if (product.trim().length > 0) {
+    //   const results = dataHistoryComprasCopy
+    //     .map((item): GroupByIdI | null => {
+    //       const matchedProducts = item.products.filter((p) => {
+    //         return (
+    //           p.name.toLowerCase().includes(product.toLowerCase()) ||
+    //           p.description.toLowerCase().includes(product.toLowerCase())
+    //         );
+    //       });
+    //       if (matchedProducts.length > 0) {
+    //         return { ...item, products: matchedProducts };
+    //       }
+    //       return null;
+    //     })
+    //     .filter((item): item is GroupByIdI => item !== null);
+    //   if (results.length === 0) {
+    //     setDataHistoryCompras(dataHistoryComprasCopy);
+    //   } else {
+    //     setDataHistoryCompras(results);
+    //   }
+    // } else {
+    //   setDataHistoryCompras(dataHistoryComprasCopy);
+    // }
   };
 
-  const handleOnPeriodo = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
+  // const handleOnPeriodo = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = event.target;
 
-    if (value) {
-      const result = dataHistoryComprasCopy.filter((item) => {
-        let date = new Date(item.createdAt);
-        let year = date.getFullYear();
-        let month = String(date.getMonth() + 1).padStart(2, "0");
+  //   if (value) {
+  //     const result = dataHistoryComprasCopy.filter((item) => {
+  //       const itemDate = new Date(item.createdAt);
 
-        let day = String(date.getDate()).padStart(2, "0");
+  //       const itemDateString = `${itemDate.getFullYear()}-${String(
+  //         itemDate.getMonth() + 1
+  //       ).padStart(2, "0")}-${String(itemDate.getDate()).padStart(2, "0")}`;
 
-        if (value == `${year}-${month}-${day}`) {
-          return item;
-        }
-      });
+  //       return itemDateString === value; // value ya viene en formato YYYY-MM-DD
+  //     });
 
-      if (result.length > 0) {
-        setDataHistoryCompras(result);
-      } else {
-        setDataHistoryCompras(dataHistoryComprasCopy);
-      }
-    }
-    //
-  };
+  //     setDataHistoryCompras(result); // si no hay coincidencias, queda vacío
+  //   } else {
+  //     // Si borras la fecha del input, restablece todos los datos
+  //     setDataHistoryCompras(dataHistoryComprasCopy);
+  //   }
+  // };
 
   return {
     dataHistoryCompras,
     loadingCancelledCompra,
     showModal,
-    handleOnPeriodo,
+    // handleOnPeriodo,
     handleHistoryByUser,
-    handleOnSelectStatus,
+    setDataFilter,
+    // handleOnSelectStatus,
+    // handleOnFilter,
     handleOnSearch,
     setDataHistoryCompras,
   };

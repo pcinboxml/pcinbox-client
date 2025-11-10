@@ -262,6 +262,11 @@ const PayEnd = () => {
                       value={dataOrderCash?.payment_method?.name!}
                       mono
                     />
+                    <DetailRow
+                      label="Beneficiario"
+                      value={"LIZBETH ORDAZ CAMACHO"}
+                      mono
+                    />
                   </div>
                 ) : null}
               </div>

@@ -14,11 +14,12 @@ const HistoryShop = () => {
     dataHistoryCompras,
     loadingCancelledCompra,
     handleHistoryByUser,
-    handleOnSelectStatus,
+    // handleOnSelectStatus,
     showModal,
     handleOnSearch,
+    setDataFilter,
     setDataHistoryCompras,
-    handleOnPeriodo,
+    // handleOnPeriodo,
   } = useHistorialDeCompras();
   const { formatCurrency, onRouterLink } = useService();
 
@@ -36,8 +37,6 @@ const HistoryShop = () => {
     const handler = (data: any) => {
       setDataHistoryCompras((prev) => {
         return prev.map((item) => {
-          console.log(item);
-          // console.log(data.idShipment, item.idShipment);
           if (item.idShipment == data.idShipment) {
             return { ...item, statusEnvio: data.status };
           }
@@ -80,7 +79,13 @@ const HistoryShop = () => {
               className="form-select"
               id="state"
               defaultValue={"allState"}
-              onChange={handleOnSelectStatus}
+              onChange={(event) => {
+                setDataFilter((prev) => ({
+                  ...prev,
+                  status: event.target.value,
+                }));
+              }}
+              // onChange={handleOnSelectStatus}
             >
               <option value="allState">Todos los estados</option>
               <option value="entregado">Entregado</option>
@@ -98,7 +103,13 @@ const HistoryShop = () => {
               type="date"
               id="periodo"
               className="form-control"
-              onChange={handleOnPeriodo}
+              onChange={(event) => {
+                setDataFilter((prev) => ({
+                  ...prev,
+                  periodo: event.target.value,
+                }));
+              }}
+              // onChange={handleOnPeriodo}
             />
           </div>
 
@@ -109,7 +120,12 @@ const HistoryShop = () => {
             <input
               type="text"
               className="form-control"
-              onInput={(e) => handleOnSearch(e.currentTarget.value)}
+              onInput={(e: React.FormEvent<HTMLInputElement>) =>
+                setDataFilter((prev) => ({
+                  ...prev,
+                  searchProduct: (e.target as HTMLInputElement).value.trim(),
+                }))
+              }
             />
           </div>
         </div>

@@ -21,14 +21,13 @@ const useCart = () => {
 
   const handleRemoveItemCart = async (
     dataCartProp: ProductI[],
-    productProp: ProductI
+    productProp: ProductI,
+    handleRemoveItemCartProp: any
   ) => {
     if (hasToken) {
       try {
         const resp = await requestPost(
-          {
-            idProduct: productProp.idProduct,
-          },
+          { idProduct: productProp.idProduct },
           "/cart/removeProduct"
         );
 
@@ -36,6 +35,11 @@ const useCart = () => {
           const removeProduct = dataCartProp.filter(
             (item: ProductI) => item.idProduct != productProp.idProduct
           );
+
+          if (removeProduct.length === 0) {
+            handleRemoveItemCartProp();
+          }
+
           setDataCart(removeProduct);
         }
       } catch (error: any) {
@@ -43,7 +47,7 @@ const useCart = () => {
           isOpen: true,
           title: "Error",
           type: "error",
-          message: error.response.message || error.message,
+          message: error.response?.message || error.message,
           onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
           onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
         });
@@ -58,6 +62,11 @@ const useCart = () => {
 
         setDataCart(removeProductStorage);
         localStorage.setItem("dataCart", JSON.stringify(removeProductStorage));
+
+        // 🔥 Cierra el modal si ya no hay productos
+        if (removeProductStorage.length === 0) {
+          setShowDivCart(false);
+        }
       }
     }
   };
@@ -81,7 +90,10 @@ const useCart = () => {
     }
   };
 
-  const handleRemoveAllCart = async (dataCartProp: ProductI[]) => {
+  const handleRemoveAllCart = async (
+    dataCartProp: ProductI[],
+    onMouseLeaveCartProp: any
+  ) => {
     if (hasToken) {
       try {
         setLoadingRmAllCart(true);
@@ -97,6 +109,7 @@ const useCart = () => {
         const status = await resp.status;
         if (status == 200) {
           setDataCart([]);
+          onMouseLeaveCartProp();
         }
       } catch (error) {
         setLoadingRmAllCart(false);

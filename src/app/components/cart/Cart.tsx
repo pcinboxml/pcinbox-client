@@ -74,7 +74,7 @@ export const ModalCart = ({
             <button
               className="border flex justify-center items-center p-2"
               disabled={loadingRmAllCart}
-              onClick={() => handleRemoveAllCart(dataCart)}
+              onClick={() => handleRemoveAllCart(dataCart, onMouseLeaveCart)}
             >
               {loadingRmAllCart ? (
                 <MdAutorenew size={20} className="m-auto the-spinner" />
@@ -218,7 +218,11 @@ export const ModalCart = ({
                         </p>
                         <button
                           onClick={() =>
-                            handleRemoveItemCart(dataCart, product)
+                            handleRemoveItemCart(
+                              dataCart,
+                              product,
+                              onMouseLeaveCart
+                            )
                           }
                           className="text-red-500 hover:text-red-700 p-1 mt-2"
                         >
