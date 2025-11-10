@@ -247,7 +247,7 @@ const useFormFactura = () => {
 
       setDataModal({
         isOpen: true,
-        message: error.response.data.message,
+        message: "Ocurrio un error, intentalo de nuevo",
         title: "Error",
         type: "error",
         onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
@@ -324,7 +324,7 @@ const useFormFactura = () => {
         isOpen: true,
         type: "error",
         title: "Error",
-        message: error.response.data.message,
+        message: "Ocurrio un error, intentelo de nuevo",
         onClose: () => {
           setDataModal((prev) => ({ ...prev, isOpen: false }));
         },

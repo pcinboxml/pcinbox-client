@@ -513,6 +513,9 @@ const MiCuenta = () => {
                   <option value="Efectivo">Efectivo</option>
                   <option value="Tarjeta_de_Credito">Tarjeta de credito</option>
                   <option value="Tarjeta_de_Debito">Tarjeta de debito</option>
+                  <option value="transferencia_bancaria">
+                    Transferencia bancaria
+                  </option>
                   {/* <option value="Mercado_Pago">Mercado Pago</option> */}
                 </select>
               </div>

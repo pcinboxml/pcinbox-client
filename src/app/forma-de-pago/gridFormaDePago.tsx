@@ -76,6 +76,23 @@ const GridFormaDePago = () => {
     //   cargoBancario: "0",
     //   color: "#666666",
     // },
+    {
+      id: 7,
+      value: "openpay",
+      label: " Tarjeta de crédito/débito, Efectivo y Transferencia",
+      icon: (
+        <img
+          src={
+            "https://documents.openpay.mx/wp-content/uploads/2022/02/openpay-color.png"
+          }
+          style={{
+            objectFit: "contain",
+            width: "100px",
+            height: "100px",
+          }}
+        />
+      ),
+    },
   ];
 
   const methodsPay = [

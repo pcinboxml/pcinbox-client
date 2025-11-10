@@ -36,7 +36,7 @@ const useDetallesPedido = () => {
       renderCell: (params: any) => {
         if (params.value) {
           return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
+            <div className="flex justify-center items-center h-[150px] max-h-[200px] p-1">
               <Carousel
                 showIndicators={true}
                 showThumbs={false}

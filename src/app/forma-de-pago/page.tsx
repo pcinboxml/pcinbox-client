@@ -110,9 +110,9 @@ const FormaDePago = () => {
                       })
                       .filter((pago) => {
                         if (totalPrice >= 10000) {
-                          return pago.id == 1;
+                          return pago.id == 1 || pago.id == 7;
                         } else {
-                          return pago.id == 1 || pago.id == 5;
+                          return pago.id == 1 || pago.id == 5 || pago.id == 7;
                         }
                       })
                       .map((pag_, index) => {
@@ -311,6 +311,8 @@ const FormaDePago = () => {
                             ? "mercadopago"
                             : idMethodPay == 5
                             ? "efectivo"
+                            : idMethodPay == 7
+                            ? "openpay"
                             : "",
                         idCard: selectedCard,
                       },

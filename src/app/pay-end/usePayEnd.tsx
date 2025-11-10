@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
-import { OrderI } from "../interfaces/stripe/stripe.interface";
 
 const usePayEnd = () => {
   const { requestPostPagos, requestGetPagos } = usePasarelaDePagos();
-  const [dataOrderCash, setDataOrderCash] = useState<OrderI | null>();
+  const [dataOrderCash, setDataOrderCash] = useState<any | null>(null);
   const [loadingDownloadBar, setLoadingDownloadBar] = useState<boolean>(false);
 
-  const handleGetOrderCash = async (idOrder: any, idUser: any) => {
+  const handleGetOrderCash = async (idTransaction: any, idOrder: any) => {
     try {
       const resp = await requestPostPagos(
         {
+          idTransaction,
           idOrder,
-          idUser,
+          idUser: localStorage.getItem("idUser"),
         },
-        "/stripe/getOrderCash"
+        "/openpay/getDataOrderOpenPay"
       );
 
       if (resp.status == 200) {

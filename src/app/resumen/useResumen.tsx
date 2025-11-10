@@ -247,6 +247,28 @@ const useResumen = () => {
       } catch (error) {
         setLoadingCreateOrder(false);
       }
+    } else if (progressPay.methodPay.typeMethod == "openpay") {
+      try {
+        setLoadingCreateOrder(true);
+        const resp = await requestPostPagos(
+          {
+            userId: Number(localStorage.getItem("idUser")),
+            amount: totalPagar,
+            optionEnvio: progressPay.optionSend.name,
+            idAddress: progressPay.optionSend.address,
+            dataProduct: dataCart,
+            requiredFactura: selectedFactura,
+          },
+          "/openpay/generateLinkOpenPay"
+        );
+        if (resp.status == 200) {
+          const data = resp.data;
+          location.href = data.data.data.checkout_link;
+          // setLoadingCreateOrder(false);
+        }
+      } catch (error) {
+        setLoadingCreateOrder(false);
+      }
     }
   };
 

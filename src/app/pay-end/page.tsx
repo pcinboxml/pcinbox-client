@@ -9,6 +9,31 @@ import { MdAutorenew, MdCopyAll } from "react-icons/md";
 import useService from "../services/useService";
 import useStorage from "../services/useStorage";
 
+function DetailRow({
+  label,
+  value,
+  mono = false,
+  bold = false,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+  bold?: boolean;
+}) {
+  return (
+    <div className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
+      <span className="text-sm text-gray-600">{label}</span>
+      <span
+        className={`text-sm text-gray-900 ${mono ? "font-mono" : ""} ${
+          bold ? "font-bold text-base" : "font-semibold"
+        }`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
 const PayEnd = () => {
   const [idOrder, setIdOrder] = useState("");
   const [methodPay, setMethodPay] = useState("");
@@ -29,6 +54,7 @@ const PayEnd = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
 
+    const idParam = urlParams.get("id");
     const idOrderParam = urlParams.get("idOrder");
     const methodPayParam = urlParams.get("method_pay");
     const expiredParam = urlParams.get("expired");
@@ -38,9 +64,9 @@ const PayEnd = () => {
     }
 
     if (methodPayParam) {
-      if (methodPayParam == "oxxo") {
-        handleGetOrderCash(idOrderParam, localStorage.getItem("idUser"));
-      }
+      // if (methodPayParam == "oxxo") {
+      handleGetOrderCash(idParam, idOrderParam);
+      // }
       setMethodPay(methodPayParam);
     }
 
@@ -50,8 +76,8 @@ const PayEnd = () => {
   }, [idOrder, methodPay, expired]);
 
   useEffect(() => {
-    if (dataOrderCash?.number.toString()) {
-      initDownloadBar(dataOrderCash?.number.toString());
+    if (dataOrderCash?.payment_method?.reference) {
+      initDownloadBar(dataOrderCash?.payment_method?.reference);
     }
   }, []);
 
@@ -62,7 +88,7 @@ const PayEnd = () => {
         margin: "50px auto",
       }}
     >
-      {idOrder == "" ? (
+      {idOrder == "" || dataOrderCash == null ? (
         <Alert severity="info">Contenido no disponible</Alert>
       ) : (
         <div className="w-full">
@@ -101,7 +127,7 @@ const PayEnd = () => {
                 {/* Código de barras */}
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <h3 className="font-bold text-gray-800 mb-3 text-center">
-                    Código de Barras para OXXO
+                    Código de Barras
                   </h3>
 
                   {dataOrderCash?.amount ? (
@@ -109,7 +135,7 @@ const PayEnd = () => {
                       Total a pagar:{" "}
                       <span className="text-black font-bold">
                         {formatCurrency(
-                          Number((dataOrderCash.amount / 100).toFixed(2))
+                          Number(dataOrderCash.amount.toFixed(2))
                         )}{" "}
                         pesos
                       </span>
@@ -120,7 +146,9 @@ const PayEnd = () => {
                   <div className="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300 mb-3">
                     <div className="flex justify-center mb-2">
                       {/* Representación visual del código de barras */}
-                      <Barcode value={dataOrderCash?.number.toString()!} />
+                      <Barcode
+                        value={dataOrderCash?.payment_method.reference}
+                      />
                     </div>
 
                     {/* Número del código de barras */}
@@ -128,7 +156,9 @@ const PayEnd = () => {
                       <button
                         disabled={loadingDownloadBar}
                         onClick={() =>
-                          handleDownloadBar(dataOrderCash?.number.toString())
+                          handleDownloadBar(
+                            dataOrderCash?.payment_method.reference
+                          )
                         }
                         className="flex items-center justify-center mx-auto my-2 px-3 py-1 bg-[#606060] text-white text-xs rounded"
                       >
@@ -156,13 +186,13 @@ const PayEnd = () => {
                     </span>
 
                     <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
-                      # {dataOrderCash?.idOrder}
+                      # {dataOrderCash?.order_id}
                     </span>
                   </div>
                 ) : null}
 
                 {/* Información de expiración */}
-                <div className="p-4 border-b border-gray-200 bg-red-50">
+                {/* <div className="p-4 border-b border-gray-200 bg-red-50">
                   <div className="flex items-center justify-center mb-2">
                     <Clock className="w-5 h-5 text-red-600 mr-2" />
                     <span className="font-bold text-red-700 mx-2">
@@ -182,7 +212,7 @@ const PayEnd = () => {
                       Después de esta fecha el código expirará
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             ) : (
               <div className="w-full mt-2 mb-5">
@@ -208,6 +238,32 @@ const PayEnd = () => {
                 <div className="w-full flex justify-center">
                   <Barcode value={idOrder} />
                 </div>
+
+                {dataOrderCash?.payment_method?.type == "bank_transfer" ||
+                dataOrderCash?.payment_method.type === "bank_account" ? (
+                  <div className="space-y-3">
+                    <span className="text-[20px] text-black font-bold">
+                      Datos Bancarios para hacer la transferencia
+                    </span>
+                    <DetailRow
+                      label="Banco"
+                      value={dataOrderCash?.payment_method.bank!}
+                    />
+                    {dataOrderCash?.payment_method?.clabe && (
+                      <DetailRow
+                        label="CLABE"
+                        value={dataOrderCash?.payment_method?.clabe}
+                        mono
+                      />
+                    )}
+
+                    <DetailRow
+                      label="Referencia"
+                      value={dataOrderCash?.payment_method?.name!}
+                      mono
+                    />
+                  </div>
+                ) : null}
               </div>
             )}
           </div>

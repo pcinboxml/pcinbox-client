@@ -11,7 +11,6 @@ import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
-import useFavorites from "./services/useFavorites";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
 
@@ -29,7 +28,6 @@ export default function AppWrapper({
     setDataCart,
     setDataProducts,
     socketServer,
-    dataProducts,
   } = useTheContext();
 
   const { addProductFromStorage } = useCart();
@@ -107,7 +105,7 @@ export default function AppWrapper({
           minHeight: "100vh",
         }}
       >
-        <Navbar />
+        {pathName != "/estatusPay" && <Navbar />}
         <main className="container" style={{ marginTop: "180px" }}>
           {children}
 
@@ -123,11 +121,16 @@ export default function AppWrapper({
           />
 
           <Notification dataNotification={dataNotification} />
-          <Footer />
-          <span className="block mx-auto my-2 text-center text-[13px]">
-            © {new Date().getFullYear().toString()} PCinBOX Todos los derechos
-            reservados, México.
-          </span>
+
+          {pathName != "/estatusPay" && <Footer />}
+          {pathName != "/estatusPay" && (
+            <>
+              <span className="block mx-auto my-2 text-center text-[13px]">
+                © {new Date().getFullYear().toString()} PCinBOX Todos los
+                derechos reservados, México.
+              </span>
+            </>
+          )}
         </main>
 
         <a

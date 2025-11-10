@@ -68,11 +68,13 @@ const useHistorialDeCompras = () => {
       isOpen: true,
       message: "¿Seguro que deseas cancelar la compra?",
       type: "info",
-      title: "",
+      title: "Cancelar compra",
+
       onClose: () => {
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
       onConfirm: async () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
         await handleCancelPedido(historyCompra);
       },
     });
@@ -86,19 +88,38 @@ const useHistorialDeCompras = () => {
         {
           idOrder: historyCompra.idOrder,
           userId: Number(localStorage.getItem("idUser")),
-          stripePaymentIntentId: historyCompra.stripePaymentIntentId,
         },
-        "/stripe/cancelledCompra"
+        "/openpay/cancelledPaymantOpenPay"
       );
       setLoadingCancelledCompra(false);
       if (resp.status == 200) {
         const data = await resp.data;
+
         setDataHistoryCompras(groupById(data.data.data));
-        window.location.reload();
+
+        setDataModal({
+          isOpen: true,
+          type: "success",
+          message: `Compra ${historyCompra.idOrder} cancelada correctamente.`,
+          title: "Compra cancelada",
+
+          onConfirm: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+        });
       }
     } catch (error) {
       setLoadingCancelledCompra(false);
-      setDataHistoryCompras([]);
+      //setDataHistoryCompras([]);
     }
   };
 
