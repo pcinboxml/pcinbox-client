@@ -39,6 +39,7 @@ const useDetailsProduct = () => {
       return;
     }
     setQuantity(newQuantity);
+
     updateLocalStorageQuantity(newQuantity);
   };
 
@@ -94,7 +95,12 @@ const useDetailsProduct = () => {
           if (existingProduct) {
             return prev.map((item) =>
               Number(item.idProduct) == Number(existingProduct.idProduct)
-                ? { ...item, quantity: Number(item.quantity) + Number(1) }
+                ? {
+                    ...item,
+                    quantity: quantityProp
+                      ? quantityProp + Number(item.quantity)
+                      : 1,
+                  }
                 : item
             );
           } else {
@@ -112,7 +118,7 @@ const useDetailsProduct = () => {
                 stock: dataProduct.stock,
                 rating: dataProduct.rating,
                 reviews: dataProduct.reviews,
-                quantity: 1,
+                quantity: quantityProp ? quantityProp : 1,
                 sku: dataProduct.sku,
               },
             ];

@@ -11,6 +11,7 @@ import Failed from "../components/openpay/failed/Failed";
 import { GridLoader } from "react-spinners";
 
 const EstatusPay = () => {
+  // ✅ Solo cliente
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -21,15 +22,8 @@ const EstatusPay = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // ✅ Esto se ejecuta solo en cliente
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
     if (!id) {
       setError(true);
       setLoading(false);
@@ -59,12 +53,7 @@ const EstatusPay = () => {
     };
 
     handleGetDataTransactionOpenPay();
-  }, [id, isClient]);
-
-  if (!isClient) {
-    // Mientras no estemos en cliente, mostramos un placeholder o nada
-    return null;
-  }
+  }, [id, requestPostPagos]);
 
   if (loading) {
     return (
