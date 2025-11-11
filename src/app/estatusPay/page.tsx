@@ -1,17 +1,19 @@
 "use client";
 
+import { useEffect, useState, Suspense } from "react";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import NotFound from "../components/openpay/notFound/NotFound";
-import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
-import PaySuccess from "../components/openpay/success/PaySuccess";
-import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
-import PayPending from "../components/openpay/pending/PayPending";
-import Failed from "../components/openpay/failed/Failed";
 import { GridLoader } from "react-spinners";
 
-const EstatusPay = () => {
-  // ✅ Solo cliente
+import NotFound from "../components/openpay/notFound/NotFound";
+import PaySuccess from "../components/openpay/success/PaySuccess";
+import PayPending from "../components/openpay/pending/PayPending";
+import Failed from "../components/openpay/failed/Failed";
+import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
+
+// Creamos el componente que maneja la lógica de OpenPay
+const EstatusPayContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -30,7 +32,7 @@ const EstatusPay = () => {
       return;
     }
 
-    const handleGetDataTransactionOpenPay = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(false);
@@ -45,40 +47,19 @@ const EstatusPay = () => {
         } else {
           setError(true);
         }
-      } catch (err) {
+      } catch {
         setError(true);
       } finally {
         setLoading(false);
       }
     };
 
-    handleGetDataTransactionOpenPay();
+    fetchData();
   }, [id, requestPostPagos]);
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-        }}
-      >
-        <GridLoader color="#bb3d4b" size={20} aria-label="Cargando..." />
-      </div>
-    );
-  }
+  if (loading) return null; // El fallback de Suspense mostrará el loader
 
-  if (error || !dataPayOpenPay) {
-    return <NotFound />;
-  }
+  if (error || !dataPayOpenPay) return <NotFound />;
 
   switch (dataPayOpenPay.status) {
     case "failed":
@@ -91,6 +72,39 @@ const EstatusPay = () => {
     default:
       return <NotFound />;
   }
+};
+
+// Cargamos dinámicamente para evitar SSR
+const EstatusPayDynamic = dynamic(() => Promise.resolve(EstatusPayContent), {
+  ssr: false,
+});
+
+// Componente principal que incluye Suspense y loader
+const EstatusPay = () => {
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <GridLoader color="#bb3d4b" size={20} aria-label="Cargando..." />
+        </div>
+      }
+    >
+      <EstatusPayDynamic />
+    </Suspense>
+  );
 };
 
 export default EstatusPay;
