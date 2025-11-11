@@ -56,7 +56,9 @@ const usePayEnd = () => {
       link.setAttribute("download", `barcode-${valueBar}.png`);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      if (link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
 
       // Limpiar URL temporal
       window.URL.revokeObjectURL(url);
@@ -81,7 +83,9 @@ const usePayEnd = () => {
     link.setAttribute("download", `barcode-${valueBar}.png`);
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
 
     // Limpiar URL temporal
     window.URL.revokeObjectURL(url);
