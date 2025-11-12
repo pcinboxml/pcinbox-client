@@ -126,9 +126,9 @@ const useService = () => {
     }
   };
 
-  const onRouterLink = async (route: string): Promise<void> => {
+  const onRouterLink = (route: string): void => {
     try {
-      await router.prefetch(route);
+      router.prefetch(route);
       router.push(route);
     } catch (error) {
       setDataModal({

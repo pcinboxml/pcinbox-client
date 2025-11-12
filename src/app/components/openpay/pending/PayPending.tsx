@@ -339,8 +339,8 @@ const PayPending = ({
           <div className="space-y-3">
             <div className="grid grid-cols-1 gap-3">
               <button
-                onClick={async () => {
-                  await onRouterLink(
+                onClick={() => {
+                  onRouterLink(
                     `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${
                       dataPayOpenPay?.order_id
                     }&method_pay=${

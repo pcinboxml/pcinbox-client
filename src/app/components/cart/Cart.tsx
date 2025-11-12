@@ -8,6 +8,7 @@ import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
 import { MdAutorenew, MdClose } from "react-icons/md";
+// import Link from "next/link";
 
 export const Cart = () => {
   return <img src="/carrito.png" />;
@@ -271,9 +272,14 @@ export const ModalCart = ({
               >
                 Seguir comprando
               </button>
+              {/* <Link href="/confirma-productos" onClick={onMouseLeaveCart}>
+                <button className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors">
+                  Proceder al pago
+                </button>
+              </Link> */}
               <button
-                onClick={async () => {
-                  await onRouterLink("/confirma-productos");
+                onClick={() => {
+                  onRouterLink("/confirma-productos");
                   onMouseLeaveCart();
                 }}
                 className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"

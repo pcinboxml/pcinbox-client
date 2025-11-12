@@ -202,9 +202,9 @@ const PaySuccess = ({
             <div className="grid grid-cols-1 gap-3">
               <button
                 disabled={loadingRoute}
-                onClick={async () => {
+                onClick={() => {
                   setLoadingRoute(true);
-                  await onRouterLink(
+                  onRouterLink(
                     `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${
                       dataPayOpenPay?.order_id
                     }&method_pay=${

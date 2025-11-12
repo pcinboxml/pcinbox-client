@@ -55,7 +55,7 @@ const EstatusPayContent = () => {
     };
 
     fetchData();
-  }, [id, requestPostPagos]);
+  }, [id]);
 
   if (loading) return null; // El fallback de Suspense mostrará el loader
 
