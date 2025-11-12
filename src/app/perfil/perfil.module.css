@@ -105,3 +105,33 @@
     grid-template-columns: auto 1fr;
   }
 }
+
+@media (max-width: 992px) {
+  .containerDatosPersonales form {
+    width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section > div {
+    width: 100%;
+  }
+  .containerCar {
+    width: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .containerDataEnvioYfacturacion > div {
+    width: 90%;
+    margin: 0;
+  }
+}

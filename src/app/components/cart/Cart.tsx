@@ -119,7 +119,7 @@ export const ModalCart = ({
                             "product",
                             JSON.stringify(product)
                           );
-                          onRouterLink("/detailsProduct");
+                          onRouterLink(`/detailsProduct/${product.idProduct}`);
                         }}
                       />
                     ) : (
@@ -132,7 +132,7 @@ export const ModalCart = ({
                             "product",
                             JSON.stringify(product)
                           );
-                          onRouterLink("/detailsProduct");
+                          onRouterLink(`/detailsProduct/${product.idProduct}`);
                         }}
                       />
                     )}

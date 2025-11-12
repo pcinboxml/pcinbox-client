@@ -32,92 +32,106 @@ const CambiarContrasena = () => {
             Cambiar contraseña
           </span>
 
-          <div className="containerForm">
+          <div className={styles.containerForm}>
             <form className="w-[500px] m-auto" onSubmit={onSubmit}>
-              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-center mt-4 relative">
+              <div className="grid grid-cols-[180px_1fr] gap-2 items-center mt-4 relative">
                 <label className="text-[#808080] text-base text-end">
                   Contraseña actual:
                 </label>
 
-                <input
-                  type={
-                    dataForm.currentPassword.showPassword ? "text" : "password"
-                  }
-                  name="currentPassword"
-                  onChange={handleInputChange}
-                  value={dataForm.currentPassword.value}
-                  className={`form-control ${styles.inputPassword} w-full px-2 py-1 border rounded`}
-                />
+                <div className="relative">
+                  <input
+                    type={
+                      dataForm.currentPassword.showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    name="currentPassword"
+                    onChange={handleInputChange}
+                    value={dataForm.currentPassword.value}
+                    className={`form-control ${styles.inputPassword} w-full px-2 py-1 border rounded`}
+                  />
 
-                <button
-                  type="button"
-                  className={styles.eye}
-                  onClick={() => handleShowPassword("currentPassword")}
-                >
-                  {!dataForm.currentPassword.showPassword ? (
-                    <Eye size={21} />
-                  ) : (
-                    <EyeClosed size={21} />
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    className={styles.eye}
+                    onClick={() => handleShowPassword("currentPassword")}
+                  >
+                    {!dataForm.currentPassword.showPassword ? (
+                      <Eye size={21} />
+                    ) : (
+                      <EyeClosed size={21} />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-center mt-4 relative">
+              <div className="grid grid-cols-[180px_1fr] gap-2 items-center mt-4 relative">
                 <label
                   htmlFor=""
                   className="text-[#808080] text-base shrink-0 text-end"
                 >
                   Nueva Contraseña:
                 </label>
-                <input
-                  type={dataForm.newPassword.showPassword ? "text" : "password"}
-                  name="newPassword"
-                  onChange={handleInputChange}
-                  value={dataForm.newPassword.value}
-                  className={`form-control ${styles.inputPassword}`}
-                />
 
-                <button
-                  type="button"
-                  className={styles.eye}
-                  onClick={() => handleShowPassword("newPassword")}
-                >
-                  {!dataForm.newPassword.showPassword ? (
-                    <Eye size={21} />
-                  ) : (
-                    <EyeClosed size={21} />
-                  )}
-                </button>
+                <div className="relative">
+                  <input
+                    type={
+                      dataForm.newPassword.showPassword ? "text" : "password"
+                    }
+                    name="newPassword"
+                    onChange={handleInputChange}
+                    value={dataForm.newPassword.value}
+                    className={`form-control ${styles.inputPassword}`}
+                  />
+                  <button
+                    type="button"
+                    className={styles.eye}
+                    onClick={() => handleShowPassword("newPassword")}
+                  >
+                    {!dataForm.newPassword.showPassword ? (
+                      <Eye size={21} />
+                    ) : (
+                      <EyeClosed size={21} />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-center mt-4 relative">
+              <div className="grid grid-cols-[180px_1fr] gap-2 items-center mt-4 relative">
                 <label
                   htmlFor=""
                   className="text-[#808080] text-base mx-2 shrink-0 text-end"
                 >
                   Confirmar Nueva <br /> Contraseña:
                 </label>
-                <input
-                  type={
-                    dataForm.confirmPassword.showPassword ? "text" : "password"
-                  }
-                  name="confirmPassword"
-                  onChange={handleInputChange}
-                  value={dataForm.confirmPassword.value}
-                  className={`form-control ${styles.inputPassword}`}
-                />
 
-                <button
-                  type="button"
-                  className={styles.eye}
-                  onClick={() => handleShowPassword("confirmPassword")}
-                >
-                  {!dataForm.confirmPassword.showPassword ? (
-                    <Eye size={21} />
-                  ) : (
-                    <EyeClosed size={21} />
-                  )}
-                </button>
+                <div className="relative">
+                  <input
+                    type={
+                      dataForm.confirmPassword.showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    name="confirmPassword"
+                    onChange={handleInputChange}
+                    value={dataForm.confirmPassword.value}
+                    className={`form-control ${styles.inputPassword}`}
+                  />
+
+                  <button
+                    type="button"
+                    className={styles.eye}
+                    id="eyeEnd"
+                    onClick={() => handleShowPassword("confirmPassword")}
+                  >
+                    {!dataForm.confirmPassword.showPassword ? (
+                      <Eye size={21} />
+                    ) : (
+                      <EyeClosed size={21} />
+                    )}
+                  </button>
+                </div>
               </div>
 
               {typeStrength != "" ? (

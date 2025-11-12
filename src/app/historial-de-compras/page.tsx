@@ -10,6 +10,8 @@ import { MdAutorenew } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
 
 const HistoryShop = () => {
+  const currentDate = new Date();
+
   const {
     dataHistoryCompras,
     loadingCancelledCompra,
@@ -103,6 +105,12 @@ const HistoryShop = () => {
               type="date"
               id="periodo"
               className="form-control"
+              defaultValue={`${currentDate.getFullYear()}-${String(
+                currentDate.getMonth() + 1
+              ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(
+                2,
+                "0"
+              )}`}
               onChange={(event) => {
                 setDataFilter((prev) => ({
                   ...prev,

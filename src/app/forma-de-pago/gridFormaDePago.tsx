@@ -82,9 +82,7 @@ const GridFormaDePago = () => {
       label: " Tarjeta de crédito/débito, Efectivo y Transferencia",
       icon: (
         <img
-          src={
-            "https://documents.openpay.mx/wp-content/uploads/2022/02/openpay-color.png"
-          }
+          src={"openpay.png"}
           style={{
             objectFit: "contain",
             width: "100px",

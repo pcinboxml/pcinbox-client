@@ -93,7 +93,7 @@ const MiCuenta = () => {
           <Skeleton />
         ) : (
           <div
-            className={`containerCar border flex p-2  min-h-[150px]`}
+            className={`${styles.containerCar} border flex p-2  min-h-[150px]`}
             style={{
               // width: !dataAddress.street ? "500px" : "100%",
               width: "500px",

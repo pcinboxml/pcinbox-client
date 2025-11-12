@@ -47,7 +47,7 @@ const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
         filterOptions={filterOptions}
         onChange={handleSelect}
       />
-      <button className="z-20 relative">
+      <button className="z-20 relative will-change-contents">
         <span className="px-2">Buscar</span>
       </button>
     </form>
