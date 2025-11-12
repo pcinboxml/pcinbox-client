@@ -9,6 +9,7 @@ const WriteReview = () => {
   const { setDataAddReview, handleAddReview, loadingAddReview, dataAddReview } =
     useWriteReview();
   const [fullName, setFullName] = useState<string>("");
+  const [idProduct, setIdProduct] = useState("");
   const [image_url, setImageUrl] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -27,6 +28,7 @@ const WriteReview = () => {
     const descrip = urlParams.get("description");
 
     if (idProduct) {
+      setIdProduct(idProduct);
       setDataAddReview((prev) => ({ ...prev, idProduct: idProduct }));
     }
     if (imageUrl) {
@@ -38,16 +40,18 @@ const WriteReview = () => {
     }
   }, []);
 
-  return image_url && description ? (
+  return idProduct ? (
     <section>
       <span className="text-[#bb3d4b] text-[17px] font-bold block text-start">
         Escribe tu opinión acerca de este producto:
       </span>
 
-      <div className="flex items-center">
+      <div className="flex items-center mt-2">
         <img src={image_url} alt="" width={200} height={200} />
 
-        <p className="text-[18px] text-[#606060] font-bold">{description}</p>
+        <p className="text-[18px] text-[#606060] font-bold mx-3">
+          {description}
+        </p>
       </div>
 
       <div className="w-full grid grid-cols-[1fr_auto]">

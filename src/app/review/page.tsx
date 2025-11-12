@@ -163,25 +163,23 @@ const Reviews = () => {
               ¿Deseas compartir tu experiencia?
             </span>
 
-            <button className="p-2 block my-2 mx-auto bg-[#bb3d4b] text-white rounded font-bold">
-              <span
-                className="text-[13px]"
-                onClick={() =>
-                  onRouterLink(
-                    `/write-review?idProduct=${
-                      dataProduct?.idProduct
-                    }&image_url=${
-                      dataProduct?.imageUrl &&
-                      Array.isArray(dataProduct?.imageUrl) &&
-                      dataProduct?.imageUrl.length > 0
-                        ? dataProduct?.imageUrl[0]
-                        : dataProduct?.imageUrl
-                    }&description=${dataProduct?.description}`
-                  )
-                }
-              >
-                Escribir mi opinión
-              </span>
+            <button
+              className="p-2 block my-2 mx-auto bg-[#bb3d4b] text-white rounded font-bold"
+              onClick={() =>
+                onRouterLink(
+                  `/write-review?idProduct=${
+                    dataProduct?.idProduct
+                  }&image_url=${
+                    dataProduct?.imageUrl &&
+                    Array.isArray(dataProduct?.imageUrl) &&
+                    dataProduct?.imageUrl.length > 0
+                      ? dataProduct?.imageUrl[0]
+                      : dataProduct?.imageUrl
+                  }&description=${dataProduct?.description}`
+                )
+              }
+            >
+              <span className="text-[13px]">Escribir mi opinión</span>
             </button>
           </div>
         </div>
