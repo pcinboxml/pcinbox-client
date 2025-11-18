@@ -17,7 +17,7 @@ const TerminosCondiciones = () => {
     >
       <div className="terms-container">
         <header className="terms-header">
-          <h1>Terminos y Condiciones</h1>
+          <h1>Términos y Condiciones</h1>
         </header>
 
         <section className="terms-section">
