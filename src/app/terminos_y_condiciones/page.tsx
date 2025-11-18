@@ -158,7 +158,7 @@ const TerminosCondiciones = () => {
             autorizado en el apartado 3).
           </p>
 
-          <p className="disclaimer">
+          {/* <p className="disclaimer">
             Para la gestión y procesamiento de los pagos, PCINBOX utiliza los
             servicios de <strong>Openpay</strong>, una plataforma certificada
             con estándares de seguridad bancaria. Al realizar una compra,
@@ -178,7 +178,7 @@ const TerminosCondiciones = () => {
             </strong>{" "}
             (números de tarjeta, códigos de seguridad, etc.). Toda la
             información sensible es gestionada exclusivamente por Openpay.
-          </p>
+          </p> */}
         </section>
 
         <footer className="terms-footer">
