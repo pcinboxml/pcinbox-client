@@ -173,7 +173,7 @@ const TerminosCondiciones = () => {
             </a>
             .{" "}
             <strong>
-              PCINBOX no almacena, registra ni tiene acceso a datos financieros
+              PCINBOX no almacena,registra ni tiene acceso a datos financieros
               del usuario
             </strong>{" "}
             (números de tarjeta, códigos de seguridad, etc.). Toda la
