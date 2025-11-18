@@ -177,7 +177,7 @@ const TerminosCondiciones = () => {
               del usuario
             </strong>{" "}
             (números de tarjeta, códigos de seguridad, etc.). Toda la
-            información sesible es gestionada exclusivamente por Openpay.
+            información sesible es gestiona exclusivamente por Openpay.
           </p> */}
         </section>
 
