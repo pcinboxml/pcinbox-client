@@ -2,7 +2,7 @@
 import "./avisoprivacidad.css";
 
 const AvisoPrivacidad = () => {
-  const lastUpdated = new Date(2025, 10, 18).toLocaleDateString("es-MX", {
+  const lastUpdated = new Date().toLocaleDateString("es-MX", {
     day: "numeric",
     month: "long",
     year: "numeric",
