@@ -18,6 +18,7 @@ const TerminosCondiciones = () => {
       <div className="terms-container">
         <header className="terms-header">
           <h1>Términos y Condiciones</h1>
+          <p className="last-updated">Última actualización: {currentDate}</p>
         </header>
 
         <section className="terms-section">

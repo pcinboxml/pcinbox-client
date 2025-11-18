@@ -17,6 +17,7 @@ const AvisoPrivacidad = () => {
       <div className="privacy-container">
         <header className="privacy-header">
           <h1>Aviso de Privacidad</h1>
+          <p className="last-updated">Última actualización: {lastUpdated}</p>
         </header>
 
         <section className="privacy-section">
