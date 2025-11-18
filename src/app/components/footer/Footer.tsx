@@ -133,6 +133,27 @@ const Footer = () => {
           <p>Atención Vía Whatsapp: +52 (477) 533 41 27</p>
         </div>
       </footer>
+      <div className="bg-[#BA2B3D] w-full px-1 py-1 flex justify-start absolute bottom-0">
+        <div>
+          <a
+            href="/terminos_y_condiciones"
+            target="_blank"
+            className="text-[13px] text-white cursor-pointer hover:underline"
+            style={{ textDecoration: "none" }}
+          >
+            Términos y condiciones de uso
+          </a>
+          <span className="text-white text-[13px] mx-1">|</span>
+          <a
+            href="/aviso_privacidad"
+            target="_blank"
+            className="text-[13px] text-white cursor-pointer hover:underline"
+            style={{ textDecoration: "none" }}
+          >
+            Aviso de privacidad
+          </a>
+        </div>
+      </div>
     </section>
   );
 };

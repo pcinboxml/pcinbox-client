@@ -105,7 +105,9 @@ export default function AppWrapper({
           minHeight: "100vh",
         }}
       >
-        {pathName != "/estatusPay" && <Navbar />}
+        {pathName != "/estatusPay" &&
+          pathName != "/terminos_y_condiciones" &&
+          pathName != "/aviso_privacidad" && <Navbar />}
         <main className="container" style={{ marginTop: "180px" }}>
           {children}
 
@@ -122,15 +124,19 @@ export default function AppWrapper({
 
           <Notification dataNotification={dataNotification} />
 
-          {pathName != "/estatusPay" && <Footer />}
-          {pathName != "/estatusPay" && (
-            <>
-              <span className="block mx-auto my-2 text-center text-[13px]">
-                © {new Date().getFullYear().toString()} PCinBOX Todos los
-                derechos reservados, México.
-              </span>
-            </>
-          )}
+          {pathName != "/estatusPay" &&
+            pathName != "/terminos_y_condiciones" &&
+            pathName != "/aviso_privacidad" && <Footer />}
+          {pathName != "/estatusPay" &&
+            pathName != "/terminos_y_condiciones" &&
+            pathName != "/aviso_privacidad" && (
+              <>
+                <span className="block mx-auto my-2 text-center text-[13px]">
+                  © {new Date().getFullYear().toString()} PCinBOX Todos los
+                  derechos reservados, México.
+                </span>
+              </>
+            )}
         </main>
 
         <a

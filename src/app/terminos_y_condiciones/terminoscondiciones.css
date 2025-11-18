@@ -1,0 +1,148 @@
+/* TermsAndConditions.css */
+
+.terms-container {
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  color: #333;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.terms-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.terms-header h1 {
+  font-size: 2.2rem;
+  color: #1a1a1a;
+  margin: 0;
+  font-weight: 700;
+}
+
+.last-updated {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.terms-section {
+  margin-bottom: 2.5rem;
+}
+
+.terms-section h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 1.2rem;
+  padding-left: 0.7rem;
+  border-left: 4px solid #3498db;
+}
+
+.terms-section h3 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin: 1.5rem 0 0.8rem 0;
+}
+
+.terms-section p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.terms-list {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.terms-list li {
+  margin-bottom: 0.8rem;
+  font-size: 1.05rem;
+}
+
+.terms-list li strong {
+  color: #2c3e50;
+}
+
+.terms-link {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.payment-logos {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.payment-icon {
+  background-color: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.disclaimer {
+  background-color: #ecf0f1;
+  padding: 1.2rem;
+  border-radius: 8px;
+  border-left: 4px solid #e74c3c;
+  margin: 1.5rem 0;
+  font-size: 1rem;
+}
+
+.disclaimer strong {
+  color: #e74c3c;
+}
+
+.terms-footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 1.5rem;
+  }
+
+  .terms-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .terms-section h2 {
+    font-size: 1.6rem;
+  }
+
+  .terms-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .payment-logos {
+    justify-content: center;
+  }
+
+  .payment-icon {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
