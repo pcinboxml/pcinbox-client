@@ -57,7 +57,12 @@ const StepIconComponent = ({
       }}
     >
       {/* Aquí va tu icono personalizado */}
-      <img src="/caja_blanca_pcinbox.png" alt="step" width={18} />
+      <img
+        src="/caja_blanca_pcinbox.png"
+        alt="step"
+        width={18}
+        loading="lazy"
+      />
     </Box>
   );
 };

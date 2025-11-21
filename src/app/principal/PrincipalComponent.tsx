@@ -14,6 +14,7 @@ import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
 import usePro from "./usePro";
 import useIntermedio from "./useIntermedio";
 import useEntrada from "./useEntrada";
+import Image from "next/image";
 
 const PrincipalComponent = () => {
   const pathName = usePathname();
@@ -44,9 +45,33 @@ const PrincipalComponent = () => {
       <div className="content-main">
         {dataProducts && dataProducts.length > 0 ? (
           <div className="list-products">
-            <img src="/banner0.png" className="banner0" />
-            <img src="/banner1.png" className="banner1" />
-            <img src="/banner2.png" className="banner2" />
+            <Image
+              src="/banner0.png"
+              className="banner0"
+              width={100}
+              height={`${100}`}
+              loading="lazy"
+              alt="banner0"
+            />
+            <Image
+              src="/banner1.png"
+              className="banner1"
+              loading="lazy"
+              width={100}
+              height={`${100}`}
+              alt="banner1"
+            />
+            <Image
+              src="/banner2.png"
+              className="banner2"
+              loading="lazy"
+              width={100}
+              height={`${100}`}
+              alt="banner2"
+            />
+
+            {/* <img src="/banner1.png" className="banner1" loading="lazy" />
+            <img src="/banner2.png" className="banner2" loading="lazy" /> */}
           </div>
         ) : (
           ""

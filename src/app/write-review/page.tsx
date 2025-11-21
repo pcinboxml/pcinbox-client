@@ -47,7 +47,7 @@ const WriteReview = () => {
       </span>
 
       <div className="flex items-center mt-2">
-        <img src={image_url} alt="" width={200} height={200} />
+        <img src={image_url} alt="" width={200} height={200} loading="lazy" />
 
         <p className="text-[18px] text-[#606060] font-bold mx-3">
           {description}

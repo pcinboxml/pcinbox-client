@@ -39,6 +39,7 @@ const Carousel = () => {
           src={images[currentIndex]}
           alt={`Imagen ${currentIndex + 1}`}
           className="image"
+          loading="lazy"
         />
 
         <div className="dotsOverlay">

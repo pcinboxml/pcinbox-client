@@ -19,6 +19,8 @@ const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
     value: ProductI | null
   ) => {
     console.log("Producto seleccionado:", value);
+    if (value) {
+    }
   };
 
   useEffect(() => {
@@ -46,6 +48,7 @@ const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
         getOptionLabel={(option: ProductI) => option.name}
         filterOptions={filterOptions}
         onChange={handleSelect}
+        getOptionKey={(option: ProductI) => option.idProduct}
       />
       <button className="z-20 relative will-change-contents">
         <span className="px-2">Buscar</span>

@@ -60,6 +60,7 @@ const Reviews = () => {
               width={200}
               height={200}
               className="object-contain"
+              loading="lazy"
             />
 
             <div className="container-price-product flex flex-col items-start">

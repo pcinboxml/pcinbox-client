@@ -56,6 +56,7 @@ const useDetallesPedido = () => {
                             height: "150px",
                             marginTop: "12px",
                           }}
+                          loading="lazy"
                         />
                       </div>
                     ))

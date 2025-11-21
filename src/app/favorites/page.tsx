@@ -100,6 +100,7 @@ const Favorites = () => {
                                 objectFit: "contain",
                                 height: "200px",
                               }}
+                              loading="lazy"
                             />
                           </div>
                         ))

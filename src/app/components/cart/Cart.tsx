@@ -11,7 +11,7 @@ import { MdAutorenew, MdClose } from "react-icons/md";
 // import Link from "next/link";
 
 export const Cart = () => {
-  return <img src="/carrito.png" />;
+  return <img src="/carrito.png" loading="lazy" />;
 };
 
 export const ModalCart = ({
@@ -49,7 +49,8 @@ export const ModalCart = ({
           position: "absolute",
           top: "50px",
           right: "120px",
-          width: "500px",
+          minWidth: "500px",
+          maxWidth: "600px",
         }}
         onMouseLeave={() => {
           onMouseLeaveCart();
@@ -113,6 +114,7 @@ export const ModalCart = ({
                     {(product as any).image_url ? (
                       <img
                         src={(product as any).image_url[0]}
+                        loading="lazy"
                         alt={"Imagen"}
                         className="w-16 h-16 object-cover rounded-md cursor-pointer"
                         onClick={() => {
@@ -127,6 +129,7 @@ export const ModalCart = ({
                       <img
                         src={(product as any).imageUrl[0]}
                         alt={"Imagen"}
+                        loading="lazy"
                         className="w-16 h-16 object-cover rounded-md cursor-pointer"
                         onClick={() => {
                           localStorage.setItem(

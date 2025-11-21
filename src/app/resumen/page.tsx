@@ -43,6 +43,7 @@ const Resumen = () => {
                 width={70}
                 height={70}
                 style={{ objectFit: "contain", marginLeft: "10px" }}
+                loading="lazy"
               />
 
               <span className="text-[white] mx-2"> | RESUMEN</span>

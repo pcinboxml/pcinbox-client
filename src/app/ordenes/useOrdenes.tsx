@@ -61,7 +61,13 @@ const useOrdenes = () => {
         if (params.value) {
           return (
             <div className="flex justify-center items-center min-h-[100%] p-1">
-              <img src={params.value} alt="User" width={50} height={50} />
+              <img
+                src={params.value}
+                alt="User"
+                width={50}
+                height={50}
+                loading="lazy"
+              />
             </div>
           );
         } else {

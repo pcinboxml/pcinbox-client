@@ -29,7 +29,12 @@ const Register = () => {
       }}
     >
       <div className="w-[50%]">
-        <img className={styles.img} src="/pc_gamer.jpeg" alt="" />
+        <img
+          className={styles.img}
+          src="/pc_gamer.jpeg"
+          alt=""
+          loading="lazy"
+        />
       </div>
 
       <div className={`w-[50%] ${styles.containerForm}`}>
