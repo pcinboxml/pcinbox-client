@@ -79,7 +79,7 @@ export default function AppWrapper({
       setDataProducts((prev) =>
         prev.map((item) =>
           item.idProduct == data.idProduct
-            ? { ...item, stock: data.stock }
+            ? { ...item, stock: data.stock, price: data.price }
             : item
         )
       );
