@@ -98,6 +98,7 @@
   width: 25%;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .container-products .btn-products {
@@ -105,15 +106,18 @@
   border-top-left-radius: 10px;
   background: #808080;
   color: white;
+  position: relative;
 }
 
 .container-products .container-list-products {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  /* width: 150px; */
+  width: 150px;
   min-height: 544px;
   top: 100%;
-  left: 27% !important;
+  left: 0px;
+  /* top: 100%;
+  left: 27% !important; */
   padding: 9px;
   z-index: 999;
 }

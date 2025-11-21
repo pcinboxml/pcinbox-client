@@ -27,7 +27,7 @@ const Navbar = () => {
   const {
     navRefResponsive,
     navRef,
-
+    showProductsMenu,
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
     handleToggleNav,
@@ -176,8 +176,84 @@ const Navbar = () => {
       <div className="flex container">
         <div
           className="container-products"
+          // onMouseLeave={
+          //   pathname == "/principal" || pathname == "/"
+          //     ? () => {}
+          //     : onMouseLeaveProducts
+          // }
+          // onMouseEnter={
+          //   pathname == "/principal" || pathname == "/"
+          //     ? () => {}
+          //     : onMouseEnterProducts
+          // }
+        >
+          <button
+            className="btn-products"
+            onMouseEnter={onMouseEnterProducts}
+            onMouseLeave={onMouseLeaveProducts}
+          >
+            Productos
+            {showProductsMenu && <SubMenuProductos />}
+          </button>
+
+          {/* <div
+            // ref={showProductsMenu}
+            className="container-list-products absolute bg-white shadow"
+            style={{
+              display:
+                pathname == "/principal" || pathname == "/" ? "block" : "none",
+            }}
+          >
+            <SubMenuProductos />
+            {/* <ul>
+              <li>
+                <a href="#">Procesadores</a>
+              </li>
+              <li>
+                <a href="#">Tarjetas de video</a>
+              </li>
+              <li>
+                <a href="#">Placas madre</a>
+              </li>
+              <li>
+                <a href="#">Memoria Ram</a>
+              </li>
+              <li>
+                <a href="#">Almacenamiento</a>
+              </li>
+              <li>
+                <a href="#">Gabinetes para PC</a>
+              </li>
+              <li>
+                <a href="#">Fuentes de Poder</a>
+              </li>
+              <li>
+                <a href="#">Enfriamientos</a>
+              </li>
+              <li>
+                <a href="#">Monitores</a>
+              </li>
+              <li>
+                <a href="#">Teclados</a>
+              </li>
+              <li>
+                <a href="#">Mouse</a>
+              </li>
+              <li>
+                <a href="#">Energia</a>
+              </li>
+              <li>
+                <a href="#">Redes</a>
+              </li>
+            </ul> 
+          </div> */}
+        </div>
+        {/* <div
+          className="container-products"
           style={{ position: "relative", zIndex: 100 }} // Asegúrate del zIndex
-        ></div>
+        >
+          <SubMenuProductos />
+        </div> */}
 
         <div className="container-submenu">
           <div className="submenu">

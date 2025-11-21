@@ -49,7 +49,8 @@ export const ModalCart = ({
           position: "absolute",
           top: "50px",
           right: "120px",
-          width: "500px",
+          minWidth: "500px",
+          maxWidth: "600px",
         }}
         onMouseLeave={() => {
           onMouseLeaveCart();
