@@ -222,8 +222,22 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   };
 
   useEffect(() => {
-    getListProducts();
+    let mounted = true;
+
+    const fetchProducts = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`
+      );
+      const data = await res.json();
+      if (mounted) setDataProducts(data.data);
+    };
+
+    fetchProducts();
     handleGetDataFavorites();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {

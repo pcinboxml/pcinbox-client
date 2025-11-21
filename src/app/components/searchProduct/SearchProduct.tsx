@@ -4,11 +4,10 @@ import { Autocomplete, createFilterOptions, TextField } from "@mui/material";
 import "./searchProduct.css";
 import { useTheContext } from "@/app/services/globalContext";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
   const { dataProducts, setDataProducts } = useTheContext();
-  const [hasFetchedProducts, setHasFetchedProducts] = useState<boolean>(false);
 
   const filterOptions = createFilterOptions({
     stringify: (option: ProductI) => `${option.name} ${option.description}`,
@@ -21,17 +20,17 @@ const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
     console.log("Producto seleccionado:", value);
   };
 
-  useEffect(() => {
-    if (!hasFetchedProducts && dataProducts.length === 0) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
-        async (res) => {
-          const data = await res.json();
-          setDataProducts(data.data);
-          setHasFetchedProducts(true);
-        }
-      );
-    }
-  }, [hasFetchedProducts]);
+  // useEffect(() => {
+  //   if (!hasFetchedProducts && dataProducts.length === 0) {
+  //     fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
+  //       async (res) => {
+  //         const data = await res.json();
+  //         setDataProducts(data.data);
+  //         setHasFetchedProducts(true);
+  //       }
+  //     );
+  //   }
+  // }, [hasFetchedProducts]);
   return (
     <form className="flex">
       <Autocomplete
