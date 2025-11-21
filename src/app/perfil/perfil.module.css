@@ -130,8 +130,30 @@
     align-items: center !important;
   }
 
-  .containerDataEnvioYfacturacion > div {
-    width: 90%;
-    margin: 0;
+  .containerDataEnvioYfacturacion form div {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .containerDataEnvioYfacturacion form div label {
+    text-align: start !important;
   }
 }
+
+@media (max-width: 535px) {
+  .containerDataEnvioYfacturacion form {
+    width: 350px !important;
+    margin: 0 !important;
+  }
+
+  .containerDataEnvioYfacturacion form button {
+    width: 100% !important;
+  }
+}
+
+/* @media (max-width: 480px) {
+  .containerDataEnvioYfacturacion > div {
+    width: 80%;
+  }
+} */
