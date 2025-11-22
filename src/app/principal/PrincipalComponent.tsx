@@ -1,43 +1,33 @@
 "use client";
 import "./principal.css";
-import usePrincipal from "./usePrincipal";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
-import { useEffect } from "react";
-import Skeleton from "../components/skeleton/Skeleton";
 import PaginationComponent from "../components/pagination/PaginationComponent";
-import ProductI from "../interfaces/products/product.interface";
 import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
 import { usePathname } from "next/navigation";
 import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
-import usePro from "./usePro";
-import useIntermedio from "./useIntermedio";
-import useEntrada from "./useEntrada";
+import usePcGamers from "./usePcGamers";
 
 const PrincipalComponent = () => {
   const pathName = usePathname();
   const { dataProducts } = useTheContext();
-  const {
-    pagePro,
-    handlePageChangePro,
-    totalPagesPro,
-    currentPageProductsPro,
-  } = usePro();
 
-  const {
-    pageInter,
-    handlePageChangeInter,
-    totalPagesInter,
-    currentPageProductsInter,
-  } = useIntermedio();
 
-  const {
-    pageEntrada,
-    handlePageChangeEntrada,
-    totalPagesEntrada,
-    currentPageProductsEntrada,
-  } = useEntrada();
+  const tipos = [
+    { tipo: "workStation", label: "PC Estación de trabajo" },
+    { tipo: "pro", label: "Pc Gamer Pro" },
+    { tipo: "intermedia", label: "Pc Gamer Intermedio" },
+    { tipo: "entrada", label: "Pc Gamer de entrada" },
+  ];
+
+  const productosPorTipo = tipos.map(({ tipo, label }) => {
+    const { currentPageProducts, page, totalPages, handlePageChange } =
+      usePcGamers({ tipo });
+    return { tipo, label, currentPageProducts, page, totalPages, handlePageChange };
+  });
+
+
 
   return (
     <section className="mb-4">
@@ -65,111 +55,45 @@ const PrincipalComponent = () => {
             />
           ) : null} */}
           <div className="container-carousel">
-            {/* <img src="/nintendo.jpg" alt="" /> */}
+
 
             {dataProducts && dataProducts.length > 0 ? (
               <Carousel />
             ) : (
               <div className="w-full flex justify-end p-2">
-                {/* <Skeleton /> */}
+
                 <Alert severity="info">Sin contenido disponible</Alert>
               </div>
             )}
           </div>
+          {productosPorTipo.map(
+            ({ tipo, label, currentPageProducts, page, totalPages, handlePageChange }) =>
+              currentPageProducts.length > 0 && (
+                <div key={tipo}>
+                  <div className="head-container">
+                    <span>{label}</span>
+                  </div>
 
-          {currentPageProductsPro && currentPageProductsPro.length > 0 ? (
-            <>
-              <div className="head-container">
-                <span>Pc Gamer Pro</span>
-              </div>
+                  <div className="container-destacado">
+                    {currentPageProducts.map((product) => (
+                      <Card
+                        key={product.idProduct}
+                        product={product}
+                        dataProducts={dataProducts}
+                      />
+                    ))}
+                  </div>
 
-              <div className="container-destacado">
-                {currentPageProductsPro.map((product, indexproduct) => (
-                  <Card
-                    key={product.idProduct + indexproduct}
-                    product={product}
-                    dataProducts={dataProducts}
-                  />
-                ))}
-              </div>
-              {/* <Alert severity="info" className="my-2">
-                Las imágenes publicadas son meramente ilustrativas y no siempre
-                representan el producto final.
-              </Alert> */}
-
-              {currentPageProductsPro && currentPageProductsPro.length > 0 && (
-                <PaginationComponent
-                  page={pagePro}
-                  count={totalPagesPro}
-                  onChange={handlePageChangePro}
-                />
-              )}
-            </>
-          ) : (
-            <Skeleton />
-          )}
-
-          {currentPageProductsInter && currentPageProductsInter.length > 0 ? (
-            <>
-              <div className="head-container">
-                <span>Pc Gamer Intermedio</span>
-              </div>
-
-              <div className="container-destacado">
-                {currentPageProductsInter.map((product, indexproduct) => (
-                  <Card
-                    key={product.idProduct + indexproduct}
-                    product={product}
-                    dataProducts={dataProducts}
-                  />
-                ))}
-              </div>
-              {/* <Alert severity="info" className="my-2">
-                Las imágenes publicadas son meramente ilustrativas y no siempre
-                representan el producto final.
-              </Alert> */}
-
-              {currentPageProductsInter &&
-                currentPageProductsInter.length > 0 && (
                   <PaginationComponent
-                    page={pageInter}
-                    count={totalPagesInter}
-                    onChange={handlePageChangeInter}
+                    page={page}
+                    count={totalPages}
+                    onChange={handlePageChange}
                   />
-                )}
-            </>
-          ) : (
-            <Skeleton />
+                </div>
+              )
           )}
 
-          {currentPageProductsEntrada &&
-          currentPageProductsEntrada.length > 0 ? (
-            <>
-              <div className="head-container">
-                <span>Pc Gamer de entrada</span>
-              </div>
 
-              <div className="container-destacado">
-                {currentPageProductsEntrada.map((product) => (
-                  <Card
-                    key={product.idProduct}
-                    product={product}
-                    dataProducts={dataProducts}
-                  />
-                ))}
-              </div>
-              {currentPageProductsEntrada &&
-                currentPageProductsEntrada.length > 0 && (
-                  <PaginationComponent
-                    page={pageEntrada}
-                    count={totalPagesEntrada}
-                    onChange={handlePageChangeEntrada}
-                  />
-                )}
-            </>
-          ) : (
-            <Skeleton />
-          )}
         </div>
       </div>
     </section>
