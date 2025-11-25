@@ -152,7 +152,7 @@ export const ModalCart = ({
                         Disponibles: {product.stock} piezas.
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        SKU: {"CO547-S"}
+                        SKU: {product.sku}
                       </p>
                     </div>
 

@@ -59,7 +59,14 @@ const EstatusPayContent = () => {
 
   if (loading) return null; // El fallback de Suspense mostrará el loader
 
-  if (error || !dataPayOpenPay) return <NotFound />;
+  if (error || !dataPayOpenPay)
+    return (
+      <NotFound
+        title="Transacción No Encontrada"
+        description="No pudimos localizar la transacción que buscas. Verifica el ID e
+              intenta nuevamente."
+      />
+    );
 
   switch (dataPayOpenPay.status) {
     case "failed":
@@ -70,7 +77,13 @@ const EstatusPayContent = () => {
     case "in_progress":
       return <PayPending dataPayOpenPay={dataPayOpenPay} />;
     default:
-      return <NotFound />;
+      return (
+        <NotFound
+          title="Transacción No Encontrada"
+          description="No pudimos localizar la transacción que buscas. Verifica el ID e
+              intenta nuevamente."
+        />
+      );
   }
 };
 

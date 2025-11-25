@@ -92,7 +92,7 @@ const Navbar = () => {
       const token = (session as any)?.token;
       const idUser = (session as any)?.idUser;
       const isValidToken = (session as any)?.isValidToken;
-      if (token && token !== "undefined" && token !== "null") {
+      if (token && token !== "undefined" && token !== "null" && token != null) {
         localStorage.setItem("token", token);
         localStorage.setItem("email", session.user?.email!);
         localStorage.setItem("name", session.user?.name!);
@@ -100,15 +100,21 @@ const Navbar = () => {
         localStorage.setItem("lastname", "");
         socketPagos.current?.emit("idUser", idUser);
 
-        if (isValidToken.idUser) {
-          setHasToken(true);
-        } else {
-          setHasToken(false);
+        if (isValidToken?.idUser) {
+          const now = Math.floor(Date.now() / 1000);
+
+          // validar
+          if (isValidToken?.exp < now) {
+            setHasToken(false);
+          } else {
+            setHasToken(true);
+          }
         }
       }
     } else if (authGoogle == "false") {
       if (localStorage.getItem("token")) {
         const validToken = isTokenExpired(localStorage.getItem("token")!);
+
         socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
 
         setHasToken(validToken == true ? false : true);

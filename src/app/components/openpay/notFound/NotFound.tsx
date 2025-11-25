@@ -1,6 +1,12 @@
 "use client";
 
-const NotFound = () => {
+const NotFound = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => {
   return (
     <div className="min-h-screen top-0 left-0 right-0 bottom-0 flex items-center justify-center p-5 bg-gradient-to-br from-purple-600 to-purple-800 fixed overflow-hidden">
       {/* Formas flotantes de fondo */}
@@ -37,11 +43,10 @@ const NotFound = () => {
 
             {/* Título y descripción */}
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Transacción No Encontrada
+              {title}
             </h1>
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              No pudimos localizar la transacción que buscas. Verifica el ID e
-              intenta nuevamente.
+              {description}
             </p>
           </div>
 

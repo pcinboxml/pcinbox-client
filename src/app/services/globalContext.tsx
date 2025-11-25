@@ -92,50 +92,50 @@ interface ContextProps {
 const CreateContext = createContext<ContextProps>({
   dataModal: {
     isOpen: false,
-    onClose: () => {},
+    onClose: () => { },
     type: "success",
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
     children: "",
     showActions: true,
   },
-  setDataModal: () => {},
+  setDataModal: () => { },
   dataCart: [],
-  setDataCart: () => {},
+  setDataCart: () => { },
   priceCart: 0,
-  setPriceCart: () => {},
+  setPriceCart: () => { },
   hasToken: null,
-  setHasToken: () => {},
+  setHasToken: () => { },
   dataNotification: {
     open: false,
-    handleClose: () => {},
+    handleClose: () => { },
     message: "",
     type: "success",
   },
-  setDataNotification: () => {},
+  setDataNotification: () => { },
   rutaImgPerfil: "",
-  setRutaImgPerfil: () => {},
+  setRutaImgPerfil: () => { },
   dataFavorites: [],
-  setDataFavorites: () => {},
+  setDataFavorites: () => { },
   selectedCard: "",
-  setSelectedCard: () => {},
-  handleSelectedCard: () => {},
+  setSelectedCard: () => { },
+  handleSelectedCard: () => { },
   dataCard: [],
-  setDataCard: () => {},
+  setDataCard: () => { },
   dataProducts: [],
-  setDataProducts: () => {},
+  setDataProducts: () => { },
   socketPagos: { current: null },
   socketServer: { current: null },
   showProductsMenu: false,
-  setShowProductsMenu: () => {},
+  setShowProductsMenu: () => { },
   dataUserAddress: [],
-  setDataUserAddress: () => {},
+  setDataUserAddress: () => { },
   isEditAddress: {
     edit: false,
     idAddress: 0,
   },
-  setIsEditAddress: () => {},
+  setIsEditAddress: () => { },
   dataAddress: {
     street: "",
     noExt: "",
@@ -148,20 +148,20 @@ const CreateContext = createContext<ContextProps>({
     phone2: "",
     country: "México",
   },
-  setDataAddress: () => {},
+  setDataAddress: () => { },
   postalCodes: [],
-  setPostalCodes: () => {},
+  setPostalCodes: () => { },
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
   //Data para los modales
   const [dataModal, setDataModal] = useState<ModalData>({
     isOpen: false,
-    onClose: () => {},
+    onClose: () => { },
     type: "success",
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
     children: "",
     showActions: true,
   });
@@ -173,7 +173,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   const [priceCart, setPriceCart] = useState<number>(0);
   const [dataNotification, setDataNotification] = useState<NotificationData>({
     open: false,
-    handleClose: () => {},
+    handleClose: () => { },
     message: "",
     type: "success",
   });
@@ -211,19 +211,27 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
 
-  const getListProducts = async () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
-      async (res) => {
-        const data = await res.json();
-
-        setDataProducts(data.data);
-      }
-    );
-  };
 
   useEffect(() => {
+    let mounted = true;
+
+    const getListProducts = async () => {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
+        async (res) => {
+          const data = await res.json();
+
+          setDataProducts(data.data);
+          if (mounted) setDataProducts(data.data);
+        }
+      );
+    };
+
     getListProducts();
     handleGetDataFavorites();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
