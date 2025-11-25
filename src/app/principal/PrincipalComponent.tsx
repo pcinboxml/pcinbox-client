@@ -13,9 +13,9 @@ const PrincipalComponent = () => {
   const pathName = usePathname();
   const { dataProducts } = useTheContext();
 
-
   const tipos = [
     { tipo: "workStation", label: "PC Estación de trabajo" },
+    // { tipo: "", label: "" },
     { tipo: "pro", label: "Pc Gamer Pro" },
     { tipo: "intermedia", label: "Pc Gamer Intermedio" },
     { tipo: "entrada", label: "Pc Gamer de entrada" },
@@ -24,10 +24,15 @@ const PrincipalComponent = () => {
   const productosPorTipo = tipos.map(({ tipo, label }) => {
     const { currentPageProducts, page, totalPages, handlePageChange } =
       usePcGamers({ tipo });
-    return { tipo, label, currentPageProducts, page, totalPages, handlePageChange };
+    return {
+      tipo,
+      label,
+      currentPageProducts,
+      page,
+      totalPages,
+      handlePageChange,
+    };
   });
-
-
 
   return (
     <section className="mb-4">
@@ -55,19 +60,23 @@ const PrincipalComponent = () => {
             />
           ) : null} */}
           <div className="container-carousel">
-
-
             {dataProducts && dataProducts.length > 0 ? (
               <Carousel />
             ) : (
               <div className="w-full flex justify-end p-2">
-
                 <Alert severity="info">Sin contenido disponible</Alert>
               </div>
             )}
           </div>
           {productosPorTipo.map(
-            ({ tipo, label, currentPageProducts, page, totalPages, handlePageChange }) =>
+            ({
+              tipo,
+              label,
+              currentPageProducts,
+              page,
+              totalPages,
+              handlePageChange,
+            }) =>
               currentPageProducts.length > 0 && (
                 <div key={tipo}>
                   <div className="head-container">
@@ -92,8 +101,6 @@ const PrincipalComponent = () => {
                 </div>
               )
           )}
-
-
         </div>
       </div>
     </section>

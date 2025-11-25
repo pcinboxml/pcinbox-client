@@ -40,6 +40,17 @@ const Footer = () => {
               <img src="/mastercard.png" />
               <img src="/visa.png" />
             </div>
+            <div className="flex">
+              <img src="/openpay.png" />
+              <img
+                width="250"
+                height="250"
+                src="/compra_segura_blanco.jpg"
+                style={{
+                  filter: "grayscale(0%)",
+                }}
+              />
+            </div>
           </div>
 
           <br />
@@ -56,7 +67,7 @@ const Footer = () => {
           <div className="iconos-envios">
             <img src="/estafeta.png" />
             <img src="/paqueteexpress.png" />
-            <img src="/dhl.png" />
+            {/* <img src="/dhl.png" /> */}
           </div>
         </div>
 
@@ -118,14 +129,18 @@ const Footer = () => {
         <div className="container-footer">
           <span className="block text-center">Ubicación</span>
 
-          <p
+          <a
+            id="address"
+            href="https://maps.app.goo.gl/4egcn2hWZf4Whkyu9"
+            target="_blank"
             style={{
               lineHeight: "15px",
+              color: "#808080",
             }}
           >
             Blvd. Juan Alonso de Torres Pte. No. 1917 Local 1 Colonia Unión
             Comunitaria de León C.P 37239 Ciudad de León, Guanajuato, México
-          </p>
+          </a>
           <br />
           <span className="text-center block">Contacto</span>
 

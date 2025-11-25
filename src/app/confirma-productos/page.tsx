@@ -61,7 +61,13 @@ const ConfirmaProducts = () => {
 
             {dataCart && dataCart.length > 0 ? (
               <div className="w-full flex justify-end items-center gap-3 py-2">
-                <div className="grid grid-cols-[2fr_1fr]">
+                <div className="grid grid-cols-[1fr_2fr_1fr]">
+                  <img
+                    src="compra_segura_gris.png"
+                    width="150"
+                    height="100"
+                    style={{ objectFit: "contain" }}
+                  />
                   <span
                     className="block text-end"
                     style={{
