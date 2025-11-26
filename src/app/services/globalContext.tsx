@@ -20,6 +20,7 @@ import { AddressI } from "../interfaces/address/address.interface";
 import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 import useFavorites from "./useFavorites";
+import useService from "./useService";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -92,50 +93,50 @@ interface ContextProps {
 const CreateContext = createContext<ContextProps>({
   dataModal: {
     isOpen: false,
-    onClose: () => { },
+    onClose: () => {},
     type: "success",
     title: "",
     message: "",
-    onConfirm: () => { },
+    onConfirm: () => {},
     children: "",
     showActions: true,
   },
-  setDataModal: () => { },
+  setDataModal: () => {},
   dataCart: [],
-  setDataCart: () => { },
+  setDataCart: () => {},
   priceCart: 0,
-  setPriceCart: () => { },
+  setPriceCart: () => {},
   hasToken: null,
-  setHasToken: () => { },
+  setHasToken: () => {},
   dataNotification: {
     open: false,
-    handleClose: () => { },
+    handleClose: () => {},
     message: "",
     type: "success",
   },
-  setDataNotification: () => { },
+  setDataNotification: () => {},
   rutaImgPerfil: "",
-  setRutaImgPerfil: () => { },
+  setRutaImgPerfil: () => {},
   dataFavorites: [],
-  setDataFavorites: () => { },
+  setDataFavorites: () => {},
   selectedCard: "",
-  setSelectedCard: () => { },
-  handleSelectedCard: () => { },
+  setSelectedCard: () => {},
+  handleSelectedCard: () => {},
   dataCard: [],
-  setDataCard: () => { },
+  setDataCard: () => {},
   dataProducts: [],
-  setDataProducts: () => { },
+  setDataProducts: () => {},
   socketPagos: { current: null },
   socketServer: { current: null },
   showProductsMenu: false,
-  setShowProductsMenu: () => { },
+  setShowProductsMenu: () => {},
   dataUserAddress: [],
-  setDataUserAddress: () => { },
+  setDataUserAddress: () => {},
   isEditAddress: {
     edit: false,
     idAddress: 0,
   },
-  setIsEditAddress: () => { },
+  setIsEditAddress: () => {},
   dataAddress: {
     street: "",
     noExt: "",
@@ -148,32 +149,33 @@ const CreateContext = createContext<ContextProps>({
     phone2: "",
     country: "México",
   },
-  setDataAddress: () => { },
+  setDataAddress: () => {},
   postalCodes: [],
-  setPostalCodes: () => { },
+  setPostalCodes: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
   //Data para los modales
   const [dataModal, setDataModal] = useState<ModalData>({
     isOpen: false,
-    onClose: () => { },
+    onClose: () => {},
     type: "success",
     title: "",
     message: "",
-    onConfirm: () => { },
+    onConfirm: () => {},
     children: "",
     showActions: true,
   });
 
-  const { handleGetDataFavorites } = useFavorites();
+  const { requestGet } = useService();
+
   const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
   const [dataFavorites, setDataFavorites] = useState<FavoritesI[]>([]);
   const [priceCart, setPriceCart] = useState<number>(0);
   const [dataNotification, setDataNotification] = useState<NotificationData>({
     open: false,
-    handleClose: () => { },
+    handleClose: () => {},
     message: "",
     type: "success",
   });
@@ -211,7 +213,6 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
 
-
   useEffect(() => {
     let mounted = true;
 
@@ -226,6 +227,18 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       );
     };
 
+    const handleGetDataFavorites = async () => {
+      try {
+        const resp = await requestGet("/favorites/getFavoritesUser");
+
+        if (resp.status == 200) {
+          const data = await resp.data;
+          setDataFavorites(data.data.data);
+        }
+      } catch (error) {
+        setDataFavorites([]);
+      }
+    };
     getListProducts();
     handleGetDataFavorites();
 

@@ -5,10 +5,24 @@ import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 
+const ITEMS_PER_PAGE = 20;
+
 const useResultSearchCategory = () => {
   const [loadingAddProductCar, setLoadingAddProductCar] = useState(false);
   const { requestPost } = useService();
   const { setDataCart } = useTheContext();
+
+  const [page, setPage] = useState<number>(1);
+
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
 
   const handleAddProductCart = async (productProp: ProductI) => {
     try {
@@ -68,6 +82,12 @@ const useResultSearchCategory = () => {
   return {
     handleAddProductCart,
     loadingAddProductCar,
+    page,
+    setPage,
+    startIndex,
+    endIndex,
+    handleChangePage,
+    itemsPerPage: ITEMS_PER_PAGE,
   };
 };
 

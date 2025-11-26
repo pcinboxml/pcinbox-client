@@ -15,6 +15,7 @@ const PrincipalComponent = () => {
 
   const tipos = [
     { tipo: "workStation", label: "PC Estación de trabajo" },
+    // { tipo: "", label: "" },
     { tipo: "pro", label: "Pc Gamer Pro" },
     { tipo: "intermedia", label: "Pc Gamer Intermedio" },
     { tipo: "entrada", label: "Pc Gamer de entrada" },

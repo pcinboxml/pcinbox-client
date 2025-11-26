@@ -13,6 +13,7 @@ export default interface ProductI {
   rating: number;
   sku: string;
   caracteristicas?: any;
+  upc?: any;
   reviews: {
     idReview: string;
     productId: string;

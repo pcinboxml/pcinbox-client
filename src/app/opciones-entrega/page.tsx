@@ -112,12 +112,21 @@ const OpcionesEntrega = () => {
                 </div>
 
                 {totalPrice > 1000 && dataUserAddress ? (
-                  <Alert severity="info">
-                    Estimado cliente, le pedimos atentamente considere que las
-                    paqueterías tienen exceso de entregas a nivel nacional, por
-                    lo que puede implicar tiempos de entrega más prolongados en
-                    algunos casos. Esto es totalmente ajeno a nuestra empresa.
-                  </Alert>
+                  <>
+                    <Alert severity="info">
+                      Estimado cliente, le pedimos atentamente considere que las
+                      paqueterías tienen exceso de entregas a nivel nacional,
+                      por lo que puede implicar tiempos de entrega más
+                      prolongados en algunos casos. Esto es totalmente ajeno a
+                      nuestra empresa.
+                    </Alert>
+                    <img
+                      src="/compra_segura_gris.png"
+                      width="150"
+                      height="150"
+                      style={{ objectFit: "contain", marginTop: "10px" }}
+                    />
+                  </>
                 ) : null}
 
                 {totalPrice < 1000 ? (
@@ -207,7 +216,7 @@ const OpcionesEntrega = () => {
                         </label>
                       </div>
 
-                      <div className="flex items-center relative">
+                      {/* <div className="flex items-center relative">
                         <input
                           type="radio"
                           value="dhl"
@@ -238,7 +247,7 @@ const OpcionesEntrega = () => {
                             </span>
                           </div>
                         </label>
-                      </div>
+                      </div> */}
 
                       <div className="flex items-center relative ">
                         <input

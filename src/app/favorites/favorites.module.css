@@ -1,0 +1,11 @@
+.containerImgProduct {
+  max-height: 200px;
+  max-width: 350px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}

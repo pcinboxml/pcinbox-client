@@ -5,6 +5,7 @@ import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import { Alert } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
+import styles from "./favorites.module.css";
 
 const Favorites = () => {
   const {
@@ -79,33 +80,35 @@ const Favorites = () => {
                 className="border grid grid-cols-[250px_1fr] my-3"
                 key={favorite.idFavorite}
               >
-                <div className="container-img-favorite overflow-hidden">
-                  <Carousel
-                    showIndicators={true}
-                    showThumbs={false}
-                    showStatus={false}
-                    showArrows={true}
-                    onClickItem={() => {
-                      onRouterLink(
-                        `/detailsProduct/${favorite.products?.idProduct}`
-                      );
-                    }}
-                  >
-                    {favorite.image_url && favorite.image_url.length > 0
-                      ? favorite.image_url.map((img: string, i: number) => (
-                          <div key={i} className="cursor-pointer">
-                            <img
-                              src={img}
-                              style={{
-                                objectFit: "contain",
-                                height: "200px",
-                              }}
-                              loading="lazy"
-                            />
-                          </div>
-                        ))
-                      : [<div key="no-img">Sin imágenes</div>]}
-                  </Carousel>
+                <div className="flex justify-center items-center overflow-hidden">
+                  <div className={`${styles.containerImgProduct}`}>
+                    <Carousel
+                      showIndicators={true}
+                      showThumbs={false}
+                      showStatus={false}
+                      showArrows={true}
+                      onClickItem={() => {
+                        onRouterLink(
+                          `/detailsProduct/${favorite.products?.idProduct}`
+                        );
+                      }}
+                    >
+                      {favorite.image_url && favorite.image_url.length > 0
+                        ? favorite.image_url.map((img: string, i: number) => (
+                            <div key={i} className="cursor-pointer">
+                              <img
+                                src={img}
+                                style={{
+                                  objectFit: "contain",
+                                  height: "200px",
+                                }}
+                                loading="lazy"
+                              />
+                            </div>
+                          ))
+                        : [<div key="no-img">Sin imágenes</div>]}
+                    </Carousel>
+                  </div>
                 </div>
 
                 <div className="content-favorite grid grid-cols-[5fr_auto]">
@@ -132,10 +135,17 @@ const Favorites = () => {
 
                     <p>
                       <span className="font-bold text-black">SKU: </span>
-                      <span className="text-[#cccccc]">
+                      <span className="text-[#606060]">
                         {favorite.products?.sku}
                       </span>
                     </p>
+
+                    {favorite?.products?.upc && (
+                      <p>
+                        <span className="font-bold text-black">UPC: </span>
+                        <span>{favorite.products?.upc}</span>
+                      </p>
+                    )}
 
                     <p>
                       <span className="font-bold text-black">
@@ -152,6 +162,43 @@ const Favorites = () => {
                           : ""}
                       </span>
                     </p>
+
+                    <div>
+                      <ul>
+                        {favorite.products?.caracteristicas
+                          ? (() => {
+                              try {
+                                const caracs = JSON.parse(
+                                  favorite.products?.caracteristicas
+                                );
+                                if (
+                                  Array.isArray(caracs) &&
+                                  caracs.length > 0
+                                ) {
+                                  return caracs.map(
+                                    (carac: any, index: number) => (
+                                      <li
+                                        key={index}
+                                        className="flex gap-2 items-end"
+                                      >
+                                        <span className="font-bold text-black text-[19px]">
+                                          {carac.prop}:
+                                        </span>
+                                        <span className="italic">
+                                          {carac.value}
+                                        </span>
+                                      </li>
+                                    )
+                                  );
+                                }
+                                return "Sin caracteristicas disponibles";
+                              } catch (e) {
+                                return "Sin caracteristicas disponibles";
+                              }
+                            })()
+                          : "Sin caracteristicas disponibles"}
+                      </ul>
+                    </div>
                   </div>
 
                   <div className="flex flex-row items-center justify-center">

@@ -18,6 +18,13 @@ footer {
   flex-direction: column;
   justify-content: space-between;
 }
+.container-footer #address {
+  text-decoration: none;
+}
+
+.container-footer #address:hover {
+  text-decoration: underline !important;
+}
 
 .container-footer span {
   color: #8a8a8a;

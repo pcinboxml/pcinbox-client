@@ -32,20 +32,20 @@ const Reviews = () => {
   return (
     <section>
       <span className="text-[#bb3d4b] text-[17px] font-bold block my-5 text-center">
-        Opiniones de clientes sobre{" "}
+        Opiniones de clientes sobre <br />
         <span
           style={{
             fontStyle: "italic",
           }}
         >
-          {dataProduct?.description}
+          {dataProduct?.description || dataProduct?.name}
         </span>
       </span>
 
       <div className="w-full flex justify-between">
         <div className="desc-product w-[400px] border p-3">
           <span className="text-black font-bold text-[15px]">
-            {dataProduct?.description}
+            {dataProduct?.description || dataProduct?.name}
           </span>
           <div className="container-product flex justify-between mt-4">
             <img
@@ -176,7 +176,9 @@ const Reviews = () => {
                     dataProduct?.imageUrl.length > 0
                       ? dataProduct?.imageUrl[0]
                       : dataProduct?.imageUrl
-                  }&description=${dataProduct?.description}`
+                  }&description=${
+                    dataProduct?.description || dataProduct?.name
+                  }`
                 )
               }
             >
