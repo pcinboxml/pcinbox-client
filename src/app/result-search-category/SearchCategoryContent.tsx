@@ -532,21 +532,26 @@ const SearchCategoryContent = () => {
                                               Array.isArray(caracs) &&
                                               caracs.length > 0
                                             ) {
-                                              return caracs.map(
-                                                (carac: any, index: number) => (
-                                                  <li
-                                                    key={index}
-                                                    className="flex gap-2 items-end"
-                                                  >
-                                                    <span className="font-bold text-black text-[19px]">
-                                                      {carac.prop}:
-                                                    </span>
-                                                    <span className="italic">
-                                                      {carac.value}
-                                                    </span>
-                                                  </li>
-                                                )
-                                              );
+                                              return caracs
+                                                .slice(0, 6)
+                                                .map(
+                                                  (
+                                                    carac: any,
+                                                    index: number
+                                                  ) => (
+                                                    <li
+                                                      key={index}
+                                                      className="flex gap-2 items-end"
+                                                    >
+                                                      <span className="font-bold text-black text-[19px]">
+                                                        {carac.prop}:
+                                                      </span>
+                                                      <span className="italic">
+                                                        {carac.value}
+                                                      </span>
+                                                    </li>
+                                                  )
+                                                );
                                             }
                                             return "Sin caracteristicas disponibles";
                                           } catch (e) {
