@@ -485,7 +485,7 @@ const SearchCategoryContent = () => {
                                             </div>
                                           }
                                         >
-                                          <div className="flex justify-center items-center">
+                                          <div className="flex">
                                             <button
                                               className="flex justify-center items-center border"
                                               style={{
