@@ -371,6 +371,7 @@ const HistoryShop = () => {
                                 : d.image_url
                             }
                             className={style.itemImage}
+                            loading="lazy"
                           />
                           <div className={style.itemDetails}>
                             <div className={style.itemName}>{d.name}</div>

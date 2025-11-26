@@ -77,6 +77,7 @@ const Card = ({
                 <div key={i}>
                   <img
                     src={img}
+                    loading="lazy"
                     style={{
                       objectFit: "contain",
                       height: "150px",

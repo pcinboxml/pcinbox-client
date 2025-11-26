@@ -157,28 +157,6 @@ const TerminosCondiciones = () => {
             cotización formal, asistidos vía electrónica (medio de venta
             autorizado en el apartado 3).
           </p>
-
-          {/* <p className="disclaimer">
-            Para la gestión y procesamiento de los pagos, PCINBOX utiliza los
-            servicios de <strong>Openpay</strong>, una plataforma certificada
-            con estándares de seguridad bancaria. Al realizar una compra,
-            aceptas que la operación será procesada por Openpay, bajo sus{" "}
-            <a
-              href="https://www.openpay.mx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="terms-link"
-            >
-              Términos y Condiciones y Política de Privacidad
-            </a>
-            .{" "}
-            <strong>
-              PCINBOX no almacena,registra ni tiene acceso a datos financieros
-              del usuario
-            </strong>{" "}
-            (números de tarjeta, códigos de seguridad, etc.). Toda la
-            información sesible es gestiona exclusivamente por Openpay.
-          </p> */}
         </section>
 
         <footer className="terms-footer">

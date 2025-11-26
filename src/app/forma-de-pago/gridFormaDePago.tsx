@@ -88,6 +88,7 @@ const GridFormaDePago = () => {
             width: "100px",
             height: "100px",
           }}
+          loading="lazy"
         />
       ),
     },

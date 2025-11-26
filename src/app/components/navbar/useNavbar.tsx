@@ -90,7 +90,7 @@ const useNavbar = () => {
     navRef,
     onMouseEnterProducts,
     onMouseLeaveProducts,
-
+    showProductsMenu,
     setNavRefResponsive,
     handleGetDataCart,
     handleClickTopScroll,

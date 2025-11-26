@@ -128,6 +128,7 @@ const MiCuenta = () => {
                   width="150"
                   height="150"
                   style={{ objectFit: "contain" }}
+                  loading="lazy"
                 />
               </div>
             </div>

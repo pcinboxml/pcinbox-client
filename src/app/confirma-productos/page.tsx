@@ -49,6 +49,7 @@ const ConfirmaProducts = () => {
                 width={70}
                 height={70}
                 style={{ objectFit: "contain", marginLeft: "10px" }}
+                loading="lazy"
               />
             </div>
             {dataCart && dataCart.length > 0 ? (

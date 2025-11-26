@@ -71,6 +71,7 @@ const OpcionesEntrega = () => {
               width={70}
               height={70}
               style={{ objectFit: "contain", marginLeft: "10px" }}
+              loading="lazy"
             />
           </div>
           <div className="content-tabla-opciones-entrega">
@@ -202,6 +203,7 @@ const OpcionesEntrega = () => {
                                 objectFit: "contain",
                                 filter: "grayscale(100%)",
                               }}
+                              loading="lazy"
                             />
                             <span
                               className="text-[#666666] text-sm mx-2"
@@ -235,6 +237,7 @@ const OpcionesEntrega = () => {
                                 objectFit: "contain",
                                 filter: "grayscale(100%)",
                               }}
+                              loading="lazy"
                             />
                             <span
                               className="text-[#666666] text-sm mx-2"
@@ -267,6 +270,7 @@ const OpcionesEntrega = () => {
                                 objectFit: "contain",
                                 filter: "grayscale(100%)",
                               }}
+                              loading="lazy"
                             />
 
                             <span

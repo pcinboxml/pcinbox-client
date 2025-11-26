@@ -27,7 +27,7 @@ const Navbar = () => {
   const {
     navRefResponsive,
     navRef,
-
+    showProductsMenu,
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
     handleToggleNav,
@@ -92,7 +92,7 @@ const Navbar = () => {
       const token = (session as any)?.token;
       const idUser = (session as any)?.idUser;
       const isValidToken = (session as any)?.isValidToken;
-      if (token && token !== "undefined" && token !== "null") {
+      if (token && token !== "undefined" && token !== "null" && token != null) {
         localStorage.setItem("token", token);
         localStorage.setItem("email", session.user?.email!);
         localStorage.setItem("name", session.user?.name!);
@@ -100,15 +100,21 @@ const Navbar = () => {
         localStorage.setItem("lastname", "");
         socketPagos.current?.emit("idUser", idUser);
 
-        if (isValidToken.idUser) {
-          setHasToken(true);
-        } else {
-          setHasToken(false);
+        if (isValidToken?.idUser) {
+          const now = Math.floor(Date.now() / 1000);
+
+          // validar
+          if (isValidToken?.exp < now) {
+            setHasToken(false);
+          } else {
+            setHasToken(true);
+          }
         }
       }
     } else if (authGoogle == "false") {
       if (localStorage.getItem("token")) {
         const validToken = isTokenExpired(localStorage.getItem("token")!);
+
         socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
 
         setHasToken(validToken == true ? false : true);
@@ -135,7 +141,7 @@ const Navbar = () => {
       </div>
       <div className="container-header container flex w-full justify-center p-2 items-center">
         <div className="logo" onClick={() => onRouterLink("/principal")}>
-          <img src="/logo.png" />
+          <img src="/logo.png" loading="lazy" />
         </div>
         <div className="search">
           {isFocusedSearch && (
@@ -176,8 +182,84 @@ const Navbar = () => {
       <div className="flex container">
         <div
           className="container-products"
+          // onMouseLeave={
+          //   pathname == "/principal" || pathname == "/"
+          //     ? () => {}
+          //     : onMouseLeaveProducts
+          // }
+          // onMouseEnter={
+          //   pathname == "/principal" || pathname == "/"
+          //     ? () => {}
+          //     : onMouseEnterProducts
+          // }
+        >
+          <button
+            className="btn-products"
+            onMouseEnter={onMouseEnterProducts}
+            onMouseLeave={onMouseLeaveProducts}
+          >
+            Productos
+            {showProductsMenu && <SubMenuProductos />}
+          </button>
+
+          {/* <div
+            // ref={showProductsMenu}
+            className="container-list-products absolute bg-white shadow"
+            style={{
+              display:
+                pathname == "/principal" || pathname == "/" ? "block" : "none",
+            }}
+          >
+            <SubMenuProductos />
+            {/* <ul>
+              <li>
+                <a href="#">Procesadores</a>
+              </li>
+              <li>
+                <a href="#">Tarjetas de video</a>
+              </li>
+              <li>
+                <a href="#">Placas madre</a>
+              </li>
+              <li>
+                <a href="#">Memoria Ram</a>
+              </li>
+              <li>
+                <a href="#">Almacenamiento</a>
+              </li>
+              <li>
+                <a href="#">Gabinetes para PC</a>
+              </li>
+              <li>
+                <a href="#">Fuentes de Poder</a>
+              </li>
+              <li>
+                <a href="#">Enfriamientos</a>
+              </li>
+              <li>
+                <a href="#">Monitores</a>
+              </li>
+              <li>
+                <a href="#">Teclados</a>
+              </li>
+              <li>
+                <a href="#">Mouse</a>
+              </li>
+              <li>
+                <a href="#">Energia</a>
+              </li>
+              <li>
+                <a href="#">Redes</a>
+              </li>
+            </ul> 
+          </div> */}
+        </div>
+        {/* <div
+          className="container-products"
           style={{ position: "relative", zIndex: 100 }} // Asegúrate del zIndex
-        ></div>
+        >
+          <SubMenuProductos />
+        </div> */}
 
         <div className="container-submenu">
           <div className="submenu">
@@ -345,6 +427,7 @@ const Navbar = () => {
                               objectFit: "contain",
                               margin: "auto",
                             }}
+                            loading="lazy"
                           />
 
                           <span
@@ -481,6 +564,7 @@ const Navbar = () => {
                                   width={50}
                                   height={50}
                                   style={{ objectFit: "contain" }}
+                                  loading="lazy"
                                 />
                               );
                             })}

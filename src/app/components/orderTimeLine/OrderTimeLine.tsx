@@ -52,6 +52,7 @@ export const OrderTimeline = ({ steps, product }: OrderTimelineProps) => {
               src={p.image_url[0]}
               alt={p.name}
               className="w-[150px] h-20 rounded object-cover"
+              loading="lazy"
             />
             <div className="flex flex-col justify-between">
               <h3 className="text-lg font-semibold" title={p.name}>

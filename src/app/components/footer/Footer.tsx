@@ -33,12 +33,12 @@ const Footer = () => {
           </span>
           <div className="iconos-formas-de-pago">
             <div>
-              <img src="/spei.png" />
-              <img src="/bbva.png" />
+              <img src="/spei.png" loading="lazy" />
+              <img src="/bbva.png" loading="lazy" />
             </div>
             <div>
-              <img src="/mastercard.png" />
-              <img src="/visa.png" />
+              <img src="/mastercard.png" loading="lazy" />
+              <img src="/visa.png" loading="lazy" />
             </div>
             <div className="flex">
               <img src="/openpay.png" />
@@ -75,7 +75,7 @@ const Footer = () => {
           <span className="block text-center">Siguenos</span>
 
           <div className="iconos-redes">
-            <img src="/google.jpg" alt="" />
+            <img src="/google.jpg" alt="" loading="lazy" />
             <span
               style={{
                 color: "#646464",
@@ -112,16 +112,16 @@ const Footer = () => {
               className="cursor-pointer"
               href="https://www.facebook.com/pcinboxbajio?locale=es_LA"
             >
-              <img src="/facebook.png" />
+              <img src="/facebook.png" loading="lazy" />
             </a>
             <a href="https://www.youtube.com/@pcinboxmx" target="_blank">
-              <img src="/youtube.png" />
+              <img src="/youtube.png" loading="lazy" />
             </a>
             <a href="https://www.instagram.com/pcinbox_bajio/" target="_blank">
-              <img src="/instagram.png" />
+              <img src="/instagram.png" loading="lazy" />
             </a>
-            <a href="https://www.tiktok.com/@pcinboxbajio" target="_blank">
-              <img src="/tiktok.png" />
+            <a href="https://www.tiktok.com/@pcinbox" target="_blank">
+              <img src="/tiktok.png" loading="lazy" />
             </a>
           </div>
         </div>

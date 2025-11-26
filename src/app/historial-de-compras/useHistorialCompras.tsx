@@ -144,7 +144,7 @@ const useHistorialDeCompras = () => {
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
       onConfirm: async () => {
-        setDataModal((prev) => ({ ...prev, isOpen: false }));
+        // setDataModal((prev) => ({ ...prev, isOpen: false }));
         await handleCancelPedido(historyCompra);
       },
     });
@@ -163,7 +163,7 @@ const useHistorialDeCompras = () => {
       );
       setLoadingCancelledCompra(false);
       if (resp.status == 200) {
-        const data = await resp.data;
+        const data = resp.data;
 
         setDataHistoryCompras(groupById(data.data.data));
 

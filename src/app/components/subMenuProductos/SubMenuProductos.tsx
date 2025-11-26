@@ -1,11 +1,13 @@
 "use client";
 import { useTheContext } from "@/app/services/globalContext";
 import useProveedores from "@/app/services/proveedores/useProveedores";
+import useService from "@/app/services/useService";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const SubMenuProductos = ({ styles }: { styles?: any }) => {
   const { showProductsMenu, dataProducts } = useTheContext();
+  const { onRouterLink } = useService();
   const pathname = usePathname();
   const [hasMounted, setHasMounted] = useState(false);
   const [dataCategories, setDataCategories] = useState<
@@ -16,7 +18,7 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
     }[]
   >([]);
 
-  const [subMenus, setSubMenus] = useState<{ content: any }[]>([]);
+  // const [subMenus, setSubMenus] = useState<{ content: any }[]>([]);
 
   const { requestGetProveedor } = useProveedores();
 
@@ -69,45 +71,45 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
                     return (
                       <li key={categoria.idCategorie}>
                         <a
-                          href="#"
+                          href={`/result-search-category?categoryId=${categoria.idCategorie}`}
                           style={{
                             wordBreak: "break-word",
                             overflowWrap: "break-word",
                             display: "inline-block",
                             maxWidth: "150px",
                           }}
-                          onMouseEnter={() => {
-                            if (categoria) {
-                              let findProductByCategori = dataProducts
-                                .filter(
-                                  (product) =>
-                                    Number(product.categoryId) ==
-                                    Number(categoria.idCategorie)
-                                )
-                                .map((mProduct, indexProduct) => {
-                                  return (
-                                    <li
-                                      key={indexProduct}
-                                      className="mt-1 block"
-                                    >
-                                      <a href="#">{mProduct.name}</a>
-                                    </li>
-                                  );
-                                });
-                              setSubMenus((prevSubMenu) => [
-                                {
-                                  content: (
-                                    <div
-                                      key={1}
-                                      className="h-[100%] max-h-[550px] w-[150px]  overflow-y-auto overflow-x-hidden"
-                                    >
-                                      <ul>{findProductByCategori}</ul>
-                                    </div>
-                                  ),
-                                },
-                              ]);
-                            }
-                          }}
+                          // onMouseEnter={() => {
+                          //   if (categoria) {
+                          //     let findProductByCategori = dataProducts
+                          //       .filter(
+                          //         (product) =>
+                          //           Number(product.categoryId) ==
+                          //           Number(categoria.idCategorie)
+                          //       )
+                          //       .map((mProduct, indexProduct) => {
+                          //         return (
+                          //           <li
+                          //             key={indexProduct}
+                          //             className="mt-1 block"
+                          //           >
+                          //             <a href="#">{mProduct.name}</a>
+                          //           </li>
+                          //         );
+                          //       });
+                          //     setSubMenus((prevSubMenu) => [
+                          //       {
+                          //         content: (
+                          //           <div
+                          //             key={1}
+                          //             className="h-[100%] max-h-[550px] w-[150px]  overflow-y-auto overflow-x-hidden"
+                          //           >
+                          //             <ul>{findProductByCategori}</ul>
+                          //           </div>
+                          //         ),
+                          //       },
+                          //     ]);
+                          //   }
+                          // }}
                         >
                           {categoria.name}
                         </a>
@@ -118,7 +120,7 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
               : null}
           </ul>
         </div>
-        {subMenus && subMenus.map((mSubMenu) => mSubMenu.content)}
+        {/* {subMenus && subMenus.map((mSubMenu) => mSubMenu.content)} */}
       </div>
     </div>
   );

@@ -172,6 +172,7 @@ const DetailsProduct = () => {
                     <img
                       src={img}
                       style={{ objectFit: "contain", cursor: "pointer" }}
+                      loading="lazy"
                     />
                   </div>
                 ))
@@ -309,6 +310,7 @@ const DetailsProduct = () => {
                 <img
                   src={changeImg}
                   style={{ height: "90%", objectFit: "contain" }}
+                  loading="lazy"
                 />
               </div>
               <div className="flex flex-wrap justify-start items-start p-2 gap-2">
@@ -321,6 +323,7 @@ const DetailsProduct = () => {
                             key={index}
                             style={{ cursor: "pointer", height: "150px" }}
                             onClick={() => setChangeImg(img)}
+                            loading="lazy"
                           />
                         </div>
                       );

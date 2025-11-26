@@ -114,6 +114,7 @@ const PayEnd = () => {
                 width={70}
                 height={70}
                 style={{ objectFit: "contain", marginLeft: "10px" }}
+                loading="lazy"
               />
 
               <span className="font-bold text-white mx-2">|</span>
