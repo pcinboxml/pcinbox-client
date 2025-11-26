@@ -519,7 +519,7 @@ const SearchCategoryContent = () => {
                                 })()}
                               </div>
 
-                              <div className="grid grid-cols-[1fr_1fr_auto] my-4">
+                              <div className="grid grid-cols-[1fr_1fr_auto] my-1">
                                 <div>
                                   <ul>
                                     {item?.caracteristicas
@@ -543,10 +543,10 @@ const SearchCategoryContent = () => {
                                                       key={index}
                                                       className="flex gap-2 items-end"
                                                     >
-                                                      <span className="font-bold text-black text-[19px]">
+                                                      <span className="font-bold text-black text-[13px]">
                                                         {carac.prop}:
                                                       </span>
-                                                      <span className="italic">
+                                                      <span className="italic text-[13px]">
                                                         {carac.value}
                                                       </span>
                                                     </li>
