@@ -223,7 +223,10 @@ const Favorites = () => {
                       <button
                         className="bg-[#bb3d4b] px-2 py-2 text-[white] rounded flex flex-row items-center gap-2"
                         style={{ fontWeight: "bold" }}
-                        disabled={loadingAddCartFavorite}
+                        disabled={
+                          loadingAddCartFavorite ||
+                          favorite.products?.stock == 0
+                        }
                         onClick={() => handleAddFavoriteCart(favorite)}
                       >
                         {loadingAddCartFavorite ? (
@@ -233,8 +236,14 @@ const Favorites = () => {
                           />
                         ) : (
                           <>
-                            Agregar al carrito
-                            <MdShoppingCart size={20} color="white" />
+                            {favorite?.products?.stock == 0 ? (
+                              "No disponible"
+                            ) : (
+                              <>
+                                Agregar al carrito
+                                <MdShoppingCart size={20} color="white" />
+                              </>
+                            )}
                           </>
                         )}
                       </button>

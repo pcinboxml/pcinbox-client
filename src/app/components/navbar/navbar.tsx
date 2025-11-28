@@ -69,6 +69,7 @@ const Navbar = () => {
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
+          .filter((itemF) => itemF.stock != 0)
           .map((item) => Number(item.price) * item.quantity)
           .reduce((sum, current) => sum + current, 0)
       : 0;
@@ -164,12 +165,15 @@ const Navbar = () => {
               onMouseLeaveCart={onMouseLeaveCart}
             />
 
-            {dataCart && dataCart.length > 0 ? (
+            {dataCart &&
+            dataCart.filter((itemF) => itemF.stock != 0).length > 0 ? (
               <span
                 className="absolute badge badge-car"
                 style={{ background: "#bb3d4b" }}
               >
-                {dataCart.reduce((acc, item) => acc + Number(item.quantity), 0)}
+                {dataCart
+                  .filter((itemF) => itemF.stock != 0)
+                  .reduce((acc, item) => acc + Number(item.quantity), 0)}
               </span>
             ) : null}
           </div>

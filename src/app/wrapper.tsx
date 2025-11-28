@@ -27,6 +27,7 @@ export default function AppWrapper({
     hasToken,
     setDataCart,
     setDataProducts,
+    setDataFavorites,
     socketServer,
   } = useTheContext();
 
@@ -48,8 +49,7 @@ export default function AppWrapper({
   }, [hasToken]);
 
   useEffect(() => {
-    if (!socketServer?.current) return;
-
+    if (!socketServer.current) return;
     const socket = socketServer.current;
 
     const handlerNewProduct = (data: ProductI) => {
@@ -77,20 +77,86 @@ export default function AppWrapper({
 
     const handlerUpdateProduct = (data: ProductI) => {
       setDataProducts((prev) =>
-        prev.map((item) =>
-          item.idProduct == data.idProduct
-            ? { ...item, stock: data.stock, price: data.price }
-            : item
-        )
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(data.idProduct);
+
+          return match
+            ? {
+                ...item,
+                stock: Number(data.stock),
+                price: Number(data.price).toString(),
+              }
+            : item;
+        })
       );
+
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          const match = Number(item.idProduct) === Number(data.idProduct);
+
+          return match
+            ? {
+                ...item,
+                products: {
+                  ...item.products,
+                  stock: Number(data.stock),
+                  price: Number(data.price).toString(),
+                },
+              }
+            : item;
+        });
+      });
     };
+
+    const handleUpdateCart = (dataSocketCart: any) => {
+      setDataCart((prevCart) => {
+        return prevCart.map((item) => {
+          const match =
+            Number(item.idProduct) === Number(dataSocketCart?.idProduct);
+
+          return match
+            ? {
+                ...item,
+                stock: Number(dataSocketCart?.stock),
+                price: Number(dataSocketCart?.price).toString(),
+              }
+            : item;
+        });
+      });
+    };
+
+    const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          // Aquí comparamos con la estructura correcta:
+          const match = Number(item.productId) == Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                products: {
+                  ...item.products,
+                  stock: Number(dataSocket.stock),
+                  price: Number(dataSocket.price).toString(),
+                },
+              }
+            : item;
+        });
+      });
+    };
+
+    socket.on("updateProductComponent", handlerUpdateProductComponent);
 
     socket.on("newProduct", handlerNewProduct);
     socket.on("updateProduct", handlerUpdateProduct);
 
+    socket.on("updateCart", handleUpdateCart);
+
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
+      socket.off("updateCart", handleUpdateCart);
+      socket.off("updateProductComponent", handlerUpdateProductComponent);
     };
   }, [socketServer.current]);
 
