@@ -79,16 +79,21 @@ const Reviews = () => {
 
           <div className="w-full mt-5 flex justify-center">
             <button
+              disabled={loadingAddProductCar || dataProduct?.stock == 0}
               onClick={() => handleAddProductCart(dataProduct!)}
               className="bg-[#bb3d4b] text-white font-bold rounded p-2"
             >
               {loadingAddProductCar ? (
                 <MdAutorenew size={20} className="m-auto the-spinner" />
+              ) : dataProduct?.stock == 0 ? (
+                "No disponible"
               ) : (
-                <div className="flex items-center gap-2">
-                  Agregar al carrito
-                  <MdShoppingCart size={20} color="white" />
-                </div>
+                <>
+                  <div className="flex items-center gap-2">
+                    Agregar al carrito
+                    <MdShoppingCart size={20} color="white" />
+                  </div>
+                </>
               )}
             </button>
           </div>

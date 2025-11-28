@@ -24,6 +24,7 @@ const ConfirmaProducts = () => {
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
+          .filter((itemF) => itemF.stock != 0)
           .map((item) => Number(item.price) * item.quantity)
           .reduce((sum, current) => sum + current, 0)
       : 0;

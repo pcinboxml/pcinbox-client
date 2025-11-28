@@ -209,6 +209,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
+
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
   const [isEditAddress, setIsEditAddress] = useState({
@@ -335,6 +336,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataProducts,
         socketPagos,
         socketServer,
+
         showProductsMenu,
         setShowProductsMenu,
         dataUserAddress,

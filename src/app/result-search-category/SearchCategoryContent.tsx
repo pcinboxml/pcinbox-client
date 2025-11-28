@@ -25,7 +25,7 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts } = useTheContext();
+  const { dataProducts, socketServer, setDataFavorites } = useTheContext();
 
   const {
     startIndex,
@@ -126,6 +126,45 @@ const SearchCategoryContent = () => {
       rating: 1,
     },
   ];
+
+  useEffect(() => {
+    if (!socketServer.current || data.length === 0) return;
+    const socket = socketServer.current;
+
+    const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+      setData((prev: any) =>
+        prev.map((item: any) =>
+          item.idProduct == dataSocket.idProduct
+            ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
+            : item
+        )
+      );
+
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          // Aquí comparamos con la estructura correcta:
+          const match = Number(item.productId) === Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                products: {
+                  ...item.products,
+                  stock: Number(dataSocket.stock),
+                  price: Number(dataSocket.price).toString(),
+                },
+              }
+            : item;
+        });
+      });
+    };
+
+    socket.on("updateProductComponent", handlerUpdateProductComponent);
+
+    return () => {
+      socket.off("updateProductComponent", handlerUpdateProductComponent);
+    };
+  }, [socketServer.current, data]);
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -561,7 +600,7 @@ const SearchCategoryContent = () => {
                                       : "Sin caracteristicas disponibles"}
                                   </ul>
                                 </div>
-                                <div>
+                                <div className="px-3">
                                   <span>
                                     {formatCurrency(Number(item.price))}
                                   </span>
@@ -572,24 +611,33 @@ const SearchCategoryContent = () => {
                                 </div>
                                 <div>
                                   <button
-                                    disabled={loadingAddProductCar}
+                                    disabled={
+                                      // loadingAddProductCar ||
+                                      item.stock == 0 || item.stock == "0"
+                                    }
                                     className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
                                     onClick={() => handleAddProductCart(item)}
                                   >
-                                    {loadingAddProductCar ? (
+                                    {/* {loadingAddProductCar ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
                                       />
-                                    ) : (
-                                      <>
-                                        Agregar al carrito
-                                        <MdShoppingCart
-                                          size={20}
-                                          color="white"
-                                        />
-                                      </>
-                                    )}
+                                    ) : ( */}
+                                    <>
+                                      {item.stock == "0" || item.stock == 0 ? (
+                                        "No disponible"
+                                      ) : (
+                                        <>
+                                          Agregar al carrito
+                                          <MdShoppingCart
+                                            size={20}
+                                            color="white"
+                                          />
+                                        </>
+                                      )}
+                                    </>
+                                    {/* )} */}
                                   </button>
                                 </div>
                               </div>
