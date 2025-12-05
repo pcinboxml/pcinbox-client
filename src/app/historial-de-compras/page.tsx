@@ -52,7 +52,7 @@ const HistoryShop = () => {
     return () => {
       socket.off("changeStatusShipment", handler);
     };
-  }, []);
+  }, [socketPagos.current]);
   return (
     <section className={style.section}>
       <div className="w-[280px] border ">
