@@ -7,13 +7,10 @@ import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos
 import { GroupByIdI } from "../interfaces/compras/historyCompras.interface";
 
 const useHistorialDeCompras = () => {
-  const currentDate = new Date();
-
   const [dataFilter, setDataFilter] = useState({
     status: "allState",
-    periodo: `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`,
+    startDate: "",
+    endDate: "",
     searchProduct: "",
   });
   const { requestPost } = useService();
@@ -44,18 +41,22 @@ const useHistorialDeCompras = () => {
           ? item.statusEnvio === dataFilter.status
           : true;
 
-      const dateMatch = dataFilter.periodo
-        ? (() => {
-            const itemDate = new Date(item.createdAt);
-            const localDate =
-              itemDate.getFullYear() +
-              "-" +
-              String(itemDate.getMonth() + 1).padStart(2, "0") +
-              "-" +
-              String(itemDate.getDate()).padStart(2, "0");
-            return localDate === dataFilter.periodo;
-          })()
-        : true;
+      const dateMatch =
+        dataFilter.startDate && dataFilter.endDate
+          ? (() => {
+              const itemDate = new Date(item.createdAt);
+
+              const start = new Date(dataFilter.startDate);
+              const end = new Date(dataFilter.endDate);
+
+              // Normaliza las fechas para comparar solo por día
+              start.setHours(0, 0, 0, 0);
+              end.setHours(23, 59, 59, 999);
+              itemDate.setHours(0, 0, 0, 0);
+
+              return itemDate >= start && itemDate <= end;
+            })()
+          : true;
 
       const searchTextMatch = dataFilter.searchProduct
         ? item.products.some((p) =>
@@ -247,6 +248,7 @@ const useHistorialDeCompras = () => {
     // handleOnPeriodo,
     handleHistoryByUser,
     setDataFilter,
+    dataFilter,
     // handleOnSelectStatus,
     // handleOnFilter,
     handleOnSearch,

@@ -14,6 +14,7 @@ const PrincipalComponent = () => {
   const { dataProducts } = useTheContext();
 
   const tipos = [
+    { tipo: "laptop", label: "Laptops" },
     { tipo: "workStation", label: "PC Estación de trabajo" },
     // { tipo: "", label: "" },
     { tipo: "pro", label: "Pc Gamer Pro" },

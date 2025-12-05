@@ -10,16 +10,16 @@ import { MdAutorenew } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
 
 const HistoryShop = () => {
-  const currentDate = new Date();
-
   const {
     dataHistoryCompras,
     loadingCancelledCompra,
+    dataFilter,
     handleHistoryByUser,
     // handleOnSelectStatus,
     showModal,
     handleOnSearch,
     setDataFilter,
+
     setDataHistoryCompras,
     // handleOnPeriodo,
   } = useHistorialDeCompras();
@@ -97,27 +97,30 @@ const HistoryShop = () => {
             </select>
           </div>
 
-          <div className="flex gap-1 items-center">
-            <label htmlFor="periodo" className="flex shrink-0 text-[#808080]">
-              Período:
-            </label>
+          <div className="flex gap-2 items-center">
+            <label className="text-[#808080]">Período:</label>
+
             <input
               type="date"
-              id="periodo"
               className="form-control"
-              defaultValue={`${currentDate.getFullYear()}-${String(
-                currentDate.getMonth() + 1
-              ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(
-                2,
-                "0"
-              )}`}
-              onChange={(event) => {
+              value={dataFilter.startDate || ""}
+              onChange={(e) =>
                 setDataFilter((prev) => ({
                   ...prev,
-                  periodo: event.target.value,
-                }));
-              }}
-              // onChange={handleOnPeriodo}
+                  startDate: e.target.value,
+                }))
+              }
+            />
+
+            <span className="text-[#808080]">a</span>
+
+            <input
+              type="date"
+              className="form-control"
+              value={dataFilter.endDate || ""}
+              onChange={(e) =>
+                setDataFilter((prev) => ({ ...prev, endDate: e.target.value }))
+              }
             />
           </div>
 
