@@ -73,10 +73,12 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
                         <a
                           href={`/result-search-category?categoryId=${categoria.idCategorie}`}
                           style={{
-                            wordBreak: "break-word",
-                            overflowWrap: "break-word",
+                            wordBreak: "break-word", // corta palabras largas si no caben
+                            overflowWrap: "break-word", // compatibilidad extra
+                            whiteSpace: "normal", // permite que las frases se rompan en espacios
                             display: "inline-block",
                             maxWidth: "150px",
+                            fontSize: "13px",
                           }}
                           // onMouseEnter={() => {
                           //   if (categoria) {

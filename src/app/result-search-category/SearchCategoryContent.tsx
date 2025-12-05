@@ -16,6 +16,7 @@ import { useSearchParams } from "next/navigation";
 import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
+// import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const SearchCategoryContent = () => {
   const [loadingData, setLoadingData] = useState<boolean>(false);
@@ -25,7 +26,8 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts } = useTheContext();
+  const { dataProducts, socketServer, setDataFavorites, setDataModal } =
+    useTheContext();
 
   const {
     startIndex,
@@ -127,6 +129,45 @@ const SearchCategoryContent = () => {
     },
   ];
 
+  useEffect(() => {
+    if (!socketServer.current || data.length === 0) return;
+    const socket = socketServer.current;
+
+    const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+      setData((prev: any) =>
+        prev.map((item: any) =>
+          item.idProduct == dataSocket.idProduct
+            ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
+            : item
+        )
+      );
+
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          // Aquí comparamos con la estructura correcta:
+          const match = Number(item.productId) === Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                products: {
+                  ...item.products,
+                  stock: Number(dataSocket.stock),
+                  price: Number(dataSocket.price).toString(),
+                },
+              }
+            : item;
+        });
+      });
+    };
+
+    socket.on("updateProductComponent", handlerUpdateProductComponent);
+
+    return () => {
+      socket.off("updateProductComponent", handlerUpdateProductComponent);
+    };
+  }, [socketServer.current, data]);
+
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip {...props} arrow classes={{ popper: className }} />
   ))(() => ({
@@ -179,6 +220,14 @@ const SearchCategoryContent = () => {
       rating: progressRating.rating,
     };
   };
+
+  // useEffect(() => {
+  //   setData((prev) => {
+  //     return prev
+  //       .slice(startIndex, endIndex)
+  //       .sort((a: any, b: any) => Number(b.price) - Number(a.price));
+  //   });
+  // }, []);
 
   return (
     <section>
@@ -244,37 +293,63 @@ const SearchCategoryContent = () => {
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
             </h3>
 
-            <div className="mt-4 flex gap-1 items-center">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="border py-1 px-4"
-                onChange={(event) => {
-                  setSearchText(event.currentTarget.value);
-                }}
-                value={searchText}
-              />
-              <button
-                className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
-                onClick={() => {
-                  if (searchText.trim().length < 3) {
-                    setData(dataCopy);
-                    return;
-                  }
+            <div className="mt-4 flex gap-1 items-center justify-between">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  className="border py-1 px-4"
+                  onChange={(event) => {
+                    setSearchText(event.currentTarget.value);
+                  }}
+                  value={searchText}
+                />
+                <button
+                  className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
+                  onClick={() => {
+                    if (searchText.trim().length < 3) {
+                      setData(dataCopy);
+                      return;
+                    }
 
-                  const term = searchText.toLowerCase().trim();
+                    const term = searchText.toLowerCase().trim();
 
-                  const filtered = dataCopy.filter(
-                    (item: any) =>
-                      item.name.toLowerCase().includes(term) ||
-                      item.sku.toLowerCase().includes(term)
-                  );
+                    const filtered = dataCopy.filter(
+                      (item: any) =>
+                        item.name.toLowerCase().includes(term) ||
+                        item.sku.toLowerCase().includes(term)
+                    );
 
-                  setData(filtered);
-                }}
-              >
-                Buscar
-              </button>
+                    setData(filtered);
+                  }}
+                >
+                  Buscar
+                </button>
+              </div>
+              <div className="flex gap-1 items-center">
+                <span className="flex shrink-0">Ordenar por:</span>
+                <select
+                  className="form-select"
+                  defaultValue={""}
+                  onChange={(event) => {
+                    setData((prev) => {
+                      return prev
+                        .slice(startIndex, endIndex)
+                        .sort((a: any, b: any) =>
+                          event.target.value == "1"
+                            ? Number(b.price) - Number(a.price)
+                            : Number(a.price) - Number(b.price)
+                        );
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Selecciona una opción
+                  </option>
+                  <option value={1}>Mayor precio</option>
+                  <option value={2}>Menor precio</option>
+                </select>
+              </div>
             </div>
 
             <hr />
@@ -485,7 +560,7 @@ const SearchCategoryContent = () => {
                                             </div>
                                           }
                                         >
-                                          <div className="flex justify-center items-center">
+                                          <div className="flex">
                                             <button
                                               className="flex justify-center items-center border"
                                               style={{
@@ -519,7 +594,7 @@ const SearchCategoryContent = () => {
                                 })()}
                               </div>
 
-                              <div className="grid grid-cols-[1fr_1fr_auto] my-4">
+                              <div className="grid grid-cols-[1fr_1fr_auto] my-1">
                                 <div>
                                   <ul>
                                     {item?.caracteristicas
@@ -543,10 +618,10 @@ const SearchCategoryContent = () => {
                                                       key={index}
                                                       className="flex gap-2 items-end"
                                                     >
-                                                      <span className="font-bold text-black text-[19px]">
+                                                      <span className="font-bold text-black text-[13px]">
                                                         {carac.prop}:
                                                       </span>
-                                                      <span className="italic">
+                                                      <span className="italic text-[13px]">
                                                         {carac.value}
                                                       </span>
                                                     </li>
@@ -561,7 +636,7 @@ const SearchCategoryContent = () => {
                                       : "Sin caracteristicas disponibles"}
                                   </ul>
                                 </div>
-                                <div>
+                                <div className="px-3">
                                   <span>
                                     {formatCurrency(Number(item.price))}
                                   </span>
@@ -572,24 +647,58 @@ const SearchCategoryContent = () => {
                                 </div>
                                 <div>
                                   <button
-                                    disabled={loadingAddProductCar}
+                                    disabled={
+                                      // loadingAddProductCar ||
+                                      item.stock == 0 || item.stock == "0"
+                                    }
                                     className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
-                                    onClick={() => handleAddProductCart(item)}
+                                    onClick={() => {
+                                      // setDataModal({
+                                      //   isOpen: true,
+                                      //   message: (
+                                      //     <BranchSelector
+                                      //       productSelected={item}
+                                      //     />
+                                      //   ),
+                                      //   title: "",
+                                      //   type: "success",
+                                      //   showActions: false,
+                                      //   onClose: () => {
+                                      //     setDataModal((prev) => ({
+                                      //       ...prev,
+                                      //       isOpen: false,
+                                      //     }));
+                                      //   },
+                                      //   onConfirm: () => {
+                                      //     setDataModal((prev) => ({
+                                      //       ...prev,
+                                      //       isOpen: false,
+                                      //     }));
+                                      //   },
+                                      // });
+                                      handleAddProductCart(item);
+                                    }}
                                   >
-                                    {loadingAddProductCar ? (
+                                    {/* {loadingAddProductCar ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
                                       />
-                                    ) : (
-                                      <>
-                                        Agregar al carrito
-                                        <MdShoppingCart
-                                          size={20}
-                                          color="white"
-                                        />
-                                      </>
-                                    )}
+                                    ) : ( */}
+                                    <>
+                                      {item.stock == "0" || item.stock == 0 ? (
+                                        "No disponible"
+                                      ) : (
+                                        <>
+                                          Agregar al carrito
+                                          <MdShoppingCart
+                                            size={20}
+                                            color="white"
+                                          />
+                                        </>
+                                      )}
+                                    </>
+                                    {/* )} */}
                                   </button>
                                 </div>
                               </div>
