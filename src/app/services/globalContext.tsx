@@ -21,6 +21,7 @@ import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 import useFavorites from "./useFavorites";
 import useService from "./useService";
+import useProveedores from "./proveedores/useProveedores";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -88,6 +89,20 @@ interface ContextProps {
   setDataAddress: Dispatch<SetStateAction<DataSendI>>;
   postalCodes: PostalCodeLookupI[];
   setPostalCodes: Dispatch<SetStateAction<PostalCodeLookupI[]>>;
+  dataCategories: {
+    idCategorie: number;
+    name: string;
+    providerId: number;
+  }[];
+  setDataCategories: Dispatch<
+    SetStateAction<
+      {
+        idCategorie: number;
+        name: string;
+        providerId: number;
+      }[]
+    >
+  >;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -152,6 +167,8 @@ const CreateContext = createContext<ContextProps>({
   setDataAddress: () => {},
   postalCodes: [],
   setPostalCodes: () => {},
+  dataCategories: [],
+  setDataCategories: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -168,6 +185,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   });
 
   const { requestGet } = useService();
+  const { requestGetProveedor } = useProveedores();
 
   const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
@@ -191,6 +209,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
+
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
   const [isEditAddress, setIsEditAddress] = useState({
@@ -210,6 +229,14 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     phone2: "",
     country: "México",
   });
+
+  const [dataCategories, setDataCategories] = useState<
+    {
+      idCategorie: number;
+      name: string;
+      providerId: number;
+    }[]
+  >([]);
 
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
 
@@ -239,8 +266,23 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataFavorites([]);
       }
     };
+
+    const getDataCategories = async () => {
+      try {
+        const resp = await requestGetProveedor("/getAllCategoriPrincipal");
+        if (resp.status == 200) {
+          const data = resp.data;
+
+          setDataCategories(data.data.data);
+        }
+      } catch (error) {
+        setDataCategories([]);
+      }
+    };
+
     getListProducts();
     handleGetDataFavorites();
+    getDataCategories();
 
     return () => {
       mounted = false;
@@ -294,6 +336,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataProducts,
         socketPagos,
         socketServer,
+
         showProductsMenu,
         setShowProductsMenu,
         dataUserAddress,
@@ -304,6 +347,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataAddress,
         postalCodes,
         setPostalCodes,
+        dataCategories,
+        setDataCategories,
       }}
     >
       {children}

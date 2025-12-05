@@ -55,10 +55,10 @@ const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
         freeSolo
         disablePortal
         options={
-          dataProducts.length > 0
-            ? dataProducts
-                .filter((product) => product.categoryId == "1")
-                .map((item) => item)
+          inputValue.length >= 3
+            ? dataProducts && dataProducts.length > 0
+              ? dataProducts.filter((product) => product.categoryId == "1")
+              : []
             : []
         } //Solo productos de la categoria TARJETAS DE VIDEO
         noOptionsText="Sin resultados disponibles"

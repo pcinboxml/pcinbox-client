@@ -29,6 +29,7 @@ export const ModalCart = ({
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
+          .filter((itemF) => itemF.stock != 0)
           .map((item) => Number(item.price) * item.quantity)
           .reduce((sum, current) => sum + current, 0)
       : 0;
@@ -106,136 +107,145 @@ export const ModalCart = ({
           ) : (
             <div className="space-y-4">
               {dataCart &&
-                dataCart.map((product: ProductI, index: number) => (
-                  <div
-                    key={product.idProduct + index}
-                    className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
-                  >
-                    {(product as any).image_url ? (
-                      <img
-                        src={(product as any).image_url[0]}
-                        loading="lazy"
-                        alt={"Imagen"}
-                        className="w-16 h-16 object-cover rounded-md cursor-pointer"
-                        onClick={() => {
-                          localStorage.setItem(
-                            "product",
-                            JSON.stringify(product)
-                          );
-                          onRouterLink(`/detailsProduct/${product.idProduct}`);
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src={(product as any).imageUrl[0]}
-                        alt={"Imagen"}
-                        loading="lazy"
-                        className="w-16 h-16 object-cover rounded-md cursor-pointer"
-                        onClick={() => {
-                          localStorage.setItem(
-                            "product",
-                            JSON.stringify(product)
-                          );
-                          onRouterLink(`/detailsProduct/${product.idProduct}`);
-                        }}
-                      />
-                    )}
-
-                    <div className="flex-1">
-                      <h3
-                        className="font-semibold text-gray-800 text-sm line-clamp-2"
-                        title={product.name}
+                dataCart.map((product: ProductI, index: number) => {
+                  if (product.stock != 0) {
+                    return (
+                      <div
+                        key={product.idProduct + index}
+                        className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                       >
-                        {product.name}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Disponibles: {product.stock} piezas.
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        SKU: {product.sku}
-                      </p>
-                    </div>
+                        {(product as any).image_url ? (
+                          <img
+                            src={(product as any).image_url[0]}
+                            loading="lazy"
+                            alt={"Imagen"}
+                            className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                            onClick={() => {
+                              localStorage.setItem(
+                                "product",
+                                JSON.stringify(product)
+                              );
+                              onRouterLink(
+                                `/detailsProduct/${product.idProduct}`
+                              );
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={(product as any).imageUrl[0]}
+                            alt={"Imagen"}
+                            loading="lazy"
+                            className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                            onClick={() => {
+                              localStorage.setItem(
+                                "product",
+                                JSON.stringify(product)
+                              );
+                              onRouterLink(
+                                `/detailsProduct/${product.idProduct}`
+                              );
+                            }}
+                          />
+                        )}
 
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="flex items-center border border-gray-300 rounded">
-                        <button
-                          onClick={() => {
-                            const updateItems = dataCart.map((item) => {
-                              if (item.idProduct === product.idProduct) {
-                                const newQuantity =
-                                  Number(item.quantity) > 1
-                                    ? Number(item.quantity) - Number(1)
-                                    : 1;
+                        <div className="flex-1">
+                          <h3
+                            className="font-semibold text-gray-800 text-sm line-clamp-2"
+                            title={product.name}
+                          >
+                            {product.name}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Disponibles: {product.stock} piezas.
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            SKU: {product.sku}
+                          </p>
+                        </div>
 
-                                return { ...item, quantity: newQuantity };
-                              }
-                              return { ...item };
-                            });
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="flex items-center border border-gray-300 rounded">
+                            <button
+                              onClick={() => {
+                                const updateItems = dataCart.map((item) => {
+                                  if (item.idProduct === product.idProduct) {
+                                    const newQuantity =
+                                      Number(item.quantity) > 1
+                                        ? Number(item.quantity) - Number(1)
+                                        : 1;
 
-                            setDataCart(updateItems);
-                          }}
-                          className="p-1 hover:bg-gray-100 text-gray-600"
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <input
-                          readOnly
-                          value={
-                            dataCart.find(
-                              (item) => item.idProduct === product.idProduct
-                            )?.quantity || 1
-                          }
-                          style={{ minWidth: "45px", maxWidth: "55px" }}
-                          className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
-                        />
-
-                        <button
-                          onClick={() => {
-                            const updateItems = dataCart.map((item) => {
-                              return item.idProduct === product.idProduct
-                                ? {
-                                    ...item,
-                                    quantity:
-                                      Number(item.quantity) + Number(1) <=
-                                      product.stock
-                                        ? Number(item.quantity) + Number(1)
-                                        : product.stock,
+                                    return { ...item, quantity: newQuantity };
                                   }
-                                : { ...item };
-                            });
+                                  return { ...item };
+                                });
 
-                            setDataCart(updateItems);
-                          }}
-                          className="p-1 hover:bg-gray-100 text-gray-600"
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
+                                setDataCart(updateItems);
+                              }}
+                              className="p-1 hover:bg-gray-100 text-gray-600"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <input
+                              readOnly
+                              value={
+                                dataCart.find(
+                                  (item) => item.idProduct === product.idProduct
+                                )?.quantity || 1
+                              }
+                              style={{ minWidth: "45px", maxWidth: "55px" }}
+                              className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
+                            />
 
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-gray-800">
-                          {formatCurrency(
-                            Number(
-                              Number(product.price) * Number(product.quantity)
-                            )
-                          )}
-                        </p>
-                        <button
-                          onClick={() =>
-                            handleRemoveItemCart(
-                              dataCart,
-                              product,
-                              onMouseLeaveCart
-                            )
-                          }
-                          className="text-red-500 hover:text-red-700 p-1 mt-2"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                            <button
+                              onClick={() => {
+                                const updateItems = dataCart.map((item) => {
+                                  return item.idProduct === product.idProduct
+                                    ? {
+                                        ...item,
+                                        quantity:
+                                          Number(item.quantity) + Number(1) <=
+                                          product.stock
+                                            ? Number(item.quantity) + Number(1)
+                                            : product.stock,
+                                      }
+                                    : { ...item };
+                                });
+
+                                setDataCart(updateItems);
+                              }}
+                              className="p-1 hover:bg-gray-100 text-gray-600"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-gray-800">
+                              {formatCurrency(
+                                Number(
+                                  Number(product.price) *
+                                    Number(product.quantity)
+                                )
+                              )}
+                            </p>
+                            <button
+                              onClick={() =>
+                                handleRemoveItemCart(
+                                  dataCart,
+                                  product,
+                                  onMouseLeaveCart
+                                )
+                              }
+                              className="text-red-500 hover:text-red-700 p-1 mt-2"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  }
+                })}
             </div>
           )}
         </div>

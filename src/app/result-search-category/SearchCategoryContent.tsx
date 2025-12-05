@@ -26,8 +26,7 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketServer, setDataFavorites, setDataModal } =
-    useTheContext();
+  const { dataProducts, socketServer, setDataFavorites } = useTheContext();
 
   const {
     startIndex,

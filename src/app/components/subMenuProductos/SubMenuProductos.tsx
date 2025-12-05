@@ -1,46 +1,12 @@
 "use client";
 import { useTheContext } from "@/app/services/globalContext";
-import useProveedores from "@/app/services/proveedores/useProveedores";
-import useService from "@/app/services/useService";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const SubMenuProductos = ({ styles }: { styles?: any }) => {
-  const { showProductsMenu, dataProducts } = useTheContext();
-  const { onRouterLink } = useService();
+  const { showProductsMenu, dataCategories } = useTheContext();
   const pathname = usePathname();
-  const [hasMounted, setHasMounted] = useState(false);
-  const [dataCategories, setDataCategories] = useState<
-    {
-      idCategorie: number;
-      name: string;
-      providerId: number;
-    }[]
-  >([]);
 
   // const [subMenus, setSubMenus] = useState<{ content: any }[]>([]);
-
-  const { requestGetProveedor } = useProveedores();
-
-  const getDataCategories = async () => {
-    try {
-      const resp = await requestGetProveedor("/getAllCategoriPrincipal");
-      if (resp.status == 200) {
-        const data = resp.data;
-
-        setDataCategories(data.data.data);
-      }
-    } catch (error) {
-      setDataCategories([]);
-    }
-  };
-
-  useEffect(() => {
-    getDataCategories();
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) return null;
 
   const isVisible =
     pathname === "/principal" || pathname === "/" || showProductsMenu;
