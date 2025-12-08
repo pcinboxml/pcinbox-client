@@ -15,22 +15,22 @@ const useDetailsProduct = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [changeImg, setChangeImg] = useState<string>("");
 
-  const [dataProduct, setProduct] = useState<ProductI>({
-    categoryId: "",
-    createdAt: "",
-    description: "",
-    idProduct: "",
-    imageUrl: [],
-    name: "",
-    price: "",
-    providerId: "",
-    quantity: 0,
-    stock: 0,
-    reviews: [],
-    rating: 0,
-    sku: "",
-    caracteristicas: [],
-  });
+  // const [dataProduct, setProduct] = useState<ProductI>({
+  //   categoryId: "",
+  //   createdAt: "",
+  //   description: "",
+  //   idProduct: "",
+  //   imageUrl: [],
+  //   name: "",
+  //   price: "",
+  //   providerId: "",
+  //   quantity: 0,
+  //   stock: 0,
+  //   reviews: [],
+  //   rating: 0,
+  //   sku: "",
+  //   caracteristicas: [],
+  // });
 
   const handleAdd = (stockProp: number) => {
     const newQuantity = Number(quantity) + 1;
@@ -157,22 +157,22 @@ const useDetailsProduct = () => {
     }
   };
 
-  const handleGetDataProduct = async (idProduct: any) => {
-    try {
-      const resp = await requestGetProveedor(`/getProduct/${idProduct}`);
-      if (resp.status == 200) {
-        const data = resp.data;
-        setProduct(data.data.data);
-      }
-    } catch (error) {}
-  };
+  // const handleGetDataProduct = async (idProduct: any) => {
+  //   try {
+  //     const resp = await requestGetProveedor(`/getProduct/${idProduct}`);
+  //     if (resp.status == 200) {
+  //       const data = resp.data;
+  //       setProduct(data.data.data);
+  //     }
+  //   } catch (error) {}
+  // };
 
   return {
     quantity,
     loadingAddProduct,
     openModal,
     changeImg,
-    dataProduct,
+    // dataProduct,
     setOpenModal,
     setChangeImg,
     handleAdd,
@@ -180,7 +180,7 @@ const useDetailsProduct = () => {
     handleAddProductCart,
     handleOnChange,
     handleKeyBoard,
-    handleGetDataProduct,
+    // handleGetDataProduct,
   };
 };
 
