@@ -70,6 +70,7 @@ export default function AppWrapper({
           caracteristicas: data.caracteristicas,
           quantity: data.quantity,
           reviews: [],
+          upc: data.upc,
         },
         ...prev,
       ]);
