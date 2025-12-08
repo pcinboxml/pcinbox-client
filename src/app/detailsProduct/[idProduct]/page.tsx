@@ -1,7 +1,7 @@
 "use client";
 import "./detailsProduct.css";
 import useDetailsProduct from "./useDetailsProducts";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useService from "../../services/useService";
 import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
 import useFavorites from "../../services/useFavorites";
@@ -9,6 +9,7 @@ import { Alert, Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
 import { Carousel } from "react-responsive-carousel";
 import ReactPlayer from "react-player";
+import { useTheContext } from "@/app/services/globalContext";
 
 const DetailsProduct = () => {
   const {
@@ -16,7 +17,7 @@ const DetailsProduct = () => {
     loadingAddProduct,
     openModal,
     changeImg,
-    dataProduct,
+    // dataProduct,
     setChangeImg,
     setOpenModal,
     handleAdd,
@@ -24,10 +25,11 @@ const DetailsProduct = () => {
     handleAddProductCart,
     handleOnChange,
     handleKeyBoard,
-    handleGetDataProduct,
+    // handleGetDataProduct,
   } = useDetailsProduct();
 
   const { formatCurrency } = useService();
+  const { dataProducts } = useTheContext();
   const router = useParams();
   const { idProduct } = router;
 
@@ -43,42 +45,48 @@ const DetailsProduct = () => {
   const fechaActualFormateada = dateCurrent.toLocaleDateString();
   const fechaFuturaFormateada = dateSend.toLocaleDateString();
 
-  useEffect(() => {
-    if (idProduct) {
-      handleGetDataProduct(idProduct);
-      //setProduct(null);
-    }
-  }, []);
+  const dataProduct = useMemo(() => {
+    return dataProducts.find(
+      (pro) => Number(pro.idProduct) == Number(idProduct)
+    );
+  }, [idProduct, dataProducts]);
+
+  // useEffect(() => {
+  //   if (idProduct) {
+  //     handleGetDataProduct(idProduct);
+  //     //setProduct(null);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    if (dataProduct.imageUrl) {
+    if (dataProduct?.imageUrl) {
       setChangeImg(dataProduct.imageUrl[0]);
     }
-  }, [dataProduct.imageUrl]);
+  }, [dataProduct?.imageUrl]);
 
   return (
     <div className="container-all white p-4">
       <div className="flex justify-center gap-2 mt-4 container-detail1">
         <div className="container-detail border p-3">
-          <h3 className="title-product">{dataProduct.name}</h3>
-          {dataProduct.description && dataProduct.description.length > 100 ? (
+          <h3 className="title-product">{dataProduct?.name}</h3>
+          {dataProduct?.description && dataProduct?.description.length > 100 ? (
             <span
               title={dataProduct.description}
               className="text-[#808080] text-[16px] mt-2"
             >
               Descripción: {`${dataProduct.description.slice(0, 100)}...`}
             </span>
-          ) : dataProduct.description &&
+          ) : dataProduct?.description &&
             dataProduct.description.length < 100 ? (
             <span className="text-[#808080] text-[16px]">
               Descripción: {dataProduct.description}
             </span>
           ) : null}
 
-          <span className="code-product mt-2">{dataProduct.sku}</span>
+          <span className="code-product mt-2 block">{dataProduct?.sku}</span>
 
           <span className="price-product mt-2">
-            {formatCurrency(Number(dataProduct.price))}
+            {formatCurrency(Number(dataProduct?.price))}
           </span>
           {/* <span className="plazos-product">Hasta 18 pagos en $125.00</span>
           <br /> */}
@@ -91,13 +99,13 @@ const DetailsProduct = () => {
             </span>
           </span>
           <span className="stock-product mt-2">
-            En stock: {dataProduct.stock} pzas.
+            En stock: {dataProduct?.stock} pzas.
           </span>
 
           <div className="textfield flex mt-1">
             <button
               className="border"
-              onClick={() => handleAdd(dataProduct.stock)}
+              onClick={() => handleAdd(dataProduct!.stock)}
             >
               +
             </button>
@@ -106,7 +114,7 @@ const DetailsProduct = () => {
               className="border text-center"
               value={quantity}
               onChange={handleOnChange}
-              onKeyUp={(event) => handleKeyBoard(event, dataProduct)}
+              onKeyUp={(event) => handleKeyBoard(event, dataProduct!)}
             />
             <button className="border" onClick={handleSubstract}>
               -
@@ -115,12 +123,12 @@ const DetailsProduct = () => {
 
           <button
             className="btnAgregar"
-            disabled={loadingAddProduct || dataProduct.stock <= 0}
-            onClick={() => handleAddProductCart(dataProduct, Number(quantity))}
+            disabled={loadingAddProduct || dataProduct?.stock! <= 0}
+            onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
           >
             {loadingAddProduct ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
-            ) : dataProduct.stock > 0 ? (
+            ) : dataProduct?.stock! > 0 ? (
               "Agregar"
             ) : (
               "No disponible"
@@ -131,7 +139,7 @@ const DetailsProduct = () => {
           <button
             className="btnAgregarFavoritos"
             disabled={loadingFavorite}
-            onClick={() => handleAddFavorites(dataProduct)}
+            onClick={() => handleAddFavorites(dataProduct!)}
           >
             {loadingFavorite ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
@@ -159,7 +167,7 @@ const DetailsProduct = () => {
               setOpenModal(true);
             }}
           >
-            {dataProduct.imageUrl && dataProduct.imageUrl.length > 0
+            {dataProduct?.imageUrl && dataProduct.imageUrl.length > 0
               ? dataProduct.imageUrl.map((img: string, i: number) => (
                   <div
                     key={i}
@@ -197,7 +205,7 @@ const DetailsProduct = () => {
           {(() => {
             try {
               // 1️⃣ Verificamos que exista
-              if (!dataProduct.caracteristicas) return null;
+              if (!dataProduct?.caracteristicas) return null;
 
               // 2️⃣ Si es string, intentamos parsear
               const caracteristicas =
@@ -314,8 +322,8 @@ const DetailsProduct = () => {
                 />
               </div>
               <div className="flex flex-wrap justify-start items-start p-2 gap-2">
-                {dataProduct.imageUrl.length > 0
-                  ? dataProduct.imageUrl.map((img: string, index: number) => {
+                {dataProduct?.imageUrl.length > 0
+                  ? dataProduct?.imageUrl.map((img: string, index: number) => {
                       return (
                         <div className="p-3 rounded hover:shadow-2xl hover:rounded">
                           <img

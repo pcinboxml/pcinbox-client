@@ -86,7 +86,7 @@ export default function AppWrapper({
                 name: data.name,
                 description: data.description,
                 caracteristicas: data.caracteristicas,
-                price: data.price,
+                price: Number(data.price).toString(),
                 stock: Number(data.stock),
                 sku: data.sku,
               }
