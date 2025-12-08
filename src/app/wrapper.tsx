@@ -83,8 +83,12 @@ export default function AppWrapper({
           return match
             ? {
                 ...item,
+                name: data.name,
+                description: data.description,
+                caracteristicas: data.caracteristicas,
+                price: data.price,
                 stock: Number(data.stock),
-                price: Number(data.price).toString(),
+                sku: data.sku,
               }
             : item;
         })
