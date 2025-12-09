@@ -9,7 +9,6 @@ import { Alert, Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
 import { Carousel } from "react-responsive-carousel";
 import ReactPlayer from "react-player";
-import { SideBySideMagnifier } from "react-image-magnifiers";
 
 const DetailsProduct = () => {
   const {
