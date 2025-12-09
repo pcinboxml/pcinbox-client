@@ -70,6 +70,7 @@ export default function AppWrapper({
           caracteristicas: data.caracteristicas,
           quantity: data.quantity,
           reviews: [],
+          upc: data.upc,
         },
         ...prev,
       ]);
@@ -83,8 +84,12 @@ export default function AppWrapper({
           return match
             ? {
                 ...item,
-                stock: Number(data.stock),
+                name: data.name,
+                description: data.description,
+                caracteristicas: data.caracteristicas,
                 price: Number(data.price).toString(),
+                stock: Number(data.stock),
+                sku: data.sku,
               }
             : item;
         })
