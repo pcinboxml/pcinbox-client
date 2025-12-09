@@ -94,6 +94,7 @@ const HistoryShop = () => {
               <option value="enviado">Enviado</option>
               <option value="procesando">Procesando</option>
               <option value="cancelado">Cancelado</option>
+              <option value="disponible">Disponible</option>
             </select>
           </div>
 
@@ -170,6 +171,8 @@ const HistoryShop = () => {
                                 ? style.statusCancelled
                                 : historyCompra.statusEnvio == "entregado"
                                 ? style.statusDelivered
+                                : historyCompra.statusEnvio == "disponible"
+                                ? style.statusDelivered
                                 : ""
                             } p-2 rounded`}
                           >
@@ -194,11 +197,18 @@ const HistoryShop = () => {
                                 <span className="font-bold">PCInbox</span> para
                                 solicitar reembolso de tu pedido. <br />
                               </p>
+                            ) : historyCompra.statusEnvio == "disponible" &&
+                              historyCompra.shipping_method == "sucursal" ? (
+                              <p className="text-[16px]">
+                                Ya puedes recoger el pedido en la sucursal
+                                PCinBox León.
+                              </p>
                             ) : null}
                           </div>
 
                           {historyCompra.statusEnvio != "entregado" &&
-                          historyCompra.statusEnvio != "cancelado" ? (
+                          historyCompra.statusEnvio != "cancelado" &&
+                          historyCompra.statusEnvio != "disponible" ? (
                             <button
                               disabled={loadingCancelledCompra}
                               onClick={() => showModal(historyCompra)}
