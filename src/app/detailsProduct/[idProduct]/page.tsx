@@ -283,6 +283,10 @@ const DetailsProduct = () => {
         onClose={() => setOpenModal(false)}
         sx={{
           zIndex: "9999",
+          overflow: "visible !important",
+          "& .MuiBackdrop-root": {
+            overflow: "visible !important",
+          },
         }}
         children={
           <Box
@@ -314,18 +318,25 @@ const DetailsProduct = () => {
               <MdClose size={24} color="#333" />
             </button>
             <div className="w-full border grid grid-cols-[1fr_1fr] h-[400px] relative">
-              <div className="flex justify-center items-center h-[400px]">
+              <div className="flex justify-center items-center">
                 <img
                   src={changeImg}
-                  style={{ height: "90%", objectFit: "contain" }}
-                  loading="lazy"
+                  alt="Image"
+                  style={{
+                    width: "100%",
+                    height: "400px",
+                    objectFit: "contain",
+                  }}
                 />
               </div>
               <div className="flex flex-wrap justify-start items-start p-2 gap-2">
                 {dataProduct?.imageUrl.length > 0
                   ? dataProduct?.imageUrl.map((img: string, index: number) => {
                       return (
-                        <div className="p-3 rounded hover:shadow-2xl hover:rounded">
+                        <div
+                          className="p-3 rounded hover:shadow-2xl hover:rounded"
+                          key={index}
+                        >
                           <img
                             src={img}
                             key={index}
