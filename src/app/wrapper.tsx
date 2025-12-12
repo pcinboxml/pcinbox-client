@@ -135,6 +135,23 @@ export default function AppWrapper({
     };
 
     const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+      setDataProducts((prev) =>
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                name: dataSocket.name,
+                description: dataSocket.description,
+                caracteristicas: dataSocket.caracteristicas,
+                price: Number(dataSocket.price).toString(),
+                stock: Number(dataSocket.stock),
+                sku: dataSocket.sku,
+              }
+            : item;
+        })
+      );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           // Aquí comparamos con la estructura correcta:
