@@ -49,7 +49,6 @@ export default function AppWrapper({
 
     return () => window.removeEventListener("resize", checkWidth);
   }, []);
-
   useEffect(() => {
     if (localStorage.getItem("dataCart") && hasToken == false) {
       const productsStorage = JSON.parse(
