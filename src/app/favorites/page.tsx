@@ -1,11 +1,17 @@
 "use client";
-import { MdAutorenew, MdShoppingCart } from "react-icons/md";
+import {
+  MdArrowDropDown,
+  MdAutorenew,
+  MdShoppingCart,
+  MdStar,
+} from "react-icons/md";
 import useFavorites from "../services/useFavorites";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { Alert } from "@mui/material";
+import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
 import styles from "./favorites.module.css";
+import ProductI from "../interfaces/products/product.interface";
 
 const Favorites = () => {
   const {
@@ -15,8 +21,95 @@ const Favorites = () => {
     loadingRemoveFavorite,
     loadingAddCartFavorite,
   } = useFavorites();
-  const { dataFavorites } = useTheContext();
+  const { dataFavorites, dataProducts } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
+
+  const StyledTooltip = styled(({ className, ...props }: any) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(() => ({
+    [`& .MuiTooltip-tooltip`]: {
+      backgroundColor: "#fff",
+      color: "#000",
+      borderRadius: 8,
+      boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+      padding: 12,
+      minWidth: 300,
+      maxWidth: 400,
+    },
+    [`& .MuiTooltip-arrow`]: {
+      color: "#fff",
+    },
+  }));
+
+  const ratingProgress = [
+    {
+      id: 1,
+      rating: 5,
+    },
+    {
+      id: 2,
+      rating: 4,
+    },
+    {
+      id: 3,
+      rating: 3,
+    },
+    {
+      id: 4,
+      rating: 2,
+    },
+    {
+      id: 5,
+      rating: 1,
+    },
+  ];
+
+  const calcPorcentaje = (
+    reviews: {
+      idReview: string;
+      productId: string;
+      rating: number;
+      title: string;
+      description: string;
+      date: string;
+      reviewerName: string;
+    }[],
+    dataProducts: ProductI[],
+    progressRating: any,
+    idProduct: number
+  ) => {
+    console.log("Reviews");
+    console.log(reviews);
+    const ratingCount = reviews?.reduce((acc, item) => {
+      if (item.rating === progressRating.rating) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+
+    const totalRatingCount = dataProducts.reduce((acc, item) => {
+      if (item.reviews) {
+        return (
+          acc +
+          item.reviews.filter(
+            (r) =>
+              r.rating === progressRating.rating &&
+              item.idProduct == String(idProduct)
+          ).length
+        );
+      } else {
+        return 0;
+      }
+    }, 0);
+
+    const percentage =
+      totalRatingCount > 0 ? (ratingCount / totalRatingCount) * 100 : 0;
+
+    return {
+      percentage,
+      rating: progressRating.rating,
+    };
+  };
 
   return (
     <section>
@@ -74,14 +167,337 @@ const Favorites = () => {
       <div className="mb-11">
         {dataFavorites &&
           dataFavorites.length > 0 &&
-          dataFavorites.map((favorite) => {
+          dataFavorites.map((favorite, index) => {
             return (
-              <div
-                className="border grid grid-cols-[250px_1fr] my-3"
-                key={favorite.idFavorite}
-              >
-                <div className="flex justify-center items-center overflow-hidden">
-                  <div className={`${styles.containerImgProduct}`}>
+              <div key={index}>
+                <div className="grid grid-cols-[1fr_auto] gap-4">
+                  <div className="flex flex-col">
+                    <div className="item-component p-3">
+                      <a
+                        role="button"
+                        onClick={() => {
+                          onRouterLink(`/detailsProduct/${favorite.productId}`);
+                        }}
+                        className="text-[#BB3D4B] font-bold"
+                        style={{
+                          color: "#BB3D4B",
+                        }}
+                      >
+                        {favorite?.products?.name}
+                      </a>
+                      {/* <span className="text-[#BB3D4B] font-bold">
+                                {item.name}
+                              </span> */}
+                      <div className="grid grid-cols-[1fr_1fr_1fr] my-1">
+                        <div className="flex">
+                          {favorite?.products?.upc && (
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[#808080]">
+                                SKU: {favorite?.products?.sku}
+                              </span>
+                              <span className="font-bold text-black">
+                                UPC:
+                                <span className="font-normal mx-1">
+                                  {favorite?.products?.upc}
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {(() => {
+                          const promedioRating =
+                            favorite?.products?.reviews?.length! > 0
+                              ? favorite?.products?.reviews.reduce(
+                                  (sum: any, review: any) =>
+                                    sum + review.rating,
+                                  0
+                                ) / favorite?.products?.reviews?.length!
+                              : 0;
+                          return (
+                            <div className="container-rating flex gap-2">
+                              <div className="rating">
+                                <Rating
+                                  name="simple-controlled"
+                                  max={5}
+                                  readOnly
+                                  value={promedioRating}
+                                  size="medium"
+                                  sx={{
+                                    color: "#BB3D4B",
+                                  }}
+                                />
+                              </div>
+                              {/* {product.reviews && product.reviews.length > 0 && ( */}
+                              <div className="comments flex">
+                                <StyledTooltip
+                                  title={
+                                    <div className="w-full  flex justify-center">
+                                      <Box>
+                                        <div className="w-full flex items-center">
+                                          <Rating
+                                            value={favorite?.products?.rating}
+                                            readOnly
+                                            size="medium"
+                                            precision={0.5}
+                                            sx={{
+                                              color: "#BB3D4B",
+                                            }}
+                                          />
+
+                                          <span className="text-[#666666] font-bold text-[18px] block mx-2">
+                                            {favorite?.products?.reviews?.length.toLocaleString()}{" "}
+                                            Opiniones
+                                          </span>
+                                        </div>
+                                        <div className="mt-2">
+                                          <span className="text-[#808080] text-[16px] ">
+                                            {favorite?.products?.rating}{" "}
+                                            estrellas
+                                          </span>
+                                        </div>
+
+                                        <div className="mt-3 grid grid-cols[1fr_auto] w-full">
+                                          {ratingProgress &&
+                                            ratingProgress.map(
+                                              (progressRating) => {
+                                                return (
+                                                  <div
+                                                    className="flex items-center mb-2"
+                                                    key={progressRating.id}
+                                                  >
+                                                    <div
+                                                      className="barProgress"
+                                                      style={{
+                                                        width: "200px",
+                                                        height: "15px",
+                                                        borderRadius: "5px",
+                                                        background: "#E7E7E7",
+                                                        position: "relative",
+                                                      }}
+                                                    >
+                                                      <div
+                                                        style={{
+                                                          width: calcPorcentaje(
+                                                            favorite.products
+                                                              ?.reviews!,
+                                                            dataProducts,
+                                                            progressRating,
+                                                            favorite.productId
+                                                          ).percentage,
+                                                          height: "15px",
+                                                          top: "0",
+                                                          left: "0",
+                                                          bottom: "0",
+                                                          background: "#BB3D4B",
+                                                          borderRadius: "5px",
+                                                        }}
+                                                      ></div>
+                                                    </div>
+                                                    <div className="text-[15px] text-[#606060] font-bold mx-2">
+                                                      {
+                                                        calcPorcentaje(
+                                                          favorite.products
+                                                            ?.reviews!,
+                                                          dataProducts,
+                                                          progressRating,
+                                                          favorite.productId
+                                                        ).rating
+                                                      }
+                                                    </div>
+                                                    <div>
+                                                      <MdStar
+                                                        color="#ccc"
+                                                        size={20}
+                                                      />
+                                                    </div>
+
+                                                    <div>
+                                                      <span className="text-[#ccc] text-[13px] mx-1">
+                                                        (
+                                                        {favorite?.products?.reviews.reduce(
+                                                          (
+                                                            acc: any,
+                                                            item: any
+                                                          ) => {
+                                                            if (
+                                                              item.rating ===
+                                                              progressRating.rating
+                                                            ) {
+                                                              return acc + 1;
+                                                            }
+                                                            return acc;
+                                                          },
+                                                          0
+                                                        )}
+                                                        )
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                );
+                                              }
+                                            )}
+
+                                          <a
+                                            role="button"
+                                            onClick={() =>
+                                              onRouterLink(
+                                                `/review?idProduct=${favorite?.products?.idProduct}`
+                                              )
+                                            }
+                                            style={{
+                                              display: "block",
+                                              color: "#BB3D4B",
+                                              textAlign: "center",
+                                              fontSize: "17px",
+                                              textDecoration: "none",
+                                            }}
+                                          >
+                                            Ver todas las (
+                                            {favorite?.products?.reviews.length.toLocaleString()}
+                                            ) opiniones
+                                          </a>
+                                        </div>
+                                      </Box>
+                                    </div>
+                                  }
+                                >
+                                  <div className="flex">
+                                    <button
+                                      className="flex justify-center items-center border"
+                                      style={{
+                                        marginLeft: "5px",
+                                        borderRadius: "2px",
+                                        width: "20px",
+                                        height: "20px",
+                                      }}
+                                    >
+                                      <MdArrowDropDown size={10} color="gray" />
+                                    </button>
+                                  </div>
+                                </StyledTooltip>
+                                <a style={{ marginLeft: "5px" }}>
+                                  {favorite?.products?.reviews
+                                    .filter(
+                                      (itemF: any) =>
+                                        itemF.productId ==
+                                        favorite?.products?.idProduct
+                                    )
+                                    .length.toLocaleString()}{" "}
+                                  opiniones
+                                </a>
+                              </div>
+                              {/* )} */}
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      <div className="grid grid-cols-[1fr_1fr_auto] my-1">
+                        <div>
+                          <ul>
+                            {favorite?.products?.caracteristicas
+                              ? (() => {
+                                  try {
+                                    const caracs = JSON.parse(
+                                      favorite?.products?.caracteristicas
+                                    );
+                                    if (
+                                      Array.isArray(caracs) &&
+                                      caracs.length > 0
+                                    ) {
+                                      return caracs
+                                        .slice(0, 6)
+                                        .map((carac: any, index: number) => (
+                                          <li
+                                            key={index}
+                                            className="flex gap-2 items-end"
+                                          >
+                                            <span className="font-bold text-black text-[13px]">
+                                              {carac.prop}:
+                                            </span>
+                                            <span className="italic text-[13px]">
+                                              {carac.value}
+                                            </span>
+                                          </li>
+                                        ));
+                                    }
+                                    return "Sin caracteristicas disponibles";
+                                  } catch (e) {
+                                    return "Sin caracteristicas disponibles";
+                                  }
+                                })()
+                              : "Sin caracteristicas disponibles"}
+                          </ul>
+                        </div>
+                        <div className="px-3">
+                          <span>
+                            {formatCurrency(Number(favorite?.products?.price))}
+                          </span>
+                          <br />
+                          {/* <span>Costo de envio: $160</span> */}
+                          {/* <br /> */}
+                          <span>
+                            Disponibles: {favorite?.products?.stock} piezas
+                          </span>
+                        </div>
+                        <div>
+                          <button
+                            disabled={
+                              //loadingAddProductCar ||
+                              favorite?.products?.stock == 0
+                            }
+                            className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
+                            onClick={() => {
+                              // setDataModal({
+                              //   isOpen: true,
+                              //   message: (
+                              //     <BranchSelector
+                              //       productSelected={item}
+                              //     />
+                              //   ),
+                              //   title: "",
+                              //   type: "success",
+                              //   showActions: false,
+                              //   onClose: () => {
+                              //     setDataModal((prev) => ({
+                              //       ...prev,
+                              //       isOpen: false,
+                              //     }));
+                              //   },
+                              //   onConfirm: () => {
+                              //     setDataModal((prev) => ({
+                              //       ...prev,
+                              //       isOpen: false,
+                              //     }));
+                              //   },
+                              // });
+                              handleAddFavoriteCart(favorite);
+                            }}
+                          >
+                            {/* {loadingAddProductCar ? (
+                                      <MdAutorenew
+                                        size={20}
+                                        className="m-auto the-spinner"
+                                      />
+                                    ) : ( */}
+                            <>
+                              {favorite?.products?.stock == 0 ? (
+                                "No disponible"
+                              ) : (
+                                <>
+                                  Agregar al carrito
+                                  <MdShoppingCart size={20} color="white" />
+                                </>
+                              )}
+                            </>
+                            {/* )} */}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-[150px] flex justify-center items-center">
                     <Carousel
                       showIndicators={true}
                       showThumbs={false}
@@ -89,182 +505,32 @@ const Favorites = () => {
                       showArrows={true}
                       onClickItem={() => {
                         onRouterLink(
-                          `/detailsProduct/${favorite.products?.idProduct}`
+                          `/detailsProduct/${favorite?.products?.idProduct}`
                         );
                       }}
                     >
-                      {favorite.image_url && favorite.image_url.length > 0
-                        ? favorite.image_url.map((img: string, i: number) => (
-                            <div key={i} className="cursor-pointer">
-                              <img
-                                src={img}
-                                style={{
-                                  objectFit: "contain",
-                                  height: "200px",
-                                }}
-                                loading="lazy"
-                              />
-                            </div>
-                          ))
+                      {(favorite?.products as any).image_url &&
+                      (favorite?.products as any).image_url.length > 0
+                        ? (favorite?.products as any).image_url.map(
+                            (img: string, i: number) => (
+                              <div key={i}>
+                                <img
+                                  src={img}
+                                  style={{
+                                    objectFit: "contain",
+                                    height: "150px",
+                                    marginTop: "12px",
+                                  }}
+                                  loading="lazy"
+                                />
+                              </div>
+                            )
+                          )
                         : [<div key="no-img">Sin imágenes</div>]}
                     </Carousel>
                   </div>
                 </div>
-
-                <div className="content-favorite grid grid-cols-[5fr_auto]">
-                  <div className="flex flex-col p-3">
-                    <p
-                      className="text-[#606060]"
-                      style={{ fontWeight: "bold" }}
-                    >
-                      <span className="font-bold text-black">Nombre:</span>{" "}
-                      {favorite?.products?.name}
-                    </p>
-
-                    {favorite.products?.description ? (
-                      <p
-                        className="text-[#606060]"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        <span className="font-bold text-black">
-                          Descripción:
-                        </span>{" "}
-                        {favorite?.products?.description}
-                      </p>
-                    ) : null}
-
-                    <p>
-                      <span className="font-bold text-black">SKU: </span>
-                      <span className="text-[#606060]">
-                        {favorite.products?.sku}
-                      </span>
-                    </p>
-
-                    {favorite?.products?.upc && (
-                      <p>
-                        <span className="font-bold text-black">UPC: </span>
-                        <span>{favorite.products?.upc}</span>
-                      </p>
-                    )}
-
-                    <p>
-                      <span className="font-bold text-black">
-                        Fecha de agregado:
-                      </span>
-
-                      <span
-                        className="text-[#606060]"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        {" "}
-                        {favorite.createdAt != null
-                          ? new Date(favorite?.createdAt || "").toLocaleString()
-                          : ""}
-                      </span>
-                    </p>
-
-                    <div>
-                      <ul>
-                        {favorite.products?.caracteristicas
-                          ? (() => {
-                              try {
-                                const caracs = JSON.parse(
-                                  favorite.products?.caracteristicas
-                                );
-                                if (
-                                  Array.isArray(caracs) &&
-                                  caracs.length > 0
-                                ) {
-                                  return caracs.map(
-                                    (carac: any, index: number) => (
-                                      <li
-                                        key={index}
-                                        className="flex gap-2 items-end"
-                                      >
-                                        <span className="font-bold text-black text-[19px]">
-                                          {carac.prop}:
-                                        </span>
-                                        <span className="italic">
-                                          {carac.value}
-                                        </span>
-                                      </li>
-                                    )
-                                  );
-                                }
-                                return "Sin caracteristicas disponibles";
-                              } catch (e) {
-                                return "Sin caracteristicas disponibles";
-                              }
-                            })()
-                          : "Sin caracteristicas disponibles"}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row items-center justify-center">
-                    <div className="flex flex-col items-end">
-                      <span
-                        className="text-[#bb3d4b]"
-                        style={{ fontWeight: "bold", fontSize: "19px" }}
-                      >
-                        {formatCurrency(Number(favorite.products?.price))}
-                      </span>
-
-                      <span
-                        className="text-[#606060]"
-                        style={{ fontWeight: "bold", fontSize: "14px" }}
-                      >
-                        Disponibles: {favorite.products?.stock.toLocaleString()}{" "}
-                        piezas
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col mx-3">
-                      <button
-                        className="bg-[#bb3d4b] px-2 py-2 text-[white] rounded flex flex-row items-center gap-2"
-                        style={{ fontWeight: "bold" }}
-                        disabled={
-                          loadingAddCartFavorite ||
-                          favorite.products?.stock == 0
-                        }
-                        onClick={() => handleAddFavoriteCart(favorite)}
-                      >
-                        {loadingAddCartFavorite ? (
-                          <MdAutorenew
-                            size={20}
-                            className="m-auto the-spinner"
-                          />
-                        ) : (
-                          <>
-                            {favorite?.products?.stock == 0 ? (
-                              "No disponible"
-                            ) : (
-                              <>
-                                Agregar al carrito
-                                <MdShoppingCart size={20} color="white" />
-                              </>
-                            )}
-                          </>
-                        )}
-                      </button>
-
-                      <button
-                        className="border bg-white text-black rounded px-2 py-2 my-2"
-                        disabled={loadingRemoveFavorite}
-                        onClick={() => handleRemoveFavorite(favorite)}
-                      >
-                        {loadingRemoveFavorite ? (
-                          <MdAutorenew
-                            size={20}
-                            className="m-auto the-spinner"
-                          />
-                        ) : (
-                          "Eliminar"
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <hr />
               </div>
             );
           })}
