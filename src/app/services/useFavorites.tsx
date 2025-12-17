@@ -237,6 +237,8 @@ const useFavorites = () => {
     handleRemoveFavorite,
     loadingAddId,
     loadingRemoveId,
+    loadingFavorite,
+    loadingAddCartFavorite,
   };
 };
 
