@@ -18,6 +18,9 @@ const useFavorites = () => {
   const [loadingAddCartFavorite, setLoadingAddCartFavorite] =
     useState<boolean>(false);
 
+  const [loadingAddId, setLoadingAddId] = useState<string | null>(null);
+  const [loadingRemoveId, setLoadingRemoveId] = useState<string | null>(null);
+
   const handleGetDataFavorites = async () => {
     try {
       const resp = await requestGet("/favorites/getFavoritesUser");
@@ -68,6 +71,7 @@ const useFavorites = () => {
 
   const handleAddFavoriteCart = async (product: FavoritesI) => {
     try {
+      setLoadingAddId(String(product.productId) || null);
       setLoadingAddCartFavorite(true);
 
       const resp = await requestPost(
@@ -121,6 +125,8 @@ const useFavorites = () => {
       }
     } catch (error) {
       setLoadingAddCartFavorite(false);
+    } finally {
+      setLoadingAddId(null);
     }
   };
 
@@ -191,6 +197,7 @@ const useFavorites = () => {
 
   const handleRemoveFavorite = async (favorite: FavoritesI) => {
     try {
+      setLoadingRemoveId(favorite.products?.idProduct?.toString()! || null);
       setLoadingRemoveFavorite(true);
 
       const resp = await requestPost(
@@ -217,6 +224,8 @@ const useFavorites = () => {
       }
     } catch (error) {
       setLoadingRemoveFavorite(false);
+    } finally {
+      setLoadingRemoveId(null);
     }
   };
 
@@ -226,9 +235,8 @@ const useFavorites = () => {
     handleAddFavoriteCart,
     handleSelectOrden,
     handleRemoveFavorite,
-    loadingFavorite,
-    loadingRemoveFavorite,
-    loadingAddCartFavorite,
+    loadingAddId,
+    loadingRemoveId,
   };
 };
 

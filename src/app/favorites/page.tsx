@@ -10,16 +10,16 @@ import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
-import styles from "./favorites.module.css";
 import ProductI from "../interfaces/products/product.interface";
+import { useState } from "react";
 
 const Favorites = () => {
   const {
     handleAddFavoriteCart,
     handleSelectOrden,
     handleRemoveFavorite,
-    loadingRemoveFavorite,
-    loadingAddCartFavorite,
+    loadingAddId,
+    loadingRemoveId,
   } = useFavorites();
   const { dataFavorites, dataProducts } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
@@ -443,7 +443,7 @@ const Favorites = () => {
                         <div>
                           <button
                             disabled={
-                              loadingAddCartFavorite ||
+                              loadingAddId == favorite.products?.idProduct ||
                               favorite?.products?.stock == 0
                             }
                             className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
@@ -474,7 +474,7 @@ const Favorites = () => {
                               handleAddFavoriteCart(favorite);
                             }}
                           >
-                            {loadingAddCartFavorite ? (
+                            {loadingAddId == favorite.products?.idProduct ? (
                               <MdAutorenew
                                 size={20}
                                 className="m-auto the-spinner"
@@ -495,10 +495,13 @@ const Favorites = () => {
 
                           <button
                             className="border bg-white text-black rounded px-2 py-2 my-2"
-                            disabled={loadingRemoveFavorite}
+                            disabled={
+                              loadingRemoveId === favorite?.products?.idProduct
+                            }
                             onClick={() => handleRemoveFavorite(favorite)}
                           >
-                            {loadingRemoveFavorite ? (
+                            {loadingRemoveId ===
+                            favorite?.products?.idProduct ? (
                               <MdAutorenew
                                 size={20}
                                 className="m-auto the-spinner"
