@@ -443,7 +443,7 @@ const Favorites = () => {
                         <div>
                           <button
                             disabled={
-                              //loadingAddProductCar ||
+                              loadingAddCartFavorite ||
                               favorite?.products?.stock == 0
                             }
                             className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
@@ -474,23 +474,38 @@ const Favorites = () => {
                               handleAddFavoriteCart(favorite);
                             }}
                           >
-                            {/* {loadingAddProductCar ? (
-                                      <MdAutorenew
-                                        size={20}
-                                        className="m-auto the-spinner"
-                                      />
-                                    ) : ( */}
-                            <>
-                              {favorite?.products?.stock == 0 ? (
-                                "No disponible"
-                              ) : (
-                                <>
-                                  Agregar al carrito
-                                  <MdShoppingCart size={20} color="white" />
-                                </>
-                              )}
-                            </>
-                            {/* )} */}
+                            {loadingAddCartFavorite ? (
+                              <MdAutorenew
+                                size={20}
+                                className="m-auto the-spinner"
+                              />
+                            ) : (
+                              <>
+                                {favorite?.products?.stock == 0 ? (
+                                  "No disponible"
+                                ) : (
+                                  <>
+                                    Agregar al carrito
+                                    <MdShoppingCart size={20} color="white" />
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            className="border bg-white text-black rounded px-2 py-2 my-2"
+                            disabled={loadingRemoveFavorite}
+                            onClick={() => handleRemoveFavorite(favorite)}
+                          >
+                            {loadingRemoveFavorite ? (
+                              <MdAutorenew
+                                size={20}
+                                className="m-auto the-spinner"
+                              />
+                            ) : (
+                              "Eliminar"
+                            )}
                           </button>
                         </div>
                       </div>
