@@ -1,6 +1,6 @@
 "use client";
 
-import { MdAutorenew, MdDirectionsCar, MdStore } from "react-icons/md";
+import { MdAutorenew, MdClose, MdDirectionsCar, MdStore } from "react-icons/md";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
@@ -9,27 +9,31 @@ import useOpcionesEntrega from "./useOpcionesEntrega";
 import styles from "./opciones-entrega.module.css";
 import { use, useEffect, useMemo } from "react";
 import useStorage from "../services/useStorage";
+import { CheckCircle } from "lucide-react";
 
 const OpcionesEntrega = () => {
   const { onRouterLink } = useService();
   const {
     handleOnChangeOptionEnvio,
-    setIdAddressEnvio,
     handleRemoveAddress,
     handleFormRegisterAddress,
     setIsEditAddress,
     getValuesStorage,
-    idAddressEnvio,
+
     optionEnvio,
+    setOptionEnvio,
     loadingAddressUser,
     handleFormEditAddress,
-    loadingEdit,
   } = useOpcionesEntrega();
 
-  const { handleWriteStorageProgressPay } = useStorage();
-
-  const { dataCart, dataUserAddress, setDataModal, setDataAddress } =
-    useTheContext();
+  const {
+    dataCart,
+    dataUserAddress,
+    idAddressEnvio,
+    setIdAddressEnvio,
+    setDataModal,
+    setDataAddress,
+  } = useTheContext();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -41,12 +45,6 @@ const OpcionesEntrega = () => {
 
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
-
-  useEffect(() => {
-    if (dataUserAddress.length === 1) {
-      setIdAddressEnvio(Number(dataUserAddress[0].idAddress));
-    }
-  }, [dataUserAddress]);
 
   useEffect(() => {
     loadingAddressUser();
@@ -250,7 +248,7 @@ const OpcionesEntrega = () => {
                         </label>
                       </div> */}
 
-                      <div className="flex items-center relative ">
+                      {/* <div className="flex items-center relative ">
                         <input
                           type="radio"
                           name="envio"
@@ -283,11 +281,11 @@ const OpcionesEntrega = () => {
                             </span>
                           </div>
                         </label>
-                      </div>
+                      </div> */}
                     </>
                   )}
 
-                {totalPrice >= 1000 &&
+                {/* {totalPrice >= 1000 &&
                 dataUserAddress &&
                 dataUserAddress.length > 0 &&
                 optionEnvio != "sucursal" ? (
@@ -511,7 +509,7 @@ const OpcionesEntrega = () => {
                       }
                     })}
                   </form>
-                ) : null}
+                ) : null} */}
 
                 <hr />
               </div>
@@ -528,6 +526,100 @@ const OpcionesEntrega = () => {
               Agregar domicilio
             </button>
           </div>
+
+          {idAddressEnvio != 0 &&
+            dataUserAddress &&
+            dataUserAddress.length > 0 &&
+            dataUserAddress.map((selectedAddress) => {
+              if (selectedAddress.idAddress == idAddressEnvio) {
+                return (
+                  <div
+                    className="bg-red-50 rounded-lg border border-red-200 p-3 relative"
+                    key={1}
+                  >
+                    <button
+                      className="absolute right-3 top-3"
+                      onClick={() => {
+                        setIdAddressEnvio(0);
+                        setOptionEnvio("");
+                      }}
+                    >
+                      <MdClose size={30} />
+                    </button>
+
+                    <span className="font-bold text-black text-[18px] block my-3">
+                      Seleccionaste el domicilio:
+                    </span>
+
+                    <div className="flex items-start gap-2">
+                      <CheckCircle
+                        size={18}
+                        className="text-[#BB3D4B] flex-shrink-0 mt-0.5"
+                      />
+                      <div className="text-sm">
+                        <p className="font-semibold text-gray-800">
+                          {selectedAddress.street} #{selectedAddress.noExt}
+                          {selectedAddress.noInt &&
+                            ` Int. ${selectedAddress.noInt}`}
+                        </p>
+                        <p className="text-gray-600 text-xs mt-1">
+                          {selectedAddress.cologne}, {selectedAddress.city} • CP{" "}
+                          {selectedAddress.postalCode}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex my-2 justify-start p-2">
+                      <a
+                        role="button"
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "10px",
+                          color: "#606060",
+                          fontWeight: "bold",
+                          textDecoration: "none",
+                        }}
+                        onClick={() => {
+                          setIsEditAddress({
+                            edit: true,
+                            idAddress: selectedAddress.idAddress,
+                          });
+                          setDataAddress({
+                            city: selectedAddress.city,
+                            cologne: selectedAddress.cologne,
+                            country: selectedAddress.country,
+                            noExt: selectedAddress.noExt,
+                            phone1: selectedAddress.phone1,
+                            phone2: selectedAddress.phone2,
+                            state: selectedAddress.state,
+                            street: selectedAddress.street,
+                            noInt: selectedAddress.noInt,
+                            codePostal: Number(selectedAddress.postalCode),
+                          });
+
+                          handleFormEditAddress(selectedAddress);
+                        }}
+                      >
+                        Editar
+                      </a>
+
+                      <a
+                        role="button"
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "10px",
+                          color: "#BB3D4B",
+                          fontWeight: "bold",
+                          textDecoration: "none",
+                        }}
+                        onClick={() => handleRemoveAddress(selectedAddress)}
+                      >
+                        Eliminar
+                      </a>
+                    </div>
+                  </div>
+                );
+              }
+            })}
 
           {dataCart && dataCart.length > 0 && (
             <div className="w-full flex justify-end items-center  gap-5 mt-4">
@@ -567,12 +659,12 @@ const OpcionesEntrega = () => {
                       },
                     });
                   } else {
-                    handleWriteStorageProgressPay({
-                      optionSend: {
-                        name: optionEnvio,
-                        address: idAddressEnvio,
-                      },
-                    });
+                    // handleWriteStorageProgressPay({
+                    //   optionSend: {
+                    //     name: optionEnvio,
+                    //     address: idAddressEnvio,
+                    //   },
+                    // });
                     onRouterLink("/forma-de-pago");
                   }
                 }}

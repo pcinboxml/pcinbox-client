@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 interface progressPayI {
   optionSend: {
-    name: string;
+    name?: string;
     address?: number;
   };
   methodPay: {

@@ -103,6 +103,8 @@ interface ContextProps {
       }[]
     >
   >;
+  idAddressEnvio: number;
+  setIdAddressEnvio: Dispatch<SetStateAction<number>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -169,6 +171,8 @@ const CreateContext = createContext<ContextProps>({
   setPostalCodes: () => {},
   dataCategories: [],
   setDataCategories: () => {},
+  idAddressEnvio: 0,
+  setIdAddressEnvio: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -216,7 +220,16 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     edit: false,
     idAddress: 0,
   });
-
+  const [idAddressEnvio, setIdAddressEnvio] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("progressPay");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed?.optionSend?.address ?? 0;
+      }
+    }
+    return 0;
+  });
   const [dataAddress, setDataAddress] = useState<DataSendI>({
     street: "",
     noExt: "",
@@ -349,6 +362,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setPostalCodes,
         dataCategories,
         setDataCategories,
+        idAddressEnvio,
+        setIdAddressEnvio,
       }}
     >
       {children}

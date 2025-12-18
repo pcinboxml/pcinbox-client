@@ -36,14 +36,6 @@ const RegisterDomicilio = () => {
       .map(([key]) => key);
 
     if (emptyFields.length > 0) {
-      setDataModal({
-        isOpen: true,
-        message: "Completa los campos",
-        title: "Error",
-        type: "error",
-        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      });
       return;
     }
 
@@ -166,59 +158,45 @@ const RegisterDomicilio = () => {
   };
 
   return (
-    <div className="w-full flex justify-end">
-      <div className="px-3">
-        <form className="w-[100%] my-3 mx-auto">
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-4 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Calle:
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="street"
-                value={dataAddress?.street}
-                onChange={handleOnChange}
-              />
-            </div>
+    <div className="w-full">
+      <div className="px-3 w-full max-w-3xl">
+        <form className="w-full my-3 mx-auto">
+          {/* Calle */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Calle:
+            </label>
+            <input
+              type="text"
+              className="form-control w-full"
+              name="street"
+              value={dataAddress?.street}
+              onChange={handleOnChange}
+            />
           </div>
 
-          <div className="grid grid-cols-[auto_auto] gap-2 items-end justify-end mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base  mx-2 block"
-              >
+          {/* Número exterior / interior */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+            <div className="grid grid-cols-[80px_1fr] gap-2 items-center">
+              <label className="text-[#808080] text-base text-right">
                 Número Ext:
               </label>
               <input
                 type="text"
-                className="form-control"
+                className="form-control w-full"
                 name="noExt"
                 value={dataAddress?.noExt}
                 onChange={handleOnChange}
               />
             </div>
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label htmlFor="" className="text-[#808080] text-base mx-2">
-                Interior: (opcional)
+
+            <div className="grid grid-cols-[80px_1fr] gap-2 items-center">
+              <label className="text-[#808080] text-base text-right whitespace-normal">
+                Interior (opcional):
               </label>
               <input
                 type="text"
-                className="form-control"
+                className="form-control w-full"
                 name="noInt"
                 value={dataAddress?.noInt}
                 onChange={handleOnChange}
@@ -226,187 +204,133 @@ const RegisterDomicilio = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label htmlFor="" className="text-[#808080] text-base mx-2 block">
-                Código Postal:
-              </label>
-
-              <input
-                type="number"
-                name="codePostal"
-                className="form-control"
-                onChange={handleOnChange}
-                value={
-                  dataAddress?.codePostal == 0 ? "" : dataAddress?.codePostal
-                }
-              />
-            </div>
+          {/* Código Postal */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Código Postal:
+            </label>
+            <input
+              type="number"
+              name="codePostal"
+              className="form-control w-full"
+              onChange={handleOnChange}
+              value={
+                dataAddress?.codePostal === 0 ? "" : dataAddress?.codePostal
+              }
+            />
           </div>
 
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
+          {/* Colonia */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Colonia:
+            </label>
+            <select
+              name="cologne"
+              className="form-select w-full"
+              disabled={postalCodes.length === 0}
+              onChange={handleOnSelect}
+              value={dataAddress.cologne ?? ""}
             >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Colonia:
-              </label>
-
-              <select
-                name="cologne"
-                className="form-select"
-                disabled={postalCodes.length == 0}
-                onChange={handleOnSelect}
-                value={dataAddress.cologne ?? ""}
-              >
-                {postalCodes && postalCodes.length > 0 ? (
-                  <>
-                    <option value="">Selecciona una colonia</option>
-                    {postalCodes.map((pCodes) => (
-                      <option key={pCodes.placeName} value={pCodes.placeName}>
-                        {pCodes.placeName}
-                      </option>
-                    ))}
-                  </>
-                ) : (
-                  <option value="">Selecciona una colonia</option>
-                )}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Estado:
-              </label>
-
-              <select
-                name="state"
-                className="form-select"
-                disabled={postalCodes.length === 0}
-                onChange={handleOnSelect}
-                value={dataAddress.state ?? ""}
-              >
-                <option value="">
-                  {postalCodes.length > 0
-                    ? postalCodes[0].adminName1
-                    : "Selecciona un estado"}
+              <option value="">Selecciona una colonia</option>
+              {postalCodes.map((pCodes) => (
+                <option key={pCodes.placeName} value={pCodes.placeName}>
+                  {pCodes.placeName}
                 </option>
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
 
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
+          {/* Estado */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Estado:
+            </label>
+            <select
+              name="state"
+              className="form-select w-full"
+              disabled={postalCodes.length === 0}
+              onChange={handleOnSelect}
+              value={dataAddress.state ?? ""}
             >
-              {" "}
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Ciudad:
-              </label>
-              <select
-                name="city"
-                className="form-select"
-                disabled={postalCodes.length === 0}
-                onChange={handleOnSelect}
-                value={dataAddress.city ?? ""}
-              >
-                {postalCodes.length > 0 ? (
-                  <option value={postalCodes[0].adminName3}>
-                    {postalCodes[0].adminName3}
-                  </option>
-                ) : (
-                  <option value="">Selecciona una ciudad</option>
-                )}
-              </select>
-            </div>
+              <option value="">
+                {postalCodes.length > 0
+                  ? postalCodes[0].adminName1
+                  : "Selecciona un estado"}
+              </option>
+            </select>
           </div>
 
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
+          {/* Ciudad */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Ciudad:
+            </label>
+            <select
+              name="city"
+              className="form-select w-full"
+              disabled={postalCodes.length === 0}
+              onChange={handleOnSelect}
+              value={dataAddress.city ?? ""}
             >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Teléfono 1:
-              </label>
-
-              <input
-                type="text"
-                className="form-control"
-                name="phone1"
-                onChange={handleOnChange}
-                value={dataAddress?.phone1}
-              />
-            </div>
+              {postalCodes.length > 0 ? (
+                <option value={postalCodes[0].adminName3}>
+                  {postalCodes[0].adminName3}
+                </option>
+              ) : (
+                <option value="">Selecciona una ciudad</option>
+              )}
+            </select>
           </div>
 
-          <div className="grid grid-cols-[auto] gap-2 items-center mt-2 relative">
-            <div
-              className="flex justify-center"
-              style={{ alignItems: "flex-end" }}
-            >
-              <label
-                htmlFor=""
-                className="text-[#808080] text-base text-end mx-2 block"
-              >
-                Teléfono 2: <br /> (opcional)
-              </label>
-
-              <input
-                type="text"
-                className="form-control"
-                name="phone2"
-                onChange={handleOnChange}
-                value={dataAddress?.phone2}
-              />
-            </div>
+          {/* Teléfono 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right">
+              Teléfono 1:
+            </label>
+            <input
+              type="text"
+              className="form-control w-full"
+              name="phone1"
+              onChange={handleOnChange}
+              value={dataAddress?.phone1}
+            />
           </div>
 
-          <div
-            className={`grid grid-cols-[auto_auto] gap-2 items-center mt-2 relative containerBtnGuardar1`}
-          >
+          {/* Teléfono 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center my-2">
+            <label className="text-[#808080] text-base text-right whitespace-normal">
+              Teléfono 2 (opcional):
+            </label>
+            <input
+              type="text"
+              className="form-control w-full"
+              name="phone2"
+              onChange={handleOnChange}
+              value={dataAddress?.phone2}
+            />
+          </div>
+
+          {/* Botones */}
+          <div className="grid grid-cols-2 gap-4 pt-4">
             <button
               type="button"
               className="border rounded p-2 font-bold"
-              onClick={() => {
-                setDataModal((prev) => ({ ...prev, isOpen: false }));
-              }}
+              onClick={() =>
+                setDataModal((prev) => ({ ...prev, isOpen: false }))
+              }
             >
               Cancelar
             </button>
+
             <button
               type="button"
-              onClick={() => {
-                registerAddress(dataAddress);
-              }}
+              onClick={() => registerAddress(dataAddress)}
               disabled={loadingRegisterAddress}
-              className="p-2 bg-[#BB3D4B] text-white font-bold mt-1"
-              style={{ borderRadius: "10px" }}
+              className="p-2 bg-[#BB3D4B] text-white font-bold rounded"
             >
               {loadingRegisterAddress ? (
-                <MdAutorenew size={20} className="m-auto the-spinner" />
+                <MdAutorenew size={20} className="m-auto animate-spin" />
               ) : (
                 "Guardar"
               )}
