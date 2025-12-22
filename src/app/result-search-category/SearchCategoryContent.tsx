@@ -636,7 +636,7 @@ const SearchCategoryContent = () => {
                                   </ul>
                                 </div>
                                 <div className="px-3">
-                                  <span>
+                                  <span className="text-[20px] font-bold">
                                     {formatCurrency(Number(item.price))}
                                   </span>
                                   <br />
