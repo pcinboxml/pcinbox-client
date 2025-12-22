@@ -56,7 +56,7 @@ const SidebarMiCuenta = () => {
             Cambiar contraseña
           </a>
         </li>
-        <li className={`${styles.li} ${isRouteActive("/mis-pedidos")[1]}`}>
+        {/* <li className={`${styles.li} ${isRouteActive("/mis-pedidos")[1]}`}>
           <a
             role="button"
             onClick={() => onRouterLink("/mis-pedidos")}
@@ -64,7 +64,7 @@ const SidebarMiCuenta = () => {
           >
             Mis pedidos
           </a>
-        </li>
+        </li> */}
 
         {/* <li
           className={`${styles.tagA} ${

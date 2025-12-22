@@ -469,10 +469,10 @@ const Navbar = () => {
                                 path: "/cambiar-contrasena",
                                 name: "Cambiar contraseña",
                               },
-                              {
-                                path: "/mis-pedidos",
-                                name: "Mis pedidos",
-                              },
+                              // {
+                              //   path: "/mis-pedidos",
+                              //   name: "Mis pedidos",
+                              // },
                               {
                                 path: "/ordenes",
                                 name: "Carrito",

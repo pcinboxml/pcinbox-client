@@ -1,0 +1,7 @@
+@media (max-width: 992px) {
+  .containerDataCompra {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}

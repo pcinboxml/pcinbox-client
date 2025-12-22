@@ -20,7 +20,8 @@ const MisPedidos = () => {
       </div>
 
       <div className="w-[80%] border p-3">
-        {rows && rows.length > 0 ? (
+        <Alert severity="info">Sin contenido disponible</Alert>
+        {/* {rows && rows.length > 0 ? (
           <div>
             <span
               className="text-[#bb3d4b]"
@@ -38,7 +39,7 @@ const MisPedidos = () => {
           </div>
         ) : (
           <Alert severity="info">Sin contenido disponible</Alert>
-        )}
+        )} */}
       </div>
     </section>
   );
