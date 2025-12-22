@@ -1,5 +1,6 @@
 "use client";
 
+import { SalesByUserI } from "@/app/interfaces/compras/salesByUser.interface";
 import useService from "../../services/useService";
 import { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
@@ -9,7 +10,9 @@ const useDetallesPedido = () => {
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  const [rows, setRows] = useState([]);
+  const [dataSalesByUser, setDataSalesByUser] = useState<SalesByUserI | null>(
+    null
+  );
 
   useEffect(() => {
     const match = window.matchMedia("(max-width: 1550px)");
@@ -26,142 +29,142 @@ const useDetallesPedido = () => {
     };
   }, []);
 
-  const columns = [
-    {
-      field: "img",
-      headerName: "Imagen",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
+  // const columns = [
+  //   {
+  //     field: "img",
+  //     headerName: "Imagen",
+  //     flex: isSmallScreen ? undefined : 1,
+  //     width: isSmallScreen ? 170 : undefined,
 
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center h-[150px] max-h-[200px] p-1">
-              <Carousel
-                showIndicators={true}
-                showThumbs={false}
-                showStatus={false}
-                showArrows={true}
-                // onClickItem={() => {
-                //   onRouterLink(`/detailsProduct/${params.row.id}`);
-                // }}
-              >
-                {params.value && params.value.length > 0
-                  ? params.value.map((img: string, i: number) => (
-                      <div key={i}>
-                        <img
-                          src={img}
-                          style={{
-                            objectFit: "contain",
-                            height: "150px",
-                            marginTop: "12px",
-                          }}
-                          loading="lazy"
-                        />
-                      </div>
-                    ))
-                  : [<div key="no-img">Sin imágenes</div>]}
-              </Carousel>
-              {/* <img
-                src={params.value[0]}
-                alt="User"
-                width={50}
-                height={50}
-                className="mx-auto my-2"
-              /> */}
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "description",
-      headerName: "Descripción",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 350 : undefined,
-      renderCell: (params: any) => {
-        if (params) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                title={params.value}
-                className="inline-block text-center text-sm leading-snug w-full text-[#808080]"
-                style={{
-                  display: "inline-block",
-                  wordBreak: "break-word",
-                  whiteSpace: "normal",
-                }}
-              >
-                {params?.value?.length > 150
-                  ? `${params.value.slice(0, 150)}...`
-                  : params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "quantity",
-      headerName: "Cantidad",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {params.value}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "unitPrice",
-      headerName: "Precio Unitario",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-    {
-      field: "totalPrice",
-      headerName: "Precio Total",
-      flex: isSmallScreen ? undefined : 1,
-      width: isSmallScreen ? 170 : undefined,
-      renderCell: (params: any) => {
-        if (params.value) {
-          return (
-            <div className="flex justify-center items-center min-h-[100%] p-1">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                {formatCurrency(Number(params.value))}
-              </span>
-            </div>
-          );
-        }
-      },
-    },
-  ];
+  //     renderCell: (params: any) => {
+  //       if (params.value) {
+  //         return (
+  //           <div className="flex justify-center items-center h-[150px] max-h-[200px] p-1">
+  //             <Carousel
+  //               showIndicators={true}
+  //               showThumbs={false}
+  //               showStatus={false}
+  //               showArrows={true}
+  //               // onClickItem={() => {
+  //               //   onRouterLink(`/detailsProduct/${params.row.id}`);
+  //               // }}
+  //             >
+  //               {params.value && params.value.length > 0
+  //                 ? params.value.map((img: string, i: number) => (
+  //                     <div key={i}>
+  //                       <img
+  //                         src={img}
+  //                         style={{
+  //                           objectFit: "contain",
+  //                           height: "150px",
+  //                           marginTop: "12px",
+  //                         }}
+  //                         loading="lazy"
+  //                       />
+  //                     </div>
+  //                   ))
+  //                 : [<div key="no-img">Sin imágenes</div>]}
+  //             </Carousel>
+  //             {/* <img
+  //               src={params.value[0]}
+  //               alt="User"
+  //               width={50}
+  //               height={50}
+  //               className="mx-auto my-2"
+  //             /> */}
+  //           </div>
+  //         );
+  //       }
+  //     },
+  //   },
+  //   {
+  //     field: "description",
+  //     headerName: "Descripción",
+  //     flex: isSmallScreen ? undefined : 1,
+  //     width: isSmallScreen ? 350 : undefined,
+  //     renderCell: (params: any) => {
+  //       if (params) {
+  //         return (
+  //           <div className="flex justify-center items-center min-h-[100%] p-1">
+  //             <span
+  //               title={params.value}
+  //               className="inline-block text-center text-sm leading-snug w-full text-[#808080]"
+  //               style={{
+  //                 display: "inline-block",
+  //                 wordBreak: "break-word",
+  //                 whiteSpace: "normal",
+  //               }}
+  //             >
+  //               {params?.value?.length > 150
+  //                 ? `${params.value.slice(0, 150)}...`
+  //                 : params.value}
+  //             </span>
+  //           </div>
+  //         );
+  //       }
+  //     },
+  //   },
+  //   {
+  //     field: "quantity",
+  //     headerName: "Cantidad",
+  //     flex: isSmallScreen ? undefined : 1,
+  //     width: isSmallScreen ? 170 : undefined,
+  //     renderCell: (params: any) => {
+  //       if (params.value) {
+  //         return (
+  //           <div className="flex justify-center items-center min-h-[100%] p-1">
+  //             <span
+  //               className="text-[#808080] block text-center"
+  //               style={{ fontSize: "18px", fontWeight: "600" }}
+  //             >
+  //               {params.value}
+  //             </span>
+  //           </div>
+  //         );
+  //       }
+  //     },
+  //   },
+  //   {
+  //     field: "unitPrice",
+  //     headerName: "Precio Unitario",
+  //     flex: isSmallScreen ? undefined : 1,
+  //     width: isSmallScreen ? 170 : undefined,
+  //     renderCell: (params: any) => {
+  //       if (params.value) {
+  //         return (
+  //           <div className="flex justify-center items-center min-h-[100%] p-1">
+  //             <span
+  //               className="text-[#808080] block text-center"
+  //               style={{ fontSize: "18px", fontWeight: "600" }}
+  //             >
+  //               {formatCurrency(Number(params.value))}
+  //             </span>
+  //           </div>
+  //         );
+  //       }
+  //     },
+  //   },
+  //   {
+  //     field: "totalPrice",
+  //     headerName: "Precio Total",
+  //     flex: isSmallScreen ? undefined : 1,
+  //     width: isSmallScreen ? 170 : undefined,
+  //     renderCell: (params: any) => {
+  //       if (params.value) {
+  //         return (
+  //           <div className="flex justify-center items-center min-h-[100%] p-1">
+  //             <span
+  //               className="text-[#808080] block text-center"
+  //               style={{ fontSize: "18px", fontWeight: "600" }}
+  //             >
+  //               {formatCurrency(Number(params.value))}
+  //             </span>
+  //           </div>
+  //         );
+  //       }
+  //     },
+  //   },
+  // ];
 
   const handleGetSalesByUser = async (idOrder: any) => {
     try {
@@ -171,45 +174,49 @@ const useDetallesPedido = () => {
       );
       if (resp.status == 200) {
         const data = resp.data;
+        setDataSalesByUser(data.data.data);
 
-        let dataRow = data.data.data.map((item: any) => {
-          return {
-            id: item.idOrder,
-            img: item.image_url,
-            description: item.description,
-            quantity: Number(item.quantity),
-            unitPrice: Number(item.price),
-            totalPrice: Number(item.totalAmount),
-          };
-        });
+        // let dataRow = data.data.data.map((item: any) => {
+        //   return {
+        //     id: item.idOrder,
+        //     img: item.image_url,
+        //     description: item.description,
+        //     quantity: Number(item.quantity),
+        //     unitPrice: Number(item.price),
+        //     totalPrice: Number(item.totalAmount),
+        //     createdAt: item.createdAt,
+        //     pay_method: item.pay_method,
+        //     status: item.status,
+        //     updatedAt: item.updatedAt,
+        //   };
+        // });
 
-        const grouped: any = Object.values(
-          dataRow.reduce((acc: any, item: any) => {
-            if (!acc[item.id]) {
-              // Clonar el item para no modificar el original
-              acc[item.id] = { ...item };
-            } else {
-              // Sumar quantity
-              acc[item.id].quantity += item.quantity;
+        // const grouped: any = Object.values(
+        //   dataRow.reduce((acc: any, item: any) => {
+        //     if (!acc[item.id]) {
+        //       // Clonar el item para no modificar el original
+        //       acc[item.id] = { ...item };
+        //     } else {
+        //       // Sumar quantity
+        //       acc[item.id].quantity += item.quantity;
 
-              // (Opcional) combinar arrays de imágenes sin duplicar
-              acc[item.id].img = Array.from(
-                new Set([...acc[item.id].img, ...item.img])
-              );
-            }
-            return acc;
-          }, {})
-        );
+        //       // (Opcional) combinar arrays de imágenes sin duplicar
+        //       acc[item.id].img = Array.from(
+        //         new Set([...acc[item.id].img, ...item.img])
+        //       );
+        //     }
+        //     return acc;
+        //   }, {})
+        // );
 
-        setRows(grouped);
+        // setRows(grouped);
       }
     } catch (error) {
-      setRows([]);
+      setDataSalesByUser(null);
     }
   };
   return {
-    columns,
-    rows,
+    dataSalesByUser,
     handleGetSalesByUser,
   };
 };

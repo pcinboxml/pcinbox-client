@@ -235,10 +235,11 @@ const HistoryShop = () => {
                         }
                       </div>
                       <div className={style.orderDate}>
-                        {historyCompra.shipping_method == "envioLeon" ||
-                        historyCompra.shipping_method == "paqueteexpress" ||
-                        historyCompra.shipping_method == "dhl" ||
-                        historyCompra.shipping_method == "estafeta" ? (
+                        {(historyCompra.shipping_method == "envioLeon" ||
+                          historyCompra.shipping_method == "paqueteexpress" ||
+                          historyCompra.shipping_method == "dhl" ||
+                          historyCompra.shipping_method == "estafeta") &&
+                        historyCompra.statusEnvio != "entregado" ? (
                           <div>
                             <span>
                               Envío a tu domicilio. (
@@ -326,7 +327,8 @@ const HistoryShop = () => {
                             </div>
                           </div>
                         ) : historyCompra.shipping_method == "sucursal" &&
-                          historyCompra.statusEnvio != "cancelado" ? (
+                          historyCompra.statusEnvio != "cancelado" &&
+                          historyCompra.statusEnvio != "entregado" ? (
                           <span>
                             Recoger en sucursal{" "}
                             <span className="font-bold text-black">
