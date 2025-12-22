@@ -1,0 +1,73 @@
+export interface SalesByUserI {
+  idOrder: number;
+  userId: number;
+  totalAmount: string;
+  stripePaymentIntentId: any;
+  status: string;
+  paidAtOxxo: any;
+  shipping_method: string;
+  pay_method: string;
+  oxxo_reference: string;
+  gatewayPaymentId: string;
+  payment_plan: string;
+  createdAt: string;
+  updatedAt: string;
+  requiredFactura: number;
+  shipments: {
+    idShipment: number;
+    orderId: number;
+    addressId: number | null;
+    trackingNumber: string | null;
+    lastStatus: string | null;
+    lastLocation: string | null;
+    lastUpdated: string | null;
+    status: string;
+    createdAt: string;
+    addresses: {
+      active: number;
+      city: string;
+      cologne: string;
+      country: string;
+      createdAt: string;
+      idAddress: number;
+      noExt: string;
+      noInt: string;
+      phone1: string;
+      phone2: string;
+      postalCode: string;
+      state: string;
+      street: string;
+      updatedAt: string;
+      userId: number;
+    };
+  }[];
+  sales: {
+    idSale: number;
+    orderId: number;
+    productId: number;
+    userId: number;
+    quantity: number;
+    total: string;
+    status: string;
+    createdAt: string;
+    products: {
+      idProduct: number;
+      idProductExt: null | string;
+      name: string;
+      description: string;
+      caracteristicas: string;
+      price: string;
+      stock: number;
+      sku: string;
+      upc: null | string;
+      rating: number;
+      image_url: string[];
+      categoryId: null | number;
+      marcaId: null | number;
+      providerId: number;
+      isPC: number;
+      createdAt: string;
+      active: number;
+    };
+  }[];
+}
