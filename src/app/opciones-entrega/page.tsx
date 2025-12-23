@@ -274,8 +274,7 @@ const OpcionesEntrega = () => {
             </button>
           </div>
 
-          {((optionEnvio && optionEnvio != "sucursal") ||
-            progressPay?.optionSend?.address != 0) &&
+          {optionEnvio !== "sucursal" &&
             dataUserAddress &&
             dataUserAddress.length > 0 &&
             dataUserAddress.map((selectedAddress) => {
