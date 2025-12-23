@@ -189,6 +189,72 @@ export default function AppWrapper({
       });
     };
 
+    const handleUpdatedStock = (
+      dataSocket: { idProduct: number; stock: Number }[]
+    ) => {
+      setDataProducts((prev) =>
+        prev.map((item) => {
+          let findIdProduct = dataSocket.find(
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct)
+          );
+
+          if (findIdProduct) {
+            return {
+              ...item,
+              stock:
+                item?.stock == 0
+                  ? 0
+                  : Number(item?.stock - Number(findIdProduct.stock)),
+            };
+          }
+
+          return item;
+        })
+      );
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          let findIdProduct = dataSocket.find(
+            (dSocket) => Number(dSocket.idProduct) === Number(item.productId)
+          );
+
+          if (findIdProduct) {
+            return {
+              ...item,
+              products: {
+                ...item.products,
+                stock:
+                  item?.stock == 0
+                    ? 0
+                    : Number(item?.stock - Number(findIdProduct.stock)),
+              },
+            };
+          } else {
+            return item;
+          }
+        });
+      });
+
+      setDataCart((prevCart) => {
+        return prevCart.map((item) => {
+          let findIdProduct = dataSocket.find(
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct)
+          );
+
+          if (findIdProduct) {
+            return {
+              ...item,
+              stock:
+                item?.stock == 0
+                  ? 0
+                  : Number(item?.stock - Number(findIdProduct.stock)),
+            };
+          } else {
+            return item;
+          }
+        });
+      });
+    };
+
     socket.on("updateProductComponent", handlerUpdateProductComponent);
 
     socket.on("newProduct", handlerNewProduct);
@@ -282,6 +348,8 @@ export default function AppWrapper({
             bottom: "10px",
             right: "10px",
             textDecoration: "none",
+            background: "white",
+            borderRadius: "5px",
           }}
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
         >

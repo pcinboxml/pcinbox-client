@@ -190,8 +190,12 @@ const FormFactura = () => {
               value={dataFacturacion.city ?? ""}
             >
               {postalCodes2.length > 0 ? (
-                <option value={postalCodes2[0].adminName3}>
-                  {postalCodes2[0].adminName3}
+                <option
+                  value={
+                    postalCodes2[0]?.adminName3 || postalCodes2[0]?.adminName2
+                  }
+                >
+                  {postalCodes2[0]?.adminName3 || postalCodes2[0]?.adminName2}
                 </option>
               ) : (
                 <option value="">Selecciona una ciudad</option>
