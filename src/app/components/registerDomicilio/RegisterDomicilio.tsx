@@ -35,80 +35,58 @@ const RegisterDomicilio = () => {
       )
       .map(([key]) => key);
 
-    if (emptyFields.length > 0) {
-      return;
-    }
+    if (emptyFields.length > 0) return;
 
     setLoadingRegisterAddress(true);
 
     try {
       const resp = await requestPost(
-        isEditAddress.edit == false
+        isEditAddress.edit === false
           ? dataAddress
-          : {
-              ...dataAddress,
-              idAddress: isEditAddress.idAddress,
-            },
-        isEditAddress.edit == false
+          : { ...dataAddress, idAddress: isEditAddress.idAddress },
+        isEditAddress.edit === false
           ? "/address/registerAddress"
           : "/address/updatedAddress"
       );
 
       setLoadingRegisterAddress(false);
 
-      if (resp && resp.status == 200) {
+      if (resp && resp.status === 200) {
+        const data: AddressI[] = await resp.data.data.data;
+        setDataUserAddress(data);
+
         setDataModal({
           isOpen: true,
           message:
-            isEditAddress.edit == false
-              ? "Tu domicilio se creo correctamente"
-              : "Tu domicilio se actualizo correctamente",
+            isEditAddress.edit === false
+              ? "Tu domicilio se creó correctamente"
+              : "Tu domicilio se actualizó correctamente",
           title: "Correcto",
           type: "success",
-          onClose: async () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-            const data: AddressI[] = await resp.data.data.data;
-            setDataUserAddress(data);
-            setDataAddress({
-              city: "",
-              codePostal: 0,
-              cologne: "",
-              country: "",
-              noExt: "",
-              phone1: "",
-              phone2: "",
-              state: "",
-              street: "",
-              noInt: "",
-            });
-          },
-          onConfirm: async () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-            const data: AddressI[] = await resp.data.data.data;
-            setDataUserAddress(data);
-            setDataAddress({
-              city: "",
-              codePostal: 0,
-              cologne: "",
-              country: "",
-              noExt: "",
-              phone1: "",
-              phone2: "",
-              state: "",
-              street: "",
-              noInt: "",
-            });
-          },
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        });
+
+        setDataAddress({
+          city: "",
+          codePostal: 0,
+          cologne: "",
+          country: "",
+          noExt: "",
+          phone1: "",
+          phone2: "",
+          state: "",
+          street: "",
+          noInt: "",
         });
 
         return;
       }
     } catch (error: any) {
       setLoadingRegisterAddress(false);
-
       setDataModal({
         isOpen: true,
-        message: error.response.data.message,
+        message: error.response?.data?.message || "Ocurrió un error",
         title: "Error",
         type: "error",
         onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
@@ -121,27 +99,21 @@ const RegisterDomicilio = () => {
   const handleOnChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
-    if (name == "codePostal" && value.length == 5) {
+    if (name === "codePostal" && value.length === 5) {
       const resp = await requestPost(
-        {
-          postalCode: value,
-        },
+        { postalCode: value },
         "/geonames/getAddressWithPostalCode"
       );
 
-      if (resp.status == 200) {
+      if (resp.status === 200) {
         const dataResp = await resp.data.data;
-
         setPostalCodes(dataResp.postalcodes);
       }
-    } else if (name == "codePostal" && value.length < 5) {
+    } else if (name === "codePostal" && value.length < 5) {
       setPostalCodes([]);
     }
 
-    setDataAddress((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setDataAddress((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleOnSelect = async (
@@ -149,31 +121,23 @@ const RegisterDomicilio = () => {
   ) => {
     const { name, value } = event.currentTarget;
 
-    setDataAddress((prev) => ({
-      ...prev,
-      cologne: name == "cologne" ? value : "",
-      state: postalCodes[0].adminName1,
-      city: postalCodes[0].adminName3,
-    }));
+    setDataAddress((prev) => ({ ...prev, [name]: value }));
   };
 
   useEffect(() => {
     const getDataCP = async () => {
       const resp = await requestPost(
-        {
-          postalCode: dataAddress?.codePostal,
-        },
+        { postalCode: dataAddress?.codePostal },
         "/geonames/getAddressWithPostalCode"
       );
 
-      if (resp.status == 200) {
+      if (resp.status === 200) {
         const dataResp = await resp.data.data;
-
         setPostalCodes(dataResp.postalcodes);
       }
     };
 
-    if (dataAddress && isEditAddress?.edit == true) {
+    if (dataAddress && isEditAddress?.edit === true) {
       getDataCP();
     }
   }, [dataAddress]);
@@ -274,11 +238,13 @@ const RegisterDomicilio = () => {
               onChange={handleOnSelect}
               value={dataAddress.state ?? ""}
             >
-              <option value="">
-                {postalCodes.length > 0
-                  ? postalCodes[0].adminName1
-                  : "Selecciona un estado"}
-              </option>
+              {postalCodes.length > 0 ? (
+                <option value={postalCodes[0].adminName1}>
+                  {postalCodes[0].adminName1}
+                </option>
+              ) : (
+                <option value="">Selecciona un estado</option>
+              )}
             </select>
           </div>
 
@@ -295,8 +261,12 @@ const RegisterDomicilio = () => {
               value={dataAddress.city ?? ""}
             >
               {postalCodes.length > 0 ? (
-                <option value={postalCodes[0].adminName3}>
-                  {postalCodes[0].adminName3}
+                <option
+                  value={
+                    postalCodes[0]?.adminName3 || postalCodes[0]?.adminName2
+                  }
+                >
+                  {postalCodes[0]?.adminName3 || postalCodes[0]?.adminName2}
                 </option>
               ) : (
                 <option value="">Selecciona una ciudad</option>
