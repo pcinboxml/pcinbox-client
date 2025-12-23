@@ -430,7 +430,7 @@ const Favorites = () => {
                           </ul>
                         </div>
                         <div className="px-3">
-                          <span>
+                          <span className="text-[20px] font-bold">
                             {formatCurrency(Number(favorite?.products?.price))}
                           </span>
                           <br />

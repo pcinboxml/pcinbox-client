@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 
 interface progressPayI {
   optionSend: {
-    name: string;
+    name?: string;
     address?: number;
+    costo?: any;
   };
   methodPay: {
     name: string;
@@ -19,6 +20,7 @@ const useStorage = () => {
     optionSend: {
       name: "",
       address: 0,
+      costo: 0,
     },
     methodPay: {
       name: "",

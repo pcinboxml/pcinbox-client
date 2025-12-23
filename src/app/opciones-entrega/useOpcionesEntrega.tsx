@@ -6,44 +6,83 @@ import { AddressI } from "../interfaces/address/address.interface";
 import { useTheContext } from "../services/globalContext";
 import useStorage from "../services/useStorage";
 import RegisterDomicilio from "../components/registerDomicilio/RegisterDomicilio";
+import SelectDomicilio from "../components/selectDomicilio/SelectDomicilio";
+import EliminarDomicilio from "../components/eliminarDomicilio/EliminarDomicilio";
 
 const useOpcionesEntrega = () => {
   const {
     dataUserAddress,
     setDataUserAddress,
     setIsEditAddress,
-    setPostalCodes,
     setDataAddress,
   } = useTheContext();
+
+  const [costoEnvioByZone, setCostoEnvioByZone] = useState<{
+    valor: number;
+    loading: boolean;
+    destino: string;
+  }>({
+    valor: 0,
+    loading: false,
+    destino: "",
+  });
+
   const [optionEnvio, setOptionEnvio] = useState<string>("");
-  const [idAddressEnvio, setIdAddressEnvio] = useState<number>(0);
-  const [loadingEdit, setLoadingEdit] = useState<boolean>(false);
 
   const { requestGet, requestPost } = useService();
 
   const { setDataModal } = useTheContext();
 
-  const { handleWriteStorageProgressPay } = useStorage();
+  // const { handleWriteStorageProgressPay } = useStorage();
 
   const handleOnChangeOptionEnvio = async (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
+    costoEnvioByZone?: {
+      valor: number;
+      loading: boolean;
+      destino: string;
+    }
   ) => {
     const { value } = event.target;
     setOptionEnvio(value);
-    handleWriteStorageProgressPay({
-      optionSend: {
-        name: value,
-      },
-    });
+
+    // handleWriteStorageProgressPay({
+    //   optionSend: {
+    //     name: value,
+    //   },
+    // });
+
+    if (value != "sucursal") {
+      setDataModal({
+        isOpen: true,
+        title: "Selecciona el domicilio",
+        type: "info",
+        showActions: false,
+        onClose: () => {
+          setOptionEnvio("");
+
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        message: (
+          <SelectDomicilio
+            optionEnvio={value}
+            setOptionEnvio={setOptionEnvio}
+          />
+        ),
+      });
+    }
   };
 
   const handleOnChangeOptionEnvio2 = async (name: string) => {
     setOptionEnvio(name);
-    handleWriteStorageProgressPay({
-      optionSend: {
-        name: name,
-      },
-    });
+    // handleWriteStorageProgressPay({
+    //   optionSend: {
+    //     name: name,
+    //   },
+    // });
   };
 
   const handleRemoveAddress = async (address: AddressI) => {
@@ -52,59 +91,14 @@ const useOpcionesEntrega = () => {
       type: "info",
       title: "Cuidado",
       message: (
-        <div className="flex flex-col p-1 items-start justify-center w-full">
-          <span className="text-[#808080] font-bold block text-center w-full mb-2">
-            ¿Seguro que deseas eliminar el domicilio?
-          </span>
-
-          <div className="flex flex-row items-center my-1 w-full">
-            <span className="text-[#808080] font-bold min-w-[80px]">
-              Calle:
-            </span>
-            <span className="text-[#606060]">{address.street}</span>
-          </div>
-
-          <div className="flex flex-row items-center my-1 w-full">
-            <span className="text-[#808080] font-bold min-w-[80px]">
-              Colonia:
-            </span>
-            <span className="text-[#606060]">{address.cologne}</span>
-          </div>
-
-          <div className="flex flex-row items-center my-1 w-full">
-            <span className="text-[#808080] font-bold min-w-[80px]">
-              No.Ext:
-            </span>
-            <span className="text-[#606060]">{address.noExt}</span>
-          </div>
-
-          <div className="flex flex-row items-center my-1 w-full">
-            <span className="text-[#808080] font-bold min-w-[80px]">
-              No.Int:
-            </span>
-            <span className="text-[#606060]">{address.noInt}</span>
-          </div>
-        </div>
+        <EliminarDomicilio address={address} setOptionEnvio={setOptionEnvio} />
       ),
+      showActions: false,
       onClose: () => {
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
       onConfirm: async () => {
         setDataModal((prev) => ({ ...prev, isOpen: false }));
-
-        try {
-          const resp = await requestPost(
-            {
-              idAddress: address.idAddress,
-            },
-            "/address/removeAddress"
-          );
-
-          if (resp.status == 200) {
-            const data = await resp.data;
-            setDataUserAddress(data.data.data);
-          }
-        } catch (error) {}
       },
     });
   };
@@ -113,10 +107,15 @@ const useOpcionesEntrega = () => {
     const stored = localStorage.getItem("progressPay");
     if (stored) {
       const store = JSON.parse(stored);
-      setIdAddressEnvio(store?.optionSend?.address);
-
       const name = store?.optionSend?.name;
+      const costo = store?.optionsSend?.costo;
       if (name) {
+        setOptionEnvio(name);
+        setCostoEnvioByZone({
+          loading: false,
+          valor: Number(costo),
+          destino: "",
+        });
         handleOnChangeOptionEnvio2(name);
       }
     }
@@ -174,24 +173,6 @@ const useOpcionesEntrega = () => {
       idAddress: addressProp.idAddress,
     });
 
-    try {
-      setLoadingEdit(true);
-      const resp = await requestPost(
-        {
-          postalCode: addressProp.postalCode,
-        },
-        "/geonames/getAddressWithPostalCode"
-      );
-      setLoadingEdit(false);
-      if (resp.status == 200) {
-        const dataResp = await resp.data.data;
-
-        setPostalCodes(dataResp.postalcodes);
-      }
-    } catch (error) {
-      setLoadingEdit(false);
-    }
-
     setDataModal({
       isOpen: true,
       type: "info",
@@ -207,19 +188,44 @@ const useOpcionesEntrega = () => {
       },
     });
   };
+
+  const generateCostoByZone = async (destino: string) => {
+    try {
+      setCostoEnvioByZone((prev) => ({ ...prev, loading: true }));
+      const resp = await requestPost(
+        {
+          destino,
+        },
+        "/geonames/ShippingByZone"
+      );
+      setCostoEnvioByZone((prev) => ({ ...prev, loading: false }));
+
+      if (resp.status == 200) {
+        const data = resp.data.data;
+
+        setCostoEnvioByZone({
+          loading: false,
+          valor: data?.costo,
+          destino: data?.destino,
+        });
+      }
+    } catch (error) {}
+  };
+
   return {
     handleOnChangeOptionEnvio,
-    setIdAddressEnvio,
     handleRemoveAddress,
     setIsEditAddress,
     getValuesStorage,
     loadingAddressUser,
     handleFormRegisterAddress,
     handleFormEditAddress,
-    idAddressEnvio,
+
     optionEnvio,
+    setOptionEnvio,
     dataUserAddress,
-    loadingEdit,
+    generateCostoByZone,
+    costoEnvioByZone,
   };
 };
 

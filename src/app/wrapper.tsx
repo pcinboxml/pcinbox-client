@@ -262,15 +262,40 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
-    socketPagos.current.on("updatedStock", handleUpdatedStock);
+    socketPagos?.current?.on(
+      "removeProgressPay",
+      (dataSocket: { idUser: number }) => {
+        if (typeof window !== "undefined") {
+          const idUser = localStorage.getItem("idUser");
+          if (idUser) {
+            if (Number(idUser) == Number(dataSocket.idUser)) {
+              localStorage.removeItem("progressPay");
+            }
+          }
+        }
+      }
+    );
 
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
+      socketPagos?.current?.off(
+        "removeProgressPay",
+        (dataSocket: { idUser: number }) => {
+          if (typeof window !== "undefined") {
+            const idUser = localStorage.getItem("idUser");
+            if (idUser) {
+              if (Number(idUser) == Number(dataSocket.idUser)) {
+                localStorage.removeItem("progressPay");
+              }
+            }
+          }
+        }
+      );
     };
-  }, [socketServer.current]);
+  }, [socketServer.current, socketPagos?.current]);
 
   ProtectedRoute(pathName);
 
