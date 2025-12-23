@@ -7,12 +7,12 @@ import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import useOpcionesEntrega from "./useOpcionesEntrega";
 import styles from "./opciones-entrega.module.css";
-import { use, useEffect, useMemo } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
 
 const OpcionesEntrega = () => {
-  const { onRouterLink } = useService();
+  const { onRouterLink, formatCurrency } = useService();
   const {
     handleOnChangeOptionEnvio,
     handleRemoveAddress,
@@ -21,10 +21,14 @@ const OpcionesEntrega = () => {
     getValuesStorage,
 
     optionEnvio,
+    costoEnvioByZone,
     setOptionEnvio,
     loadingAddressUser,
     handleFormEditAddress,
+    generateCostoByZone,
   } = useOpcionesEntrega();
+
+  const { progressPay, handleWriteStorageProgressPay } = useStorage();
 
   const {
     dataCart,
@@ -34,6 +38,19 @@ const OpcionesEntrega = () => {
     setDataModal,
     setDataAddress,
   } = useTheContext();
+
+  useEffect(() => {
+    if (optionEnvio != "sucursal" || idAddressEnvio != 0) {
+      if (dataUserAddress && dataUserAddress.length > 0) {
+        let findSelectAddress = dataUserAddress.find(
+          (addres) => Number(addres.idAddress) == Number(idAddressEnvio)
+        );
+        if (findSelectAddress) {
+          generateCostoByZone(findSelectAddress.city);
+        }
+      }
+    }
+  }, [idAddressEnvio, optionEnvio]);
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -148,7 +165,9 @@ const OpcionesEntrega = () => {
                         className="mx-2"
                         value={"envioLeon"}
                         checked={optionEnvio === "envioLeon"}
-                        onChange={handleOnChangeOptionEnvio}
+                        onChange={(e) =>
+                          handleOnChangeOptionEnvio(e, costoEnvioByZone)
+                        }
                       />
 
                       <label className="form-check-label" htmlFor="envioLeon">
@@ -158,18 +177,40 @@ const OpcionesEntrega = () => {
                             className="text-[#666666] text-sm mx-2"
                             style={{ fontWeight: "bold" }}
                           >
-                            <span style={{ fontWeight: "bold" }}>|</span> Envío
-                            local (León) solo en compra mayores de $1,000 pesos
+                            <span style={{ fontWeight: "bold" }}>| </span>
+                            Envío personalizado por parte de PCinBOX
+                          </span>
+                          <span>
+                            {(() => {
+                              if (optionEnvio == "envioLeon") {
+                                if (costoEnvioByZone?.valor == 0) {
+                                  return `Envío: Gratis`;
+                                } else {
+                                  return `Envío: (${formatCurrency(
+                                    Number(
+                                      costoEnvioByZone.valor ||
+                                        progressPay?.optionSend?.costo
+                                    )
+                                  )})`;
+                                }
+                              }
+                            })()}
+                            {/* {optionEnvio == "envioLeon" &&
+                            costoEnvioByZone?.valor == 0
+                              ? "Envío: Gratis"
+                              : `Envío: $(${formatCurrency(
+                                  Number(costoEnvioByZone.valor)
+                                )})`} */}
                           </span>
                         </div>
                       </label>
 
-                      <span
+                      {/* <span
                         className="absolute right-5 to-5 text-[#808080]"
                         style={{ fontSize: "14px" }}
                       >
                         Gratis
-                      </span>
+                      </span> */}
                     </div>
                   )}
                 {totalPrice >= 1000 &&
@@ -214,302 +255,8 @@ const OpcionesEntrega = () => {
                           </div>
                         </label>
                       </div>
-
-                      {/* <div className="flex items-center relative">
-                        <input
-                          type="radio"
-                          value="dhl"
-                          name="envio"
-                          id="dhl"
-                          className="mx-2"
-                          checked={optionEnvio === "dhl"}
-                          onChange={handleOnChangeOptionEnvio}
-                        />
-
-                        <label className="form-check-label" htmlFor="dhl">
-                          <div className="w-full flex items-center">
-                            <img
-                              src="/dhl.png"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "contain",
-                                filter: "grayscale(100%)",
-                              }}
-                              loading="lazy"
-                            />
-                            <span
-                              className="text-[#666666] text-sm mx-2"
-                              style={{ fontWeight: "bold" }}
-                            >
-                              <span style={{ fontWeight: "bold" }}>|</span> DHL
-                            </span>
-                          </div>
-                        </label>
-                      </div> */}
-
-                      {/* <div className="flex items-center relative ">
-                        <input
-                          type="radio"
-                          name="envio"
-                          id="estafeta"
-                          className="mx-2"
-                          value="estafeta"
-                          checked={optionEnvio === "estafeta"}
-                          onChange={handleOnChangeOptionEnvio}
-                        />
-
-                        <label className="form-check-label" htmlFor="estafeta">
-                          <div className="w-full flex items-center">
-                            <img
-                              src="/estafeta.png"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "contain",
-                                filter: "grayscale(100%)",
-                              }}
-                              loading="lazy"
-                            />
-
-                            <span
-                              className="text-[#666666] text-sm mx-2"
-                              style={{ fontWeight: "bold" }}
-                            >
-                              <span style={{ fontWeight: "bold" }}>|</span>{" "}
-                              Estafeta
-                            </span>
-                          </div>
-                        </label>
-                      </div> */}
                     </>
                   )}
-
-                {/* {totalPrice >= 1000 &&
-                dataUserAddress &&
-                dataUserAddress.length > 0 &&
-                optionEnvio != "sucursal" ? (
-                  <form className={styles.formContainer}>
-                    <h2>Selecciona tu domicilio</h2>
-
-                    {dataUserAddress.map((address) => {
-                      if (optionEnvio == "envioLeon") {
-                        if (address.city == "León de los Aldama") {
-                          return (
-                            <div
-                              key={address.idAddress}
-                              className="radio-group"
-                            >
-                              <label className="my-3">
-                                <input
-                                  type="radio"
-                                  name="domicilio"
-                                  value={address.idAddress}
-                                  checked={idAddressEnvio == address.idAddress}
-                                  onChange={(event) =>
-                                    setIdAddressEnvio(
-                                      Number(event.target.value)
-                                    )
-                                  }
-                                  required
-                                />
-                                <div className="flex items-center  flex-wrap">
-                                  <b>Calle: </b>{" "}
-                                  <span className="pb-0 mx-2">
-                                    {" "}
-                                    {address.street}
-                                  </span>
-                                  <b>Colonia: </b>{" "}
-                                  <span className="mx-2">
-                                    {address.cologne}
-                                  </span>
-                                  <b>No.Ext: </b>
-                                  <span className="mx-2">{address.noExt}</span>
-                                  <b
-                                    style={{
-                                      display:
-                                        address.noInt != "" ? "block" : "none",
-                                    }}
-                                  >
-                                    No.Int:{" "}
-                                  </b>
-                                  <span
-                                    style={{
-                                      display:
-                                        address.noInt != "" ? "block" : "none",
-                                    }}
-                                    className="mx-2"
-                                  >
-                                    {address.noExt}
-                                  </span>
-                                </div>
-                              </label>
-
-                              {loadingEdit ? (
-                                <MdAutorenew />
-                              ) : (
-                                <a
-                                  role="button"
-                                  style={{
-                                    display: "inline-block",
-                                    marginLeft: "10px",
-                                    color: "#606060",
-                                    fontWeight: "bold",
-                                    textDecoration: "none",
-                                  }}
-                                  onClick={() => {
-                                    setIsEditAddress({
-                                      edit: true,
-                                      idAddress: address.idAddress,
-                                    });
-                                    setDataAddress({
-                                      city: address.city,
-                                      cologne: address.cologne,
-                                      country: address.country,
-                                      noExt: address.noExt,
-                                      phone1: address.phone1,
-                                      phone2: address.phone2,
-                                      state: address.state,
-                                      street: address.street,
-                                      noInt: address.noInt,
-                                      codePostal: Number(address.postalCode),
-                                    });
-
-                                    handleFormEditAddress(address);
-                                  }}
-                                >
-                                  Editar
-                                </a>
-                              )}
-                              <a
-                                role="button"
-                                style={{
-                                  display: "inline-block",
-                                  marginLeft: "10px",
-                                  color: "#BB3D4B",
-                                  fontWeight: "bold",
-                                  textDecoration: "none",
-                                }}
-                                onClick={() => handleRemoveAddress(address)}
-                              >
-                                Eliminar
-                              </a>
-
-                              <hr />
-                            </div>
-                          );
-                        }
-                      } else {
-                        if (address.city != "León de los Aldama") {
-                          return (
-                            <div
-                              key={address.idAddress}
-                              className="radio-group"
-                            >
-                              <label className="my-3">
-                                <input
-                                  type="radio"
-                                  name="domicilio"
-                                  value={address.idAddress}
-                                  checked={idAddressEnvio == address.idAddress}
-                                  onChange={(event) =>
-                                    setIdAddressEnvio(
-                                      Number(event.target.value)
-                                    )
-                                  }
-                                  required
-                                />
-                                <div className="flex items-center  flex-wrap">
-                                  <b>Calle: </b>{" "}
-                                  <span className="pb-0 mx-2">
-                                    {" "}
-                                    {address.street}
-                                  </span>
-                                  <b>Colonia: </b>{" "}
-                                  <span className="mx-2">
-                                    {address.cologne}
-                                  </span>
-                                  <b>No.Ext: </b>
-                                  <span className="mx-2">{address.noExt}</span>
-                                  <b
-                                    style={{
-                                      display:
-                                        address.noInt != "" ? "block" : "none",
-                                    }}
-                                  >
-                                    No.Int:{" "}
-                                  </b>
-                                  <span
-                                    style={{
-                                      display:
-                                        address.noInt != "" ? "block" : "none",
-                                    }}
-                                    className="mx-2"
-                                  >
-                                    {address.noExt}
-                                  </span>
-                                </div>
-                              </label>
-
-                              {loadingEdit ? (
-                                <MdAutorenew />
-                              ) : (
-                                <a
-                                  role="button"
-                                  style={{
-                                    display: "inline-block",
-                                    marginLeft: "10px",
-                                    color: "#606060",
-                                    fontWeight: "bold",
-                                    textDecoration: "none",
-                                  }}
-                                  onClick={() => {
-                                    setIsEditAddress({
-                                      edit: true,
-                                      idAddress: address.idAddress,
-                                    });
-                                    setDataAddress({
-                                      city: address.city,
-                                      cologne: address.cologne,
-                                      country: address.country,
-                                      noExt: address.noExt,
-                                      phone1: address.phone1,
-                                      phone2: address.phone2,
-                                      state: address.state,
-                                      street: address.street,
-                                      noInt: address.noInt,
-                                      codePostal: Number(address.postalCode),
-                                    });
-
-                                    handleFormEditAddress(address);
-                                  }}
-                                >
-                                  Editar
-                                </a>
-                              )}
-
-                              <a
-                                role="button"
-                                style={{
-                                  display: "inline-block",
-                                  marginLeft: "10px",
-                                  color: "#BB3D4B",
-                                  fontWeight: "bold",
-                                  textDecoration: "none",
-                                }}
-                                onClick={() => handleRemoveAddress(address)}
-                              >
-                                Eliminar
-                              </a>
-
-                              <hr />
-                            </div>
-                          );
-                        }
-                      }
-                    })}
-                  </form>
-                ) : null} */}
 
                 <hr />
               </div>
@@ -527,7 +274,8 @@ const OpcionesEntrega = () => {
             </button>
           </div>
 
-          {idAddressEnvio != 0 &&
+          {((optionEnvio && optionEnvio != "sucursal") ||
+            progressPay?.optionSend?.address != 0) &&
             dataUserAddress &&
             dataUserAddress.length > 0 &&
             dataUserAddress.map((selectedAddress) => {
@@ -665,6 +413,13 @@ const OpcionesEntrega = () => {
                     //     address: idAddressEnvio,
                     //   },
                     // });
+                    handleWriteStorageProgressPay({
+                      optionSend: {
+                        costo: costoEnvioByZone?.valor,
+                        address: idAddressEnvio,
+                        name: optionEnvio,
+                      },
+                    });
                     onRouterLink("/forma-de-pago");
                   }
                 }}

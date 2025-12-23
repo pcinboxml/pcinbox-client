@@ -24,7 +24,21 @@ const SelectDomicilio = ({
           const isSelected = idAddressEnvio === address.idAddress;
 
           if (optionEnvio == "envioLeon") {
-            if (address.city == "León de los Aldama") {
+            if (
+              address.city == "León de los Aldama" ||
+              address.city == "Irapuato" ||
+              address.city == "Silao" ||
+              address.city == "Guanajuato" ||
+              address.city == "San Felipe" ||
+              address.city == "Dolores Hgo. Cuna de la Indep. Nal." ||
+              address.city == "San miguel de Allende" ||
+              address.city == "Salamanca" ||
+              address.city == "San Francisco del Rincón" ||
+              address.city == "Purísima del Rincón" ||
+              address.city == "Pénjamo" ||
+              address.city == "Cuerámaro" ||
+              address.city == "Abasolo"
+            ) {
               return (
                 <label
                   key={address.idAddress}
@@ -113,7 +127,21 @@ const SelectDomicilio = ({
               );
             }
           } else {
-            if (address.city != "León de los Aldama") {
+            if (
+              address.city != "León de los Aldama" &&
+              address.city != "Irapuato" &&
+              address.city != "Silao" &&
+              address.city != "Guanajuato" &&
+              address.city != "San Felipe" &&
+              address.city != "Dolores Hgo. Cuna de la Indep. Nal." &&
+              address.city != "San miguel de Allende" &&
+              address.city != "Salamanca" &&
+              address.city != "San Francisco del Rincón" &&
+              address.city != "Purísima del Rincón" &&
+              address.city != "Pénjamo" &&
+              address.city != "Cuerámaro" &&
+              address.city != "Abasolo"
+            ) {
               return (
                 <label
                   key={address.idAddress}
@@ -216,6 +244,11 @@ const SelectDomicilio = ({
         </button>
         <button
           onClick={() => {
+            handleWriteStorageProgressPay({
+              optionSend: {
+                address: idAddressEnvio,
+              },
+            });
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }}
           className="cursor-pointer text-white border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#BB3D4B]"

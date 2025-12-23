@@ -254,7 +254,11 @@ const useResumen = () => {
         const resp = await requestPostPagos(
           {
             userId: Number(localStorage.getItem("idUser")),
-            amount: totalPagar,
+            amount:
+              totalPagar +
+              (progressPay?.optionSend?.costo
+                ? Number(progressPay?.optionSend?.costo)
+                : 0),
             optionEnvio: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
             dataProduct: dataCart,

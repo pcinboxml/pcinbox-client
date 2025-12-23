@@ -5,7 +5,7 @@ import PostalCodeLookupI from "@/app/interfaces/geonames/postalCodeLookupJSON/po
 import { DataSendI } from "@/app/interfaces/perfil/perfil.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
-import { ChangeEvent, SyntheticEvent, useState } from "react";
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { MdAutorenew } from "react-icons/md";
 
 const RegisterDomicilio = () => {
@@ -156,6 +156,27 @@ const RegisterDomicilio = () => {
       city: postalCodes[0].adminName3,
     }));
   };
+
+  useEffect(() => {
+    const getDataCP = async () => {
+      const resp = await requestPost(
+        {
+          postalCode: dataAddress?.codePostal,
+        },
+        "/geonames/getAddressWithPostalCode"
+      );
+
+      if (resp.status == 200) {
+        const dataResp = await resp.data.data;
+
+        setPostalCodes(dataResp.postalcodes);
+      }
+    };
+
+    if (dataAddress && isEditAddress?.edit == true) {
+      getDataCP();
+    }
+  }, [dataAddress]);
 
   return (
     <div className="w-full">

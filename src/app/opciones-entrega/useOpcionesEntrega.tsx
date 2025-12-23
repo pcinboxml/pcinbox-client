@@ -16,24 +16,41 @@ const useOpcionesEntrega = () => {
     setIsEditAddress,
     setDataAddress,
   } = useTheContext();
+
+  const [costoEnvioByZone, setCostoEnvioByZone] = useState<{
+    valor: number;
+    loading: boolean;
+    destino: string;
+  }>({
+    valor: 0,
+    loading: false,
+    destino: "",
+  });
+
   const [optionEnvio, setOptionEnvio] = useState<string>("");
 
-  const { requestGet } = useService();
+  const { requestGet, requestPost } = useService();
 
   const { setDataModal } = useTheContext();
 
-  const { handleWriteStorageProgressPay } = useStorage();
+  // const { handleWriteStorageProgressPay } = useStorage();
 
   const handleOnChangeOptionEnvio = async (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
+    costoEnvioByZone?: {
+      valor: number;
+      loading: boolean;
+      destino: string;
+    }
   ) => {
     const { value } = event.target;
     setOptionEnvio(value);
-    handleWriteStorageProgressPay({
-      optionSend: {
-        name: value,
-      },
-    });
+
+    // handleWriteStorageProgressPay({
+    //   optionSend: {
+    //     name: value,
+    //   },
+    // });
 
     if (value != "sucursal") {
       setDataModal({
@@ -61,11 +78,11 @@ const useOpcionesEntrega = () => {
 
   const handleOnChangeOptionEnvio2 = async (name: string) => {
     setOptionEnvio(name);
-    handleWriteStorageProgressPay({
-      optionSend: {
-        name: name,
-      },
-    });
+    // handleWriteStorageProgressPay({
+    //   optionSend: {
+    //     name: name,
+    //   },
+    // });
   };
 
   const handleRemoveAddress = async (address: AddressI) => {
@@ -91,7 +108,14 @@ const useOpcionesEntrega = () => {
     if (stored) {
       const store = JSON.parse(stored);
       const name = store?.optionSend?.name;
+      const costo = store?.optionsSend?.costo;
       if (name) {
+        setOptionEnvio(name);
+        setCostoEnvioByZone({
+          loading: false,
+          valor: Number(costo),
+          destino: "",
+        });
         handleOnChangeOptionEnvio2(name);
       }
     }
@@ -149,24 +173,6 @@ const useOpcionesEntrega = () => {
       idAddress: addressProp.idAddress,
     });
 
-    // try {
-    //   setLoadingEdit(true);
-    //   const resp = await requestPost(
-    //     {
-    //       postalCode: addressProp.postalCode,
-    //     },
-    //     "/geonames/getAddressWithPostalCode"
-    //   );
-    //   setLoadingEdit(false);
-    //   if (resp.status == 200) {
-    //     const dataResp = await resp.data.data;
-
-    //     setPostalCodes(dataResp.postalcodes);
-    //   }
-    // } catch (error) {
-    //   setLoadingEdit(false);
-    // }
-
     setDataModal({
       isOpen: true,
       type: "info",
@@ -182,6 +188,30 @@ const useOpcionesEntrega = () => {
       },
     });
   };
+
+  const generateCostoByZone = async (destino: string) => {
+    try {
+      setCostoEnvioByZone((prev) => ({ ...prev, loading: true }));
+      const resp = await requestPost(
+        {
+          destino,
+        },
+        "/geonames/ShippingByZone"
+      );
+      setCostoEnvioByZone((prev) => ({ ...prev, loading: false }));
+
+      if (resp.status == 200) {
+        const data = resp.data.data;
+
+        setCostoEnvioByZone({
+          loading: false,
+          valor: data?.costo,
+          destino: data?.destino,
+        });
+      }
+    } catch (error) {}
+  };
+
   return {
     handleOnChangeOptionEnvio,
     handleRemoveAddress,
@@ -194,6 +224,8 @@ const useOpcionesEntrega = () => {
     optionEnvio,
     setOptionEnvio,
     dataUserAddress,
+    generateCostoByZone,
+    costoEnvioByZone,
   };
 };
 

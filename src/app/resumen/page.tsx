@@ -55,7 +55,7 @@ const Resumen = () => {
 
             <div className="w-full mt-2 grid grid-cols-[4fr_1fr]">
               <div className="flex flex-col justify-center items-end pr-2 gap-2">
-                <span className="text-[#808080] text-sm">Envió: </span>
+                <span className="text-[#808080] text-sm">Envío: </span>
 
                 <span className="text-[#808080] text-sm">Tipo de pago:</span>
 
@@ -64,11 +64,26 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
-                  {progressPay.optionSend.name == "envioLeon"
-                    ? "Gratis"
+                  {/* {progressPay.optionSend.name == "envioLeon"
+                    ? progressPay?.optionSend?.costo
+                      ? formatCurrency(Number(progressPay?.optionSend?.costo))
+                      : "Gratis"
                     : progressPay.optionSend.name == "sucursal"
                     ? "Entrega en Sucursal"
-                    : progressPay.optionSend.name}
+                    : progressPay.optionSend.name} */}
+                  {(progressPay?.optionSend?.name == "envioLeon" &&
+                    progressPay?.optionSend?.costo) ||
+                  (progressPay?.optionSend?.name == "paqueteexpress" &&
+                    progressPay?.optionSend?.costo)
+                    ? formatCurrency(Number(progressPay?.optionSend?.costo))
+                    : progressPay?.optionSend?.name == "sucursal"
+                    ? "Entrega en sucursal"
+                    : "Gratis"}
+                  {/* {} */}
+                  {/* {progressPay?.optionSend?.name == "paqueteexpress" &&
+                  progressPay?.optionSend?.costo
+                    ? formatCurrency(Number(progressPay?.optionSend?.costo))
+                    : "Gratis"} */}
                 </span>
                 <span className="text-[#808080] text-sm">
                   {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
@@ -101,7 +116,14 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {formatCurrency(totalPagar)}
+                  {formatCurrency(
+                    totalPagar +
+                      (progressPay?.optionSend?.name != "sucursal"
+                        ? progressPay?.optionSend?.costo
+                          ? Number(progressPay?.optionSend?.costo)
+                          : 0
+                        : 0)
+                  )}
                 </span>
               </div>
             </div>

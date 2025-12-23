@@ -30,6 +30,7 @@ export default function AppWrapper({
     setDataProducts,
     setDataFavorites,
     socketServer,
+    socketPagos,
   } = useTheContext();
 
   const { addProductFromStorage } = useCart();
@@ -65,6 +66,8 @@ export default function AppWrapper({
 
   useEffect(() => {
     if (!socketServer.current) return;
+    if (!socketPagos.current) return;
+
     const socket = socketServer.current;
 
     const handlerNewProduct = (data: ProductI) => {
@@ -193,13 +196,40 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
+    socketPagos?.current?.on(
+      "removeProgressPay",
+      (dataSocket: { idUser: number }) => {
+        if (typeof window !== "undefined") {
+          const idUser = localStorage.getItem("idUser");
+          if (idUser) {
+            if (Number(idUser) == Number(dataSocket.idUser)) {
+              localStorage.removeItem("progressPay");
+            }
+          }
+        }
+      }
+    );
+
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
+      socketPagos?.current?.off(
+        "removeProgressPay",
+        (dataSocket: { idUser: number }) => {
+          if (typeof window !== "undefined") {
+            const idUser = localStorage.getItem("idUser");
+            if (idUser) {
+              if (Number(idUser) == Number(dataSocket.idUser)) {
+                localStorage.removeItem("progressPay");
+              }
+            }
+          }
+        }
+      );
     };
-  }, [socketServer.current]);
+  }, [socketServer.current, socketPagos?.current]);
 
   ProtectedRoute(pathName);
 

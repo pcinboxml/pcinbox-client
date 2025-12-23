@@ -6,6 +6,7 @@ interface progressPayI {
   optionSend: {
     name?: string;
     address?: number;
+    costo?: any;
   };
   methodPay: {
     name: string;
@@ -19,6 +20,7 @@ const useStorage = () => {
     optionSend: {
       name: "",
       address: 0,
+      costo: 0,
     },
     methodPay: {
       name: "",
