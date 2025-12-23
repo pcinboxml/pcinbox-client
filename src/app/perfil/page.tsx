@@ -347,8 +347,12 @@ const MiCuenta = () => {
                   value={dataAddress.city ?? ""}
                 >
                   {postalCodes.length > 0 ? (
-                    <option value={postalCodes[0].adminName3}>
-                      {postalCodes[0].adminName3}
+                    <option
+                      value={
+                        postalCodes[0]?.adminName3 || postalCodes[0]?.adminName2
+                      }
+                    >
+                      {postalCodes[0].adminName3 || postalCodes[0]?.adminName2}
                     </option>
                   ) : (
                     <option value="">Selecciona una ciudad</option>
@@ -567,8 +571,14 @@ const MiCuenta = () => {
                   value={dataFacturacion.city ?? ""}
                 >
                   {postalCodes2.length > 0 ? (
-                    <option value={postalCodes2[0].adminName3}>
-                      {postalCodes2[0].adminName3}
+                    <option
+                      value={
+                        postalCodes2[0]?.adminName3 ||
+                        postalCodes2[0]?.adminName2
+                      }
+                    >
+                      {postalCodes2[0]?.adminName3 ||
+                        postalCodes2[0]?.adminName2}
                     </option>
                   ) : (
                     <option value="">Selecciona una ciudad</option>

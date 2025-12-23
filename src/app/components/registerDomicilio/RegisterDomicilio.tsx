@@ -274,12 +274,33 @@ const RegisterDomicilio = () => {
               onChange={handleOnSelect}
               value={dataAddress.state ?? ""}
             >
-              <option value="">
-                {postalCodes.length > 0
-                  ? postalCodes[0].adminName1
-                  : "Selecciona un estado"}
-              </option>
-            </select>
+              {" "}
+              <label
+                htmlFor=""
+                className="text-[#808080] text-base text-end mx-2 block"
+              >
+                Ciudad:
+              </label>
+              <select
+                name="city"
+                className="form-select"
+                disabled={postalCodes.length === 0}
+                onChange={handleOnSelect}
+                value={dataAddress.city ?? ""}
+              >
+                {postalCodes.length > 0 ? (
+                  <option
+                    value={
+                      postalCodes[0]?.adminName3 || postalCodes[0]?.adminName2
+                    }
+                  >
+                    {postalCodes[0]?.adminName3 || postalCodes[0]?.adminName2}
+                  </option>
+                ) : (
+                  <option value="">Selecciona una ciudad</option>
+                )}
+              </select>
+            </div>
           </div>
 
           {/* Ciudad */}
