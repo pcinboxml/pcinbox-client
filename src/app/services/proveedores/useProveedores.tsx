@@ -67,7 +67,11 @@ const useProveedores = () => {
 
   const requestGetProveedor = async (endpoint: string) => {
     try {
-      const res = await api.get(endpoint);
+      const res = await api.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       return res;
     } catch (error: any) {
@@ -77,7 +81,11 @@ const useProveedores = () => {
 
   const requestPostProveedor = async (data: any, endPoint: string) => {
     try {
-      const res = await api.post(endPoint, data);
+      const res = await api.post(endPoint, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return res;
     } catch (error: any) {
       throw error;
