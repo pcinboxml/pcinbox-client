@@ -57,7 +57,11 @@ const useProveedores = () => {
 
   const requestGetProducts = async (showErrorSesion: boolean = false) => {
     try {
-      const res = await api.get("/getAllProduct");
+      const res = await api.get("/getAllProduct", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       return res;
     } catch (error: any) {
