@@ -35,6 +35,8 @@ const RegisterDomicilio = () => {
       )
       .map(([key]) => key);
 
+    console.log(dataAddress);
+
     if (emptyFields.length > 0) return;
 
     setLoadingRegisterAddress(true);
@@ -108,6 +110,16 @@ const RegisterDomicilio = () => {
       if (resp.status === 200) {
         const dataResp = await resp.data.data;
         setPostalCodes(dataResp.postalcodes);
+
+        if (dataResp.postalcodes.length > 0) {
+          setDataAddress((prev) => ({
+            ...prev,
+            state: dataResp.postalcodes[0].adminName1,
+            city:
+              dataResp.postalcodes[0].adminName3 ||
+              dataResp.postalcodes[0].adminName2,
+          }));
+        }
       }
     } else if (name === "codePostal" && value.length < 5) {
       setPostalCodes([]);

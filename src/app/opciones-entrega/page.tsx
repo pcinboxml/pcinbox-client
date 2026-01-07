@@ -213,7 +213,7 @@ const OpcionesEntrega = () => {
                       </span> */}
                     </div>
                   )}
-                {totalPrice >= 1000 &&
+                {/* {totalPrice >= 1000 &&
                   dataUserAddress &&
                   dataUserAddress.some(
                     (d) => d.city != "León de los Aldama"
@@ -256,7 +256,7 @@ const OpcionesEntrega = () => {
                         </label>
                       </div>
                     </>
-                  )}
+                  )} */}
 
                 <hr />
               </div>
