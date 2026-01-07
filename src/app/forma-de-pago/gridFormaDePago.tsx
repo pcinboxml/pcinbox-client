@@ -63,7 +63,7 @@ const GridFormaDePago = () => {
       id: 6,
       value: "mercado_pago",
       label:
-        "Mercado Pago (Tarjeta de crédito con 3 y 6 meses sin intereses y pago con saldo de tu cuenta)",
+        "Mercado Pago. Pagos con tarjeta de crédito a 3 y 6 meses con intereses, o con saldo en cuenta.",
       icon: (
         <img
           src="/mercadopago.jpg"
@@ -81,7 +81,7 @@ const GridFormaDePago = () => {
       id: 7,
       value: "openpay",
       label:
-        " Tarjeta de crédito/débito, Efectivo y Transferencia (solo de contado)",
+        " Pagos con tarjeta de crédito o débito, efectivo y transferencia (únicamente pago de contado).",
       icon: (
         <img
           src={"openpay.png"}
