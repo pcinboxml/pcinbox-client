@@ -59,27 +59,29 @@ const GridFormaDePago = () => {
     //   cargoBancario: "0",
     //   color: "#666666",
     // },
-    // {
-    //   id: 6,
-    //   value: "mercado_pago",
-    //   label: "Mercado Pago",
-    //   icon: (
-    //     <img
-    //       src="/mercadopago.jpg"
-    //       style={{
-    //         objectFit: "contain",
-    //         width: "100px",
-    //         height: "50px",
-    //       }}
-    //     />
-    //   ),
-    //   cargoBancario: "0",
-    //   color: "#666666",
-    // },
+    {
+      id: 6,
+      value: "mercado_pago",
+      label:
+        "Mercado Pago (Tarjeta de crédito con 3 y 6 meses sin intereses y pago con saldo de tu cuenta)",
+      icon: (
+        <img
+          src="/mercadopago.jpg"
+          style={{
+            objectFit: "contain",
+            width: "100px",
+            height: "50px",
+          }}
+        />
+      ),
+      cargoBancario: "0",
+      color: "#666666",
+    },
     {
       id: 7,
       value: "openpay",
-      label: " Tarjeta de crédito/débito, Efectivo y Transferencia",
+      label:
+        " Tarjeta de crédito/débito, Efectivo y Transferencia (solo de contado)",
       icon: (
         <img
           src={"openpay.png"}

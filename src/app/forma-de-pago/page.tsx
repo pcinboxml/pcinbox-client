@@ -26,7 +26,7 @@ const FormaDePago = () => {
     useTheContext();
   const { onRouterLink } = useService();
 
-  const { requestPostPagos } = usePasarelaDePagos();
+  // const { requestPostPagos } = usePasarelaDePagos();
 
   const { progressPay, handleWriteStorageProgressPay } = useStorage();
 
@@ -42,16 +42,16 @@ const FormaDePago = () => {
   }, [dataCart]);
 
   useEffect(() => {
-    requestPostPagos(
-      {
-        userId: localStorage.getItem("idUser"),
-      },
-      "/stripe/getCardByUser"
-    ).then((resp) => {
-      if (resp?.status == 200) {
-        setDataCard(resp.data.data.data);
-      }
-    });
+    // requestPostPagos(
+    //   {
+    //     userId: localStorage.getItem("idUser"),
+    //   },
+    //   "/stripe/getCardByUser"
+    // ).then((resp) => {
+    //   if (resp?.status == 200) {
+    //     setDataCard(resp.data.data.data);
+    //   }
+    // });
 
     getValuesStorage();
   }, []);
@@ -111,11 +111,12 @@ const FormaDePago = () => {
                         return true;
                       })
                       .filter((pago) => {
-                        if (totalPrice >= 10000) {
-                          return pago.id == 1 || pago.id == 7;
-                        } else {
-                          return pago.id == 1 || pago.id == 5 || pago.id == 7;
-                        }
+                        return pago.id;
+                        // if (totalPrice >= 10000) {
+                        //   return pago.id == 1 || pago.id == 7 || pago.id == 6;
+                        // } else {
+                        //   return pago.id == 1 || pago.id == 5 || pago.id == 7;
+                        // }
                       })
                       .map((pag_, index) => {
                         return (

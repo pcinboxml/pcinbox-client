@@ -236,14 +236,16 @@ const useResumen = () => {
             totalAmount: totalPagar,
             shipping_method: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
+            requiredFactura: selectedFactura,
           },
-          "/mercadopago/payMP"
+          "/mercadopago/preferencePago"
         );
-        setLoadingCreateOrder(false);
 
         if (resp.status == 200) {
           //Pruebas
-          window.location.href = resp.data.sandbox_init_point;
+
+          window.location.href = resp.data.data.sandbox_init_point;
+          setLoadingCreateOrder(false);
         }
       } catch (error) {
         setLoadingCreateOrder(false);

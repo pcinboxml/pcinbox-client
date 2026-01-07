@@ -308,10 +308,22 @@ export default function AppWrapper({
           minHeight: "100vh",
         }}
       >
-        {pathName != "/estatusPay" &&
+        {pathName != "/estatusMP" &&
+          pathName != "/estatusPay" &&
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <Navbar />}
-        <main className="container" style={{ marginTop: "180px" }}>
+        <main
+          className={
+            pathName != "/estatusMP" && pathName != "/estatusPay"
+              ? "container"
+              : ""
+          }
+          style={
+            pathName != "/estatusMP" && pathName != "/estatusPay"
+              ? { marginTop: "180px" }
+              : {}
+          }
+        >
           {children}
 
           <ModalComponent
@@ -327,10 +339,13 @@ export default function AppWrapper({
 
           <Notification dataNotification={dataNotification} />
 
-          {pathName != "/estatusPay" &&
+          {pathName != "/estatusMP" &&
+            pathName != "/estatusPay" &&
             pathName != "/terminos_y_condiciones" &&
             pathName != "/aviso_privacidad" && <Footer />}
-          {pathName != "/estatusPay" &&
+
+          {pathName != "/estatusMP" &&
+            pathName != "/estatusPay" &&
             pathName != "/terminos_y_condiciones" &&
             pathName != "/aviso_privacidad" && (
               <>
