@@ -75,6 +75,9 @@ const Resumen = () => {
                   {dataCart && dataCart.length > 0
                     ? totalPagar <= 1000
                       ? "Entrega en sucursal"
+                      : progressPay?.optionSend?.costo == "0" &&
+                        progressPay?.optionSend?.name == "sucursal"
+                      ? "Entrega en sucursal"
                       : formatCurrency(Number(progressPay?.optionSend?.costo))
                     : null}
                 </span>
