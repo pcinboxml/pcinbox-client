@@ -255,10 +255,14 @@ const useResumen = () => {
           {
             userId: Number(localStorage.getItem("idUser")),
             amount:
-              totalPagar +
-              (progressPay?.optionSend?.costo
-                ? Number(progressPay?.optionSend?.costo)
-                : 0),
+              dataCart && dataCart.length > 0
+                ? totalPagar <= 1000
+                  ? totalPagar
+                  : totalPagar +
+                    (progressPay?.optionSend?.costo
+                      ? Number(progressPay?.optionSend?.costo)
+                      : 0)
+                : null,
             optionEnvio: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
             dataProduct: dataCart,

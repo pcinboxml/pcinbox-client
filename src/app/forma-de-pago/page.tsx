@@ -26,7 +26,7 @@ const FormaDePago = () => {
     useTheContext();
   const { onRouterLink } = useService();
 
-  const { requestPostPagos } = usePasarelaDePagos();
+  // const { requestPostPagos } = usePasarelaDePagos();
 
   const { progressPay, handleWriteStorageProgressPay } = useStorage();
 

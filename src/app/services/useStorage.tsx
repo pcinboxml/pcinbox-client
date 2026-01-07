@@ -55,13 +55,16 @@ const useStorage = () => {
   }, []);
 
   const handleWriteStorageProgressPay = (obj: Partial<progressPayI>) => {
-    const updated = {
+    const stored = localStorage.getItem("progressPay");
+    const prevStorage = stored ? JSON.parse(stored) : progressPay;
+
+    const updated: progressPayI = {
       optionSend: {
-        ...progressPay.optionSend,
+        ...prevStorage.optionSend,
         ...obj.optionSend,
       },
       methodPay: {
-        ...progressPay.methodPay,
+        ...prevStorage.methodPay,
         ...obj.methodPay,
       },
     };

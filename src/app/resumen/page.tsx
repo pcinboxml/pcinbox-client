@@ -64,26 +64,19 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
-                  {/* {progressPay.optionSend.name == "envioLeon"
-                    ? progressPay?.optionSend?.costo
-                      ? formatCurrency(Number(progressPay?.optionSend?.costo))
-                      : "Gratis"
-                    : progressPay.optionSend.name == "sucursal"
-                    ? "Entrega en Sucursal"
-                    : progressPay.optionSend.name} */}
-                  {(progressPay?.optionSend?.name == "envioLeon" &&
+                  {/* {(progressPay?.optionSend?.name == "envioLeon" &&
                     progressPay?.optionSend?.costo) ||
                   (progressPay?.optionSend?.name == "paqueteexpress" &&
                     progressPay?.optionSend?.costo)
                     ? formatCurrency(Number(progressPay?.optionSend?.costo))
                     : progressPay?.optionSend?.name == "sucursal"
                     ? "Entrega en sucursal"
-                    : "Gratis"}
-                  {/* {} */}
-                  {/* {progressPay?.optionSend?.name == "paqueteexpress" &&
-                  progressPay?.optionSend?.costo
-                    ? formatCurrency(Number(progressPay?.optionSend?.costo))
                     : "Gratis"} */}
+                  {dataCart && dataCart.length > 0
+                    ? totalPagar <= 1000
+                      ? "Entrega en sucursal"
+                      : formatCurrency(Number(progressPay?.optionSend?.costo))
+                    : null}
                 </span>
                 <span className="text-[#808080] text-sm">
                   {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
@@ -116,14 +109,24 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {formatCurrency(
+                  {/* {formatCurrency(
                     totalPagar +
                       (progressPay?.optionSend?.name != "sucursal"
                         ? progressPay?.optionSend?.costo
                           ? Number(progressPay?.optionSend?.costo)
                           : 0
                         : 0)
-                  )}
+                  )} */}
+                  {dataCart && dataCart.length > 0
+                    ? totalPagar <= 1000
+                      ? formatCurrency(totalPagar)
+                      : formatCurrency(
+                          totalPagar +
+                            (progressPay?.optionSend?.costo
+                              ? Number(progressPay?.optionSend?.costo)
+                              : 0)
+                        )
+                    : null}
                 </span>
               </div>
             </div>

@@ -26,6 +26,7 @@ const useFormaDePago = () => {
     const stored = localStorage.getItem("progressPay");
     if (stored) {
       const store = JSON.parse(stored);
+      console.log(store);
       setIdMethodPay(store.methodPay.name);
     }
   };

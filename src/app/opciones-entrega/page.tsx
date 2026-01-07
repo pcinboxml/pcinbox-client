@@ -60,15 +60,6 @@ const OpcionesEntrega = () => {
           .reduce((sum, current) => sum + current, 0)
       : 0;
 
-    if (total <= 1000) {
-      handleWriteStorageProgressPay({
-        optionSend: {
-          address: 0,
-          name: "sucursal",
-        },
-      });
-    }
-
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
 

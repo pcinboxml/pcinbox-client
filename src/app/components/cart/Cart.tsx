@@ -111,7 +111,7 @@ export const ModalCart = ({
                   if (product.stock != 0) {
                     return (
                       <div
-                        key={product.idProduct + index}
+                        key={index}
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                       >
                         {(product as any).image_url ? (

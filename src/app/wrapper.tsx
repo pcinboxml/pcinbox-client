@@ -8,12 +8,13 @@ import useNavbar from "./components/navbar/useNavbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
 import { Monitor, Smartphone } from "lucide-react";
+import useStorage from "./services/useStorage";
 
 export default function AppWrapper({
   children,
@@ -26,6 +27,7 @@ export default function AppWrapper({
     dataModal,
     dataNotification,
     hasToken,
+    dataCart,
     setDataCart,
     setDataProducts,
     setDataFavorites,
@@ -35,6 +37,8 @@ export default function AppWrapper({
 
   const { addProductFromStorage } = useCart();
   const { handleGetDataCart } = useNavbar();
+  const { handleWriteStorageProgressPay } = useStorage();
+  const isMounted = useRef(false);
 
   const [isDesktop, setIsDesktop] = useState(true);
 
@@ -63,6 +67,33 @@ export default function AppWrapper({
       });
     }
   }, [hasToken]);
+
+  const totalPrice = useMemo(() => {
+    if (!dataCart) return 0;
+
+    const total = dataCart
+      .filter((item) => item.stock !== 0)
+      .reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart]);
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    if (dataCart?.length > 0 && totalPrice <= 1000) {
+      handleWriteStorageProgressPay({
+        optionSend: {
+          address: 0,
+          name: "sucursal",
+          costo: 0,
+        },
+      });
+    }
+  }, [totalPrice, dataCart]);
 
   useEffect(() => {
     if (!socketServer.current) return;
@@ -262,38 +293,38 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
-    socketPagos?.current?.on(
-      "removeProgressPay",
-      (dataSocket: { idUser: number }) => {
-        if (typeof window !== "undefined") {
-          const idUser = localStorage.getItem("idUser");
-          if (idUser) {
-            if (Number(idUser) == Number(dataSocket.idUser)) {
-              localStorage.removeItem("progressPay");
-            }
-          }
-        }
-      }
-    );
+    // socketPagos?.current?.on(
+    //   "removeProgressPay",
+    //   (dataSocket: { idUser: number }) => {
+    //     if (typeof window !== "undefined") {
+    //       const idUser = localStorage.getItem("idUser");
+    //       if (idUser) {
+    //         if (Number(idUser) == Number(dataSocket.idUser)) {
+    //           localStorage.removeItem("progressPay");
+    //         }
+    //       }
+    //     }
+    //   }
+    // );
 
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
-      socketPagos?.current?.off(
-        "removeProgressPay",
-        (dataSocket: { idUser: number }) => {
-          if (typeof window !== "undefined") {
-            const idUser = localStorage.getItem("idUser");
-            if (idUser) {
-              if (Number(idUser) == Number(dataSocket.idUser)) {
-                localStorage.removeItem("progressPay");
-              }
-            }
-          }
-        }
-      );
+      // socketPagos?.current?.off(
+      //   "removeProgressPay",
+      //   (dataSocket: { idUser: number }) => {
+      //     if (typeof window !== "undefined") {
+      //       const idUser = localStorage.getItem("idUser");
+      //       if (idUser) {
+      //         if (Number(idUser) == Number(dataSocket.idUser)) {
+      //           localStorage.removeItem("progressPay");
+      //         }
+      //       }
+      //     }
+      //   }
+      // );
     };
   }, [socketServer.current, socketPagos?.current]);
 
