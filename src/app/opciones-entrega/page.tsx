@@ -60,6 +60,15 @@ const OpcionesEntrega = () => {
           .reduce((sum, current) => sum + current, 0)
       : 0;
 
+    if (total <= 1000) {
+      handleWriteStorageProgressPay({
+        optionSend: {
+          address: 0,
+          name: "sucursal",
+        },
+      });
+    }
+
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart]);
 
@@ -278,7 +287,10 @@ const OpcionesEntrega = () => {
             dataUserAddress &&
             dataUserAddress.length > 0 &&
             dataUserAddress.map((selectedAddress) => {
-              if (selectedAddress.idAddress == idAddressEnvio) {
+              if (
+                selectedAddress.idAddress == idAddressEnvio &&
+                totalPrice > 1000
+              ) {
                 return (
                   <div
                     className="bg-red-50 rounded-lg border border-red-200 p-3 relative"

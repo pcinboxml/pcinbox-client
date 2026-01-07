@@ -42,16 +42,16 @@ const FormaDePago = () => {
   }, [dataCart]);
 
   useEffect(() => {
-    requestPostPagos(
-      {
-        userId: localStorage.getItem("idUser"),
-      },
-      "/stripe/getCardByUser"
-    ).then((resp) => {
-      if (resp?.status == 200) {
-        setDataCard(resp.data.data.data);
-      }
-    });
+    // requestPostPagos(
+    //   {
+    //     userId: localStorage.getItem("idUser"),
+    //   },
+    //   "/stripe/getCardByUser"
+    // ).then((resp) => {
+    //   if (resp?.status == 200) {
+    //     setDataCard(resp.data.data.data);
+    //   }
+    // });
 
     getValuesStorage();
   }, []);
