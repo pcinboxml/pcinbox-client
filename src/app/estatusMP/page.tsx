@@ -1,132 +1,133 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import useService from "../services/useService";
+import { useEffect, useState, Suspense } from "react";
+import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
+import { GridLoader } from "react-spinners";
+
+import NotFound from "../components/openpay/notFound/NotFound";
+import PaySuccess from "../components/openpay/success/PaySuccess";
+import PayPending from "../components/openpay/pending/PayPending";
+import Failed from "../components/openpay/failed/Failed";
+import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
 import SuccessMP from "../components/mercadopago/success/SuccessMP";
+import FailedMP from "../components/mercadopago/failed/FailedMP";
+import PendingMP from "../components/mercadopago/pending/PendingMP";
 
-interface PaymentData {
-  status: string;
-  idOrden: string;
-  id: string;
-  date_last_updated: string;
-  transaction_amount: number;
-}
+// Creamos el componente que maneja la lógica de OpenPay
+const EstatusMPContent = () => {
+  const searchParams = useSearchParams();
+  const paymentId = searchParams.get("payment_id");
+  const preferenceId = searchParams.get("preference_id");
+  const merchantOrderId = searchParams.get("merchant_order_id");
 
-const EstatusMP = () => {
-  const { formatCurrency } = useService();
-  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+  const { requestPostPagos } = usePasarelaDePagos();
+
+  const [dataMpPay, setDataMpPay] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    createConfetti();
-    fetchPaymentData();
-  }, []);
-
-  const createConfetti = () => {
-    const container = document.getElementById("confettiContainer");
-    if (!container) return;
-
-    const colors = ["#009ee3", "#00a650", "#ffe600", "#ff5733", "#c70039"];
-
-    for (let i = 0; i < 50; i++) {
-      const confetti = document.createElement("div");
-      confetti.className = "confetti";
-      confetti.style.left = Math.random() * 100 + "%";
-      confetti.style.backgroundColor =
-        colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.animationDelay = Math.random() * 0.5 + "s";
-      confetti.style.animationDuration = Math.random() * 2 + 2 + "s";
-      container.appendChild(confetti);
+    if (!paymentId && !preferenceId && !merchantOrderId) {
+      setError(true);
+      setLoading(false);
+      return;
     }
-  };
 
-  const fetchPaymentData = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const preferenceId = params.get("preference_id");
-    const paymentId = params.get("payment_id");
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(false);
 
-    // if (!preferenceId && !paymentId) {
-    //   setError("ID de pago no encontrado");
-    //   setLoading(false);
-    //   return;
-    // }
+        const resp = await requestPostPagos(
+          {
+            idUser: localStorage.getItem("idUser"),
+            paymentId,
+            preferenceId,
+          },
+          "/mercadopago/getPaymentById"
+        );
 
-    // try {
-    //   const token = localStorage.getItem("token") || "";
-    //   const response = await fetch(
-    //     `https://977b168e0530.ngrok-free.app/api/v1/mercadopago/getPaymentById?idPayment=${paymentId}&preferenceId=${preferenceId}`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
+        const status = resp.status;
+        const data = await resp.data;
 
-    //   if (response.status === 200) {
-    //     const data: PaymentData = await response.json();
-    //     console.log(data);
-    //     setPaymentData(data);
-    //   } else {
-    //     setError("Error al obtener datos del pago");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   setError("Error de conexión");
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
-
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString("es-MX", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const getStatusInfo = (status: string) => {
-    const statusMap: Record<string, { text: string; color: string }> = {
-      approved: { text: "Aprobado", color: "#00a650" },
-      pending: { text: "Pendiente", color: "#ffa500" },
-      in_process: { text: "En proceso", color: "#0081c3" },
-      rejected: { text: "Rechazado", color: "#dc2626" },
-      cancelled: { text: "Cancelado", color: "#6b7280" },
-      refunded: { text: "Reembolsado", color: "#7c3aed" },
-      charged_back: { text: "Contracargo", color: "#dc2626" },
+        if (status == 200) {
+          setDataMpPay(data.data.data);
+          console.log(data.data.data);
+        }
+      } catch (error: any) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    return statusMap[status] || { text: "Desconocido", color: "#6b7280" };
-  };
+    fetchData();
+  }, [paymentId, preferenceId, merchantOrderId]);
 
-  //   if (loading) {
-  //     return (
-  //       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009ee3] to-[#0081c3]">
-  //         <div className="text-white text-xl">Cargando...</div>
-  //       </div>
-  //     );
-  //   }
+  if (loading) return null; // El fallback de Suspense mostrará el loader
 
-  //   if (error) {
-  //     return (
-  //       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009ee3] to-[#0081c3]">
-  //         <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md">
-  //           <div className="text-red-600 text-xl font-bold text-center">
-  //             {error}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
+  if (error || !dataMpPay)
+    return (
+      <NotFound
+        title="Transacción No Encontrada"
+        description="No pudimos localizar la transacción que buscas. Verifica el ID e
+              intenta nuevamente."
+      />
+    );
 
-  //   if (!paymentData) return null;
+  switch (dataMpPay.status) {
+    case "rejected":
+      return <FailedMP />;
+    case "approved":
+      return <SuccessMP dataMpPay={dataMpPay} />;
+    case "charge_pending":
+    case "in_progress":
+    case "pending":
+      return <PendingMP />;
+    default:
+      return (
+        <NotFound
+          title="Transacción No Encontrada"
+          description="No pudimos localizar la transacción que buscas. Verifica el ID e
+              intenta nuevamente."
+        />
+      );
+  }
+};
 
-  //   const statusInfo = getStatusInfo(paymentData.status);
+// Cargamos dinámicamente para evitar SSR
+const EstatusMPDynamic = dynamic(() => Promise.resolve(EstatusMPContent), {
+  ssr: false,
+});
 
-  return <SuccessMP />;
+// Componente principal que incluye Suspense y loader
+const EstatusMP = () => {
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <GridLoader color="#bb3d4b" size={20} aria-label="Cargando..." />
+        </div>
+      }
+    >
+      <EstatusMPDynamic />
+    </Suspense>
+  );
 };
 
 export default EstatusMP;

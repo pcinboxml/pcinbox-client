@@ -1,13 +1,51 @@
-"use client";
+import useService from "@/app/services/useService";
+import React, { useState, useEffect, JSX } from "react";
 
-const SuccessMP = () => {
+const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
+  const { onRouterLink } = useService();
+  useEffect(() => {
+    createConfetti();
+  }, []);
+
+  const createConfetti = () => {
+    const colors = ["#009ee3", "#00a650", "#ffe600", "#ff5733", "#c70039"];
+    const confettiElements: JSX.Element[] = [];
+
+    for (let i = 0; i < 50; i++) {
+      confettiElements.push(
+        <div
+          key={i}
+          className="absolute w-2 h-2 rounded-full animate-[confetti_3s_ease-out_forwards]"
+          style={{
+            left: `${Math.random() * 100}%`,
+            backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+            animationDelay: `${Math.random() * 0.5}s`,
+            animationDuration: `${Math.random() * 2 + 2}s`,
+          }}
+        />
+      );
+    }
+
+    return confettiElements;
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
   const handleContinue = () => {
     console.log("Continuar clickeado");
-    // Aquí puedes agregar la lógica para redirigir
   };
 
   return (
-    <div className="h-[100vh] w-full flex items-center justify-center p-5 bg-gradient-to-br from-[#009ee3] to-[#0081c3] relative overflow-x-hidden">
+    <div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009ee3] to-[#0081c3] overflow-x-hidden"
+      style={{ padding: "20px" }}
+    >
       <style>{`
         @keyframes confetti {
           0% {
@@ -19,18 +57,6 @@ const SuccessMP = () => {
             opacity: 0;
           }
         }
-
-        @keyframes pulse {
-          0%, 100% {
-            transform: scale(1);
-            opacity: 0.2;
-          }
-          50% {
-            transform: scale(1.1);
-            opacity: 0.1;
-          }
-        }
-
         @keyframes slideUp {
           from {
             opacity: 0;
@@ -41,30 +67,24 @@ const SuccessMP = () => {
             transform: translateY(0);
           }
         }
-
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.2;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.1;
+          }
+        }
         @keyframes drawCheck {
           to {
             stroke-dashoffset: 0;
           }
         }
-
-        .confetti {
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          animation: confetti 3s ease-out forwards;
-          pointer-events: none;
-        }
-
-        .pulse-circle {
-          animation: pulse 2s ease infinite;
-        }
-
-        .card-animate {
+        .animate-slideUp {
           animation: slideUp 0.5s ease;
         }
-
         .checkmark path {
           stroke-dasharray: 48;
           stroke-dashoffset: 48;
@@ -73,27 +93,30 @@ const SuccessMP = () => {
       `}</style>
 
       {/* Confetti Container */}
-      <div
-        id="confettiContainer"
-        className="absolute inset-0 pointer-events-none overflow-hidden"
-      />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {createConfetti()}
+      </div>
 
       {/* Background Circles */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-white opacity-[0.08] rounded-full blur-[60px]" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-white opacity-[0.08] rounded-full blur-[60px]" />
+      <div
+        className="absolute bg-white opacity-[0.08] rounded-full blur-[60px] w-64 h-64"
+        style={{ top: "80px", left: "40px" }}
+      />
+      <div
+        className="absolute bg-white opacity-[0.08] rounded-full blur-[60px] w-96 h-96"
+        style={{ bottom: "80px", right: "40px" }}
+      />
 
       {/* Main Container */}
-      <div className="max-w-lg w-full relative z-10">
+      <div className="max-w-[512px] w-full relative z-10">
         <div
-          className="bg-white rounded-3xl shadow-2xl card-animate"
-          style={{
-            padding: "15px",
-          }}
+          className="bg-white rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.3)] animate-slideUp"
+          style={{ padding: "40px" }}
         >
-          {/* Icon */}
-          <div className="flex justify-center mb-8">
+          {/* Icon Container */}
+          <div className="flex justify-center" style={{ marginBottom: "32px" }}>
             <div className="relative w-28 h-28">
-              <div className="absolute inset-0 bg-[#00a650] rounded-full opacity-20 pulse-circle" />
+              <div className="absolute inset-0 bg-[#00a650] rounded-full opacity-20 animate-[pulse_2s_ease_infinite]" />
               <div className="absolute inset-0 bg-[#00a650] rounded-full flex items-center justify-center">
                 <svg className="w-14 h-14" viewBox="0 0 52 52">
                   <circle
@@ -105,6 +128,7 @@ const SuccessMP = () => {
                     strokeWidth="4"
                   />
                   <path
+                    className="checkmark"
                     d="M14 27l8 8 16-16"
                     fill="none"
                     stroke="white"
@@ -118,66 +142,111 @@ const SuccessMP = () => {
           </div>
 
           {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#009ee3] mb-2">
+          <div className="text-center" style={{ marginBottom: "32px" }}>
+            <h1
+              className="text-[30px] font-bold text-[#009ee3]"
+              style={{ marginBottom: "8px" }}
+            >
               ¡Pago Exitoso!
             </h1>
-            <p className="text-base text-gray-600">
+            <p className="text-base text-gray-500">
               Tu pago se procesó correctamente
             </p>
           </div>
 
           {/* Amount Box */}
           <div
-            style={{
-              padding: "10px",
-            }}
-            className="bg-gradient-to-br from-[#e6f7ff] to-[#cceeff] rounded-2xl mb-6 text-center border-2 border-[#99d5f5]"
+            className="bg-gradient-to-br from-[#e6f7ff] to-[#cceeff] rounded-2xl text-center border-2 border-[#99d5f5]"
+            style={{ padding: "24px", marginBottom: "24px" }}
           >
-            <p className="text-sm text-gray-600 font-medium mb-2">
+            <p
+              className="text-sm text-gray-600 font-medium"
+              style={{ marginBottom: "8px" }}
+            >
               Monto pagado
             </p>
             <p className="text-4xl font-bold text-[#009ee3]">
-              {/* {formatCurrency(paymentData.transaction_amount)} */}
+              {formatCurrency(dataMpPay?.transaction_amount)}
             </p>
           </div>
 
           {/* Details Box */}
-          <div className="bg-gray-50 rounded-2xl p-5 mb-6">
-            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+          <div
+            className="bg-gray-50 rounded-2xl"
+            style={{ padding: "20px", marginBottom: "24px" }}
+          >
+            <div
+              className="flex justify-between items-center border-b border-gray-200"
+              style={{ padding: "8px 0" }}
+            >
               <span className="text-sm text-gray-600">Número de orden</span>
               <span className="text-sm font-semibold text-gray-900">
-                {/* #{paymentData.idOrden} */}
+                #{dataMpPay?.metadata?.id_order}
               </span>
             </div>
 
-            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+            <div
+              className="flex justify-between items-center border-b border-gray-200"
+              style={{ padding: "8px 0" }}
+            >
               <span className="text-sm text-gray-600">ID de transacción</span>
               <span className="text-sm font-semibold text-gray-900 font-mono">
-                {/* {paymentData.id} */}
+                {dataMpPay?.id}
               </span>
             </div>
 
-            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+            <div
+              className="flex justify-between items-center border-b border-gray-200"
+              style={{ padding: "8px 0" }}
+            >
               <span className="text-sm text-gray-600">Fecha y hora</span>
               <span className="text-sm font-semibold text-gray-900">
-                {/* {formatDate(paymentData.date_last_updated)} */}
+                {new Date(dataMpPay?.date_approved).toLocaleString()}
               </span>
             </div>
 
-            <div className="flex justify-between items-center py-2">
+            {dataMpPay?.card && (
+              <>
+                <div
+                  className="flex justify-between items-center border-b border-gray-200"
+                  style={{ padding: "8px 0" }}
+                >
+                  <span className="text-sm text-gray-600">Metodo de pago</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {dataMpPay?.card?.tags[0] == "credit"
+                      ? "Tarjeta de Crédito"
+                      : "Tarjeta de Débito"}
+                  </span>
+                </div>
+
+                <div
+                  className="flex justify-between items-center border-b border-gray-200"
+                  style={{ padding: "8px 0" }}
+                >
+                  <span className="text-sm text-gray-600">No. Tarjeta</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {dataMpPay?.card?.last_four_digits}
+                  </span>
+                </div>
+              </>
+            )}
+
+            <div
+              className="flex justify-between items-center"
+              style={{ padding: "8px 0" }}
+            >
               <span className="text-sm text-gray-600">Estado</span>
-              <span
-                className="text-sm font-semibold"
-                // style={{ color: statusInfo.color }}
-              >
-                {/* {statusInfo.text} */}
+              <span className="text-sm font-semibold text-[#00a650]">
+                Aprobado
               </span>
             </div>
           </div>
 
           {/* Security Badge */}
-          <div className="flex items-center justify-center gap-2 mb-6 p-3 bg-[#e6f7ff] rounded-xl border border-[#99d5f5]">
+          <div
+            className="flex items-center justify-center gap-2 bg-[#e6f7ff] rounded-xl border border-[#99d5f5]"
+            style={{ padding: "12px", marginBottom: "24px" }}
+          >
             <svg
               className="w-5 h-5 text-[#009ee3]"
               fill="currentColor"
@@ -196,11 +265,16 @@ const SuccessMP = () => {
 
           {/* Continue Button */}
           <button
-            onClick={handleContinue}
-            style={{
-              padding: "10px",
+            onClick={() => {
+              //   setLoadingRoute(true);
+
+              onRouterLink(
+                `/pay-end?id=${dataMpPay?.id}&idOrder=${dataMpPay?.metadata?.id_order}&method_pay=mercadopago&provider=mp`
+              );
+              //  setLoadingRoute(false);
             }}
-            className="w-full py-3.5 px-4 bg-[#009ee3] text-white font-semibold rounded border-none cursor-pointer text-base transition-all duration-300 hover:bg-[#0081c3] hover:-translate-y-0.5 hover:shadow-lg"
+            className="w-full bg-[#009ee3] text-white font-semibold rounded-lg border-none cursor-pointer text-base transition-all duration-300 hover:bg-[#0081c3] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,158,227,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ padding: "14px 16px" }}
           >
             Continuar
           </button>
