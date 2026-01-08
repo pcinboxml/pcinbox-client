@@ -263,8 +263,18 @@ const useResumen = () => {
                       ? Number(progressPay?.optionSend?.costo)
                       : 0)
                 : null,
-            optionEnvio: progressPay.optionSend.name,
-            idAddress: progressPay.optionSend.address,
+            optionEnvio:
+              dataCart && dataCart.length > 0
+                ? totalPagar <= 1000
+                  ? "sucursal"
+                  : progressPay.optionSend.name
+                : null,
+            idAddress:
+              dataCart && dataCart.length > 0
+                ? totalPagar <= 1000
+                  ? 0
+                  : progressPay.optionSend.address
+                : null,
             dataProduct: dataCart,
             requiredFactura: selectedFactura,
           },
