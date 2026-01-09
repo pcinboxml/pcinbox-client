@@ -8,7 +8,9 @@ import { useTheContext } from "../services/globalContext";
 const ITEMS_PER_PAGE = 20;
 
 const useResultSearchCategory = () => {
-  const [loadingAddProductCar, setLoadingAddProductCar] = useState(false);
+  const [loadingAddProductCar, setLoadingAddProductCar] = useState<
+    Record<any, boolean>
+  >({});
   const { requestPost } = useService();
   const { setDataCart } = useTheContext();
 
@@ -26,7 +28,10 @@ const useResultSearchCategory = () => {
 
   const handleAddProductCart = async (productProp: ProductI) => {
     try {
-      setLoadingAddProductCar(true);
+      setLoadingAddProductCar((prev) => ({
+        ...prev,
+        [productProp?.idProduct]: true,
+      }));
 
       const resp = await requestPost(
         {
@@ -38,7 +43,10 @@ const useResultSearchCategory = () => {
         "/cart/addProduct"
       );
 
-      setLoadingAddProductCar(false);
+      setLoadingAddProductCar((prev) => ({
+        ...prev,
+        [productProp?.idProduct]: false,
+      }));
 
       if (resp.status == 200) {
         setDataCart((prev) => {
@@ -75,7 +83,10 @@ const useResultSearchCategory = () => {
         });
       }
     } catch (error) {
-      setLoadingAddProductCar(false);
+      setLoadingAddProductCar((prev) => ({
+        ...prev,
+        [productProp?.idProduct]: false,
+      }));
     }
   };
 
