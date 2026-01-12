@@ -157,7 +157,7 @@ const FormaDePago = () => {
                 </div>
               </div>
 
-              {idMethodPay != 0 && (
+              {/* {idMethodPay != 0 && (
                 <div style={{ marginTop: "10px" }}>
                   {idMethodPay == 1 ? (
                     <>
@@ -226,16 +226,16 @@ const FormaDePago = () => {
                         ? "Transferencia bancaria"
                         : ""}
                     </h5>
-                  </div> */}
-                  {/* {idMethodPay == 1 ? (
+                  </div> 
+                   {idMethodPay == 1 ? (
                     <StripeProviderClient>
                       <CardForm
                         userId={Number(localStorage.getItem("idUser"))}
                       />
                     </StripeProviderClient>
-                  ) : null} */}
+                  ) : null} 
                 </div>
-              )}
+              )} */}
             </div>
 
             {dataCart && dataCart.length > 0 && (

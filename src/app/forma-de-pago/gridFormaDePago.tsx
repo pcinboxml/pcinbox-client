@@ -63,7 +63,7 @@ const GridFormaDePago = () => {
       id: 6,
       value: "mercado_pago",
       label:
-        "Mercado Pago. Pagos con tarjeta de crédito a 3 y 6 meses con intereses, o con saldo en cuenta.",
+        "Pagos con tarjeta de crédito a 3 y 6 meses con/sin intereses, o con saldo en cuenta.",
       icon: (
         <img
           src="/mercadopago.jpg"
@@ -88,7 +88,7 @@ const GridFormaDePago = () => {
           style={{
             objectFit: "contain",
             width: "100px",
-            height: "100px",
+            height: "50px",
           }}
           loading="lazy"
         />

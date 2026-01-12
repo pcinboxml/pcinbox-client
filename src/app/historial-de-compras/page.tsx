@@ -210,11 +210,13 @@ const HistoryShop = () => {
                           historyCompra.statusEnvio != "cancelado" &&
                           historyCompra.statusEnvio != "disponible" ? (
                             <button
-                              disabled={loadingCancelledCompra}
+                              disabled={
+                                loadingCancelledCompra[historyCompra.idOrder]
+                              }
                               onClick={() => showModal(historyCompra)}
                               className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
                             >
-                              {loadingCancelledCompra ? (
+                              {loadingCancelledCompra[historyCompra.idOrder] ? (
                                 <MdAutorenew
                                   size={20}
                                   className="m-auto the-spinner"
@@ -230,7 +232,9 @@ const HistoryShop = () => {
                         {
                           <>
                             Compra realizada el{" "}
-                            {new Date(historyCompra.createdAt).toLocaleString()}
+                            {new Date(
+                              historyCompra?.updatedAt
+                            ).toLocaleString()}
                           </>
                         }
                       </div>

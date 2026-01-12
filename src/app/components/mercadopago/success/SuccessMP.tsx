@@ -205,7 +205,7 @@ const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
               </span>
             </div>
 
-            {dataMpPay?.card && (
+            {dataMpPay?.card && Object.keys(dataMpPay.card).length > 0 ? (
               <>
                 <div
                   className="flex justify-between items-center border-b border-gray-200"
@@ -226,6 +226,18 @@ const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
                   <span className="text-sm text-gray-600">No. Tarjeta</span>
                   <span className="text-sm font-semibold text-gray-900">
                     {dataMpPay?.card?.last_four_digits}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className="flex justify-between items-center border-b border-gray-200"
+                  style={{ padding: "8px 0" }}
+                >
+                  <span className="text-sm text-gray-600">Metodo de pago</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    Pagado con saldo
                   </span>
                 </div>
               </>

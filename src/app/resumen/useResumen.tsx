@@ -246,12 +246,11 @@ const useResumen = () => {
         );
 
         if (resp.status == 200) {
-          //Pruebas
-
           window.location.href = resp.data.data.init_point;
-          setLoadingCreateOrder(false);
         }
       } catch (error) {
+        setLoadingCreateOrder(false);
+      } finally {
         setLoadingCreateOrder(false);
       }
     } else if (progressPay.methodPay.typeMethod == "openpay") {
@@ -278,6 +277,8 @@ const useResumen = () => {
           // setLoadingCreateOrder(false);
         }
       } catch (error) {
+        setLoadingCreateOrder(false);
+      } finally {
         setLoadingCreateOrder(false);
       }
     }

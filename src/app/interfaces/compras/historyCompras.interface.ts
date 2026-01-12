@@ -20,6 +20,7 @@ export interface GroupByIdI {
   idOrder: number;
   statusEnvio: any;
   createdAt: any;
+  updatedAt: any;
   pay_method: any;
   price: number;
   paidAtOxxo: number;
