@@ -623,10 +623,10 @@ const SearchCategoryContent = () => {
                                                       <span className="italic text-[13px]">
                                                         {carac.value &&
                                                         carac?.value?.length >
-                                                          50
+                                                          40
                                                           ? `${carac?.value?.slice(
                                                               0,
-                                                              50
+                                                              40
                                                             )}...`
                                                           : carac?.value}
                                                       </span>
