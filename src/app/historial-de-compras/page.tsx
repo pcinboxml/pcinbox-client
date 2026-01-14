@@ -230,7 +230,10 @@ const HistoryShop = () => {
                         {
                           <>
                             Compra realizada el{" "}
-                            {new Date(historyCompra.createdAt).toLocaleString()}
+                            {new Date(
+                              historyCompra.createdAt ||
+                                (historyCompra as any).updatedAt
+                            ).toLocaleString()}
                           </>
                         }
                       </div>
