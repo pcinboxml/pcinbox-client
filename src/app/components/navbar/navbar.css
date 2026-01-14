@@ -45,7 +45,7 @@
 
 .container-header .search form input {
   width: 80%;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   padding: 5px;
 }
 

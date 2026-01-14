@@ -5,99 +5,187 @@ import {
   AutocompleteChangeReason,
   createFilterOptions,
   TextField,
+  Box,
+  Typography,
+  Avatar,
+  Chip,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import "./searchProduct.css";
 import { useTheContext } from "@/app/services/globalContext";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import useService from "@/app/services/useService";
 
-const SearchProduct = ({ setIsFocusedSearch }: { setIsFocusedSearch: any }) => {
-  const { dataProducts } = useTheContext();
+interface SearchProductProps {
+  setIsFocusedSearch: (focused: boolean) => void;
+}
 
+const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
+  const { dataProducts } = useTheContext();
+  const { onRouterLink } = useService();
+
+  // const [selectedProduct, setSelectedProduct] = useState<ProductI | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+
+  // Filtro personalizado
   const filterOptions = createFilterOptions({
     stringify: (option: ProductI) => `${option.name} ${option.description}`,
   });
-  const [selectedProduct, setSelectedProduct] = useState<ProductI | null>(null);
-  const [inputValue, setInputValue] = useState<string>("");
-  const { onRouterLink } = useService();
 
   const handleSelect = (
     event: SyntheticEvent<Element, Event>,
-    value: string | ProductI | null,
+    value: ProductI | null,
     reason: AutocompleteChangeReason
   ) => {
     if (value) {
-      setSelectedProduct(typeof value !== "string" ? value : null);
+      // setSelectedProduct(value);
+      setInputValue("");
+      setIsFocusedSearch(false);
       onRouterLink(
-        `/result-search-category?idProduct=${
-          typeof value != "string" ? value.idProduct : null
-        }&name=${typeof value != "string" ? value.name : null}`
+        `/result-search-category?idProduct=${value.idProduct}&name=${value.name}`
       );
       setIsFocusedSearch(false);
     }
   };
 
+  useEffect(() => {
+    if (inputValue.length >= 3) {
+      setIsFocusedSearch(true);
+    } else {
+      setIsFocusedSearch(false);
+    }
+  }, [inputValue]);
+
   return (
     <form
-      className="flex"
+      style={{ zIndex: "21" }}
+      className="flex w-full relative"
       onSubmit={(event) => {
-        event.preventDefault(); // Evita que la página se recargue
+        event.preventDefault();
         if (inputValue) {
+          setIsFocusedSearch(false);
           onRouterLink(
             `/result-search-category?idProduct=${null}&name=${inputValue}`
           );
-          setIsFocusedSearch(false);
         }
       }}
     >
       <Autocomplete
-        freeSolo
         disablePortal
         options={
-          inputValue.length >= 3
-            ? dataProducts && dataProducts.length > 0
-              ? dataProducts.filter((product) => product.categoryId == "1")
-              : []
+          inputValue && inputValue.length >= 3
+            ? dataProducts.filter((product) => {
+                const search = inputValue.toLowerCase().trim();
+                return (
+                  product.name?.toLowerCase().includes(search) ||
+                  product.description?.toLowerCase().includes(search) ||
+                  product.sku?.toLowerCase().includes(search) ||
+                  product.upc?.toLowerCase().includes(search)
+                );
+              })
             : []
-        } //Solo productos de la categoria TARJETAS DE VIDEO
-        noOptionsText="Sin resultados disponibles"
-        className="z-20 relative border-none focus:outline-none bg-white border-0"
-        onFocus={() => setIsFocusedSearch(true)}
-        onBlur={() => setIsFocusedSearch(false)}
-        sx={{ width: "100%", border: "none" }}
-        renderInput={(params) => <TextField {...params} label="" />}
-        getOptionLabel={(option: string | ProductI) => {
-          if (typeof option === "string") return option;
-          return option.name;
-        }}
+        }
+        getOptionLabel={(option) => option.name}
         filterOptions={filterOptions}
-        onChange={handleSelect}
+        onChange={(_, value) => handleSelect(_, value, "selectOption")}
         inputValue={inputValue}
-        onInputChange={(event, value) => {
-          setInputValue(value);
-        }}
-        getOptionKey={(option: string | ProductI) => {
-          if (typeof option != "string") {
-            return option.idProduct;
+        onInputChange={(_, value, reason) => {
+          if (reason === "input") {
+            setInputValue(value);
           }
-          return option;
         }}
+        noOptionsText="Sin resultados disponibles"
+        // onFocus={() =>{
+        //     if (inputValue) {
+
+        //     }
+        //   setIsFocusedSearch(inputValue?.length >= 3 ? true : false)
+        // }
+        // }
+        // onBlur={() => setIsFocusedSearch(false)}
+        sx={{ width: "100%" }}
+        renderOption={(props, option) => {
+          const { key, ...rest } = props; // extraemos key
+          return (
+            <Box
+              key={option?.idProduct} // React necesita key directamente
+              component="li"
+              {...rest} // resto de props
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                py: 1,
+              }}
+            >
+              <Avatar
+                src={option.imageUrl[0]}
+                alt={option.name}
+                variant="rounded"
+                sx={{ width: 50, height: 50 }}
+              />
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="body1" fontWeight={500}>
+                  {option.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {option.description}
+                </Typography>
+              </Box>
+              <Chip
+                label={option.stock > 0 ? `Stock: ${option.stock}` : "Agotado"}
+                color={option.stock > 0 ? "success" : "error"}
+                size="small"
+                sx={{ ml: "auto" }}
+              />
+            </Box>
+          );
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            className="bg-white border-0"
+            placeholder="Buscar producto..."
+            variant="outlined"
+            size="small"
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {inputValue && (
+                    <InputAdornment position="end">
+                      <span
+                        onClick={() => {
+                          setInputValue("");
+                          setIsFocusedSearch(false);
+                        }}
+                        style={{
+                          fontSize: "18px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                          padding: "10px",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        X
+                      </span>
+                    </InputAdornment>
+                  )}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
       />
+
       <button
-        type="button"
-        className="z-20 relative will-change-contents"
-        onClick={(event) => {
-          event.preventDefault();
-          if (inputValue) {
-            onRouterLink(
-              `/result-search-category?idProduct=${null}&name=${inputValue}`
-            );
-            setIsFocusedSearch(false);
-          }
-        }}
+        type="submit"
+        className="ml-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
       >
-        <span className="px-2">Buscar</span>
+        Buscar
       </button>
     </form>
   );
