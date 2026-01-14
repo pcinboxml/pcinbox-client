@@ -137,12 +137,14 @@ const Resumen = () => {
             {dataCart && dataCart.length > 0 && (
               <div className="w-full flex justify-end items-center  gap-5 mt-4">
                 <FormControlLabel
+                  disabled={loadingCreateOrder}
                   control={<Checkbox checked={selectedFactura} />}
                   label="Generar Factura"
                   onChange={handleSelectedFactura}
                 />
 
                 <button
+                  disabled={loadingCreateOrder}
                   onClick={() => onRouterLink("/forma-de-pago")}
                   className="border py-2 px-5 text-black rounded"
                 >

@@ -59,34 +59,36 @@ const GridFormaDePago = () => {
     //   cargoBancario: "0",
     //   color: "#666666",
     // },
-    // {
-    //   id: 6,
-    //   value: "mercado_pago",
-    //   label: "Mercado Pago",
-    //   icon: (
-    //     <img
-    //       src="/mercadopago.jpg"
-    //       style={{
-    //         objectFit: "contain",
-    //         width: "100px",
-    //         height: "50px",
-    //       }}
-    //     />
-    //   ),
-    //   cargoBancario: "0",
-    //   color: "#666666",
-    // },
+    {
+      id: 6,
+      value: "mercado_pago",
+      label:
+        "Pagos con tarjeta de crédito a 3 y 6 meses con/sin intereses, o con saldo en cuenta.",
+      icon: (
+        <img
+          src="/mercadopago.jpg"
+          style={{
+            objectFit: "contain",
+            width: "100px",
+            height: "50px",
+          }}
+        />
+      ),
+      cargoBancario: "0",
+      color: "#666666",
+    },
     {
       id: 7,
       value: "openpay",
-      label: " Tarjeta de crédito/débito, Efectivo y Transferencia",
+      label:
+        " Pagos con tarjeta de crédito o débito, efectivo y transferencia (únicamente pago de contado).",
       icon: (
         <img
           src={"openpay.png"}
           style={{
             objectFit: "contain",
             width: "100px",
-            height: "100px",
+            height: "50px",
           }}
           loading="lazy"
         />

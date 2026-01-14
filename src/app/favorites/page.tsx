@@ -78,8 +78,6 @@ const Favorites = () => {
     progressRating: any,
     idProduct: number
   ) => {
-    console.log("Reviews");
-    console.log(reviews);
     const ratingCount = reviews?.reduce((acc, item) => {
       if (item.rating === progressRating.rating) {
         return acc + 1;
