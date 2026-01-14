@@ -233,17 +233,20 @@ const useResumen = () => {
           {
             dataProduct: dataCart,
             userId: Number(localStorage.getItem("idUser")),
-            totalAmount: totalPagar,
+            totalAmount:
+              totalPagar +
+              (progressPay?.optionSend?.costo
+                ? Number(progressPay?.optionSend?.costo)
+                : 0),
             shipping_method: progressPay.optionSend.name,
             idAddress: progressPay.optionSend.address,
+            requiredFactura: selectedFactura,
           },
-          "/mercadopago/payMP"
+          "/mercadopago/preferencePago"
         );
-        setLoadingCreateOrder(false);
 
         if (resp.status == 200) {
-          //Pruebas
-          window.location.href = resp.data.sandbox_init_point;
+          window.location.href = resp.data.data.init_point;
         }
       } catch (error) {
         setLoadingCreateOrder(false);
