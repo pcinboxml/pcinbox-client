@@ -74,6 +74,7 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
     >
       <Autocomplete
         disablePortal
+        forcePopupIcon={true}
         options={
           inputValue && inputValue.length >= 3
             ? dataProducts.filter((product) => {
