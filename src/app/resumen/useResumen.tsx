@@ -250,8 +250,6 @@ const useResumen = () => {
         }
       } catch (error) {
         setLoadingCreateOrder(false);
-      } finally {
-        setLoadingCreateOrder(false);
       }
     } else if (progressPay.methodPay.typeMethod == "openpay") {
       try {
@@ -277,8 +275,6 @@ const useResumen = () => {
           // setLoadingCreateOrder(false);
         }
       } catch (error) {
-        setLoadingCreateOrder(false);
-      } finally {
         setLoadingCreateOrder(false);
       }
     }
