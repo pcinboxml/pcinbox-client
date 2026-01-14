@@ -41,6 +41,15 @@ const Footer = () => {
               <img src="/visa.png" loading="lazy" />
             </div>
             <div className="flex">
+              <img
+                src="/mercadopago.jpg"
+                alt=""
+                width="250"
+                height="250"
+                loading="lazy"
+              />
+            </div>
+            <div className="flex">
               <img src="/openpay.png" />
               <img
                 width="250"
