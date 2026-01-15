@@ -147,8 +147,17 @@ const OpcionesEntrega = () => {
 
                 {totalPrice < 1000 ? (
                   <Alert severity="info" className="mt-3">
-                    Para enviar a tu domicilio el monto minimo de compra debe
-                    ser de $1,000 pesos.
+                    Para que la empresa{" "}
+                    <span style={{ fontWeight: "bold", color: "black" }}>
+                      PCinBOX
+                    </span>{" "}
+                    realice el envío a tu domicilio, el monto mínimo de compra
+                    debe ser de{" "}
+                    <span style={{ fontWeight: "bold", color: "black" }}>
+                      $1,000 pesos
+                    </span>
+                    . Este servicio aplica únicamente para León y zonas
+                    específicas.
                   </Alert>
                 ) : null}
 
