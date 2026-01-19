@@ -9,12 +9,12 @@ export default function useProtectedRoute(pathname: string) {
     const token = localStorage.getItem("token");
 
     // ❌ NO autenticado
-    if (!token) {
-      if (pathname === "/principal") {
-        router.replace("/register"); // o "/login"
-      }
-      return;
-    }
+    // if (!token) {
+    //   if (pathname === "/principal") {
+    //     router.replace("/register"); // o "/login"
+    //   }
+    //   return;
+    // }
 
     // ✅ Autenticado
     if (token) {
