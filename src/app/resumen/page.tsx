@@ -8,22 +8,61 @@ import useService from "../services/useService";
 import useStorage from "../services/useStorage";
 import useResumen from "./useResumen";
 import { Alert, Checkbox, FormControlLabel } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const Resumen = () => {
-  const { dataCart, setDataModal } = useTheContext();
+  const { dataCart } = useTheContext();
   const { onRouterLink, formatCurrency } = useService();
   const {
     rows,
     columns,
     loadingCreateOrder,
-    totalPrice,
-    totalIVA,
     totalPagar,
     selectedFactura,
+    tarifasPaqueteExpress,
     handleCreateOrder,
     handleSelectedFactura,
+    calcPesoVolumetrico,
   } = useResumen();
   const { progressPay } = useStorage();
+
+  const [envio, setEnvio] = useState<number>(0);
+
+  useEffect(() => {
+    if (!dataCart?.length) {
+      setEnvio(0);
+      return;
+    }
+
+    const optionSend = progressPay?.optionSend?.name;
+
+    // Si aún no está definido, no calcules nada
+    if (!optionSend) return;
+
+    // Entrega en sucursal
+    if (totalPagar <= 1000 || optionSend === "sucursal") {
+      setEnvio(0);
+      return;
+    }
+
+    if (optionSend === "paqueteexpress" && tarifasPaqueteExpress?.length > 0) {
+      const pesoTotal = dataCart.reduce(
+        (total, product) => total + calcPesoVolumetrico(product),
+        0,
+      );
+
+      const tarifa = tarifasPaqueteExpress.find(
+        (t) => pesoTotal >= t.de && pesoTotal <= t.a,
+      );
+
+      setEnvio(tarifa?.price ?? 0);
+    }
+  }, [
+    progressPay?.optionSend?.name,
+    dataCart,
+    tarifasPaqueteExpress,
+    totalPagar,
+  ]);
 
   return (
     <section>
@@ -59,42 +98,42 @@ const Resumen = () => {
 
                 <span className="text-[#808080] text-sm">Tipo de pago:</span>
 
+                <span className="text-[#808080] text-sm">Tipo de entrega:</span>
+
                 {/* <span className="text-[#808080] text-sm">IVA: </span> */}
               </div>
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
-                  {/* {(progressPay?.optionSend?.name == "envioLeon" &&
-                    progressPay?.optionSend?.costo) ||
-                  (progressPay?.optionSend?.name == "paqueteexpress" &&
-                    progressPay?.optionSend?.costo)
-                    ? formatCurrency(Number(progressPay?.optionSend?.costo))
-                    : progressPay?.optionSend?.name == "sucursal"
-                    ? "Entrega en sucursal"
-                    : "Gratis"} */}
-                  {dataCart && dataCart.length > 0
-                    ? totalPagar <= 1000
-                      ? "Entrega en sucursal"
-                      : progressPay?.optionSend?.costo == "0" &&
-                        progressPay?.optionSend?.name == "sucursal"
-                      ? "Entrega en sucursal"
-                      : formatCurrency(Number(progressPay?.optionSend?.costo))
-                    : null}
+                  {formatCurrency(envio)}
                 </span>
+
                 <span className="text-[#808080] text-sm">
                   {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
                     ? "Tarjeta Crédito/Débito"
                     : progressPay.methodPay.typeMethod == "transferencia"
-                    ? "Transferencia"
-                    : progressPay.methodPay.typeMethod == "efectivo_al_recoger"
-                    ? "Efectivo en sucursal"
-                    : progressPay.methodPay.typeMethod == "tarjeta_al_recoger"
-                    ? "Tarjeta Crédito/Débito en sucursal"
-                    : progressPay.methodPay.typeMethod == "efectivo"
-                    ? "Efectivo (OXXO)"
-                    : progressPay.methodPay.typeMethod == "mercadopago"
-                    ? "Mercado Pago"
-                    : progressPay.methodPay.typeMethod}
+                      ? "Transferencia"
+                      : progressPay.methodPay.typeMethod ==
+                          "efectivo_al_recoger"
+                        ? "Efectivo en sucursal"
+                        : progressPay.methodPay.typeMethod ==
+                            "tarjeta_al_recoger"
+                          ? "Tarjeta Crédito/Débito en sucursal"
+                          : progressPay.methodPay.typeMethod == "efectivo"
+                            ? "Efectivo (OXXO)"
+                            : progressPay.methodPay.typeMethod == "mercadopago"
+                              ? "Mercado Pago"
+                              : progressPay.methodPay.typeMethod}
+                </span>
+
+                <span className="text-[#808080] text-sm">
+                  {progressPay?.optionSend?.name == "sucursal"
+                    ? "Entrega en Sucursal"
+                    : progressPay?.optionSend?.name == "paqueteexpress"
+                      ? "Paquete Express"
+                      : progressPay?.optionSend?.name == "estafeta"
+                        ? "Estafeta"
+                        : "Tipo de entrega desconocido"}
                 </span>
                 {/* <span className="text-[#808080] text-sm">
                   {formatCurrency(Number(totalIVA))} 
@@ -127,7 +166,7 @@ const Resumen = () => {
                           totalPagar +
                             (progressPay?.optionSend?.costo
                               ? Number(progressPay?.optionSend?.costo)
-                              : 0)
+                              : envio),
                         )
                     : null}
                 </span>
@@ -153,7 +192,7 @@ const Resumen = () => {
                 <button
                   disabled={loadingCreateOrder}
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  onClick={handleCreateOrder}
+                  onClick={() => handleCreateOrder(envio)}
                 >
                   {loadingCreateOrder ? (
                     <MdAutorenew size={20} className="m-auto the-spinner" />

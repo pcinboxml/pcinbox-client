@@ -123,10 +123,10 @@ export const ModalCart = ({
                             onClick={() => {
                               localStorage.setItem(
                                 "product",
-                                JSON.stringify(product)
+                                JSON.stringify(product),
                               );
                               onRouterLink(
-                                `/detailsProduct/${product.idProduct}`
+                                `/detailsProduct/${product.idProduct}`,
                               );
                             }}
                           />
@@ -139,10 +139,10 @@ export const ModalCart = ({
                             onClick={() => {
                               localStorage.setItem(
                                 "product",
-                                JSON.stringify(product)
+                                JSON.stringify(product),
                               );
                               onRouterLink(
-                                `/detailsProduct/${product.idProduct}`
+                                `/detailsProduct/${product.idProduct}`,
                               );
                             }}
                           />
@@ -165,6 +165,7 @@ export const ModalCart = ({
 
                         <div className="flex flex-col items-end gap-2">
                           <div className="flex items-center border border-gray-300 rounded">
+                            {/*Boton de menos quantity*/}
                             <button
                               onClick={() => {
                                 const updateItems = dataCart.map((item) => {
@@ -189,13 +190,15 @@ export const ModalCart = ({
                               readOnly
                               value={
                                 dataCart.find(
-                                  (item) => item.idProduct === product.idProduct
+                                  (item) =>
+                                    item.idProduct === product.idProduct,
                                 )?.quantity || 1
                               }
                               style={{ minWidth: "45px", maxWidth: "55px" }}
                               className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
                             />
 
+                            {/*Boton de mas quantity*/}
                             <button
                               onClick={() => {
                                 const updateItems = dataCart.map((item) => {
@@ -224,8 +227,8 @@ export const ModalCart = ({
                               {formatCurrency(
                                 Number(
                                   Number(product.price) *
-                                    Number(product.quantity)
-                                )
+                                    Number(product.quantity),
+                                ),
                               )}
                             </p>
                             <button
@@ -233,7 +236,7 @@ export const ModalCart = ({
                                 handleRemoveItemCart(
                                   dataCart,
                                   product,
-                                  onMouseLeaveCart
+                                  onMouseLeaveCart,
                                 )
                               }
                               className="text-red-500 hover:text-red-700 p-1 mt-2"

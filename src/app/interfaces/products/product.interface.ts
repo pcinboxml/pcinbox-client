@@ -14,6 +14,21 @@ export default interface ProductI {
   sku: string;
   caracteristicas?: any;
   upc?: any;
+  width?: any;
+  height?: any;
+  largo?: any;
+  product_stock?: {
+    idProductStock: number;
+    branchId: number;
+    productId: number;
+    stock: number;
+    branches?: {
+      city: string | null;
+      idBranche: number;
+      name: string;
+      providerId: number;
+    };
+  }[];
   reviews: {
     idReview: string;
     productId: string;

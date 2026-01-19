@@ -16,9 +16,12 @@ import { useSearchParams } from "next/navigation";
 import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
+import BranchSelector from "../components/branchSelector/BranchSelector";
 // import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const SearchCategoryContent = () => {
+  const { setDataModal } = useTheContext();
+
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const { requestPostProveedor } = useProveedores();
   const [data, setData] = useState([]);
@@ -49,7 +52,7 @@ const SearchCategoryContent = () => {
 
     // Validar que todos los parámetros en searchParams estén permitidos
     const invalidParams = Array.from(searchParams.keys()).filter(
-      (key) => !allowedParams.includes(key)
+      (key) => !allowedParams.includes(key),
     );
 
     if (invalidParams.length > 0) {
@@ -65,7 +68,7 @@ const SearchCategoryContent = () => {
       setLoadingData(true);
       const resp = await requestPostProveedor(
         { idProduct: idProduct, name: name?.trim(), categoryId },
-        "/getProductByCategoryIdAndIdProduct"
+        "/getProductByCategoryIdAndIdProduct",
       );
       setLoadingData(false);
       if (resp.status == 200) {
@@ -82,7 +85,7 @@ const SearchCategoryContent = () => {
   const handleOnSelectMarca = (event: ChangeEvent<HTMLInputElement>) => {
     if (event?.target?.value) {
       const filtered = dataCopy.filter(
-        (item: any) => item.marcaId == event.target.value
+        (item: any) => item.marcaId == event.target.value,
       );
       setData(filtered);
     }
@@ -99,7 +102,7 @@ const SearchCategoryContent = () => {
     const filtered = dataCopy.filter(
       (item: any) =>
         item.name.toLowerCase().includes(term) ||
-        item.sku.toLowerCase().includes(term)
+        item.sku.toLowerCase().includes(term),
     );
 
     setData(filtered);
@@ -137,8 +140,8 @@ const SearchCategoryContent = () => {
         prev.map((item: any) =>
           item.idProduct == dataSocket.idProduct
             ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
-            : item
-        )
+            : item,
+        ),
       );
 
       setDataFavorites((prevFavorites) => {
@@ -187,7 +190,7 @@ const SearchCategoryContent = () => {
   const calcPorcentaje = (
     product: ProductI,
     dataProducts: ProductI[],
-    progressRating: any
+    progressRating: any,
   ) => {
     const ratingCount = product.reviews.reduce((acc, item) => {
       if (item.rating === progressRating.rating) {
@@ -203,7 +206,7 @@ const SearchCategoryContent = () => {
           item.reviews.filter(
             (r) =>
               r.rating === progressRating.rating &&
-              item.idProduct == product.idProduct
+              item.idProduct == product.idProduct,
           ).length
         );
       } else {
@@ -377,7 +380,7 @@ const SearchCategoryContent = () => {
                                 role="button"
                                 onClick={() => {
                                   onRouterLink(
-                                    `/detailsProduct/${item.idProduct}`
+                                    `/detailsProduct/${item.idProduct}`,
                                   );
                                 }}
                                 className="text-[#BB3D4B] font-bold"
@@ -412,7 +415,7 @@ const SearchCategoryContent = () => {
                                       ? item.reviews.reduce(
                                           (sum: any, review: any) =>
                                             sum + review.rating,
-                                          0
+                                          0,
                                         ) / item.reviews.length
                                       : 0;
                                   return (
@@ -487,7 +490,7 @@ const SearchCategoryContent = () => {
                                                                     calcPorcentaje(
                                                                       item,
                                                                       dataProducts,
-                                                                      progressRating
+                                                                      progressRating,
                                                                     )
                                                                       .percentage,
                                                                   height:
@@ -507,7 +510,7 @@ const SearchCategoryContent = () => {
                                                                 calcPorcentaje(
                                                                   item,
                                                                   dataProducts,
-                                                                  progressRating
+                                                                  progressRating,
                                                                 ).rating
                                                               }
                                                             </div>
@@ -524,7 +527,7 @@ const SearchCategoryContent = () => {
                                                                 {item.reviews.reduce(
                                                                   (
                                                                     acc: any,
-                                                                    item: any
+                                                                    item: any,
                                                                   ) => {
                                                                     if (
                                                                       item.rating ===
@@ -536,21 +539,21 @@ const SearchCategoryContent = () => {
                                                                     }
                                                                     return acc;
                                                                   },
-                                                                  0
+                                                                  0,
                                                                 )}
                                                                 )
                                                               </span>
                                                             </div>
                                                           </div>
                                                         );
-                                                      }
+                                                      },
                                                     )}
 
                                                   <a
                                                     role="button"
                                                     onClick={() =>
                                                       onRouterLink(
-                                                        `/review?idProduct=${item.idProduct}`
+                                                        `/review?idProduct=${item.idProduct}`,
                                                       )
                                                     }
                                                     style={{
@@ -592,7 +595,7 @@ const SearchCategoryContent = () => {
                                             .filter(
                                               (itemF: any) =>
                                                 itemF.productId ==
-                                                item.idProduct
+                                                item.idProduct,
                                             )
                                             .length.toLocaleString()}{" "}
                                           opiniones
@@ -668,57 +671,70 @@ const SearchCategoryContent = () => {
                                 <div>
                                   <button
                                     disabled={
-                                      // loadingAddProductCar ||
-                                      item.stock == 0 || item.stock == "0"
+                                      loadingAddProductCar[item.idProduct] ||
+                                      item.stock == 0 ||
+                                      item.stock == "0"
                                     }
                                     className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
                                     onClick={() => {
-                                      // setDataModal({
-                                      //   isOpen: true,
-                                      //   message: (
-                                      //     <BranchSelector
-                                      //       productSelected={item}
-                                      //     />
-                                      //   ),
-                                      //   title: "",
-                                      //   type: "success",
-                                      //   showActions: false,
-                                      //   onClose: () => {
-                                      //     setDataModal((prev) => ({
-                                      //       ...prev,
-                                      //       isOpen: false,
-                                      //     }));
-                                      //   },
-                                      //   onConfirm: () => {
-                                      //     setDataModal((prev) => ({
-                                      //       ...prev,
-                                      //       isOpen: false,
-                                      //     }));
-                                      //   },
-                                      // });
+                                      // if (
+                                      //   (item?.isPC == 0 || item?.isPc == 0) &&
+                                      //   item?.product_stock.length > 0
+                                      // ) {
+                                      //   setDataModal({
+                                      //     isOpen: true,
+                                      //     message: (
+                                      //       <div className="w-[800px] border">
+                                      //         <BranchSelector
+                                      //           productSelected={item}
+                                      //         />
+                                      //       </div>
+                                      //     ),
+                                      //     title: "",
+                                      //     type: "success",
+                                      //     showActions: false,
+                                      //     onClose: () => {
+                                      //       setDataModal((prev) => ({
+                                      //         ...prev,
+                                      //         isOpen: false,
+                                      //       }));
+                                      //     },
+                                      //     onConfirm: () => {
+                                      //       setDataModal((prev) => ({
+                                      //         ...prev,
+                                      //         isOpen: false,
+                                      //       }));
+                                      //     },
+                                      //   });
+                                      // } else {
+
                                       handleAddProductCart(item);
+                                      // }
                                     }}
                                   >
-                                    {/* {loadingAddProductCar ? (
+                                    {item?.isPC == 0 &&
+                                    loadingAddProductCar[item.idProduct] ==
+                                      true ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
                                       />
-                                    ) : ( */}
-                                    <>
-                                      {item.stock == "0" || item.stock == 0 ? (
-                                        "No disponible"
-                                      ) : (
-                                        <>
-                                          Agregar al carrito
-                                          <MdShoppingCart
-                                            size={20}
-                                            color="white"
-                                          />
-                                        </>
-                                      )}
-                                    </>
-                                    {/* )} */}
+                                    ) : (
+                                      <>
+                                        {item.stock == "0" ||
+                                        item.stock == 0 ? (
+                                          "No disponible"
+                                        ) : (
+                                          <>
+                                            Agregar al carrito
+                                            <MdShoppingCart
+                                              size={20}
+                                              color="white"
+                                            />
+                                          </>
+                                        )}
+                                      </>
+                                    )}
                                   </button>
                                 </div>
                               </div>
@@ -733,7 +749,7 @@ const SearchCategoryContent = () => {
                               showArrows={true}
                               onClickItem={() => {
                                 onRouterLink(
-                                  `/detailsProduct/${item.idProduct}`
+                                  `/detailsProduct/${item.idProduct}`,
                                 );
                               }}
                             >
@@ -751,7 +767,7 @@ const SearchCategoryContent = () => {
                                           loading="lazy"
                                         />
                                       </div>
-                                    )
+                                    ),
                                   )
                                 : [<div key="no-img">Sin imágenes</div>]}
                             </Carousel>

@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import useService from "../services/useService";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import FormFactura from "../components/formFactura/FormFactura";
+import ProductI from "../interfaces/products/product.interface";
 
 const useResumen = () => {
   const [loadingCreateOrder, setLoadingCreateOrder] = useState<boolean>(false);
@@ -39,7 +40,7 @@ const useResumen = () => {
     isSmallScreen,
   });
 
-  const handleCreateOrder = async () => {
+  const handleCreateOrder = async (envio?: number) => {
     if (progressPay.methodPay.typeMethod == "efectivo") {
       try {
         setLoadingCreateOrder(true);
@@ -53,7 +54,7 @@ const useResumen = () => {
             idAddress: progressPay.optionSend.address,
             requiredFactura: selectedFactura,
           },
-          "/stripe/createOrderCash"
+          "/stripe/createOrderCash",
         );
 
         if (resp.status == 200) {
@@ -68,14 +69,14 @@ const useResumen = () => {
             message: "Orden generada correctamente",
             onClose: () => {
               onRouterLink(
-                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
+                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`,
               );
               setDataCart([]);
               setDataModal((prev) => ({ ...prev, isOpen: false }));
             },
             onConfirm: () => {
               onRouterLink(
-                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`
+                `/pay-end?idOrder=${data.data.orderId}&method_pay=oxxo&expired=${data.data.next_action.oxxo_display_details.expires_after}`,
               );
               setDataCart([]);
               setDataModal((prev) => ({ ...prev, isOpen: false }));
@@ -99,7 +100,7 @@ const useResumen = () => {
             dataProduct: dataCart,
             requiredFactura: selectedFactura,
           },
-          "/stripe/paymentWithCard"
+          "/stripe/paymentWithCard",
         );
 
         if (resp.status == 200) {
@@ -113,7 +114,7 @@ const useResumen = () => {
                 idOrder: data.data.orderId,
                 total: totalPagar,
               },
-              "/sales/registerSales"
+              "/sales/registerSales",
             );
             setLoadingCreateOrder(false);
 
@@ -129,14 +130,14 @@ const useResumen = () => {
                 message: "Orden generada correctamente",
                 onClose: () => {
                   onRouterLink(
-                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`
+                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`,
                   );
                   setDataCart([]);
                   setDataModal((prev) => ({ ...prev, isOpen: false }));
                 },
                 onConfirm: () => {
                   onRouterLink(
-                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`
+                    `/pay-end?idOrder=${data.data.orderId}&method_pay=tarjeta_debito_credito`,
                   );
                   setDataCart([]);
                   setDataModal((prev) => ({ ...prev, isOpen: false }));
@@ -177,7 +178,7 @@ const useResumen = () => {
               methodPay: progressPay.methodPay.typeMethod,
               userId: localStorage.getItem("idUser"),
             },
-            "/stripe/paymentInSucursal"
+            "/stripe/paymentInSucursal",
           );
           setLoadingCreateOrder(false);
 
@@ -193,14 +194,14 @@ const useResumen = () => {
               message: "Orden generada correctamente",
               onClose: () => {
                 onRouterLink(
-                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`
+                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`,
                 );
                 setDataCart([]);
                 setDataModal((prev) => ({ ...prev, isOpen: false }));
               },
               onConfirm: () => {
                 onRouterLink(
-                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`
+                  `/pay-end?idOrder=${data.data.orderId}&method_pay=efectivo_al_recoger`,
                 );
                 setDataCart([]);
                 setDataModal((prev) => ({ ...prev, isOpen: false }));
@@ -264,7 +265,7 @@ const useResumen = () => {
                   : totalPagar +
                     (progressPay?.optionSend?.costo
                       ? Number(progressPay?.optionSend?.costo)
-                      : 0)
+                      : envio || 0)
                 : null,
             optionEnvio:
               dataCart && dataCart.length > 0
@@ -280,8 +281,9 @@ const useResumen = () => {
                 : null,
             dataProduct: dataCart,
             requiredFactura: selectedFactura,
+            storeId: progressPay?.optionSend?.storeIdDico,
           },
-          "/openpay/generateLinkOpenPay"
+          "/openpay/generateLinkOpenPay",
         );
         if (resp.status == 200) {
           const data = resp.data;
@@ -296,7 +298,7 @@ const useResumen = () => {
 
   const handleSelectedFactura = async (
     event: React.SyntheticEvent,
-    checked: boolean
+    checked: boolean,
   ) => {
     setSelectedFactura(checked);
 
@@ -333,6 +335,23 @@ const useResumen = () => {
     }
   };
 
+  const calcPesoVolumetrico = (product: ProductI) => {
+    const largo = Number(product.largo);
+    const ancho = Number(product.width);
+    const alto = Number(product.height);
+
+    if (![largo, ancho, alto].every(Number.isFinite)) {
+      return 0;
+    }
+
+    return (largo * ancho * alto) / 5000;
+  };
+
+  const tarifasPaqueteExpress = [
+    { id: 1, de: 0, a: 5, price: 303 },
+    { id: 2, de: 6, a: 10, price: 329 },
+    { id: 3, de: 11, a: 20, price: 396 },
+  ];
   return {
     loadingCreateOrder,
     columns,
@@ -341,8 +360,10 @@ const useResumen = () => {
     totalIVA,
     totalPagar,
     selectedFactura,
+    tarifasPaqueteExpress,
     handleCreateOrder,
     handleSelectedFactura,
+    calcPesoVolumetrico,
   };
 };
 
