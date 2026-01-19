@@ -109,7 +109,7 @@ const ModalComponent = ({
       />
 
       <div
-        className={`relative bg-[#E6E6E6] rounded shadow-2xl max-w-lg w-full mx-4 p-8 transform transition-all duration-300 ${
+        className={`relative bg-[#E6E6E6] rounded shadow-2xl  mx-4 p-8 transform transition-all duration-300 ${
           isVisible
             ? "scale-100 opacity-100"
             : "scale-95 opacity-0 pointer-events-none"
@@ -136,7 +136,8 @@ const ModalComponent = ({
           <div
             className="absolute"
             style={{
-              transform: "translateX(225px)",
+              left: "50%",
+              transform: "translateX(-50%)",
               top: "-17px",
             }}
           >

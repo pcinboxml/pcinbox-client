@@ -7,6 +7,7 @@ interface progressPayI {
     name?: string;
     address?: number;
     costo?: any;
+    storeIdDico?: any;
   };
   methodPay: {
     name: string;
