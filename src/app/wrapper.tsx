@@ -57,7 +57,7 @@ export default function AppWrapper({
   useEffect(() => {
     if (localStorage.getItem("dataCart") && hasToken == false) {
       const productsStorage = JSON.parse(
-        localStorage.getItem("dataCart") || ""
+        localStorage.getItem("dataCart") || "",
       );
 
       setDataCart(productsStorage);
@@ -141,7 +141,7 @@ export default function AppWrapper({
                 sku: data.sku,
               }
             : item;
-        })
+        }),
       );
 
       setDataFavorites((prevFavorites) => {
@@ -199,7 +199,7 @@ export default function AppWrapper({
                 sku: dataSocket.sku,
               }
             : item;
-        })
+        }),
       );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
@@ -221,12 +221,12 @@ export default function AppWrapper({
     };
 
     const handleUpdatedStock = (
-      dataSocket: { idProduct: number; stock: Number }[]
+      dataSocket: { idProduct: number; stock: Number }[],
     ) => {
       setDataProducts((prev) =>
         prev.map((item) => {
           let findIdProduct = dataSocket.find(
-            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct)
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
           );
 
           if (findIdProduct) {
@@ -240,12 +240,12 @@ export default function AppWrapper({
           }
 
           return item;
-        })
+        }),
       );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           let findIdProduct = dataSocket.find(
-            (dSocket) => Number(dSocket.idProduct) === Number(item.productId)
+            (dSocket) => Number(dSocket.idProduct) === Number(item.productId),
           );
 
           if (findIdProduct) {
@@ -268,7 +268,7 @@ export default function AppWrapper({
       setDataCart((prevCart) => {
         return prevCart.map((item) => {
           let findIdProduct = dataSocket.find(
-            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct)
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
           );
 
           if (findIdProduct) {
@@ -382,6 +382,7 @@ export default function AppWrapper({
             background: "white",
             borderRadius: "5px",
           }}
+          target="_blank"
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
         >
           <FaWhatsapp

@@ -10,6 +10,7 @@ import styles from "./opciones-entrega.module.css";
 import { use, useEffect, useMemo, useState } from "react";
 import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
+import ShippingNotice from "../components/shoppingNotice/ShoppingNotice";
 
 const OpcionesEntrega = () => {
   const { onRouterLink, formatCurrency } = useService();
@@ -70,6 +71,7 @@ const OpcionesEntrega = () => {
 
   return (
     <section>
+      {dataCart && dataCart?.length > 0 ? <ShippingNotice /> : ""}
       {dataCart && dataCart.length > 0 ? (
         <TimelineComponent activeStep={1} />
       ) : null}
@@ -129,13 +131,13 @@ const OpcionesEntrega = () => {
 
                 {totalPrice > 1000 && dataUserAddress ? (
                   <>
-                    <Alert severity="info">
+                    {/* <Alert severity="info">
                       Estimado cliente, le pedimos atentamente considere que las
                       paqueterías tienen exceso de entregas a nivel nacional,
                       por lo que puede implicar tiempos de entrega más
                       prolongados en algunos casos. Esto es totalmente ajeno a
                       nuestra empresa.
-                    </Alert>
+                    </Alert> */}
                     <img
                       src="/compra_segura_gris.png"
                       width="150"
@@ -213,7 +215,7 @@ const OpcionesEntrega = () => {
                       </span> */}
                     </div>
                   )}
-                {totalPrice >= 1000 &&
+                {/* {totalPrice >= 1000 &&
                   dataUserAddress &&
                   dataUserAddress.some(
                     (d) => d.city != "León de los Aldama",
@@ -256,7 +258,7 @@ const OpcionesEntrega = () => {
                         </label>
                       </div>
                     </>
-                  )}
+                  )} */}
 
                 <hr />
               </div>
@@ -387,7 +389,7 @@ const OpcionesEntrega = () => {
                       isOpen: true,
                       type: "info",
                       message: "Selecciona una opción de entrega",
-                      title: "",
+                      title: "Error",
                       onClose: () => {
                         setDataModal((prev) => ({ ...prev, isOpen: false }));
                       },

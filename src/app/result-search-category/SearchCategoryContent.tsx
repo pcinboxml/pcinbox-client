@@ -656,43 +656,44 @@ const SearchCategoryContent = () => {
                                     }
                                     className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
                                     onClick={() => {
-                                      if (
-                                        (item?.isPC == 0 || item?.isPc == 0) &&
-                                        item?.product_stock.length > 0
-                                      ) {
-                                        setDataModal({
-                                          isOpen: true,
-                                          message: (
-                                            <div className="w-[800px] border">
-                                              <BranchSelector
-                                                productSelected={item}
-                                              />
-                                            </div>
-                                          ),
-                                          title: "",
-                                          type: "success",
-                                          showActions: false,
-                                          onClose: () => {
-                                            setDataModal((prev) => ({
-                                              ...prev,
-                                              isOpen: false,
-                                            }));
-                                          },
-                                          onConfirm: () => {
-                                            setDataModal((prev) => ({
-                                              ...prev,
-                                              isOpen: false,
-                                            }));
-                                          },
-                                        });
-                                      } else {
-                                        handleAddProductCart(item);
-                                      }
+                                      // if (
+                                      //   (item?.isPC == 0 || item?.isPc == 0) &&
+                                      //   item?.product_stock.length > 0
+                                      // ) {
+                                      //   setDataModal({
+                                      //     isOpen: true,
+                                      //     message: (
+                                      //       <div className="w-[800px] border">
+                                      //         <BranchSelector
+                                      //           productSelected={item}
+                                      //         />
+                                      //       </div>
+                                      //     ),
+                                      //     title: "",
+                                      //     type: "success",
+                                      //     showActions: false,
+                                      //     onClose: () => {
+                                      //       setDataModal((prev) => ({
+                                      //         ...prev,
+                                      //         isOpen: false,
+                                      //       }));
+                                      //     },
+                                      //     onConfirm: () => {
+                                      //       setDataModal((prev) => ({
+                                      //         ...prev,
+                                      //         isOpen: false,
+                                      //       }));
+                                      //     },
+                                      //   });
+                                      // } else {
+
+                                      handleAddProductCart(item);
+                                      // }
                                     }}
                                   >
-                                    {(item?.isPC == 0 || item?.isPc == 0) &&
-                                    item?.product_stock.length == 0 &&
-                                    loadingAddProductCar[item.idProduct] ? (
+                                    {item?.isPC == 0 &&
+                                    loadingAddProductCar[item.idProduct] ==
+                                      true ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
@@ -713,28 +714,6 @@ const SearchCategoryContent = () => {
                                         )}
                                       </>
                                     )}
-                                    {/* {(item?.isPc == 0 || item?.isPC == 0) &&
-                                    loadingAddProductCar ? (
-                                      <MdAutorenew
-                                        size={20}
-                                        className="m-auto the-spinner"
-                                      />
-                                    ) : (
-                                      <>
-                                        {item.stock == "0" ||
-                                        item.stock == 0 ? (
-                                          "No disponible"
-                                        ) : (
-                                          <>
-                                            Agregar al carrito
-                                            <MdShoppingCart
-                                              size={20}
-                                              color="white"
-                                            />
-                                          </>
-                                        )}
-                                      </>
-                                    )} */}
                                   </button>
                                 </div>
                               </div>
