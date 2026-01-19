@@ -7,13 +7,16 @@ import { Alert } from "@mui/material";
 import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
+import useStorage from "@/app/services/useStorage";
 
 const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
+  const { handleWriteStorageProgressPay } = useStorage();
   const {
     handleAddProductCart,
     loadingByBranch,
     handleChangeQuantity,
     quantities,
+    branchesDico,
   } = GridBranchSelector();
   const { formatCurrency } = useService();
 
@@ -117,8 +120,22 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                             textAlign: "center",
                           }}
                         >
-                          {" "}
-                          {`PC-${sucursal.name}`}
+                          {(() => {
+                            if (sucursal?.branches?.providerId === 3) {
+                              switch (sucursal?.branches.name) {
+                                case "santafe":
+                                  return "PCinBOX-SFD";
+                                case "leon":
+                                  return "PCinBOX-León";
+                                case "gdl":
+                                  return "PCinBOX-GD";
+                                case "Arboledas":
+                                  return "PCinBOX-AGD";
+                              }
+                            } else if (sucursal?.branches?.providerId === 2) {
+                              return `PC-${sucursal?.name}`;
+                            }
+                          })()}
                         </span>
                       </td>
                       <td
@@ -183,7 +200,11 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                           />
                           <button
                             onClick={() => {
-                              if (quantities[sucursal.id] != "") {
+                              if (
+                                quantities[sucursal.id] != undefined &&
+                                Number(quantities[sucursal.id]) > 0 &&
+                                Number(sucursal?.stock) > 0
+                              ) {
                                 if (
                                   Number(quantities[sucursal.id]) >
                                   sucursal?.stock
@@ -194,8 +215,20 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                                     productSelected,
                                     Number(quantities[sucursal.id]),
                                     productSelected?.price,
-                                    sucursal
+                                    sucursal,
                                   );
+
+                                  handleWriteStorageProgressPay({
+                                    optionSend: {
+                                      storeIdDico:
+                                        sucursal?.branches?.providerId === 3
+                                          ? branchesDico?.find(
+                                              (br) =>
+                                                br?.name == sucursal?.name!,
+                                            )?.idStore
+                                          : 0,
+                                    },
+                                  });
                                 }
                               }
                             }}

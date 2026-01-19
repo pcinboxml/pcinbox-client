@@ -43,7 +43,7 @@ const OpcionesEntrega = () => {
     if (optionEnvio != "sucursal" || idAddressEnvio != 0) {
       if (dataUserAddress && dataUserAddress.length > 0) {
         let findSelectAddress = dataUserAddress.find(
-          (addres) => Number(addres.idAddress) == Number(idAddressEnvio)
+          (addres) => Number(addres.idAddress) == Number(idAddressEnvio),
         );
         if (findSelectAddress) {
           generateCostoByZone(findSelectAddress.city);
@@ -155,7 +155,7 @@ const OpcionesEntrega = () => {
                 {totalPrice >= 1000 &&
                   dataUserAddress &&
                   dataUserAddress.some(
-                    (d) => d.city === "León de los Aldama"
+                    (d) => d.city === "León de los Aldama",
                   ) && (
                     <div className="flex items-center relative my-4">
                       <input
@@ -189,8 +189,8 @@ const OpcionesEntrega = () => {
                                   return `Envío: (${formatCurrency(
                                     Number(
                                       costoEnvioByZone.valor ||
-                                        progressPay?.optionSend?.costo
-                                    )
+                                        progressPay?.optionSend?.costo,
+                                    ),
                                   )})`;
                                 }
                               }
@@ -213,10 +213,10 @@ const OpcionesEntrega = () => {
                       </span> */}
                     </div>
                   )}
-                {/* {totalPrice >= 1000 &&
+                {totalPrice >= 1000 &&
                   dataUserAddress &&
                   dataUserAddress.some(
-                    (d) => d.city != "León de los Aldama"
+                    (d) => d.city != "León de los Aldama",
                   ) && (
                     <>
                       <div className="flex items-center relative">
@@ -256,7 +256,7 @@ const OpcionesEntrega = () => {
                         </label>
                       </div>
                     </>
-                  )} */}
+                  )}
 
                 <hr />
               </div>

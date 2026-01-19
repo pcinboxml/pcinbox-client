@@ -14,7 +14,9 @@ export default interface ProductI {
   sku: string;
   caracteristicas?: any;
   upc?: any;
-
+  width?: any;
+  height?: any;
+  largo?: any;
   product_stock?: {
     idProductStock: number;
     branchId: number;

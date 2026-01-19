@@ -18,7 +18,7 @@ const GridBranchSelector = () => {
     product: ProductI,
     quantity: number,
     price: string,
-    sucursal: any
+    sucursal: any,
   ) => {
     try {
       setLoadingByBranch((prev) => ({
@@ -33,7 +33,7 @@ const GridBranchSelector = () => {
           price: product.price,
           isDetails: false,
         },
-        "/cart/addProduct"
+        "/cart/addProduct",
       );
 
       setLoadingByBranch((prev) => ({
@@ -44,7 +44,7 @@ const GridBranchSelector = () => {
       if (resp.status == 200) {
         setDataCart((prev) => {
           const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(product.idProduct)
+            (item) => Number(item.idProduct) === Number(product.idProduct),
           );
           if (existingProduct) {
             return prev.map((item) =>
@@ -53,7 +53,7 @@ const GridBranchSelector = () => {
                     ...item,
                     quantity: Number(item.quantity) + Number(quantity),
                   }
-                : item
+                : item,
             );
           } else {
             return [
@@ -109,9 +109,29 @@ const GridBranchSelector = () => {
     }));
   };
 
+  const branchesDico: { idStore: number; name: string }[] = [
+    {
+      idStore: 34,
+      name: "santafe",
+    },
+    {
+      idStore: 7,
+      name: "leon",
+    },
+    {
+      idStore: 16,
+      name: "gdl",
+    },
+    {
+      idStore: 4,
+      name: "Arboledas",
+    },
+  ];
+
   return {
     quantities,
     loadingByBranch,
+    branchesDico,
     handleAddProductCart,
     handleChangeQuantity,
   };

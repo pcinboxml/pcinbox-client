@@ -52,7 +52,7 @@ const SearchCategoryContent = () => {
 
     // Validar que todos los parámetros en searchParams estén permitidos
     const invalidParams = Array.from(searchParams.keys()).filter(
-      (key) => !allowedParams.includes(key)
+      (key) => !allowedParams.includes(key),
     );
 
     if (invalidParams.length > 0) {
@@ -68,7 +68,7 @@ const SearchCategoryContent = () => {
       setLoadingData(true);
       const resp = await requestPostProveedor(
         { idProduct: idProduct, name: name?.trim(), categoryId },
-        "/getProductByCategoryIdAndIdProduct"
+        "/getProductByCategoryIdAndIdProduct",
       );
       setLoadingData(false);
       if (resp.status == 200) {
@@ -85,7 +85,7 @@ const SearchCategoryContent = () => {
   const handleOnSelectMarca = (event: ChangeEvent<HTMLInputElement>) => {
     if (event?.target?.value) {
       const filtered = dataCopy.filter(
-        (item: any) => item.marcaId == event.target.value
+        (item: any) => item.marcaId == event.target.value,
       );
       setData(filtered);
     }
@@ -102,7 +102,7 @@ const SearchCategoryContent = () => {
     const filtered = dataCopy.filter(
       (item: any) =>
         item.name.toLowerCase().includes(term) ||
-        item.sku.toLowerCase().includes(term)
+        item.sku.toLowerCase().includes(term),
     );
 
     setData(filtered);
@@ -140,8 +140,8 @@ const SearchCategoryContent = () => {
         prev.map((item: any) =>
           item.idProduct == dataSocket.idProduct
             ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
-            : item
-        )
+            : item,
+        ),
       );
 
       setDataFavorites((prevFavorites) => {
@@ -190,7 +190,7 @@ const SearchCategoryContent = () => {
   const calcPorcentaje = (
     product: ProductI,
     dataProducts: ProductI[],
-    progressRating: any
+    progressRating: any,
   ) => {
     const ratingCount = product.reviews.reduce((acc, item) => {
       if (item.rating === progressRating.rating) {
@@ -206,7 +206,7 @@ const SearchCategoryContent = () => {
           item.reviews.filter(
             (r) =>
               r.rating === progressRating.rating &&
-              item.idProduct == product.idProduct
+              item.idProduct == product.idProduct,
           ).length
         );
       } else {
@@ -266,11 +266,11 @@ const SearchCategoryContent = () => {
                             <span className="mx-1">
                               {(() => {
                                 let longitudProductMarca = dataCopy.filter(
-                                  (item: any) => item.marcaId == marca.idMarca
+                                  (item: any) => item.marcaId == marca.idMarca,
                                 ).length;
 
                                 return `(${Number(
-                                  longitudProductMarca
+                                  longitudProductMarca,
                                 ).toLocaleString()})`;
                               })()}
                             </span>
@@ -319,7 +319,7 @@ const SearchCategoryContent = () => {
                     const filtered = dataCopy.filter(
                       (item: any) =>
                         item.name.toLowerCase().includes(term) ||
-                        item.sku.toLowerCase().includes(term)
+                        item.sku.toLowerCase().includes(term),
                     );
 
                     setData(filtered);
@@ -340,7 +340,7 @@ const SearchCategoryContent = () => {
                         .sort((a: any, b: any) =>
                           event.target.value == "1"
                             ? Number(b.price) - Number(a.price)
-                            : Number(a.price) - Number(b.price)
+                            : Number(a.price) - Number(b.price),
                         );
                     });
                   }}
@@ -369,7 +369,7 @@ const SearchCategoryContent = () => {
                                 role="button"
                                 onClick={() => {
                                   onRouterLink(
-                                    `/detailsProduct/${item.idProduct}`
+                                    `/detailsProduct/${item.idProduct}`,
                                   );
                                 }}
                                 className="text-[#BB3D4B] font-bold"
@@ -404,7 +404,7 @@ const SearchCategoryContent = () => {
                                       ? item.reviews.reduce(
                                           (sum: any, review: any) =>
                                             sum + review.rating,
-                                          0
+                                          0,
                                         ) / item.reviews.length
                                       : 0;
                                   return (
@@ -479,7 +479,7 @@ const SearchCategoryContent = () => {
                                                                     calcPorcentaje(
                                                                       item,
                                                                       dataProducts,
-                                                                      progressRating
+                                                                      progressRating,
                                                                     )
                                                                       .percentage,
                                                                   height:
@@ -499,7 +499,7 @@ const SearchCategoryContent = () => {
                                                                 calcPorcentaje(
                                                                   item,
                                                                   dataProducts,
-                                                                  progressRating
+                                                                  progressRating,
                                                                 ).rating
                                                               }
                                                             </div>
@@ -516,7 +516,7 @@ const SearchCategoryContent = () => {
                                                                 {item.reviews.reduce(
                                                                   (
                                                                     acc: any,
-                                                                    item: any
+                                                                    item: any,
                                                                   ) => {
                                                                     if (
                                                                       item.rating ===
@@ -528,21 +528,21 @@ const SearchCategoryContent = () => {
                                                                     }
                                                                     return acc;
                                                                   },
-                                                                  0
+                                                                  0,
                                                                 )}
                                                                 )
                                                               </span>
                                                             </div>
                                                           </div>
                                                         );
-                                                      }
+                                                      },
                                                     )}
 
                                                   <a
                                                     role="button"
                                                     onClick={() =>
                                                       onRouterLink(
-                                                        `/review?idProduct=${item.idProduct}`
+                                                        `/review?idProduct=${item.idProduct}`,
                                                       )
                                                     }
                                                     style={{
@@ -584,7 +584,7 @@ const SearchCategoryContent = () => {
                                             .filter(
                                               (itemF: any) =>
                                                 itemF.productId ==
-                                                item.idProduct
+                                                item.idProduct,
                                             )
                                             .length.toLocaleString()}{" "}
                                           opiniones
@@ -603,7 +603,7 @@ const SearchCategoryContent = () => {
                                       ? (() => {
                                           try {
                                             const caracs = JSON.parse(
-                                              item.caracteristicas
+                                              item.caracteristicas,
                                             );
                                             if (
                                               Array.isArray(caracs) &&
@@ -614,7 +614,7 @@ const SearchCategoryContent = () => {
                                                 .map(
                                                   (
                                                     carac: any,
-                                                    index: number
+                                                    index: number,
                                                   ) => (
                                                     <li
                                                       key={index}
@@ -627,7 +627,7 @@ const SearchCategoryContent = () => {
                                                         {carac.value}
                                                       </span>
                                                     </li>
-                                                  )
+                                                  ),
                                                 );
                                             }
                                             return "Sin caracteristicas disponibles";
@@ -749,7 +749,7 @@ const SearchCategoryContent = () => {
                               showArrows={true}
                               onClickItem={() => {
                                 onRouterLink(
-                                  `/detailsProduct/${item.idProduct}`
+                                  `/detailsProduct/${item.idProduct}`,
                                 );
                               }}
                             >
@@ -767,7 +767,7 @@ const SearchCategoryContent = () => {
                                           loading="lazy"
                                         />
                                       </div>
-                                    )
+                                    ),
                                   )
                                 : [<div key="no-img">Sin imágenes</div>]}
                             </Carousel>
