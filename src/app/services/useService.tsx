@@ -250,6 +250,7 @@ const useService = () => {
           state: item.state,
           country: item.country,
           idShipment: item.idShipment,
+          updatedAt: item.updatedAt,
           products: [{ ...item }],
         });
       }

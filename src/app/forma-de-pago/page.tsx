@@ -111,11 +111,12 @@ const FormaDePago = () => {
                         return true;
                       })
                       .filter((pago) => {
-                        if (totalPrice >= 10000) {
-                          return pago.id == 1 || pago.id == 7;
-                        } else {
-                          return pago.id == 1 || pago.id == 5 || pago.id == 7;
-                        }
+                        return pago.id;
+                        // if (totalPrice >= 10000) {
+                        //   return pago.id == 1 || pago.id == 7 || pago.id == 6;
+                        // } else {
+                        //   return pago.id == 1 || pago.id == 5 || pago.id == 7;
+                        // }
                       })
                       .map((pag_, index) => {
                         return (
@@ -156,7 +157,7 @@ const FormaDePago = () => {
                 </div>
               </div>
 
-              {idMethodPay != 0 && (
+              {/* {idMethodPay != 0 && (
                 <div style={{ marginTop: "10px" }}>
                   {idMethodPay == 1 ? (
                     <>
@@ -225,16 +226,16 @@ const FormaDePago = () => {
                         ? "Transferencia bancaria"
                         : ""}
                     </h5>
-                  </div> */}
-                  {/* {idMethodPay == 1 ? (
+                  </div> 
+                   {idMethodPay == 1 ? (
                     <StripeProviderClient>
                       <CardForm
                         userId={Number(localStorage.getItem("idUser"))}
                       />
                     </StripeProviderClient>
-                  ) : null} */}
+                  ) : null} 
                 </div>
-              )}
+              )} */}
             </div>
 
             {dataCart && dataCart.length > 0 && (

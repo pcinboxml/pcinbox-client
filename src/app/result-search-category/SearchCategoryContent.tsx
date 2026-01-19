@@ -235,54 +235,59 @@ const SearchCategoryContent = () => {
     <section>
       {!loadingData ? (
         <div className="mt-2 w-full grid grid-cols-[auto_1fr] gap-2">
-          <aside className="border p-3">
-            <span className="block text-left text-[#BB3D4B] font-bold">
-              Marcas
-            </span>
-            <div className="mt-2">
-              <ul
-                style={{
-                  paddingLeft: "0px",
-                }}
-              >
-                {(() => {
-                  return (
-                    marcas &&
-                    marcas.map((marca: any, indexMarca: number) => {
+          {marcas &&
+            marcas?.length > 0 &&
+            (marcas as any)?.[0]?.idMarca != null && (
+              <aside className="border p-3">
+                <span className="block text-left text-[#BB3D4B] font-bold">
+                  Marcas
+                </span>
+                <div className="mt-2">
+                  <ul
+                    style={{
+                      paddingLeft: "0px",
+                    }}
+                  >
+                    {(() => {
                       return (
-                        <li key={indexMarca} className="px-2">
-                          <label
-                            htmlFor={`marca${marca.idMarca}`}
-                            className=" cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              id={`marca${marca.idMarca}`}
-                              name="marca"
-                              value={marca.idMarca}
-                              onChange={handleOnSelectMarca}
-                            />
-                            <span className="mx-1">{marca.name}</span>
-                            <span className="mx-1">
-                              {(() => {
-                                let longitudProductMarca = dataCopy.filter(
-                                  (item: any) => item.marcaId == marca.idMarca,
-                                ).length;
+                        marcas &&
+                        marcas.map((marca: any, indexMarca: number) => {
+                          return (
+                            <li key={indexMarca} className="px-2">
+                              <label
+                                htmlFor={`marca${marca.idMarca}`}
+                                className=" cursor-pointer"
+                              >
+                                <input
+                                  type="radio"
+                                  id={`marca${marca.idMarca}`}
+                                  name="marca"
+                                  value={marca.idMarca}
+                                  onChange={handleOnSelectMarca}
+                                />
+                                <span className="mx-1">{marca.name}</span>
+                                <span className="mx-1">
+                                  {(() => {
+                                    let longitudProductMarca = dataCopy.filter(
+                                      (item: any) =>
+                                        item.marcaId == marca.idMarca
+                                    ).length;
 
-                                return `(${Number(
-                                  longitudProductMarca,
-                                ).toLocaleString()})`;
-                              })()}
-                            </span>
-                          </label>
-                        </li>
+                                    return `(${Number(
+                                      longitudProductMarca
+                                    ).toLocaleString()})`;
+                                  })()}
+                                </span>
+                              </label>
+                            </li>
+                          );
+                        })
                       );
-                    })
-                  );
-                })()}
-              </ul>
-            </div>
-          </aside>
+                    })()}
+                  </ul>
+                </div>
+              </aside>
+            )}
 
           <div className="px-3">
             <h3
@@ -295,66 +300,72 @@ const SearchCategoryContent = () => {
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
             </h3>
 
-            <div className="mt-4 flex gap-1 items-center justify-between">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  className="border py-1 px-4"
-                  onChange={(event) => {
-                    setSearchText(event.currentTarget.value);
-                  }}
-                  value={searchText}
-                />
-                <button
-                  className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
-                  onClick={() => {
-                    if (searchText.trim().length < 3) {
-                      setData(dataCopy);
-                      return;
-                    }
+            {data && data?.length > 0 ? (
+              <>
+                <div className="mt-4 flex gap-1 items-center justify-between">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Buscar..."
+                      className="border py-1 px-4"
+                      onChange={(event) => {
+                        setSearchText(event.currentTarget.value);
+                      }}
+                      value={searchText}
+                    />
+                    <button
+                      className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
+                      onClick={() => {
+                        if (searchText.trim().length < 3) {
+                          setData(dataCopy);
+                          return;
+                        }
 
-                    const term = searchText.toLowerCase().trim();
+                        const term = searchText.toLowerCase().trim();
 
-                    const filtered = dataCopy.filter(
-                      (item: any) =>
-                        item.name.toLowerCase().includes(term) ||
-                        item.sku.toLowerCase().includes(term),
-                    );
-
-                    setData(filtered);
-                  }}
-                >
-                  Buscar
-                </button>
-              </div>
-              <div className="flex gap-1 items-center">
-                <span className="flex shrink-0">Ordenar por:</span>
-                <select
-                  className="form-select"
-                  defaultValue={""}
-                  onChange={(event) => {
-                    setData((prev) => {
-                      return prev
-                        .slice(startIndex, endIndex)
-                        .sort((a: any, b: any) =>
-                          event.target.value == "1"
-                            ? Number(b.price) - Number(a.price)
-                            : Number(a.price) - Number(b.price),
+                        const filtered = dataCopy.filter(
+                          (item: any) =>
+                            item.name.toLowerCase().includes(term) ||
+                            item.sku.toLowerCase().includes(term)
                         );
-                    });
-                  }}
-                >
-                  <option value="" disabled>
-                    Selecciona una opción
-                  </option>
-                  <option value={1}>Mayor precio</option>
-                  <option value={2}>Menor precio</option>
-                </select>
-              </div>
-            </div>
 
-            <hr />
+                        setData(filtered);
+                      }}
+                    >
+                      Buscar
+                    </button>
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <span className="flex shrink-0">Ordenar por:</span>
+                    <select
+                      className="form-select"
+                      defaultValue={""}
+                      onChange={(event) => {
+                        setData((prev) => {
+                          return prev
+                            .slice(startIndex, endIndex)
+                            .sort((a: any, b: any) =>
+                              event.target.value == "1"
+                                ? Number(b.price) - Number(a.price)
+                                : Number(a.price) - Number(b.price)
+                            );
+                        });
+                      }}
+                    >
+                      <option value="" disabled>
+                        Selecciona una opción
+                      </option>
+                      <option value={1}>Mayor precio</option>
+                      <option value={2}>Menor precio</option>
+                    </select>
+                  </div>
+                </div>
+
+                <hr />
+              </>
+            ) : (
+              ""
+            )}
             <div>
               {data && data.length > 0 ? (
                 data
@@ -597,47 +608,57 @@ const SearchCategoryContent = () => {
                               </div>
 
                               <div className="grid grid-cols-[1fr_1fr_auto] my-1">
-                                <div>
-                                  <ul>
-                                    {item?.caracteristicas
-                                      ? (() => {
-                                          try {
-                                            const caracs = JSON.parse(
-                                              item.caracteristicas,
-                                            );
-                                            if (
-                                              Array.isArray(caracs) &&
-                                              caracs.length > 0
-                                            ) {
-                                              return caracs
-                                                .slice(0, 6)
-                                                .map(
-                                                  (
-                                                    carac: any,
-                                                    index: number,
-                                                  ) => (
-                                                    <li
-                                                      key={index}
-                                                      className="flex gap-2 items-end"
-                                                    >
-                                                      <span className="font-bold text-black text-[13px]">
-                                                        {carac.prop}:
-                                                      </span>
-                                                      <span className="italic text-[13px]">
-                                                        {carac.value}
-                                                      </span>
-                                                    </li>
-                                                  ),
+                                {item?.caracteristicas &&
+                                  item?.caracteristicas?.length > 0 && (
+                                    <div>
+                                      <ul>
+                                        {item?.caracteristicas
+                                          ? (() => {
+                                              try {
+                                                const caracs = JSON.parse(
+                                                  item.caracteristicas
                                                 );
-                                            }
-                                            return "Sin caracteristicas disponibles";
-                                          } catch (e) {
-                                            return "Sin caracteristicas disponibles";
-                                          }
-                                        })()
-                                      : "Sin caracteristicas disponibles"}
-                                  </ul>
-                                </div>
+                                                if (
+                                                  Array.isArray(caracs) &&
+                                                  caracs.length > 0
+                                                ) {
+                                                  return caracs
+                                                    .slice(0, 6)
+                                                    .map(
+                                                      (
+                                                        carac: any,
+                                                        index: number
+                                                      ) => (
+                                                        <li
+                                                          key={index}
+                                                          className="flex gap-2 items-end"
+                                                        >
+                                                          <span className="font-bold text-black text-[13px]">
+                                                            {carac.prop}:
+                                                          </span>
+                                                          <span className="italic text-[13px]">
+                                                            {carac.value &&
+                                                            carac?.value
+                                                              ?.length > 70
+                                                              ? `${carac?.value?.slice(
+                                                                  0,
+                                                                  70
+                                                                )}...`
+                                                              : carac?.value}
+                                                          </span>
+                                                        </li>
+                                                      )
+                                                    );
+                                                }
+                                                return "Sin caracteristicas disponibles";
+                                              } catch (e) {
+                                                return "Sin caracteristicas disponibles";
+                                              }
+                                            })()
+                                          : "Sin caracteristicas disponibles"}
+                                      </ul>
+                                    </div>
+                                  )}
                                 <div className="px-3">
                                   <span className="text-[20px] font-bold">
                                     {formatCurrency(Number(item.price))}
@@ -765,13 +786,15 @@ const SearchCategoryContent = () => {
       ) : (
         <Alert severity="info">Sin contenido disponible</Alert>
       )}
-      <div className="flex p-2 justify-end items-center">
-        <PaginationComponent
-          onChange={handleChangePage}
-          page={page}
-          count={Math.ceil(data.length / itemsPerPage)}
-        />
-      </div>
+      {data && data?.length > 0 && (
+        <div className="flex p-2 justify-end items-center">
+          <PaginationComponent
+            onChange={handleChangePage}
+            page={page}
+            count={Math.ceil(data.length / itemsPerPage)}
+          />
+        </div>
+      )}
     </section>
   );
 };
