@@ -13,7 +13,7 @@ export default function useProtectedRoute(pathname: string) {
       router.replace("/register");
     } else {
       // si hay token y estás en login o register, redirige a home
-      if (pathname === "/principal" || pathname === "/register") {
+      if ((token && pathname === "/principal") || pathname === "/register") {
         router.replace("/principal");
       }
     }
