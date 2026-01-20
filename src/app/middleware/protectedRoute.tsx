@@ -8,19 +8,14 @@ export default function useProtectedRoute(pathname: string) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // ❌ NO autenticado
-    // if (!token) {
-    //   if (pathname === "/principal") {
-    //     router.replace("/register"); // o "/login"
-    //   }
-    //   return;
-    // }
-
-    // ✅ Autenticado
-    if (token) {
-      if (pathname === "/register" || pathname === "/login") {
+    if (!token && pathname == "/register") {
+      // si no hay token, redirige a login
+      router.replace("/register");
+    } else {
+      // si hay token y estás en login o register, redirige a home
+      if (pathname === "/principal" || pathname === "/register") {
         router.replace("/principal");
       }
     }
-  }, [pathname, router]);
+  }, [router, pathname]);
 }
