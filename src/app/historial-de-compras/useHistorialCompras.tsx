@@ -14,8 +14,10 @@ const useHistorialDeCompras = () => {
     searchProduct: "",
   });
   const { requestPost } = useService();
-  const [loadingCancelledCompra, setLoadingCancelledCompra] =
-    useState<boolean>(false);
+
+  const [loadingCancelledCompra, setLoadingCancelledCompra] = useState<
+    Record<any, boolean>
+  >({});
 
   const { setDataModal } = useTheContext();
 
@@ -153,7 +155,10 @@ const useHistorialDeCompras = () => {
 
   const handleCancelPedido = async (historyCompra: GroupByIdI) => {
     try {
-      setLoadingCancelledCompra(true);
+      setLoadingCancelledCompra((prev) => ({
+        ...prev,
+        [historyCompra?.idOrder]: true,
+      }));
 
       const resp = await requestPostPagos(
         {
@@ -162,11 +167,30 @@ const useHistorialDeCompras = () => {
         },
         "/openpay/cancelledPaymantOpenPay"
       );
-      setLoadingCancelledCompra(false);
+      setLoadingCancelledCompra((prev) => ({
+        ...prev,
+        [historyCompra?.idOrder]: false,
+      }));
+
       if (resp.status == 200) {
         const data = resp.data;
+        console.log(data.data.data.idOrder);
 
-        setDataHistoryCompras(groupById(data.data.data));
+        setDataHistoryCompras((prevHistoryCompras) => {
+          return prevHistoryCompras.map((historyCompra) => {
+            if (
+              Number(historyCompra.idOrder) == Number(data.data.data.idOrder)
+            ) {
+              return {
+                ...historyCompra,
+                state: "cancelado",
+                statusEnvio: "cancelado",
+              };
+            } else {
+              return historyCompra;
+            }
+          });
+        });
 
         setDataModal({
           isOpen: true,
@@ -189,7 +213,11 @@ const useHistorialDeCompras = () => {
         });
       }
     } catch (error) {
-      setLoadingCancelledCompra(false);
+      setLoadingCancelledCompra((prev) => ({
+        ...prev,
+        [historyCompra?.idOrder]: false,
+      }));
+
       //setDataHistoryCompras([]);
     }
   };
