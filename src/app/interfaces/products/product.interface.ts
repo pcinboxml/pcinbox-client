@@ -38,4 +38,5 @@ export default interface ProductI {
     date: string;
     reviewerName: string;
   }[];
+  storeId?: number;
 }

@@ -12,57 +12,78 @@ import { useEffect, useState } from "react";
 
 const Resumen = () => {
   const { dataCart } = useTheContext();
-  const { onRouterLink, formatCurrency } = useService();
+  const {
+    onRouterLink,
+    formatCurrency,
+    tarifasPaqueteExpress,
+    // calcPesoPaquetExpress,
+  } = useService();
   const {
     rows,
     columns,
     loadingCreateOrder,
     totalPagar,
     selectedFactura,
-    tarifasPaqueteExpress,
     handleCreateOrder,
     handleSelectedFactura,
-    calcPesoVolumetrico,
   } = useResumen();
-  const { progressPay } = useStorage();
 
-  const [envio, setEnvio] = useState<number>(0);
+  const { progressPay2 } = useStorage();
 
-  useEffect(() => {
-    if (!dataCart?.length) {
-      setEnvio(0);
-      return;
-    }
+  const [costoTotalEnvio, setCostoTotalEnvio] = useState<number>(0);
 
-    const optionSend = progressPay?.optionSend?.name;
+  // useEffect(() => {
+  //   if (!dataCart?.length) {
+  //     setEnvio(0);
+  //     return;
+  //   }
 
-    // Si aún no está definido, no calcules nada
-    if (!optionSend) return;
+  //   const optionSend = progressPay?.optionSend?.name;
 
-    // Entrega en sucursal
-    if (totalPagar <= 1000 || optionSend === "sucursal") {
-      setEnvio(0);
-      return;
-    }
+  //   // Si aún no está definido, no calcules nada
+  //   if (!optionSend) return;
 
-    if (optionSend === "paqueteexpress" && tarifasPaqueteExpress?.length > 0) {
-      const pesoTotal = dataCart.reduce(
-        (total, product) => total + calcPesoVolumetrico(product),
-        0,
-      );
+  //   // Entrega en sucursal
+  //   if (totalPagar <= 1000 || optionSend === "sucursal") {
+  //     setEnvio(0);
+  //     return;
+  //   }
 
-      const tarifa = tarifasPaqueteExpress.find(
-        (t) => pesoTotal >= t.de && pesoTotal <= t.a,
-      );
+  //   if (optionSend === "paqueteexpress" && tarifasPaqueteExpress?.length > 0) {
+  //     const pesoTotal = dataCart.reduce(
+  //       (total, product) => total + calcPesoVolumetrico(product),
+  //       0,
+  //     );
 
-      setEnvio(tarifa?.price ?? 0);
-    }
-  }, [
-    progressPay?.optionSend?.name,
-    dataCart,
-    tarifasPaqueteExpress,
-    totalPagar,
-  ]);
+  //     const tarifa = tarifasPaqueteExpress.find(
+  //       (t) => pesoTotal >= t.de && pesoTotal <= t.a,
+  //     );
+
+  //     setEnvio(tarifa?.price ?? 0);
+  //   }
+  // }, [
+  //   progressPay?.optionSend?.name,
+  //   dataCart,
+  //   tarifasPaqueteExpress,
+  //   totalPagar,
+  // ]);
+
+  // useEffect(() => {
+  //   const pesoTotal = calcPesoPaquetExpress(dataCart).reduce(
+  //     (acc, item) => acc + (item?.pesoVolumetrico ?? 0),
+  //     0,
+  //   );
+
+  //   const pesoRedondeado = Math.ceil(pesoTotal);
+
+  //   const tarifa = tarifasPaqueteExpress.find(
+  //     (t) => pesoRedondeado >= t.de && pesoRedondeado <= t.a,
+  //   );
+
+  //   const precio = tarifa?.price ?? 0;
+
+  //   console.log(precio);
+  // }, [dataCart]);
 
   return (
     <section>
@@ -88,9 +109,9 @@ const Resumen = () => {
               <span className="text-[white] mx-2"> | RESUMEN</span>
             </div>
 
-            <div className="grid grid-cols-[1fr]">
+            {/* <div className="grid grid-cols-[1fr]">
               <Table rowsDataGrid={rows} columnsDataGrid={columns} />
-            </div>
+            </div> */}
 
             <div className="w-full mt-2 grid grid-cols-[4fr_1fr]">
               <div className="flex flex-col justify-center items-end pr-2 gap-2">
@@ -98,43 +119,41 @@ const Resumen = () => {
 
                 <span className="text-[#808080] text-sm">Tipo de pago:</span>
 
-                <span className="text-[#808080] text-sm">Tipo de entrega:</span>
+                {/* <span className="text-[#808080] text-sm">Tipo de entrega:</span> */}
 
                 {/* <span className="text-[#808080] text-sm">IVA: </span> */}
               </div>
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
-                  {formatCurrency(envio)}
+                  {/* {formatCurrency(envio)} */}
                 </span>
 
                 <span className="text-[#808080] text-sm">
-                  {progressPay.methodPay.typeMethod == "tarjeta_debito_credito"
+                  {progressPay2.pay?.name == "tarjeta_debito_credito"
                     ? "Tarjeta Crédito/Débito"
-                    : progressPay.methodPay.typeMethod == "transferencia"
+                    : progressPay2.pay?.name == "transferencia"
                       ? "Transferencia"
-                      : progressPay.methodPay.typeMethod ==
-                          "efectivo_al_recoger"
+                      : progressPay2.pay?.name == "efectivo_al_recoger"
                         ? "Efectivo en sucursal"
-                        : progressPay.methodPay.typeMethod ==
-                            "tarjeta_al_recoger"
+                        : progressPay2.pay?.name == "tarjeta_al_recoger"
                           ? "Tarjeta Crédito/Débito en sucursal"
-                          : progressPay.methodPay.typeMethod == "efectivo"
+                          : progressPay2.pay?.name == "efectivo"
                             ? "Efectivo (OXXO)"
-                            : progressPay.methodPay.typeMethod == "mercadopago"
+                            : progressPay2.pay?.name == "mercadopago"
                               ? "Mercado Pago"
-                              : progressPay.methodPay.typeMethod}
+                              : progressPay2.pay?.name}
                 </span>
 
-                <span className="text-[#808080] text-sm">
-                  {progressPay?.optionSend?.name == "sucursal"
+                {/* <span className="text-[#808080] text-sm"> */}
+                {/* {progressPay?.optionSend?.name == "sucursal"
                     ? "Entrega en Sucursal"
                     : progressPay?.optionSend?.name == "paqueteexpress"
                       ? "Paquete Express"
                       : progressPay?.optionSend?.name == "estafeta"
                         ? "Estafeta"
-                        : "Tipo de entrega desconocido"}
-                </span>
+                        : "Tipo de entrega desconocido"} */}
+                {/* </span> */}
                 {/* <span className="text-[#808080] text-sm">
                   {formatCurrency(Number(totalIVA))} 
                 </span> */}
@@ -151,15 +170,7 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {/* {formatCurrency(
-                    totalPagar +
-                      (progressPay?.optionSend?.name != "sucursal"
-                        ? progressPay?.optionSend?.costo
-                          ? Number(progressPay?.optionSend?.costo)
-                          : 0
-                        : 0)
-                  )} */}
-                  {dataCart && dataCart.length > 0
+                  {/* {dataCart && dataCart.length > 0
                     ? totalPagar <= 1000
                       ? formatCurrency(totalPagar)
                       : formatCurrency(
@@ -168,7 +179,7 @@ const Resumen = () => {
                               ? Number(progressPay?.optionSend?.costo)
                               : envio),
                         )
-                    : null}
+                    : null} */}
                 </span>
               </div>
             </div>
@@ -192,7 +203,7 @@ const Resumen = () => {
                 <button
                   disabled={loadingCreateOrder}
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  onClick={() => handleCreateOrder(envio)}
+                  // onClick={() => handleCreateOrder(envio)}
                 >
                   {loadingCreateOrder ? (
                     <MdAutorenew size={20} className="m-auto the-spinner" />

@@ -270,11 +270,11 @@ const SearchCategoryContent = () => {
                                   {(() => {
                                     let longitudProductMarca = dataCopy.filter(
                                       (item: any) =>
-                                        item.marcaId == marca.idMarca
+                                        item.marcaId == marca.idMarca,
                                     ).length;
 
                                     return `(${Number(
-                                      longitudProductMarca
+                                      longitudProductMarca,
                                     ).toLocaleString()})`;
                                   })()}
                                 </span>
@@ -326,7 +326,7 @@ const SearchCategoryContent = () => {
                         const filtered = dataCopy.filter(
                           (item: any) =>
                             item.name.toLowerCase().includes(term) ||
-                            item.sku.toLowerCase().includes(term)
+                            item.sku.toLowerCase().includes(term),
                         );
 
                         setData(filtered);
@@ -347,7 +347,7 @@ const SearchCategoryContent = () => {
                             .sort((a: any, b: any) =>
                               event.target.value == "1"
                                 ? Number(b.price) - Number(a.price)
-                                : Number(a.price) - Number(b.price)
+                                : Number(a.price) - Number(b.price),
                             );
                         });
                       }}
@@ -616,7 +616,7 @@ const SearchCategoryContent = () => {
                                           ? (() => {
                                               try {
                                                 const caracs = JSON.parse(
-                                                  item.caracteristicas
+                                                  item.caracteristicas,
                                                 );
                                                 if (
                                                   Array.isArray(caracs) &&
@@ -627,7 +627,7 @@ const SearchCategoryContent = () => {
                                                     .map(
                                                       (
                                                         carac: any,
-                                                        index: number
+                                                        index: number,
                                                       ) => (
                                                         <li
                                                           key={index}
@@ -642,12 +642,12 @@ const SearchCategoryContent = () => {
                                                               ?.length > 70
                                                               ? `${carac?.value?.slice(
                                                                   0,
-                                                                  70
+                                                                  70,
                                                                 )}...`
                                                               : carac?.value}
                                                           </span>
                                                         </li>
-                                                      )
+                                                      ),
                                                     );
                                                 }
                                                 return "Sin caracteristicas disponibles";
@@ -677,39 +677,38 @@ const SearchCategoryContent = () => {
                                     }
                                     className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
                                     onClick={() => {
-                                      // if (
-                                      //   (item?.isPC == 0 || item?.isPc == 0) &&
-                                      //   item?.product_stock.length > 0
-                                      // ) {
-                                      //   setDataModal({
-                                      //     isOpen: true,
-                                      //     message: (
-                                      //       <div className="w-[800px] border">
-                                      //         <BranchSelector
-                                      //           productSelected={item}
-                                      //         />
-                                      //       </div>
-                                      //     ),
-                                      //     title: "",
-                                      //     type: "success",
-                                      //     showActions: false,
-                                      //     onClose: () => {
-                                      //       setDataModal((prev) => ({
-                                      //         ...prev,
-                                      //         isOpen: false,
-                                      //       }));
-                                      //     },
-                                      //     onConfirm: () => {
-                                      //       setDataModal((prev) => ({
-                                      //         ...prev,
-                                      //         isOpen: false,
-                                      //       }));
-                                      //     },
-                                      //   });
-                                      // } else {
-
-                                      handleAddProductCart(item);
-                                      // }
+                                      if (
+                                        (item?.isPC == 0 || item?.isPc == 0) &&
+                                        item?.product_stock.length > 0
+                                      ) {
+                                        setDataModal({
+                                          isOpen: true,
+                                          message: (
+                                            <div className="w-[800px] border">
+                                              <BranchSelector
+                                                productSelected={item}
+                                              />
+                                            </div>
+                                          ),
+                                          title: "",
+                                          type: "success",
+                                          showActions: false,
+                                          onClose: () => {
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            }));
+                                          },
+                                          onConfirm: () => {
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            }));
+                                          },
+                                        });
+                                      } else {
+                                        handleAddProductCart(item);
+                                      }
                                     }}
                                   >
                                     {item?.isPC == 0 &&

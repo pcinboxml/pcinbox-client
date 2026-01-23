@@ -28,7 +28,11 @@ const FormaDePago = () => {
 
   // const { requestPostPagos } = usePasarelaDePagos();
 
-  const { progressPay, handleWriteStorageProgressPay } = useStorage();
+  const {
+    progressPay,
+    handleWriteStorageProgressPay,
+    handleWriteStorageProgressPay2,
+  } = useStorage();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -305,19 +309,41 @@ const FormaDePago = () => {
                           idMethodPay == 1
                             ? "tarjeta_debito_credito"
                             : idMethodPay == 2
-                            ? "transferencia"
-                            : idMethodPay == 3
-                            ? "efectivo_al_recoger"
-                            : idMethodPay == 4
-                            ? "tarjeta_al_recoger"
-                            : idMethodPay == 6
-                            ? "mercadopago"
-                            : idMethodPay == 5
-                            ? "efectivo"
-                            : idMethodPay == 7
-                            ? "openpay"
-                            : "",
+                              ? "transferencia"
+                              : idMethodPay == 3
+                                ? "efectivo_al_recoger"
+                                : idMethodPay == 4
+                                  ? "tarjeta_al_recoger"
+                                  : idMethodPay == 6
+                                    ? "mercadopago"
+                                    : idMethodPay == 5
+                                      ? "efectivo"
+                                      : idMethodPay == 7
+                                        ? "openpay"
+                                        : "",
                         idCard: selectedCard,
+                      },
+                    });
+
+                    handleWriteStorageProgressPay2({
+                      pay: {
+                        id: idMethodPay,
+                        name:
+                          idMethodPay == 1
+                            ? "tarjeta_debito_credito"
+                            : idMethodPay == 2
+                              ? "transferencia"
+                              : idMethodPay == 3
+                                ? "efectivo_al_recoger"
+                                : idMethodPay == 4
+                                  ? "tarjeta_al_recoger"
+                                  : idMethodPay == 6
+                                    ? "mercadopago"
+                                    : idMethodPay == 5
+                                      ? "efectivo"
+                                      : idMethodPay == 7
+                                        ? "openpay"
+                                        : "",
                       },
                     });
                     onRouterLink("/resumen");

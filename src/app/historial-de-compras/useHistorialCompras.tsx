@@ -25,7 +25,7 @@ const useHistorialDeCompras = () => {
   const { groupById } = useService();
 
   const [dataHistoryCompras, setDataHistoryCompras] = useState<GroupByIdI[]>(
-    []
+    [],
   );
   const [dataHistoryComprasCopy, setDataHistoryComprasCopy] = useState<
     GroupByIdI[]
@@ -64,7 +64,7 @@ const useHistorialDeCompras = () => {
         ? item.products.some((p) =>
             p.name
               .toLowerCase()
-              .includes(dataFilter.searchProduct.toLowerCase())
+              .includes(dataFilter.searchProduct.toLowerCase()),
           )
         : true;
 
@@ -81,7 +81,7 @@ const useHistorialDeCompras = () => {
           userId: localStorage.getItem("idUser"),
           status: "allState",
         },
-        "/sales/filterSales"
+        "/sales/filterSales",
       );
 
       if (resp.status == 200) {
@@ -123,7 +123,7 @@ const useHistorialDeCompras = () => {
           userId: localStorage.getItem("idUser"),
           status: "allState",
         },
-        "/sales/filterSales"
+        "/sales/filterSales",
       );
 
       if (resp.status == 200) {
@@ -165,7 +165,7 @@ const useHistorialDeCompras = () => {
           idOrder: historyCompra.idOrder,
           userId: Number(localStorage.getItem("idUser")),
         },
-        "/openpay/cancelledPaymantOpenPay"
+        "/openpay/cancelledPaymantOpenPay",
       );
       setLoadingCancelledCompra((prev) => ({
         ...prev,
@@ -174,7 +174,6 @@ const useHistorialDeCompras = () => {
 
       if (resp.status == 200) {
         const data = resp.data;
-        console.log(data.data.data.idOrder);
 
         setDataHistoryCompras((prevHistoryCompras) => {
           return prevHistoryCompras.map((historyCompra) => {

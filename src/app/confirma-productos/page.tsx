@@ -13,7 +13,7 @@ const ConfirmaProducts = () => {
   const { formatCurrency, onRouterLink } = useService();
   const {
     columns,
-    rows,
+    rowsConfirmProducts,
     loadingClearCar,
     loadingCotizacion,
     handleGenerateCotizacion,
@@ -37,6 +37,7 @@ const ConfirmaProducts = () => {
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
+          {console.log(dataCart)}
           <div className="container-tabla  w-[90%] mx-auto my-3">
             <div
               className="header-container-tabla w-[100%] p-2 bg-[#666666]"
@@ -55,7 +56,10 @@ const ConfirmaProducts = () => {
             </div>
             {dataCart && dataCart.length > 0 ? (
               <div className="content-tabla-confirma-productos">
-                <Table rowsDataGrid={rows} columnsDataGrid={columns} />
+                <Table
+                  rowsDataGrid={rowsConfirmProducts}
+                  columnsDataGrid={columns}
+                />
               </div>
             ) : (
               <Alert severity="info">No hay datos para mostrar</Alert>

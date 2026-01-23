@@ -22,7 +22,7 @@ const Table = ({
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 4,
+              pageSize: 10,
               page: 0,
             },
           },
@@ -44,6 +44,9 @@ const Table = ({
           },
         }}
         getRowHeight={() => "auto"}
+        getRowId={(row) =>
+          `${row.id}-${row.storeId}-${new Date().getTime()}` || row.id
+        }
       />
     )
   );

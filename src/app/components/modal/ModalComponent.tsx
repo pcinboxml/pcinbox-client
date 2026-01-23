@@ -29,28 +29,49 @@ const ModalComponent = ({
 
   useEffect(() => {
     if (isOpen) {
-      setIsVisible(true);
+      // Guardar la posición actual del scroll
+      const scrollY = window.scrollY;
+
+      // Bloquear el scroll del body
       document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+
+      setIsVisible(true);
     } else {
-      document.body.style.overflow = "unset";
+      // Restaurar el scroll del body
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
+
+      setIsVisible(false);
     }
 
+    // Limpieza al desmontar
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
     };
-  }, [isOpen, type]);
+  }, [isOpen]);
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
-    }, 200);
+    }, 200); // duración animación
   };
 
   const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm();
-    }
+    if (onConfirm) onConfirm();
     handleClose();
   };
 

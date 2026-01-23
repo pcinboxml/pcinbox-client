@@ -107,11 +107,11 @@ export const ModalCart = ({
           ) : (
             <div className="space-y-4">
               {dataCart &&
-                dataCart.map((product: ProductI, index: number) => {
+                dataCart.map((product: ProductI) => {
                   if (product.stock != 0) {
                     return (
                       <div
-                        key={index}
+                        key={`${product.idProduct}-${product.storeId}`}
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                       >
                         {(product as any).image_url ? (
@@ -156,7 +156,18 @@ export const ModalCart = ({
                             {product.name}
                           </h3>
                           <p className="text-xs text-gray-500 mt-1">
-                            Disponibles: {product.stock} piezas.
+                            Disponibles:{" "}
+                            {(() => {
+                              let findStockStore = product?.product_stock?.find(
+                                (branch) =>
+                                  branch?.branchId == product?.storeId,
+                              );
+
+                              return (
+                                findStockStore?.stock || product?.stock || 0
+                              );
+                            })()}{" "}
+                            piezas.
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
                             SKU: {product.sku}
@@ -169,7 +180,10 @@ export const ModalCart = ({
                             <button
                               onClick={() => {
                                 const updateItems = dataCart.map((item) => {
-                                  if (item.idProduct === product.idProduct) {
+                                  if (
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product?.storeId
+                                  ) {
                                     const newQuantity =
                                       Number(item.quantity) > 1
                                         ? Number(item.quantity) - Number(1)
@@ -191,8 +205,9 @@ export const ModalCart = ({
                               value={
                                 dataCart.find(
                                   (item) =>
-                                    item.idProduct === product.idProduct,
-                                )?.quantity || 1
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId,
+                                )?.quantity ?? 1
                               }
                               style={{ minWidth: "45px", maxWidth: "55px" }}
                               className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
@@ -200,18 +215,34 @@ export const ModalCart = ({
 
                             {/*Boton de mas quantity*/}
                             <button
+                              disabled={
+                                product.quantity >=
+                                (product?.product_stock?.find(
+                                  (branch) =>
+                                    branch?.branchId === product?.storeId,
+                                )?.stock || 0)
+                              }
                               onClick={() => {
+                                const stockByStore =
+                                  product?.product_stock?.find(
+                                    (branch) =>
+                                      branch?.branchId === product?.storeId,
+                                  )?.stock || 0;
+
                                 const updateItems = dataCart.map((item) => {
-                                  return item.idProduct === product.idProduct
-                                    ? {
-                                        ...item,
-                                        quantity:
-                                          Number(item.quantity) + Number(1) <=
-                                          product.stock
-                                            ? Number(item.quantity) + Number(1)
-                                            : product.stock,
-                                      }
-                                    : { ...item };
+                                  if (
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId
+                                  ) {
+                                    const newQuantity =
+                                      Number(item.quantity) + 1 <= stockByStore
+                                        ? Number(item.quantity) + 1
+                                        : stockByStore;
+
+                                    return { ...item, quantity: newQuantity };
+                                  }
+
+                                  return item;
                                 });
 
                                 setDataCart(updateItems);

@@ -9,6 +9,7 @@ import {
   GroupByIdI,
   HistoryComprasI,
 } from "../interfaces/compras/historyCompras.interface";
+import ProductI from "../interfaces/products/product.interface";
 
 const useService = () => {
   const pathName = usePathname();
@@ -78,7 +79,7 @@ const useService = () => {
       //     type: "error",
       //   });
       // }
-    }
+    },
   );
 
   const router = useRouter();
@@ -98,7 +99,7 @@ const useService = () => {
 
   const requestGet = async (
     endPoint: string,
-    showErrorSesion: boolean = false
+    showErrorSesion: boolean = false,
   ) => {
     try {
       const res = await api.get(endPoint, {
@@ -221,7 +222,7 @@ const useService = () => {
       if (existingGroup) {
         // Buscar si ya existe ese producto en el grupo
         const existingProduct = existingGroup.products.find(
-          (p: any) => p.idProduct === item.idProduct
+          (p: any) => p.idProduct === item.idProduct,
         );
 
         if (existingProduct) {
@@ -259,6 +260,86 @@ const useService = () => {
     return Array.from(map.values());
   };
 
+  function calcPesoPaquete(
+    products: ProductI[],
+    storeId: any,
+    tipoEnvio: "terrestre" | "aereo" = "terrestre",
+  ) {
+    const FACTOR = tipoEnvio === "aereo" ? 6000 : 5000;
+
+    if (typeof window === "undefined") {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    const stored = localStorage.getItem("progressPay2");
+
+    // Si NO hay localStorage → calcula todo
+    if (!stored) {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    let jsonParsed: any;
+
+    try {
+      jsonParsed = JSON.parse(stored);
+    } catch {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    // Si no existe optionEnvio → calcula todo
+    if (!jsonParsed?.optionEnvio) {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    const valores = Object.entries(jsonParsed.optionEnvio).flatMap(
+      ([key, value]) => {
+        if (value !== "paqueteexpress") return [];
+
+        const [idProduct] = key.split("-");
+
+        return products
+          .filter((product) => Number(product.idProduct) === Number(idProduct))
+          .map((product) => {
+            const pesoVolumetrico =
+              (product.largo * product.width * product.height) / FACTOR;
+
+            return {
+              idProduct: product.idProduct,
+              pesoVolumetrico:
+                Number(pesoVolumetrico.toFixed(2)) *
+                Number(product.quantity ?? 1),
+            };
+          });
+      },
+    );
+
+    // Si optionEnvio existe pero no tiene paqueteexpress → fallback
+    return valores.length ? valores : calcularTodos(products, FACTOR, storeId);
+  }
+
+  function calcularTodos(products: ProductI[], factor: number, storeId: any) {
+    return products && products.length > 0
+      ? products.map((product) => {
+          const pesoVolumetrico =
+            (product.largo * product.width * product.height) / factor;
+
+          return {
+            idProduct: product.idProduct,
+            storeId: storeId,
+            pesoVolumetrico:
+              Number(pesoVolumetrico.toFixed(2)) *
+              Number(product.quantity ?? 1),
+          };
+        })
+      : [];
+  }
+
+  const tarifasPaqueteExpress = [
+    { id: 1, de: 0, a: 5, price: 303 },
+    { id: 2, de: 6, a: 10, price: 329 },
+    { id: 3, de: 11, a: 20, price: 396 },
+  ];
+
   return {
     groupById,
     requestGet,
@@ -270,6 +351,8 @@ const useService = () => {
     Logout,
     handleGetAuth,
     isTokenExpired,
+    tarifasPaqueteExpress,
+    calcPesoPaquete,
   };
 };
 

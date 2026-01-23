@@ -31,11 +31,9 @@ const RegisterDomicilio = () => {
       .filter(
         ([key, value]) =>
           !excludeKeys.includes(key) &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined),
       )
       .map(([key]) => key);
-
-    console.log(dataAddress);
 
     if (emptyFields.length > 0) return;
 
@@ -48,7 +46,7 @@ const RegisterDomicilio = () => {
           : { ...dataAddress, idAddress: isEditAddress.idAddress },
         isEditAddress.edit === false
           ? "/address/registerAddress"
-          : "/address/updatedAddress"
+          : "/address/updatedAddress",
       );
 
       setLoadingRegisterAddress(false);
@@ -104,7 +102,7 @@ const RegisterDomicilio = () => {
     if (name === "codePostal" && value.length === 5) {
       const resp = await requestPost(
         { postalCode: value },
-        "/geonames/getAddressWithPostalCode"
+        "/geonames/getAddressWithPostalCode",
       );
 
       if (resp.status === 200) {
@@ -129,7 +127,7 @@ const RegisterDomicilio = () => {
   };
 
   const handleOnSelect = async (
-    event: SyntheticEvent<HTMLSelectElement, Event>
+    event: SyntheticEvent<HTMLSelectElement, Event>,
   ) => {
     const { name, value } = event.currentTarget;
 
@@ -140,7 +138,7 @@ const RegisterDomicilio = () => {
     const getDataCP = async () => {
       const resp = await requestPost(
         { postalCode: dataAddress?.codePostal },
-        "/geonames/getAddressWithPostalCode"
+        "/geonames/getAddressWithPostalCode",
       );
 
       if (resp.status === 200) {

@@ -46,7 +46,7 @@ const EstatusMPContent = () => {
             paymentId,
             preferenceId,
           },
-          "/mercadopago/getPaymentById"
+          "/mercadopago/getPaymentById",
         );
 
         const status = resp.status;
@@ -54,7 +54,6 @@ const EstatusMPContent = () => {
 
         if (status == 200) {
           setDataMpPay(data.data.data);
-          console.log(data.data.data);
         }
       } catch (error: any) {
         setError(true);

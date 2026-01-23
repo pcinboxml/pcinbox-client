@@ -32,6 +32,7 @@ const GridBranchSelector = () => {
           quantity: quantity,
           price: product.price,
           isDetails: false,
+          storeId: sucursal?.idBranche,
         },
         "/cart/addProduct",
       );
@@ -44,11 +45,15 @@ const GridBranchSelector = () => {
       if (resp.status == 200) {
         setDataCart((prev) => {
           const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(product.idProduct),
+            (item) =>
+              Number(item.idProduct) === Number(product.idProduct) &&
+              Number(item.storeId) === Number(sucursal.idBranche),
           );
+
           if (existingProduct) {
             return prev.map((item) =>
-              Number(item.idProduct) == Number(existingProduct.idProduct)
+              Number(item.idProduct) === Number(product.idProduct) &&
+              Number(item.storeId) === Number(sucursal.idBranche)
                 ? {
                     ...item,
                     quantity: Number(item.quantity) + Number(quantity),
@@ -59,10 +64,18 @@ const GridBranchSelector = () => {
             return [
               ...prev,
               {
+                ...product,
+                product_stock: product?.product_stock,
                 categoryId: product.categoryId,
                 createdAt: product.createdAt,
                 description: product.description,
                 idProduct: product.idProduct,
+                idProductExt: product.idProductExt,
+                caracteristicas: product.caracteristicas,
+                height: product.height,
+                largo: product.largo,
+                upc: product.upc,
+                width: product.width,
                 imageUrl: product.imageUrl || (product as any).image_url,
                 name: product.name,
                 price: product.price,
@@ -72,6 +85,7 @@ const GridBranchSelector = () => {
                 reviews: product.reviews,
                 sku: product.sku,
                 quantity: quantity,
+                storeId: sucursal.idBranche,
               },
             ];
           }
@@ -120,11 +134,11 @@ const GridBranchSelector = () => {
     },
     {
       idStore: 16,
-      name: "gdl",
+      name: "Arboledas",
     },
     {
-      idStore: 4,
-      name: "Arboledas",
+      idStore: 26,
+      name: "dicoags2",
     },
   ];
 

@@ -4,7 +4,7 @@ import { useMediaQuery } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
 import GridResumen from "./gridResumen";
 import useStorage from "../services/useStorage";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useService from "../services/useService";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import FormFactura from "../components/formFactura/FormFactura";
@@ -39,6 +39,25 @@ const useResumen = () => {
     dataCart,
     isSmallScreen,
   });
+
+  // const getValuesStorage2 = () => {
+  //   if (typeof window !== "undefined") {
+  //     const stored = localStorage.getItem("progressPay2");
+  //     if (stored) {
+  //       const store = JSON.parse(stored);
+
+  //       if (store.optionEnvio) {
+  //         setOptionEnvio(store.optionEnvio);
+  //       }
+  //       if (store.addressByStore) {
+  //         setAddressByStore(store.addressByStore);
+  //       }
+  //       if (store.costoEnvioProductByZone) {
+  //         setCostoEnvioProductByZone(store.costoEnvioProductByZone);
+  //       }
+  //     }
+  //   }
+  // };
 
   const handleCreateOrder = async (envio?: number) => {
     if (progressPay.methodPay.typeMethod == "efectivo") {
@@ -243,7 +262,7 @@ const useResumen = () => {
             idAddress: progressPay.optionSend.address,
             requiredFactura: selectedFactura,
           },
-          "/mercadopago/preferencePago"
+          "/mercadopago/preferencePago",
         );
 
         if (resp.status == 200) {
@@ -335,23 +354,6 @@ const useResumen = () => {
     }
   };
 
-  const calcPesoVolumetrico = (product: ProductI) => {
-    const largo = Number(product.largo);
-    const ancho = Number(product.width);
-    const alto = Number(product.height);
-
-    if (![largo, ancho, alto].every(Number.isFinite)) {
-      return 0;
-    }
-
-    return (largo * ancho * alto) / 5000;
-  };
-
-  const tarifasPaqueteExpress = [
-    { id: 1, de: 0, a: 5, price: 303 },
-    { id: 2, de: 6, a: 10, price: 329 },
-    { id: 3, de: 11, a: 20, price: 396 },
-  ];
   return {
     loadingCreateOrder,
     columns,
@@ -360,10 +362,8 @@ const useResumen = () => {
     totalIVA,
     totalPagar,
     selectedFactura,
-    tarifasPaqueteExpress,
     handleCreateOrder,
     handleSelectedFactura,
-    calcPesoVolumetrico,
   };
 };
 
