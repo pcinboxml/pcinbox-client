@@ -49,23 +49,19 @@ export default function ShippingNotice() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Información de Envíos
             </h3>
-            <p className="text-gray-700 mb-1">
+            <p className="text-gray-700">
               Por el momento,{" "}
               <span className="font-semibold text-indigo-700">PCinBOX</span> no
               cuenta con servicio de paquetería Express ni con Estafeta.
             </p>
-            <p className="text-gray-700 mb-2">
+            <p className="text-gray-700">
               Realizamos envíos únicamente a{" "}
               <span className="font-medium">León</span> y en otros destinos
               específicos.
-            </p>
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{
-                marginBottom: "2px",
-              }}
-            >
-              <span style={{ marginBottom: "10px" }}>
+              <span
+                className="inline-block mx-2"
+                style={{ marginBottom: "10px" }}
+              >
                 <a
                   href="#"
                   role="button"
@@ -144,8 +140,12 @@ export default function ShippingNotice() {
                   Mostrar destinos especificos
                 </a>
               </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
+            </p>
+
+            <div
+              className="flex items-center gap-2 text-sm"
+              style={{ marginTop: "-20px" }}
+            >
               <svg
                 className="w-5 h-5 text-indigo-600"
                 fill="none"
