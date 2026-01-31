@@ -1,16 +1,19 @@
 "use client";
 
-import { MdAutorenew, MdClose, MdDirectionsCar, MdStore } from "react-icons/md";
+import {
+  MdClose,
+  MdDirectionsCar,
+  MdLocationOn,
+  MdStore,
+} from "react-icons/md";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import useOpcionesEntrega from "./useOpcionesEntrega";
-import styles from "./opciones-entrega.module.css";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
-import ShippingNotice from "../components/shoppingNotice/ShoppingNotice";
 import ProductI from "../interfaces/products/product.interface";
 
 const OpcionesEntrega = () => {
@@ -20,6 +23,7 @@ const OpcionesEntrega = () => {
     onRouterLink,
     formatCurrency,
     tarifasPaqueteExpress,
+    totalPrice,
     calcPesoPaquete,
   } = useService();
   const {
@@ -27,7 +31,7 @@ const OpcionesEntrega = () => {
     handleRemoveAddress,
     handleFormRegisterAddress,
     setIsEditAddress,
-    getValuesStorage,
+    // getValuesStorage,
     getValuesStorage2,
     optionEnvio,
     costoEnvioProductByZone,
@@ -39,6 +43,9 @@ const OpcionesEntrega = () => {
     CIUDADES_ENVIO_PERSONALIZADO,
     addressByStore,
     setAddressByStore,
+    handleOnChangeSeguroEnvio,
+    seguroEnvio,
+    showUbicationStore,
   } = useOpcionesEntrega();
 
   const {
@@ -56,19 +63,62 @@ const OpcionesEntrega = () => {
       return;
 
     const fetchCostos = async () => {
+      const nuevosCostos: Record<string, number> = {};
+
+      // 🔹 Calculamos paquete express UNA VEZ
+      const sumaPorStore = pesoPaqueteExpress.reduce(
+        (acc, producto) => {
+          const key = producto.storeId;
+          if (!acc[key]) acc[key] = 0;
+          acc[key] += producto.pesoVolumetrico;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
       for (const [storeId, envio] of Object.entries(optionEnvio)) {
+        if (envio == "sucursal") {
+          nuevosCostos[storeId] = 0;
+        }
+
+        // 👉 ENVÍO LEÓN
         if (envio === "envioLeon") {
           const addressId = addressByStore[storeId];
-
           if (addressId) {
             const costo = await generateCostoByZone(Number(addressId));
-            setCostoEnvioProductByZone((prev) => ({
-              ...prev,
-              [storeId]: costo,
-            }));
+            nuevosCostos[storeId] = costo;
           }
         }
+
+        // 👉 PAQUETE EXPRESS
+        if (envio === "paqueteexpress") {
+          let storeIdSplit = storeId.split("-");
+
+          if (storeIdSplit.length > 0) {
+            const volumenTotal = sumaPorStore[storeIdSplit[0]];
+
+            if (volumenTotal !== undefined && volumenTotal !== null) {
+              const tarifa = tarifasPaqueteExpress.find(
+                (t) => volumenTotal <= t.max,
+              );
+
+              if (tarifa) {
+                nuevosCostos[storeId] = Number(tarifa.price);
+              }
+            }
+          }
+        }
+
+        if (envio === "estafeta") {
+          nuevosCostos[storeId] = Number(17.4);
+        }
       }
+
+      // 🔥 UN SOLO SET
+      setCostoEnvioProductByZone((prev) => ({
+        ...prev,
+        ...nuevosCostos,
+      }));
     };
 
     fetchCostos();
@@ -100,20 +150,9 @@ const OpcionesEntrega = () => {
     return Object.values(groups);
   }, [dataCart]);
 
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
   useEffect(() => {
     loadingAddressUser();
-    getValuesStorage();
+    // getValuesStorage();
     getValuesStorage2();
   }, []);
 
@@ -225,64 +264,53 @@ const OpcionesEntrega = () => {
                   </div>
 
                   <div className="opcion-de-envio p-3">
-                    {!group.storeId && (
-                      <div className="flex">
-                        <input
-                          type="radio"
-                          name={`envio-${groupKey}`}
-                          id={`sucursal-${groupKey}`}
-                          value="sucursal"
-                          style={{
-                            marginRight: "10px",
-                          }}
-                          checked={optionEnvio[groupKey] === "sucursal"}
-                          onChange={(event) =>
-                            handleOnChangeOptionEnvio(event, groupKey)
-                          }
-                        />
+                    {/* {!group.storeId && ( */}
+                    <div className="flex">
+                      <input
+                        type="radio"
+                        name={`envio-${groupKey}`}
+                        id={`sucursal-${groupKey}`}
+                        value="sucursal"
+                        style={{
+                          marginRight: "10px",
+                        }}
+                        checked={optionEnvio[groupKey] === "sucursal"}
+                        onChange={(event) =>
+                          handleOnChangeOptionEnvio(event, groupKey)
+                        }
+                      />
 
-                        <MdStore size={26} color="gray" />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`sucursal-${groupKey}`}
-                        >
-                          <span className="text-[#666666] text-sm mx-2">
-                            Recoger en sucursal (PCinBOX-LEÓN){" "}
-                          </span>
-                        </label>
-                        <hr />
-                      </div>
-                    )}
-                    {group.storeId && (
-                      <div className="flex">
-                        <input
-                          type="radio"
-                          name={`envio-${groupKey}`}
-                          id={`sucursalExt-${groupKey}`}
-                          value="sucursalExt"
-                          style={{
-                            marginRight: "10px",
-                          }}
-                          checked={optionEnvio[groupKey] === "sucursalExt"}
-                          onChange={(event) =>
-                            handleOnChangeOptionEnvio(event, groupKey)
-                          }
-                        />
+                      <MdStore size={26} color="gray" />
+                      <label
+                        className="form-check-label"
+                        htmlFor={`sucursal-${groupKey}`}
+                      >
+                        <span className="text-[#666666] text-sm mx-2">
+                          Recoger en sucursal (PCinBOX-LEÓN){" "}
+                        </span>
+                      </label>
+                      <a
+                        onClick={() => {
+                          showUbicationStore(String("PCinBOX-León"));
+                        }}
+                        style={{
+                          display: "flex",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                          textDecoration: "underline",
+                          alignItems: "center",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <MdLocationOn size={22} />
+                        Ver Ubicación
+                      </a>
+                      <hr />
+                    </div>
 
-                        <MdStore size={26} color="gray" />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`sucursalExt-${groupKey}`}
-                        >
-                          <span className="text-[#666666] text-sm mx-2">
-                            Recoger en Sucursal{" "}
-                            {getStoreName(group.storeId, group.products[0])}
-                          </span>
-                        </label>
-                        <hr />
-                      </div>
-                    )}
-                    {totalPrice > 1000 && dataUserAddress ? (
+                    {Number(group?.providerId) === 1 &&
+                    totalPrice > 1000 &&
+                    dataUserAddress ? (
                       <>
                         <img
                           src="/compra_segura_gris.png"
@@ -292,7 +320,7 @@ const OpcionesEntrega = () => {
                         />
                       </>
                     ) : null}
-                    {totalPrice < 1000 ? (
+                    {totalPrice < 1000 && Number(group?.providerId) === 1 ? (
                       <Alert severity="info" className="mt-3">
                         Para que la empresa{" "}
                         <span style={{ fontWeight: "bold", color: "black" }}>
@@ -339,7 +367,8 @@ const OpcionesEntrega = () => {
                                 Envío personalizado por parte de PCinBOX
                               </span>
                               <span>
-                                {costoEnvioProductByZone[groupKey] !== undefined
+                                {optionEnvio[groupKey] === "envioLeon" &&
+                                costoEnvioProductByZone[groupKey] !== undefined
                                   ? costoEnvioProductByZone[groupKey] === 0
                                     ? "Envío: Gratis"
                                     : `Envío: (${formatCurrency(Number(costoEnvioProductByZone[groupKey]))})`
@@ -350,8 +379,7 @@ const OpcionesEntrega = () => {
                         </div>
                       )}
 
-                    {totalPrice >= 1000 &&
-                      dataUserAddress &&
+                    {dataUserAddress &&
                       dataUserAddress.some((d) =>
                         CIUDADES_ENVIO_PERSONALIZADO.filter(
                           (df) => df !== d.city,
@@ -360,167 +388,446 @@ const OpcionesEntrega = () => {
                       Number(group.providerId) !== 1 && (
                         <>
                           {(() => {
-                            const sumaPorStore = pesoPaqueteExpress.reduce(
-                              (acc, producto) => {
-                                const key = producto.storeId; // usamos storeId como clave
-                                if (!acc[key]) {
-                                  acc[key] = 0;
-                                }
-                                acc[key] += producto.pesoVolumetrico;
-                                return acc;
+                            const findVolement = group.products.reduce(
+                              (total: any, item: any) => {
+                                const volume =
+                                  item.width * item.height * item.largo;
+                                return total + volume * Number(item.quantity);
                               },
-                              {},
+                              0,
                             );
 
-                            let arraySumStore = Object.entries(
-                              sumaPorStore,
-                            ).map((d) => {
-                              let [key, value] = d;
-                              return {
-                                storeId: key == "null" ? null : key,
-                                volumenTotal: value,
-                              };
-                            });
-
-                            let findVolement = arraySumStore.find(
-                              (a) =>
-                                Number(a.storeId) === Number(group.storeId),
+                            const tarifa = tarifasPaqueteExpress.find(
+                              (t) => findVolement <= t.max,
                             );
 
-                            if (
-                              findVolement &&
-                              Number(findVolement.volumenTotal) > 20
-                            ) {
-                              //Estafeta
-                              return (
-                                <div className="flex items-center relative ">
-                                  <input
-                                    type="radio"
-                                    style={{
-                                      marginRight: "10px",
-                                    }}
-                                    name={`envio-${groupKey}`}
-                                    id={`envio-${groupKey}`}
-                                    value="estafeta"
-                                    checked={
-                                      optionEnvio[groupKey] === "estafeta"
-                                    }
-                                    onChange={(event) =>
-                                      handleOnChangeOptionEnvio(event, groupKey)
-                                    }
-                                  />
+                            // const sumaPorStore = pesoPaqueteExpress.reduce(
+                            //   (acc, producto) => {
+                            //     const key = producto.storeId; // usamos storeId como clave
+                            //     if (!acc[key]) {
+                            //       acc[key] = 0;
+                            //     }
+                            //     acc[key] += producto.pesoVolumetrico;
+                            //     return acc;
+                            //   },
+                            //   {},
+                            // );
 
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor={`envio-${groupKey}`}
-                                  >
-                                    <div className="w-full flex items-center">
-                                      <img
-                                        src="/estafeta.png"
-                                        style={{
-                                          width: "50px",
-                                          height: "50px",
-                                          objectFit: "contain",
-                                          filter: "grayscale(100%)",
-                                        }}
-                                        loading="lazy"
-                                      />
+                            // let arraySumStore = Object.entries(
+                            //   sumaPorStore,
+                            // ).map(([key, value]) => ({
+                            //   storeId: key, // 👈 NO convertir, NO tocar
+                            //   volumenTotal: value,
+                            // }));
 
-                                      <span
-                                        className="text-[#666666] text-sm mx-2"
-                                        style={{ fontWeight: "bold" }}
-                                      >
-                                        <span style={{ fontWeight: "bold" }}>
-                                          |
-                                        </span>{" "}
-                                        Estafeta
-                                      </span>
-                                    </div>
-                                  </label>
-                                </div>
-                              );
-                            } else {
-                              //PaqueteExpress
+                            // let findVolement = arraySumStore.find(
+                            //   (a) => a.storeId === group.storeId,
+                            // );
 
-                              return (
-                                <div className="flex items-center relative">
-                                  <input
-                                    type="radio"
-                                    style={{
-                                      marginRight: "10px",
-                                    }}
-                                    name={`envio-${groupKey}`}
-                                    id={`envio-${groupKey}`}
-                                    value="paqueteexpress"
-                                    checked={
-                                      optionEnvio[groupKey] === "paqueteexpress"
-                                    }
-                                    onChange={(event) =>
-                                      handleOnChangeOptionEnvio(event, groupKey)
-                                    }
-                                  />
+                            return (
+                              <>
+                                {Number(findVolement) < 15001 && (
+                                  <div className="flex items-center relative">
+                                    <input
+                                      type="radio"
+                                      style={{
+                                        marginRight: "10px",
+                                      }}
+                                      name={`envio-pe-${groupKey}`}
+                                      id={`envio-pe-${groupKey}`}
+                                      value="paqueteexpress"
+                                      checked={
+                                        optionEnvio[groupKey] ===
+                                        "paqueteexpress"
+                                      }
+                                      onChange={(event) =>
+                                        handleOnChangeOptionEnvio(
+                                          event,
+                                          groupKey,
+                                        )
+                                      }
+                                    />
 
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor={`envio-${groupKey}`}
-                                  >
-                                    <div className="w-full flex items-center">
-                                      <img
-                                        src="/paqueteexpress.png"
-                                        style={{
-                                          width: "50px",
-                                          height: "50px",
-                                          objectFit: "contain",
-                                          filter: "grayscale(100%)",
-                                        }}
-                                        loading="lazy"
-                                      />
-                                      <span
-                                        className="text-[#666666] text-sm mx-2"
-                                        style={{ fontWeight: "bold" }}
-                                      >
-                                        <span style={{ fontWeight: "bold" }}>
-                                          |
-                                        </span>{" "}
-                                        Paquete Express
-                                      </span>
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`envio-pe-${groupKey}`}
+                                    >
+                                      <div className="w-full flex items-center">
+                                        <img
+                                          src="/paqueteexpress.png"
+                                          style={{
+                                            width: "50px",
+                                            height: "50px",
+                                            objectFit: "contain",
+                                            filter: "grayscale(100%)",
+                                          }}
+                                          loading="lazy"
+                                        />
+                                        <span
+                                          className="text-[#666666] text-sm mx-2"
+                                          style={{ fontWeight: "bold" }}
+                                        >
+                                          <span style={{ fontWeight: "bold" }}>
+                                            |
+                                          </span>{" "}
+                                          Paquete Express
+                                        </span>
 
-                                      <span>
-                                        {(() => {
-                                          if (findVolement) {
-                                            let tarifa =
-                                              tarifasPaqueteExpress?.find(
-                                                (t) =>
-                                                  Number(
-                                                    findVolement?.volumenTotal,
-                                                  ) >= t.de &&
-                                                  Number(
-                                                    findVolement?.volumenTotal,
-                                                  ) <= t.a,
+                                        <span>
+                                          {(() => {
+                                            if (tarifa) {
+                                              return formatCurrency(
+                                                Number(tarifa?.price),
+                                              );
+                                            }
+                                          })()}
+                                        </span>
+                                      </div>
+                                    </label>
+                                  </div>
+                                )}
+                                {optionEnvio[groupKey] === "paqueteexpress" &&
+                                  Number(findVolement) < 15001 && (
+                                    <Alert
+                                      severity="info"
+                                      className="flex justify-center relative"
+                                    >
+                                      <div className="flex items-center mx-2 absolute top-2 right-2">
+                                        <span className="font-bold text-black">
+                                          {(() => {
+                                            let findDataProductsStoreId =
+                                              dataCart?.filter(
+                                                (d) =>
+                                                  d.storeId ===
+                                                  Number(group.stored),
                                               );
 
+                                            const totalPriceStoreProvider3 =
+                                              Math.round(
+                                                findDataProductsStoreId
+                                                  ?.filter(
+                                                    (itemF) =>
+                                                      itemF.stock != 0 &&
+                                                      Number(
+                                                        itemF?.providerId,
+                                                      ) === 3,
+                                                  )
+                                                  .map(
+                                                    (item) =>
+                                                      Number(item.price) *
+                                                      item.quantity,
+                                                  )
+                                                  .reduce(
+                                                    (sum, current) =>
+                                                      sum + current,
+                                                    0,
+                                                  ) +
+                                                  Number.EPSILON * 100,
+                                              ) / 100;
+
                                             return formatCurrency(
-                                              Number(tarifa?.price),
+                                              Number(
+                                                seguroEnvio[groupKey]
+                                                  ?.required == "no" ||
+                                                  totalPriceStoreProvider3 <
+                                                    1000
+                                                  ? 15 * (1 + 0.16)
+                                                  : (Math.ceil(
+                                                      totalPriceStoreProvider3,
+                                                    ) /
+                                                      1000) *
+                                                      15 *
+                                                      (1 + 0.16),
+                                              ),
                                             );
-                                          }
-                                        })()}
-                                      </span>
+                                          })()}
+                                        </span>
+                                      </div>
+                                      <div className="flex relative flex-col">
+                                        <span className="font-bold text-black text-center">
+                                          ¿Deseas seguro de envío?
+                                        </span>
+
+                                        <div className="flex justify-center">
+                                          <div className="flex items-center relative">
+                                            <input
+                                              type="radio"
+                                              style={{
+                                                marginRight: "5px",
+                                              }}
+                                              name={`seguro-${groupKey}`}
+                                              id={`seguro-si-${groupKey}`}
+                                              value="si"
+                                              checked={
+                                                seguroEnvio[groupKey]
+                                                  ?.required === "si"
+                                              }
+                                              onChange={(event) => {
+                                                handleOnChangeSeguroEnvio(
+                                                  event,
+                                                  groupKey,
+                                                );
+                                              }}
+                                            />
+                                            <label
+                                              htmlFor={`seguro-si-${groupKey}`}
+                                            >
+                                              SI
+                                            </label>
+                                          </div>
+                                          <span
+                                            style={{
+                                              marginLeft: "5px",
+                                              display: "inline-block",
+                                              marginRight: "5px",
+                                              color: "black",
+                                              fontWeight: "bold",
+                                            }}
+                                          >
+                                            |
+                                          </span>
+
+                                          <div className="flex items-center relative">
+                                            <input
+                                              type="radio"
+                                              style={{
+                                                marginRight: "5px",
+                                              }}
+                                              name={`seguro-${groupKey}`}
+                                              id={`seguro-no-${groupKey}`}
+                                              value="no"
+                                              checked={
+                                                seguroEnvio[groupKey]
+                                                  ?.required === "no"
+                                              }
+                                              onChange={(event) => {
+                                                //const { value } = event.target;
+
+                                                handleOnChangeSeguroEnvio(
+                                                  event,
+                                                  groupKey,
+                                                );
+                                                // handleWriteStorageProgressPay2({
+                                                //   seguroEnvio: {
+                                                //     ...seguroEnvio,
+                                                //     [groupKey]: 0,
+                                                //   },
+                                                // });
+                                              }}
+                                            />
+                                            <label
+                                              htmlFor={`seguro-no-${groupKey}`}
+                                            >
+                                              NO
+                                            </label>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </Alert>
+                                  )}
+                                {Number(findVolement) < 5000 && (
+                                  <>
+                                    <div className="flex items-center relative ">
+                                      <input
+                                        type="radio"
+                                        style={{
+                                          marginRight: "10px",
+                                        }}
+                                        name={`envio-e-${groupKey}`}
+                                        id={`envio-e-${groupKey}`}
+                                        value="estafeta"
+                                        checked={
+                                          optionEnvio[groupKey] === "estafeta"
+                                        }
+                                        onChange={(event) =>
+                                          handleOnChangeOptionEnvio(
+                                            event,
+                                            groupKey,
+                                          )
+                                        }
+                                      />
+
+                                      <label
+                                        className="form-check-label"
+                                        htmlFor={`envio-e-${groupKey}`}
+                                      >
+                                        <div className="w-full flex items-center">
+                                          <img
+                                            src="/estafeta.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "50px",
+                                              objectFit: "contain",
+                                              filter: "grayscale(100%)",
+                                            }}
+                                            loading="lazy"
+                                          />
+
+                                          <span
+                                            className="text-[#666666] text-sm mx-2"
+                                            style={{ fontWeight: "bold" }}
+                                          >
+                                            <span
+                                              style={{ fontWeight: "bold" }}
+                                            >
+                                              |
+                                            </span>{" "}
+                                            Estafeta
+                                          </span>
+
+                                          <span>
+                                            {(() => {
+                                              return formatCurrency(
+                                                Number(178.0),
+                                              );
+                                            })()}
+                                          </span>
+                                        </div>
+                                      </label>
                                     </div>
-                                  </label>
-                                </div>
-                              );
-                            }
 
-                            // if (findVolement) {
-                            //   let tarifa = tarifasPaqueteExpress?.find(
-                            //     (t) =>
-                            //       Number(findVolement?.volumenTotal) >=
-                            //         t.de &&
-                            //       Number(findVolement?.volumenTotal) <=
-                            //         t.a,
-                            //   );
+                                    {optionEnvio[groupKey] === "estafeta" && (
+                                      <Alert
+                                        severity="info"
+                                        className="flex justify-center relative"
+                                      >
+                                        <div className="flex items-center mx-2 absolute top-2 right-2">
+                                          <span className="font-bold text-black">
+                                            {(() => {
+                                              let findDataProductsStoreId =
+                                                dataCart?.filter(
+                                                  (d) =>
+                                                    d.storeId ===
+                                                    Number(group.stored),
+                                                );
 
-                            // }
+                                              const totalPriceStoreProvider3 =
+                                                Math.round(
+                                                  findDataProductsStoreId
+                                                    ?.filter(
+                                                      (itemF) =>
+                                                        itemF.stock != 0 &&
+                                                        Number(
+                                                          itemF?.providerId,
+                                                        ) === 3,
+                                                    )
+                                                    .map(
+                                                      (item) =>
+                                                        Number(item.price) *
+                                                        item.quantity,
+                                                    )
+                                                    .reduce(
+                                                      (sum, current) =>
+                                                        sum + current,
+                                                      0,
+                                                    ) +
+                                                    Number.EPSILON * 100,
+                                                ) / 100;
+
+                                              return formatCurrency(
+                                                Number(
+                                                  seguroEnvio[groupKey]
+                                                    ?.required == "no" ||
+                                                    totalPriceStoreProvider3 <
+                                                      1000
+                                                    ? 15 * (1 + 0.16)
+                                                    : (Math.ceil(
+                                                        totalPriceStoreProvider3,
+                                                      ) /
+                                                        1000) *
+                                                        15 *
+                                                        (1 + 0.16),
+                                                ),
+                                              );
+                                            })()}
+                                          </span>
+                                        </div>
+                                        <div className="flex relative flex-col">
+                                          <span className="font-bold text-black text-center">
+                                            ¿Deseas seguro de envío?
+                                          </span>
+
+                                          <div className="flex justify-center">
+                                            <div className="flex items-center relative">
+                                              <input
+                                                type="radio"
+                                                style={{
+                                                  marginRight: "5px",
+                                                }}
+                                                name={`seguro-${groupKey}`}
+                                                id={`seguro-si-${groupKey}`}
+                                                value="si"
+                                                checked={
+                                                  seguroEnvio[groupKey]
+                                                    ?.required === "si"
+                                                }
+                                                onChange={(event) => {
+                                                  handleOnChangeSeguroEnvio(
+                                                    event,
+                                                    groupKey,
+                                                  );
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`seguro-si-${groupKey}`}
+                                              >
+                                                SI
+                                              </label>
+                                            </div>
+                                            <span
+                                              style={{
+                                                marginLeft: "5px",
+                                                display: "inline-block",
+                                                marginRight: "5px",
+                                                color: "black",
+                                                fontWeight: "bold",
+                                              }}
+                                            >
+                                              |
+                                            </span>
+
+                                            <div className="flex items-center relative">
+                                              <input
+                                                type="radio"
+                                                style={{
+                                                  marginRight: "5px",
+                                                }}
+                                                name={`seguro-${groupKey}`}
+                                                id={`seguro-no-${groupKey}`}
+                                                value="no"
+                                                checked={
+                                                  seguroEnvio[groupKey]
+                                                    ?.required === "no"
+                                                }
+                                                onChange={(event) => {
+                                                  //const { value } = event.target;
+
+                                                  handleOnChangeSeguroEnvio(
+                                                    event,
+                                                    groupKey,
+                                                  );
+                                                  // handleWriteStorageProgressPay2({
+                                                  //   seguroEnvio: {
+                                                  //     ...seguroEnvio,
+                                                  //     [groupKey]: 0,
+                                                  //   },
+                                                  // });
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`seguro-no-${groupKey}`}
+                                              >
+                                                NO
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </Alert>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            );
                           })()}
                         </>
                       )}
@@ -546,10 +853,7 @@ const OpcionesEntrega = () => {
                 dataUserAddress &&
                 dataUserAddress.length > 0 &&
                 dataUserAddress.map((selectedAddress) => {
-                  if (
-                    selectedAddress.idAddress == addressByStore[groupKey] &&
-                    totalPrice > 1000
-                  ) {
+                  if (selectedAddress.idAddress == addressByStore[groupKey]) {
                     return (
                       <div
                         className="bg-red-50 rounded-lg border border-red-200 p-3 relative"
@@ -687,10 +991,56 @@ const OpcionesEntrega = () => {
                 return;
               }
 
+              for (const [key, shippingMethod] of Object.entries(optionEnvio)) {
+                if (
+                  shippingMethod === "paqueteexpress" ||
+                  shippingMethod === "estafeta"
+                ) {
+                  const seguro = seguroEnvio[key];
+
+                  if (!seguro) {
+                    setDataModal({
+                      isOpen: true,
+                      type: "error",
+                      message:
+                        "Seleccione si desea agregar seguro o no a su envío de " +
+                        shippingMethod,
+                      title: "Error",
+                      onClose: () => {
+                        setDataModal((prev) => ({ ...prev, isOpen: false }));
+                      },
+                      onConfirm: () => {
+                        setDataModal((prev) => ({ ...prev, isOpen: false }));
+                      },
+                    });
+
+                    return; // Esto ahora sí detiene la ejecución de la función externa
+                  }
+                }
+              }
+
+              // Aquí puedes poner código que solo se ejecute si todos los seguros están correctos
+
+              let dataPurchase: any = {};
+
+              Object.entries(optionEnvio).forEach(([key, shippingMethod]) => {
+                const seguro = seguroEnvio[key];
+                const theAddressByStore = addressByStore[key];
+                const theCostoEnvioProductByZone = costoEnvioProductByZone[key];
+
+                dataPurchase[key] = {
+                  shipping_method: shippingMethod,
+                  costoSeguroEnvio: seguro ? seguro.costo : null,
+                  idAddress: theAddressByStore || null,
+                  costoEnvioProductByZone:
+                    shippingMethod == "estafeta"
+                      ? 178.0
+                      : theCostoEnvioProductByZone || null,
+                };
+              });
+
               handleWriteStorageProgressPay2({
-                optionEnvio,
-                addressByStore,
-                costoEnvioProductByZone,
+                dataPurchase,
               });
 
               onRouterLink("/forma-de-pago");

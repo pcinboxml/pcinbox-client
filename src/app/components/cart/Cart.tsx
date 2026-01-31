@@ -8,6 +8,7 @@ import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
 import { MdAutorenew, MdClose } from "react-icons/md";
+import useStorage from "@/app/services/useStorage";
 // import Link from "next/link";
 
 export const Cart = () => {
@@ -22,20 +23,10 @@ export const ModalCart = ({
   showDivCart: boolean;
 }) => {
   const { dataCart, setDataCart } = useTheContext();
-  const { formatCurrency, onRouterLink } = useService();
+  const { dataCartStorege, handleWriteStorageDataCart } = useStorage();
+  const { formatCurrency, onRouterLink, totalPrice } = useService();
   const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
     useCart();
-
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
 
   return (
     <div
@@ -195,6 +186,7 @@ export const ModalCart = ({
                                 });
 
                                 setDataCart(updateItems);
+                                handleWriteStorageDataCart(updateItems);
                               }}
                               className="p-1 hover:bg-gray-100 text-gray-600"
                             >
@@ -202,13 +194,27 @@ export const ModalCart = ({
                             </button>
                             <input
                               readOnly
-                              value={
-                                dataCart.find(
+                              value={(() => {
+                                // Buscamos primero en storage
+
+                                const itemStorage = dataCartStorege?.find(
                                   (item) =>
                                     item.idProduct === product.idProduct &&
                                     item.storeId === product.storeId,
-                                )?.quantity ?? 1
-                              }
+                                );
+                                if (itemStorage) return itemStorage.quantity;
+
+                                // Si no está en storage, buscamos en dataCart
+                                const itemCart = dataCart?.find(
+                                  (item) =>
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId,
+                                );
+                                if (itemCart) return itemCart.quantity;
+
+                                // Si no está en ninguno, devolvemos 1
+                                return 1;
+                              })()}
                               style={{ minWidth: "45px", maxWidth: "55px" }}
                               className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
                             />
@@ -216,11 +222,13 @@ export const ModalCart = ({
                             {/*Boton de mas quantity*/}
                             <button
                               disabled={
-                                product.quantity >=
-                                (product?.product_stock?.find(
-                                  (branch) =>
-                                    branch?.branchId === product?.storeId,
-                                )?.stock || 0)
+                                Number(product?.providerId) !== 1
+                                  ? product.quantity >=
+                                    (product?.product_stock?.find(
+                                      (branch) =>
+                                        branch?.branchId === product?.storeId,
+                                    )?.stock || 0)
+                                  : Number(product?.stock) === 0
                               }
                               onClick={() => {
                                 const stockByStore =
@@ -231,11 +239,22 @@ export const ModalCart = ({
 
                                 const updateItems = dataCart.map((item) => {
                                   if (
+                                    Number(item?.providerId) !== 1 &&
                                     item.idProduct === product.idProduct &&
                                     item.storeId === product.storeId
                                   ) {
                                     const newQuantity =
                                       Number(item.quantity) + 1 <= stockByStore
+                                        ? Number(item.quantity) + 1
+                                        : stockByStore;
+
+                                    return { ...item, quantity: newQuantity };
+                                  } else if (
+                                    Number(item?.providerId) === 1 &&
+                                    item.idProduct === product.idProduct
+                                  ) {
+                                    const newQuantity =
+                                      Number(item.quantity) + 1 <= item.stock
                                         ? Number(item.quantity) + 1
                                         : stockByStore;
 
@@ -246,6 +265,7 @@ export const ModalCart = ({
                                 });
 
                                 setDataCart(updateItems);
+                                handleWriteStorageDataCart(updateItems);
                               }}
                               className="p-1 hover:bg-gray-100 text-gray-600"
                             >
@@ -258,10 +278,19 @@ export const ModalCart = ({
                               {formatCurrency(
                                 Number(
                                   Number(product.price) *
-                                    Number(product.quantity),
+                                    Number(
+                                      // primero busco en storage, si no está uso dataCart
+                                      dataCartStorege.find(
+                                        (item) =>
+                                          item.idProduct ===
+                                            product.idProduct &&
+                                          item.storeId === product.storeId,
+                                      )?.quantity ?? product.quantity,
+                                    ),
                                 ),
                               )}
                             </p>
+
                             <button
                               onClick={() =>
                                 handleRemoveItemCart(

@@ -5,16 +5,15 @@ import { useRouter } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import {
-  GroupByIdI,
-  HistoryComprasI,
-} from "../interfaces/compras/historyCompras.interface";
 import ProductI from "../interfaces/products/product.interface";
+import { useMemo } from "react";
+import useStorage from "./useStorage";
 
 const useService = () => {
   const pathName = usePathname();
 
-  const { setDataModal } = useTheContext();
+  const { setDataModal, dataCart } = useTheContext();
+  const { dataCartStorege } = useStorage();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -335,10 +334,24 @@ const useService = () => {
   }
 
   const tarifasPaqueteExpress = [
-    { id: 1, de: 0, a: 5, price: 303 },
-    { id: 2, de: 6, a: 10, price: 329 },
-    { id: 3, de: 11, a: 20, price: 396 },
+    { max: 5000, price: 303 },
+    { max: 10000, price: 329 },
+    { max: 15000, price: 396 },
   ];
+
+  // const cartItems = dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
+  const cartItems = dataCart;
+
+  const totalPrice = useMemo(() => {
+    const total = cartItems
+      ? cartItems
+          .filter((itemF) => itemF.stock != 0)
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart, dataCartStorege]);
 
   return {
     groupById,
@@ -352,6 +365,7 @@ const useService = () => {
     handleGetAuth,
     isTokenExpired,
     tarifasPaqueteExpress,
+    totalPrice,
     calcPesoPaquete,
   };
 };

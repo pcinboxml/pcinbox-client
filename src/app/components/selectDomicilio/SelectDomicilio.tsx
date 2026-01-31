@@ -1,8 +1,10 @@
 "use client";
 
 import { useTheContext } from "@/app/services/globalContext";
+import useService from "@/app/services/useService";
+import useStorage from "@/app/services/useStorage";
 import { CheckCircle } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 const CIUDADES_ENVIO_PERSONALIZADO = [
   "León de los Aldama",
@@ -28,8 +30,10 @@ const SelectDomicilio = ({
 }: {
   envioKey: any;
   selectedOption: string;
+  seguroEnvio: Record<any, any>;
   addressByStore: Record<string, number>;
   setAddressByStore: Dispatch<SetStateAction<Record<string, number>>>;
+  setSeguroEnvio: Dispatch<SetStateAction<Record<any, any>>>;
 }) => {
   const { dataUserAddress, setDataModal } = useTheContext();
   const [localAddressByStore, setLocalAddressByStore] =
@@ -81,11 +85,6 @@ const SelectDomicilio = ({
                 value={address.idAddress}
                 checked={isSelected}
                 onChange={() => {
-                  console.log(
-                    "Seleccionando dirección",
-                    envioKey,
-                    address.idAddress,
-                  );
                   // --- CAMBIO IMPORTANTE ---
                   // Actualizar tanto el estado local como el estado global
                   setLocalAddressByStore((prev) => ({

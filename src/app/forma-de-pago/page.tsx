@@ -4,13 +4,9 @@ import TimelineComponent from "../components/timeline/TimelineComponent";
 import useFormaDePago from "./useFormaDePago";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { useEffect, useMemo } from "react";
-import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import { useEffect } from "react";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
-import ListCardsSave from "../components/listCardsSave/ListCardsSave";
-
-import { MdAdd, MdDelete, MdRemove } from "react-icons/md";
 
 const FormaDePago = () => {
   const {
@@ -18,12 +14,10 @@ const FormaDePago = () => {
     idMethodPay,
     handleSelectOptionPay,
     handleSelectOptionPayById,
-    handleRegisterCard,
-    getValuesStorage,
-    handleRemoveCard,
+    getValuesStorage2,
   } = useFormaDePago();
-  const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
-    useTheContext();
+
+  const { selectedCard, dataCart, setDataModal, dataCard } = useTheContext();
   const { onRouterLink } = useService();
 
   // const { requestPostPagos } = usePasarelaDePagos();
@@ -34,30 +28,8 @@ const FormaDePago = () => {
     handleWriteStorageProgressPay2,
   } = useStorage();
 
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
   useEffect(() => {
-    // requestPostPagos(
-    //   {
-    //     userId: localStorage.getItem("idUser"),
-    //   },
-    //   "/stripe/getCardByUser"
-    // ).then((resp) => {
-    //   if (resp?.status == 200) {
-    //     setDataCard(resp.data.data.data);
-    //   }
-    // });
-
-    getValuesStorage();
+    getValuesStorage2();
   }, []);
 
   return (

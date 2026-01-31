@@ -85,6 +85,29 @@ const Resumen = () => {
   //   console.log(precio);
   // }, [dataCart]);
 
+  useEffect(() => {
+    if (dataCart && dataCart.length > 0) {
+      let costoEnvioPurchase = Object.entries(progressPay2?.dataPurchase!)
+        .map((d: any) => {
+          let key = d[0].toString().split("-");
+          let objData = d[1];
+
+          return {
+            storeId: key[0],
+            provider: key[1],
+            data: objData,
+          };
+        })
+        .reduce((acc, item) => {
+          const envio = item.data.costoEnvioProductByZone ?? 0;
+          const seguro = item.data.costoSeguroEnvio ?? 0;
+          return acc + envio + seguro;
+        }, 0);
+
+      setCostoTotalEnvio(Number(costoEnvioPurchase));
+    }
+  }, [progressPay2, dataCart]);
+
   return (
     <section>
       {dataCart && dataCart.length > 0 ? (
@@ -109,24 +132,23 @@ const Resumen = () => {
               <span className="text-[white] mx-2"> | RESUMEN</span>
             </div>
 
-            {/* <div className="grid grid-cols-[1fr]">
+            <div className="grid grid-cols-[1fr]">
               <Table rowsDataGrid={rows} columnsDataGrid={columns} />
-            </div> */}
+            </div>
 
             <div className="w-full mt-2 grid grid-cols-[4fr_1fr]">
               <div className="flex flex-col justify-center items-end pr-2 gap-2">
                 <span className="text-[#808080] text-sm">Envío: </span>
 
                 <span className="text-[#808080] text-sm">Tipo de pago:</span>
-
-                {/* <span className="text-[#808080] text-sm">Tipo de entrega:</span> */}
-
-                {/* <span className="text-[#808080] text-sm">IVA: </span> */}
               </div>
 
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
                   {/* {formatCurrency(envio)} */}
+                  {dataCart && dataCart?.length > 0
+                    ? formatCurrency(Number(costoTotalEnvio))
+                    : null}
                 </span>
 
                 <span className="text-[#808080] text-sm">
@@ -144,19 +166,6 @@ const Resumen = () => {
                               ? "Mercado Pago"
                               : progressPay2.pay?.name}
                 </span>
-
-                {/* <span className="text-[#808080] text-sm"> */}
-                {/* {progressPay?.optionSend?.name == "sucursal"
-                    ? "Entrega en Sucursal"
-                    : progressPay?.optionSend?.name == "paqueteexpress"
-                      ? "Paquete Express"
-                      : progressPay?.optionSend?.name == "estafeta"
-                        ? "Estafeta"
-                        : "Tipo de entrega desconocido"} */}
-                {/* </span> */}
-                {/* <span className="text-[#808080] text-sm">
-                  {formatCurrency(Number(totalIVA))} 
-                </span> */}
               </div>
             </div>
             <hr />
@@ -170,16 +179,9 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {/* {dataCart && dataCart.length > 0
-                    ? totalPagar <= 1000
-                      ? formatCurrency(totalPagar)
-                      : formatCurrency(
-                          totalPagar +
-                            (progressPay?.optionSend?.costo
-                              ? Number(progressPay?.optionSend?.costo)
-                              : envio),
-                        )
-                    : null} */}
+                  {dataCart && dataCart.length > 0
+                    ? formatCurrency(totalPagar + costoTotalEnvio)
+                    : null}
                 </span>
               </div>
             </div>
@@ -203,7 +205,7 @@ const Resumen = () => {
                 <button
                   disabled={loadingCreateOrder}
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  // onClick={() => handleCreateOrder(envio)}
+                  onClick={() => handleCreateOrder(costoTotalEnvio)}
                 >
                   {loadingCreateOrder ? (
                     <MdAutorenew size={20} className="m-auto the-spinner" />

@@ -10,7 +10,7 @@ import { Alert } from "@mui/material";
 import { useMemo } from "react";
 
 const ConfirmaProducts = () => {
-  const { formatCurrency, onRouterLink } = useService();
+  const { formatCurrency, onRouterLink, totalPrice } = useService();
   const {
     columns,
     rowsConfirmProducts,
@@ -21,23 +21,12 @@ const ConfirmaProducts = () => {
   } = useConfirmaProductos();
   const { dataCart } = useTheContext();
 
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
   return (
     <section>
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
-          {console.log(dataCart)}
+
           <div className="container-tabla  w-[90%] mx-auto my-3">
             <div
               className="header-container-tabla w-[100%] p-2 bg-[#666666]"

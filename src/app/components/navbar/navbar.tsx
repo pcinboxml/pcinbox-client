@@ -22,6 +22,7 @@ import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import { usePathname } from "next/navigation";
+import useStorage from "@/app/services/useStorage";
 
 const Navbar = () => {
   const {
@@ -40,6 +41,7 @@ const Navbar = () => {
   } = useNavbar();
 
   const { onRouterLink, formatCurrency, Logout, isTokenExpired } = useService();
+  const { dataCartStorege } = useStorage();
   const {
     messageError,
     showAlert,
@@ -54,35 +56,27 @@ const Navbar = () => {
 
   const {
     dataCart,
+    setDataCart,
     setHasToken,
     hasToken,
     rutaImgPerfil,
     dataFavorites,
     socketPagos,
   } = useTheContext();
+  const [totalItems, setTotalItems] = useState<number>(0);
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+  const { totalPrice } = useService();
   const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
-  const pathname = usePathname();
-
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
+  const { handleWriteStorageDataCart } = useStorage();
 
   useEffect(() => {
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
-      document.removeEventListener("click", handleDOM),
-        document.removeEventListener("scroll", handleDetectedScroll);
+      (document.removeEventListener("click", handleDOM),
+        document.removeEventListener("scroll", handleDetectedScroll));
     };
   }, []);
 
@@ -132,6 +126,26 @@ const Navbar = () => {
     }
   }, [hasToken]);
 
+  // useEffect(() => {
+  //   if (dataCart.length === 0 && dataCartStorege.length > 0) {
+  //     setDataCart(dataCartStorege);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    // Siempre prioriza dataCart sobre dataCartStorege
+    const items = dataCart;
+
+    const total = items
+      .filter((item) => Number(item.stock) !== 0)
+      .reduce((acc, item) => acc + Number(item.quantity), 0);
+
+    setTotalItems(total);
+
+    // Sincroniza el storage con el estado global
+    // handleWriteStorageDataCart(dataCart);
+  }, [dataCart, dataCartStorege]);
+
   return (
     <header className="main-header" ref={navRef}>
       <div className="flex justify-between px-5 py-1 bg-[#bb3d4b]">
@@ -165,17 +179,14 @@ const Navbar = () => {
               onMouseLeaveCart={onMouseLeaveCart}
             />
 
-            {dataCart &&
-            dataCart.filter((itemF) => itemF.stock != 0).length > 0 ? (
+            {totalItems > 0 && (
               <span
                 className="absolute badge badge-car"
                 style={{ background: "#bb3d4b" }}
               >
-                {dataCart
-                  .filter((itemF) => itemF.stock != 0)
-                  .reduce((acc, item) => acc + Number(item.quantity), 0)}
+                {totalItems}
               </span>
-            ) : null}
+            )}
           </div>
 
           <div className="container-cash">
@@ -295,7 +306,7 @@ const Navbar = () => {
                               className="border"
                               value={formData.email}
                               onChange={(
-                                event: ChangeEvent<HTMLInputElement>
+                                event: ChangeEvent<HTMLInputElement>,
                               ) =>
                                 setFormData((prev) => ({
                                   ...prev,
@@ -313,7 +324,7 @@ const Navbar = () => {
                               className="border"
                               value={formData.password}
                               onChange={(
-                                event: ChangeEvent<HTMLInputElement>
+                                event: ChangeEvent<HTMLInputElement>,
                               ) =>
                                 setFormData((prev) => ({
                                   ...prev,

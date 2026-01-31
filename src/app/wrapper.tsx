@@ -10,11 +10,11 @@ import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import ProtectedRoute from "./middleware/protectedRoute";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
 import { Monitor, Smartphone } from "lucide-react";
 import useStorage from "./services/useStorage";
+import useProtectedRoute from "./middleware/protectedRoute";
 
 export default function AppWrapper({
   children,
@@ -68,33 +68,6 @@ export default function AppWrapper({
     }
   }, [hasToken]);
 
-  const totalPrice = useMemo(() => {
-    if (!dataCart) return 0;
-
-    const total = dataCart
-      .filter((item) => item.stock !== 0)
-      .reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-
-    if (dataCart?.length > 0 && totalPrice <= 1000) {
-      handleWriteStorageProgressPay({
-        optionSend: {
-          address: 0,
-          name: "sucursal",
-          costo: 0,
-        },
-      });
-    }
-  }, [totalPrice, dataCart]);
-
   useEffect(() => {
     if (!socketServer.current) return;
     if (!socketPagos.current) return;
@@ -120,6 +93,8 @@ export default function AppWrapper({
           quantity: data.quantity,
           reviews: [],
           upc: data.upc,
+          isPc: data?.isPc,
+          isPC: data?.isPC,
         },
         ...prev,
       ]);
@@ -327,9 +302,8 @@ export default function AppWrapper({
       // );
     };
   }, [socketServer.current, socketPagos?.current]);
-
-  ProtectedRoute(pathName);
-
+  // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
+  useProtectedRoute(pathName);
   return (
     <SessionProvider>
       <div
