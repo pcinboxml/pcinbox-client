@@ -71,6 +71,17 @@ const Register = () => {
 
           <div className="input-group mb-3">
             <input
+              type="number"
+              name="phone"
+              value={formData.phone}
+              placeholder="Teléfono:"
+              className="w-[100%] border p-1"
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="input-group mb-3">
+            <input
               type="email"
               value={formData.email}
               className="w-[100%] border p-1"

@@ -3,5 +3,6 @@ export interface RegisterI {
   lastname: string;
   email: string;
   password: string;
+  phone: string;
   confirmPassword: string;
 }
