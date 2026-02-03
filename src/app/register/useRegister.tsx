@@ -12,6 +12,7 @@ const useRegister = () => {
     name: "",
     lastname: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -119,10 +120,10 @@ const useRegister = () => {
           name: formData.name,
           lastname: formData.lastname,
           email: formData.email,
-
+          phone: formData.phone,
           password: formData.password,
         },
-        "/user/register"
+        "/user/register",
       );
       setLoadingRegister(false);
 
@@ -133,6 +134,7 @@ const useRegister = () => {
           email: "",
           lastname: "",
           password: "",
+          phone: "",
         });
         setDataModal({
           isOpen: true,
