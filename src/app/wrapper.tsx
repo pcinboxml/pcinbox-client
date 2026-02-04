@@ -389,6 +389,7 @@ export default function AppWrapper({
           >
             {!hasToken &&
             pathName != "/principal" &&
+            !pathName.startsWith("/result-search-category") &&
             !pathName.startsWith("/detailsProduct") &&
             pathName != "/forgotpassword" &&
             pathName != "/register" ? (
