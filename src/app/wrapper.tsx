@@ -3,7 +3,6 @@
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
-import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -15,7 +14,6 @@ import { useSession } from "next-auth/react";
 import useStorage from "./services/useStorage";
 import useService from "./services/useService";
 import { Alert } from "@mui/material";
-import { Shield } from "lucide-react";
 
 function SesionHandler({ children }: { children: React.ReactNode }) {
   const { socketPagos, setHasToken } = useTheContext();
@@ -75,7 +73,6 @@ export default function AppWrapper({
 
   const {
     dataModal,
-    dataNotification,
     hasToken,
     dataCart,
     setDataCart,
@@ -392,6 +389,7 @@ export default function AppWrapper({
           >
             {!hasToken &&
             pathName != "/principal" &&
+            !pathName.startsWith("/detailsProduct") &&
             pathName != "/forgotpassword" &&
             pathName != "/register" ? (
               <Alert severity="info">Contenido no disponible</Alert>
