@@ -334,11 +334,17 @@ const useService = () => {
   }
 
   const tarifasPaqueteExpress = [
-    { max: 5000, price: 303 },
-    { max: 10000, price: 329 },
-    { max: 15000, price: 396 },
+    { max: 5, price: 303 }, // 1 a 5 kg
+    { max: 10, price: 329 }, // 6 a 10 kg
+    { max: 15, price: 396 }, // 11 a 15 kg
   ];
 
+  function calcularPrecioPorVolumen(volumenCm3: number) {
+    const factorConversion = 5000; // cm3 por kg
+    const pesoVolumetrico = Math.ceil(volumenCm3 / factorConversion); // redondea al kg superior
+    const tarifa = tarifasPaqueteExpress.find((t) => pesoVolumetrico <= t.max);
+    return tarifa;
+  }
   // const cartItems = dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
   const cartItems = dataCart;
 
@@ -367,6 +373,7 @@ const useService = () => {
     tarifasPaqueteExpress,
     totalPrice,
     calcPesoPaquete,
+    calcularPrecioPorVolumen,
   };
 };
 

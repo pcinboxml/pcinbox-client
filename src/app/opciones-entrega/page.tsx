@@ -25,6 +25,7 @@ const OpcionesEntrega = () => {
     tarifasPaqueteExpress,
     totalPrice,
     calcPesoPaquete,
+    calcularPrecioPorVolumen,
   } = useService();
   const {
     handleOnChangeOptionEnvio,
@@ -48,12 +49,7 @@ const OpcionesEntrega = () => {
     showUbicationStore,
   } = useOpcionesEntrega();
 
-  const {
-    progressPay,
-    progressPay2,
-    handleWriteStorageProgressPay,
-    handleWriteStorageProgressPay2,
-  } = useStorage();
+  const { handleWriteStorageProgressPay2 } = useStorage();
 
   const { dataCart, dataUserAddress, setDataModal, setDataAddress } =
     useTheContext();
@@ -207,7 +203,7 @@ const OpcionesEntrega = () => {
         <TimelineComponent activeStep={1} />
       ) : null}
       {dataCart && dataCart.length > 0 ? (
-        groupedProducts.map((group: any, indexGroup: number) => {
+        groupedProducts.map((group: any) => {
           // Crear una clave única para el grupo
           const groupKey = `${group.storeId || "null"}-${group.providerId}`;
 
@@ -397,36 +393,10 @@ const OpcionesEntrega = () => {
                               0,
                             );
 
-                            const tarifa = tarifasPaqueteExpress.find(
-                              (t) => findVolement <= t.max,
-                            );
-
-                            // const sumaPorStore = pesoPaqueteExpress.reduce(
-                            //   (acc, producto) => {
-                            //     const key = producto.storeId; // usamos storeId como clave
-                            //     if (!acc[key]) {
-                            //       acc[key] = 0;
-                            //     }
-                            //     acc[key] += producto.pesoVolumetrico;
-                            //     return acc;
-                            //   },
-                            //   {},
-                            // );
-
-                            // let arraySumStore = Object.entries(
-                            //   sumaPorStore,
-                            // ).map(([key, value]) => ({
-                            //   storeId: key, // 👈 NO convertir, NO tocar
-                            //   volumenTotal: value,
-                            // }));
-
-                            // let findVolement = arraySumStore.find(
-                            //   (a) => a.storeId === group.storeId,
-                            // );
-
                             return (
                               <>
-                                {Number(findVolement) < 15001 && (
+                                {calcularPrecioPorVolumen(Number(findVolement))!
+                                  .max < 21 && (
                                   <div className="flex items-center relative">
                                     <input
                                       type="radio"
@@ -475,11 +445,11 @@ const OpcionesEntrega = () => {
 
                                         <span>
                                           {(() => {
-                                            if (tarifa) {
-                                              return formatCurrency(
-                                                Number(tarifa?.price),
-                                              );
-                                            }
+                                            return formatCurrency(
+                                              calcularPrecioPorVolumen(
+                                                Number(findVolement),
+                                              )!?.price,
+                                            );
                                           })()}
                                         </span>
                                       </div>
@@ -487,7 +457,9 @@ const OpcionesEntrega = () => {
                                   </div>
                                 )}
                                 {optionEnvio[groupKey] === "paqueteexpress" &&
-                                  Number(findVolement) < 15001 && (
+                                  calcularPrecioPorVolumen(
+                                    Number(findVolement),
+                                  )!?.max < 20 && (
                                     <Alert
                                       severity="info"
                                       className="flex justify-center relative"
@@ -625,7 +597,8 @@ const OpcionesEntrega = () => {
                                       </div>
                                     </Alert>
                                   )}
-                                {Number(findVolement) < 5000 && (
+                                {calcularPrecioPorVolumen(Number(findVolement))!
+                                  ?.max < 6 && (
                                   <>
                                     <div className="flex items-center relative ">
                                       <input
@@ -800,18 +773,10 @@ const OpcionesEntrega = () => {
                                                     ?.required === "no"
                                                 }
                                                 onChange={(event) => {
-                                                  //const { value } = event.target;
-
                                                   handleOnChangeSeguroEnvio(
                                                     event,
                                                     groupKey,
                                                   );
-                                                  // handleWriteStorageProgressPay2({
-                                                  //   seguroEnvio: {
-                                                  //     ...seguroEnvio,
-                                                  //     [groupKey]: 0,
-                                                  //   },
-                                                  // });
                                                 }}
                                               />
                                               <label
@@ -975,46 +940,46 @@ const OpcionesEntrega = () => {
           <button
             className="bg-[#B92B3D] py-2 px-5 text-white rounded"
             onClick={() => {
-              if (Object.entries(optionEnvio).length == 0) {
-                setDataModal({
-                  isOpen: true,
-                  type: "error",
-                  message: "Seleccione los metodos de entrega faltantes",
-                  title: "Error",
-                  onClose: () => {
-                    setDataModal((prev) => ({ ...prev, isOpen: false }));
-                  },
-                  onConfirm: () => {
-                    setDataModal((prev) => ({ ...prev, isOpen: false }));
-                  },
-                });
-                return;
-              }
-
               for (const [key, shippingMethod] of Object.entries(optionEnvio)) {
-                if (
-                  shippingMethod === "paqueteexpress" ||
-                  shippingMethod === "estafeta"
-                ) {
-                  const seguro = seguroEnvio[key];
+                if (shippingMethod === "") {
+                  setDataModal({
+                    isOpen: true,
+                    type: "error",
+                    message: "Seleccione los metodos de entrega faltantes",
+                    title: "Error",
+                    onClose: () => {
+                      setDataModal((prev) => ({ ...prev, isOpen: false }));
+                    },
+                    onConfirm: () => {
+                      setDataModal((prev) => ({ ...prev, isOpen: false }));
+                    },
+                  });
+                  return;
+                } else {
+                  if (
+                    shippingMethod === "paqueteexpress" ||
+                    shippingMethod === "estafeta"
+                  ) {
+                    const seguro = seguroEnvio[key];
 
-                  if (!seguro) {
-                    setDataModal({
-                      isOpen: true,
-                      type: "error",
-                      message:
-                        "Seleccione si desea agregar seguro o no a su envío de " +
-                        shippingMethod,
-                      title: "Error",
-                      onClose: () => {
-                        setDataModal((prev) => ({ ...prev, isOpen: false }));
-                      },
-                      onConfirm: () => {
-                        setDataModal((prev) => ({ ...prev, isOpen: false }));
-                      },
-                    });
+                    if (!seguro) {
+                      setDataModal({
+                        isOpen: true,
+                        type: "error",
+                        message:
+                          "Seleccione si desea agregar seguro o no a su envío de " +
+                          shippingMethod,
+                        title: "Error",
+                        onClose: () => {
+                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                        },
+                        onConfirm: () => {
+                          setDataModal((prev) => ({ ...prev, isOpen: false }));
+                        },
+                      });
 
-                    return; // Esto ahora sí detiene la ejecución de la función externa
+                      return; // Esto ahora sí detiene la ejecución de la función externa
+                    }
                   }
                 }
               }

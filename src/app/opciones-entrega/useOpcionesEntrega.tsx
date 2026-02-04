@@ -124,9 +124,13 @@ const useOpcionesEntrega = () => {
           [envioKey]: {
             required: value,
             costo:
-              value == "no" || totalPriceStoreProvider3 < 1000
-                ? 15 * (1 + IVA)
-                : (Math.ceil(totalPriceStoreProvider3) / 1000) * 15 * (1 + IVA),
+              value === "no"
+                ? 0
+                : totalPriceStoreProvider3 < 1000
+                  ? 15 * (1 + IVA)
+                  : (Math.ceil(totalPriceStoreProvider3) / 1000) *
+                    15 *
+                    (1 + IVA),
           },
         }));
       }
@@ -184,8 +188,7 @@ const useOpcionesEntrega = () => {
             setAddressByStore={setAddressByStore}
             envioKey={envioKey}
             selectedOption={value}
-            seguroEnvio={seguroEnvio}
-            setSeguroEnvio={setSeguroEnvio}
+            setOptionEnvio={setOptionEnvio}
           />
         ),
       });

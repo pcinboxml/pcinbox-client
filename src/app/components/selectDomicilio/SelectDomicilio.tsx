@@ -1,10 +1,8 @@
 "use client";
 
 import { useTheContext } from "@/app/services/globalContext";
-import useService from "@/app/services/useService";
-import useStorage from "@/app/services/useStorage";
 import { CheckCircle } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const CIUDADES_ENVIO_PERSONALIZADO = [
   "León de los Aldama",
@@ -22,41 +20,41 @@ const CIUDADES_ENVIO_PERSONALIZADO = [
   "Abasolo",
 ];
 
+type Props = {
+  envioKey: string;
+  selectedOption: string;
+  addressByStore: Record<string, number>;
+  setAddressByStore: Dispatch<SetStateAction<Record<string, number>>>;
+  setOptionEnvio: Dispatch<SetStateAction<Record<string, string>>>;
+};
+
 const SelectDomicilio = ({
   envioKey,
   selectedOption,
   addressByStore,
   setAddressByStore,
-}: {
-  envioKey: any;
-  selectedOption: string;
-  seguroEnvio: Record<any, any>;
-  addressByStore: Record<string, number>;
-  setAddressByStore: Dispatch<SetStateAction<Record<string, number>>>;
-  setSeguroEnvio: Dispatch<SetStateAction<Record<any, any>>>;
-}) => {
+  setOptionEnvio,
+}: Props) => {
   const { dataUserAddress, setDataModal } = useTheContext();
-  const [localAddressByStore, setLocalAddressByStore] =
-    useState(addressByStore);
 
-  // --- CAMBIO IMPORTANTE ---
-  // Sincronizar el estado local con las props
+  const [localAddressByStore, setLocalAddressByStore] =
+    useState<Record<string, number>>(addressByStore);
+
+  // Sincroniza cuando cambia desde fuera
   useEffect(() => {
     setLocalAddressByStore(addressByStore);
   }, [addressByStore]);
-  // --- FIN DEL CAMBIO ---
 
-  const esCiudadEnvioPersonalizado = (city: string) => {
-    return CIUDADES_ENVIO_PERSONALIZADO.includes(city);
-  };
+  // 👉 Estado GLOBAL para botones y lógica
+  const hasSelectedAddress = Boolean(localAddressByStore[envioKey]);
+
+  const esCiudadEnvioPersonalizado = (city: string) =>
+    CIUDADES_ENVIO_PERSONALIZADO.includes(city);
 
   return (
     <>
-      <div className="max-h-[500px] overflow-y-auto pr-2 space-y-3">
+      <div className="max-h-[500px] max-w-[550px] overflow-y-auto pr-2 space-y-3">
         {dataUserAddress.map((address) => {
-          const isSelected =
-            String(localAddressByStore[envioKey]) === String(address.idAddress);
-
           const debeMostrarse =
             selectedOption === "envioLeon"
               ? esCiudadEnvioPersonalizado(address.city)
@@ -64,12 +62,15 @@ const SelectDomicilio = ({
 
           if (!debeMostrarse) return null;
 
+          // 👉 Estado POR CARD
+          const isSelected =
+            String(localAddressByStore[envioKey]) === String(address.idAddress);
+
           return (
             <label
               key={address.idAddress}
               className={`
-                my-2
-                relative cursor-pointer rounded-lg border-2 p-4
+                my-2 relative cursor-pointer rounded-lg border-2 p-4
                 transition-all duration-200 flex items-start gap-4 w-full
                 ${
                   isSelected
@@ -85,8 +86,6 @@ const SelectDomicilio = ({
                 value={address.idAddress}
                 checked={isSelected}
                 onChange={() => {
-                  // --- CAMBIO IMPORTANTE ---
-                  // Actualizar tanto el estado local como el estado global
                   setLocalAddressByStore((prev) => ({
                     ...prev,
                     [envioKey]: Number(address.idAddress),
@@ -95,7 +94,6 @@ const SelectDomicilio = ({
                     ...prev,
                     [envioKey]: Number(address.idAddress),
                   }));
-                  // --- FIN DEL CAMBIO ---
                 }}
               />
 
@@ -152,11 +150,10 @@ const SelectDomicilio = ({
           );
         })}
       </div>
+
       <div className="flex justify-center items-center gap-2">
         <button
           onClick={() => {
-            // --- CAMBIO IMPORTANTE ---
-            // Actualizar tanto el estado local como el estado global
             setLocalAddressByStore((prev) => ({
               ...prev,
               [envioKey]: 0,
@@ -165,18 +162,35 @@ const SelectDomicilio = ({
               ...prev,
               [envioKey]: 0,
             }));
-            // --- FIN DEL CAMBIO ---
+            setOptionEnvio((prev) => ({
+              ...prev,
+              [envioKey]: "",
+            }));
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }}
           className="cursor-pointer text-white border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#808080]"
         >
           Cancelar
         </button>
+
         <button
+          disabled={!hasSelectedAddress}
           onClick={() => {
+            console.log(
+              "Domicilio seleccionado:",
+              localAddressByStore[envioKey],
+            );
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }}
-          className="cursor-pointer text-white border rounded px-3 py-2 my-2 flex justify-center items-center gap-2 bg-[#BB3D4B]"
+          className={`
+            cursor-pointer text-white border rounded px-3 py-2 my-2 flex
+            justify-center items-center gap-2
+            ${
+              hasSelectedAddress
+                ? "bg-[#BB3D4B]"
+                : "bg-gray-300 cursor-not-allowed"
+            }
+          `}
         >
           Aceptar
         </button>

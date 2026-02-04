@@ -2,6 +2,7 @@
 
 import ProductI from "../interfaces/products/product.interface";
 import useService from "../services/useService";
+import useStorage from "../services/useStorage";
 
 const GridResumen = ({
   dataCart,
@@ -11,6 +12,10 @@ const GridResumen = ({
   isSmallScreen: boolean;
 }) => {
   const { formatCurrency } = useService();
+  const { dataCartStorege } = useStorage();
+
+  // const items =
+  //   dataCartStorege && dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,

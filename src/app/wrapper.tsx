@@ -12,7 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
-import { Monitor, Smartphone } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
 import useProtectedRoute from "./middleware/protectedRoute";
 
@@ -268,40 +268,31 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
-    // socketPagos?.current?.on(
-    //   "removeProgressPay",
-    //   (dataSocket: { idUser: number }) => {
-    //     if (typeof window !== "undefined") {
-    //       const idUser = localStorage.getItem("idUser");
-    //       if (idUser) {
-    //         if (Number(idUser) == Number(dataSocket.idUser)) {
-    //           localStorage.removeItem("progressPay");
-    //         }
-    //       }
-    //     }
-    //   }
-    // );
-
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
-      // socketPagos?.current?.off(
-      //   "removeProgressPay",
-      //   (dataSocket: { idUser: number }) => {
-      //     if (typeof window !== "undefined") {
-      //       const idUser = localStorage.getItem("idUser");
-      //       if (idUser) {
-      //         if (Number(idUser) == Number(dataSocket.idUser)) {
-      //           localStorage.removeItem("progressPay");
-      //         }
-      //       }
-      //     }
-      //   }
-      // );
     };
   }, [socketServer.current, socketPagos?.current]);
+
+  useEffect(() => {
+    if (!socketPagos.current) return;
+
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    if (token) {
+      const payload: any = jwtDecode(token);
+      if (payload && payload?.idUser) {
+        socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
+      }
+    }
+
+    socketPagos?.current?.on("removeStorageProgressPay2", () => {
+      localStorage.removeItem("progressPay2");
+    });
+  }, [socketPagos?.current, hasToken]);
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
   useProtectedRoute(pathName);
   return (
