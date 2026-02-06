@@ -152,30 +152,6 @@ const OpcionesEntrega = () => {
     getValuesStorage2();
   }, []);
 
-  // Función para obtener el nombre de la sucursal basado en el storeId
-  const getStoreName = (storeId: any, product: ProductI) => {
-    if (!storeId) return "PCinBOX";
-
-    const sucursal = product?.product_stock?.find((s) => s.branchId == storeId);
-
-    if (sucursal) {
-      switch (sucursal?.branches?.name) {
-        case "santafe":
-          return "PCinBOX-SFD";
-        case "leon":
-          return "PCinBOX-León";
-        case "dicoags2":
-          return "PCinBOX-AG2D";
-        case "Arboledas":
-          return "PCinBOX-AGD";
-        default:
-          return `Sucursal ${sucursal?.branches?.name}`;
-      }
-    }
-
-    return "Sucursal";
-  };
-
   useEffect(() => {
     async function fetchCalcPesoPaqueteExpress() {
       if (groupedProducts && groupedProducts.length > 0) {
@@ -393,10 +369,12 @@ const OpcionesEntrega = () => {
                               0,
                             );
 
+                            const { tarifa, pesoVolumetrico, excede } =
+                              calcularPrecioPorVolumen(Number(findVolement));
+
                             return (
                               <>
-                                {calcularPrecioPorVolumen(Number(findVolement))!
-                                  .max < 21 && (
+                                {!excede && tarifa && tarifa.max < 21 && (
                                   <div className="flex items-center relative">
                                     <input
                                       type="radio"
@@ -448,7 +426,7 @@ const OpcionesEntrega = () => {
                                             return formatCurrency(
                                               calcularPrecioPorVolumen(
                                                 Number(findVolement),
-                                              )!?.price,
+                                              )?.tarifa?.price!,
                                             );
                                           })()}
                                         </span>
@@ -456,10 +434,16 @@ const OpcionesEntrega = () => {
                                     </label>
                                   </div>
                                 )}
+                                {excede && (
+                                  <Alert severity="warning">
+                                    El volumen ({pesoVolumetrico} kg) excede el
+                                    límite de Paquete Express
+                                  </Alert>
+                                )}
                                 {optionEnvio[groupKey] === "paqueteexpress" &&
-                                  calcularPrecioPorVolumen(
-                                    Number(findVolement),
-                                  )!?.max < 20 && (
+                                  !excede &&
+                                  tarifa &&
+                                  tarifa.max < 20 && (
                                     <Alert
                                       severity="info"
                                       className="flex justify-center relative"
@@ -597,8 +581,7 @@ const OpcionesEntrega = () => {
                                       </div>
                                     </Alert>
                                   )}
-                                {calcularPrecioPorVolumen(Number(findVolement))!
-                                  ?.max < 6 && (
+                                {!excede && tarifa && tarifa.max < 6 && (
                                   <>
                                     <div className="flex items-center relative ">
                                       <input
@@ -940,6 +923,23 @@ const OpcionesEntrega = () => {
           <button
             className="bg-[#B92B3D] py-2 px-5 text-white rounded"
             onClick={() => {
+              if (
+                groupedProducts.length !== Object.entries(optionEnvio).length
+              ) {
+                setDataModal({
+                  isOpen: true,
+                  type: "error",
+                  message: "Seleccione los metodos de entrega faltantes",
+                  title: "Error",
+                  onClose: () => {
+                    setDataModal((prev) => ({ ...prev, isOpen: false }));
+                  },
+                  onConfirm: () => {
+                    setDataModal((prev) => ({ ...prev, isOpen: false }));
+                  },
+                });
+                return;
+              }
               for (const [key, shippingMethod] of Object.entries(optionEnvio)) {
                 if (shippingMethod === "") {
                   setDataModal({

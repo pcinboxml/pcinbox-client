@@ -39,7 +39,7 @@ const HistoryShop = () => {
     const handler = (data: any) => {
       setDataHistoryCompras((prev) => {
         return prev.map((item) => {
-          if (item.idShipment == data.idShipment) {
+          if (item.idOrder == data.idOrder) {
             return { ...item, statusEnvio: data.status };
           }
           return item;
@@ -166,14 +166,15 @@ const HistoryShop = () => {
                               historyCompra.statusEnvio == "procesando"
                                 ? style.statusProcessing
                                 : historyCompra.statusEnvio == "enviado"
-                                ? style.statusShipped
-                                : historyCompra.statusEnvio == "cancelado"
-                                ? style.statusCancelled
-                                : historyCompra.statusEnvio == "entregado"
-                                ? style.statusDelivered
-                                : historyCompra.statusEnvio == "disponible"
-                                ? style.statusDelivered
-                                : ""
+                                  ? style.statusShipped
+                                  : historyCompra.statusEnvio == "cancelado"
+                                    ? style.statusCancelled
+                                    : historyCompra.statusEnvio == "entregado"
+                                      ? style.statusDelivered
+                                      : historyCompra.statusEnvio ==
+                                          "disponible"
+                                        ? style.statusDelivered
+                                        : ""
                             } p-2 rounded`}
                           >
                             <span className="text-center shrink-0 block">
@@ -210,20 +211,20 @@ const HistoryShop = () => {
                           historyCompra.statusEnvio != "cancelado" &&
                           historyCompra.statusEnvio != "disponible" ? (
                             <button
-                              disabled={
-                                loadingCancelledCompra[historyCompra.idOrder]
-                              }
+                              // disabled={
+                              //   loadingCancelledCompra[historyCompra.idOrder]
+                              // }
                               onClick={() => showModal(historyCompra)}
                               className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
                             >
-                              {loadingCancelledCompra[historyCompra.idOrder] ? (
+                              {/* {loadingCancelledCompra[historyCompra.idOrder] ? (
                                 <MdAutorenew
                                   size={20}
                                   className="m-auto the-spinner"
                                 />
-                              ) : (
-                                <>Cancelar compra</>
-                              )}
+                              ) : ( */}
+                              <>Cancelar compra</>
+                              {/* )} */}
                             </button>
                           ) : null}
                         </div>
@@ -234,7 +235,7 @@ const HistoryShop = () => {
                             Compra realizada el{" "}
                             {new Date(
                               historyCompra?.updatedAt ||
-                                historyCompra?.createdAt
+                                historyCompra?.createdAt,
                             ).toLocaleString()}
                           </>
                         }
@@ -259,11 +260,11 @@ const HistoryShop = () => {
                               <span className="block mx-2 font-bold text-black">
                                 {(() => {
                                   const createdAt = new Date(
-                                    historyCompra.createdAt
+                                    historyCompra.createdAt,
                                   );
                                   const fechaMas7Dias = new Date(createdAt);
                                   fechaMas7Dias.setDate(
-                                    createdAt.getDate() + 7
+                                    createdAt.getDate() + 7,
                                   );
 
                                   const inicio = createdAt.toLocaleDateString(
@@ -272,7 +273,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
                                   const fin = fechaMas7Dias.toLocaleDateString(
                                     "es-ES",
@@ -280,7 +281,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
 
                                   return `${inicio} a ${fin}`;
@@ -344,11 +345,11 @@ const HistoryShop = () => {
                               <span className="block mx-2 font-bold text-black">
                                 {(() => {
                                   const createdAt = new Date(
-                                    historyCompra.createdAt
+                                    historyCompra.createdAt,
                                   );
                                   const fechaMas7Dias = new Date(createdAt);
                                   fechaMas7Dias.setDate(
-                                    createdAt.getDate() + 7
+                                    createdAt.getDate() + 7,
                                   );
 
                                   const inicio = createdAt.toLocaleDateString(
@@ -357,7 +358,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
                                   const fin = fechaMas7Dias.toLocaleDateString(
                                     "es-ES",
@@ -365,7 +366,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
 
                                   return `${inicio} a ${fin}`;
@@ -381,37 +382,39 @@ const HistoryShop = () => {
                     </div>
                   </div>
                   <div className={style.orderItems + " flex flex-col"}>
-                    {historyCompra.products.map((d, indexD) => {
-                      return (
-                        <div className={style.item} key={indexD}>
-                          <img
-                            src={
-                              d.image_url && Array.isArray(d.image_url)
-                                ? d.image_url[0]
-                                : d.image_url
-                            }
-                            className={style.itemImage}
-                            loading="lazy"
-                          />
-                          <div className={style.itemDetails}>
-                            <div className={style.itemName}>{d.name}</div>
-                            <div className={style.itemVariant}>
-                              {d.description}
-                            </div>
-                            <div className={style.itemMeta}>
-                              <div className={style.itemQuantity}>
-                                Cantidad: {d.quantity}
+                    {(historyCompra.products as any)[0]?.products?.map(
+                      (d: any, indexD: number) => {
+                        return (
+                          <div className={style.item} key={indexD}>
+                            <img
+                              src={
+                                d.image_url && Array.isArray(d.image_url)
+                                  ? d.image_url[0]
+                                  : d.image_url
+                              }
+                              className={style.itemImage}
+                              loading="lazy"
+                            />
+                            <div className={style.itemDetails}>
+                              <div className={style.itemName}>{d.name}</div>
+                              <div className={style.itemVariant}>
+                                {d.description}
                               </div>
-                              <div className={style.itemPrice}>
-                                {formatCurrency(
-                                  Number(d.price) * Number(d.quantity)
-                                )}
+                              <div className={style.itemMeta}>
+                                <div className={style.itemQuantity}>
+                                  Cantidad: {d.quantity}
+                                </div>
+                                <div className={style.itemPrice}>
+                                  {formatCurrency(
+                                    Number(d.price) * Number(d.quantity),
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      },
+                    )}
                   </div>
 
                   {historyCompra.statusEnvio == "entregado" ? (
@@ -421,7 +424,7 @@ const HistoryShop = () => {
                         className="btn btn-secondary"
                         onClick={() =>
                           onRouterLink(
-                            `/detalles-pedido/${historyCompra.idOrder}`
+                            `/detalles-pedido/${historyCompra.idOrder}`,
                           )
                         }
                       >

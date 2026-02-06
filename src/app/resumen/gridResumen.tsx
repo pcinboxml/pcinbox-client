@@ -82,7 +82,11 @@ const GridResumen = ({
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 100 : undefined,
       renderCell: (params: any) => {
-        if (params.value && Array.isArray(params?.value)) {
+        if (
+          params.value &&
+          Array.isArray(params?.value) &&
+          params?.value?.length > 0
+        ) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
               {(() => {
@@ -129,6 +133,15 @@ const GridResumen = ({
                 );
               })()}
             </div>
+          );
+        } else {
+          return (
+            <span
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
+            >
+              {"PCinBOX-León"}
+            </span>
           );
         }
       },

@@ -5,6 +5,7 @@ import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import { GroupByIdI } from "../interfaces/compras/historyCompras.interface";
+import CancelledCompra from "../components/cancelledCompra/CancelledCompra";
 
 const useHistorialDeCompras = () => {
   const [dataFilter, setDataFilter] = useState({
@@ -139,16 +140,22 @@ const useHistorialDeCompras = () => {
   const showModal = (historyCompra: GroupByIdI) => {
     setDataModal({
       isOpen: true,
-      message: "¿Seguro que deseas cancelar la compra?",
+      message: (
+        <CancelledCompra
+          handleCancelPedido={handleCancelPedido}
+          historyCompra={historyCompra}
+        />
+      ),
       type: "info",
       title: "Cancelar compra",
+      showActions: false,
 
       onClose: () => {
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
       onConfirm: async () => {
         // setDataModal((prev) => ({ ...prev, isOpen: false }));
-        await handleCancelPedido(historyCompra);
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
     });
   };

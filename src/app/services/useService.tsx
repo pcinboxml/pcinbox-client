@@ -340,11 +340,18 @@ const useService = () => {
   ];
 
   function calcularPrecioPorVolumen(volumenCm3: number) {
-    const factorConversion = 5000; // cm3 por kg
-    const pesoVolumetrico = Math.ceil(volumenCm3 / factorConversion); // redondea al kg superior
+    const factorConversion = 5000;
+    const pesoVolumetrico = Math.ceil(volumenCm3 / factorConversion);
+
     const tarifa = tarifasPaqueteExpress.find((t) => pesoVolumetrico <= t.max);
-    return tarifa;
+
+    return {
+      tarifa,
+      pesoVolumetrico,
+      excede: !tarifa,
+    };
   }
+
   // const cartItems = dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
   const cartItems = dataCart;
 

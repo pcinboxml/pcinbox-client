@@ -268,11 +268,14 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
+    socketPagos?.current?.on("updatedStock", handleUpdatedStock);
+
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
+      socketPagos?.current?.off("updatedStock", handleUpdatedStock);
     };
   }, [socketServer.current, socketPagos?.current]);
 

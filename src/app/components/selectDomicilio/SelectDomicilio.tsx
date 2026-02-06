@@ -176,10 +176,6 @@ const SelectDomicilio = ({
         <button
           disabled={!hasSelectedAddress}
           onClick={() => {
-            console.log(
-              "Domicilio seleccionado:",
-              localAddressByStore[envioKey],
-            );
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }}
           className={`
