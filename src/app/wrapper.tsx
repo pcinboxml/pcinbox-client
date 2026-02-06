@@ -69,6 +69,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = useState(false);
+
   const pathName = usePathname();
 
   const {
@@ -359,6 +361,10 @@ export default function AppWrapper({
     };
   }, [socketServer.current, socketPagos?.current]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   ProtectedRoute();
 
   return (
@@ -387,16 +393,18 @@ export default function AppWrapper({
                 : {}
             }
           >
-            {!hasToken &&
-            pathName != "/principal" &&
-            !pathName.startsWith("/result-search-category") &&
-            !pathName.startsWith("/detailsProduct") &&
-            pathName != "/forgotpassword" &&
-            pathName != "/register" ? (
-              <Alert severity="info">Contenido no disponible</Alert>
-            ) : (
-              children
-            )}
+            {mounted &&
+              (!hasToken &&
+              pathName != "/" &&
+              pathName != "/principal" &&
+              !pathName.startsWith("/result-search-category") &&
+              !pathName.startsWith("/detailsProduct") &&
+              pathName != "/forgotpassword" &&
+              pathName != "/register" ? (
+                <Alert severity="info">Contenido no disponible</Alert>
+              ) : (
+                children
+              ))}
 
             <ModalComponent
               isOpen={dataModal.isOpen}
