@@ -1,37 +1,21 @@
 export interface HistoryComprasI {
+  idOrder: number;
+  totalSales: number;
   createdAt: string;
-  description: string;
-  idOrder: number;
-  image_url: string[];
-  name: string;
-  price: string;
-  quantity: number;
-  totalAmount: string;
-  status: any;
-  statusEnvio: any;
-  userId: number;
-  pay_method: any;
-  idProduct: number;
-  stripePaymentIntentId: string;
-}
-
-export interface GroupByIdI {
-  idShipment: number;
-  idOrder: number;
-  statusEnvio: any;
-  createdAt: any;
-  updatedAt: any;
-  pay_method: any;
-  price: number;
-  paidAtOxxo: number;
-  shipping_method: any;
-  stripePaymentIntentId: string;
-  street: string;
-  noExt: any;
-  noInt: any;
-  cologne: any;
-  city: any;
-  state: any;
-  country: any;
-  products: HistoryComprasI[];
+  updatedAt: string;
+  payment_method: string;
+  products: {
+    idShipment: number;
+    description: string;
+    price: string;
+    idProduct: number;
+    name: string;
+    quantity: number;
+    statusShip: string;
+    shipping_method: string;
+    status: string;
+    image_url: string[];
+    trackingNumber: any;
+    shippingType: any;
+  }[];
 }

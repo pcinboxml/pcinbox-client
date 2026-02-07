@@ -1,6 +1,5 @@
 "use client";
 
-import { GroupByIdI } from "@/app/interfaces/compras/historyCompras.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import { useEffect, useState } from "react";
 import { MdAutorenew } from "react-icons/md";

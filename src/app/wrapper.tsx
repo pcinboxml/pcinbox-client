@@ -279,23 +279,69 @@ export default function AppWrapper({
     };
   }, [socketServer.current, socketPagos?.current]);
 
+  // useEffect(() => {
+  //   if (!socketPagos.current) return;
+
+  //   const token =
+  //     typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  //   if (token) {
+  //     const payload: any = jwtDecode(token);
+  //     if (payload && payload?.idUser) {
+  //       console.log("mandado el user id ", payload?.idUser);
+  //       socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
+  //     }
+  //   }
+
+  //   socketPagos?.current?.on("removeStorageProgressPay2", () => {
+  //     localStorage.removeItem("progressPay2");
+  //   });
+  // }, [socketPagos?.current, hasToken]);
+
   useEffect(() => {
     if (!socketPagos.current) return;
 
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+    const payload: any = jwtDecode(token!);
+
+    if (!socketPagos.current || !payload?.idUser) return;
+
     if (token) {
       const payload: any = jwtDecode(token);
+
       if (payload && payload?.idUser) {
         socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
+      }
+
+      const joinRoom = () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      };
+
+      socketPagos.current?.on("connect", joinRoom);
+
+      // si ya está conectado
+      if (socketPagos.current?.connected) {
+        joinRoom();
       }
     }
 
     socketPagos?.current?.on("removeStorageProgressPay2", () => {
       localStorage.removeItem("progressPay2");
     });
+
+    return () => {
+      socketPagos?.current?.off("connect", () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      });
+
+      socketPagos?.current?.off("removeStorageProgressPay2", () => {
+        localStorage.removeItem("progressPay2");
+      });
+    };
   }, [socketPagos?.current, hasToken]);
+
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
   useProtectedRoute(pathName);
   return (

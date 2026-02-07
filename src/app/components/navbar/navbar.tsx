@@ -93,7 +93,6 @@ const Navbar = () => {
         localStorage.setItem("name", session.user?.name!);
         localStorage.setItem("idUser", idUser);
         localStorage.setItem("lastname", "");
-        socketPagos.current?.emit("idUser", idUser);
 
         if (isValidToken?.idUser) {
           const now = Math.floor(Date.now() / 1000);
@@ -109,8 +108,6 @@ const Navbar = () => {
     } else if (authGoogle == "false") {
       if (localStorage.getItem("token")) {
         const validToken = isTokenExpired(localStorage.getItem("token")!);
-
-        socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
 
         setHasToken(validToken == true ? false : true);
         // setHasToken(true);

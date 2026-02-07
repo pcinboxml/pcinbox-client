@@ -12,9 +12,10 @@ import { useTheContext } from "../services/globalContext";
 const HistoryShop = () => {
   const {
     dataHistoryCompras,
+    initDataHistory,
     loadingCancelledCompra,
     dataFilter,
-    handleHistoryByUser,
+    //handleHistoryByUser,
     // handleOnSelectStatus,
     showModal,
     handleOnSearch,
@@ -28,7 +29,7 @@ const HistoryShop = () => {
   const { socketPagos } = useTheContext();
 
   useEffect(() => {
-    handleHistoryByUser();
+    initDataHistory();
   }, []);
 
   useEffect(() => {
@@ -39,8 +40,20 @@ const HistoryShop = () => {
     const handler = (data: any) => {
       setDataHistoryCompras((prev) => {
         return prev.map((item) => {
-          if (item.idOrder == data.idOrder) {
-            return { ...item, statusEnvio: data.status };
+          if (item.idOrder === data.idOrder) {
+            return {
+              ...item,
+              products: item.products?.map((product) => {
+                if (product?.idShipment === data?.idShipment) {
+                  return {
+                    ...product,
+                    statusShip: data?.status,
+                  };
+                } else {
+                  return product;
+                }
+              }),
+            };
           }
           return item;
         });
@@ -161,72 +174,64 @@ const HistoryShop = () => {
                           No. Orden #{historyCompra.idOrder}
                         </span>
                         <div className="w-[80%] p-1 flex justify-end gap-3 items-center">
-                          <div
-                            className={`${style.status}  ${
-                              historyCompra.statusEnvio == "procesando"
-                                ? style.statusProcessing
-                                : historyCompra.statusEnvio == "enviado"
-                                  ? style.statusShipped
-                                  : historyCompra.statusEnvio == "cancelado"
-                                    ? style.statusCancelled
-                                    : historyCompra.statusEnvio == "entregado"
-                                      ? style.statusDelivered
-                                      : historyCompra.statusEnvio ==
-                                          "disponible"
-                                        ? style.statusDelivered
-                                        : ""
-                            } p-2 rounded`}
-                          >
-                            <span className="text-center shrink-0 block">
-                              Estatus: {historyCompra.statusEnvio}
-                            </span>
-                          </div>
-
                           <div>
-                            {(historyCompra.pay_method == "tarjeta_de_debito" ||
-                              historyCompra.pay_method ==
+                            {(historyCompra?.payment_method ==
+                              "tarjeta_de_debito" ||
+                              historyCompra?.payment_method ==
                                 "tarjeta_de_credito") &&
-                            historyCompra.statusEnvio == "cancelado" ? (
+                            historyCompra?.products[0]?.statusShip ==
+                              "cancelado" ? (
                               <p>
                                 Tu reembolso se reflejara de 5 a 10 días habiles
                               </p>
-                            ) : historyCompra.pay_method == "oxxo" &&
-                              historyCompra.statusEnvio == "cancelado" &&
-                              historyCompra.paidAtOxxo == 1 ? (
+                            ) : historyCompra?.payment_method ==
+                                "transferencia_bancaria" &&
+                              historyCompra?.products[0]?.statusShip ==
+                                "cancelado" ? (
                               <p className="text-[16px]">
                                 Comunicate con la sucursal{" "}
                                 <span className="font-bold">PCInbox</span> para
                                 solicitar reembolso de tu pedido. <br />
                               </p>
-                            ) : historyCompra.statusEnvio == "disponible" &&
-                              historyCompra.shipping_method == "sucursal" ? (
-                              <p className="text-[16px]">
-                                Ya puedes recoger el pedido en la sucursal
-                                PCinBox León.
-                              </p>
                             ) : null}
                           </div>
+                          {(() => {
+                            const estadosNoCancelables = new Set([
+                              "entregado",
+                              "cancelado",
+                              "disponible",
+                            ]);
 
+                            const tieneEstadoNoCancelable =
+                              historyCompra?.products?.some((item) =>
+                                estadosNoCancelables.has(item?.statusShip),
+                              );
+
+                            if (!tieneEstadoNoCancelable) {
+                              return (
+                                <button
+                                  onClick={() => showModal(historyCompra)}
+                                  className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
+                                >
+                                  Cancelar compra
+                                </button>
+                              );
+                            }
+                          })()}
+                          {/* 
                           {historyCompra.statusEnvio != "entregado" &&
                           historyCompra.statusEnvio != "cancelado" &&
                           historyCompra.statusEnvio != "disponible" ? (
                             <button
-                              // disabled={
-                              //   loadingCancelledCompra[historyCompra.idOrder]
-                              // }
+                            
                               onClick={() => showModal(historyCompra)}
                               className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
                             >
-                              {/* {loadingCancelledCompra[historyCompra.idOrder] ? (
-                                <MdAutorenew
-                                  size={20}
-                                  className="m-auto the-spinner"
-                                />
-                              ) : ( */}
+                              
                               <>Cancelar compra</>
-                              {/* )} */}
+                            
                             </button>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       </div>
                       <div className={style.orderDate}>
@@ -240,7 +245,7 @@ const HistoryShop = () => {
                           </>
                         }
                       </div>
-                      <div className={style.orderDate}>
+                      {/* <div className={style.orderDate}>
                         {(historyCompra.shipping_method == "envioLeon" ||
                           historyCompra.shipping_method == "paqueteexpress" ||
                           historyCompra.shipping_method == "dhl" ||
@@ -378,46 +383,78 @@ const HistoryShop = () => {
                         ) : (
                           ""
                         )}
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className={style.orderItems + " flex flex-col"}>
-                    {(historyCompra.products as any)[0]?.products?.map(
-                      (d: any, indexD: number) => {
-                        return (
-                          <div className={style.item} key={indexD}>
-                            <img
-                              src={
-                                d.image_url && Array.isArray(d.image_url)
-                                  ? d.image_url[0]
-                                  : d.image_url
-                              }
-                              className={style.itemImage}
-                              loading="lazy"
-                            />
-                            <div className={style.itemDetails}>
-                              <div className={style.itemName}>{d.name}</div>
+                    {historyCompra.products?.map((d, indexD: number) => {
+                      return (
+                        <div className={style.item} key={indexD}>
+                          <img
+                            src={
+                              d.image_url && Array.isArray(d.image_url)
+                                ? d.image_url[0]
+                                : d.image_url
+                            }
+                            className={style.itemImage}
+                            loading="lazy"
+                          />
+                          <div className={style.itemDetails}>
+                            <div className={style.itemName}>{d.name}</div>
+                            <div className={style.itemVariant}>
+                              {d.description}
+                            </div>
+                            <div className={style.itemMeta}>
                               <div className={style.itemVariant}>
-                                {d.description}
+                                <span
+                                  style={{
+                                    padding: "5px",
+                                  }}
+                                  className={`text-center rounded  font-bold shrink-0 block ${style.status} ${
+                                    d.statusShip == "procesando"
+                                      ? style.statusProcessing
+                                      : d.statusShip == "enviado"
+                                        ? style.statusShipped
+                                        : d.statusShip == "cancelado"
+                                          ? style.statusCancelled
+                                          : d.statusShip == "entregado"
+                                            ? style.statusDelivered
+                                            : d.statusShip == "disponible"
+                                              ? style.statusDelivered
+                                              : ""
+                                  }`}
+                                >
+                                  ESTATUS: {d.statusShip?.toUpperCase()}
+                                </span>
                               </div>
+                            </div>
+                            {d.statusShip == "disponible" && (
                               <div className={style.itemMeta}>
-                                <div className={style.itemQuantity}>
-                                  Cantidad: {d.quantity}
+                                <div className={style.itemVariant}>
+                                  <Alert severity="success">
+                                    Ya puedes recorger este producto a la
+                                    sucursal PCinBOX-LEON
+                                  </Alert>
                                 </div>
-                                <div className={style.itemPrice}>
-                                  {formatCurrency(
-                                    Number(d.price) * Number(d.quantity),
-                                  )}
-                                </div>
+                              </div>
+                            )}
+                            <div className={style.itemMeta}>
+                              <div className={style.itemQuantity}>
+                                Cantidad: {d.quantity}
+                              </div>
+                              <div className={style.itemPrice}>
+                                {formatCurrency(
+                                  Number(d.price) * Number(d.quantity),
+                                )}
                               </div>
                             </div>
                           </div>
-                        );
-                      },
-                    )}
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {historyCompra.statusEnvio == "entregado" ? (
+                  {/* {historyCompra.statusEnvio == "entregado" ? (
                     <div className={style.orderActions}>
                       <a
                         role="button"
@@ -431,7 +468,7 @@ const HistoryShop = () => {
                         Ver detalles
                       </a>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
               );
             })

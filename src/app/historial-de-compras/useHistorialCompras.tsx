@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
-import { GroupByIdI } from "../interfaces/compras/historyCompras.interface";
+import { HistoryComprasI } from "../interfaces/compras/historyCompras.interface";
 import CancelledCompra from "../components/cancelledCompra/CancelledCompra";
 
 const useHistorialDeCompras = () => {
@@ -25,24 +25,20 @@ const useHistorialDeCompras = () => {
   const { requestPostPagos } = usePasarelaDePagos();
   const { groupById } = useService();
 
-  const [dataHistoryCompras, setDataHistoryCompras] = useState<GroupByIdI[]>(
-    [],
-  );
-  const [dataHistoryComprasCopy, setDataHistoryComprasCopy] = useState<
-    GroupByIdI[]
+  const [dataHistoryCompras, setDataHistoryCompras] = useState<
+    HistoryComprasI[]
   >([]);
-
-  useEffect(() => {
-    initDataHistory();
-  }, []);
+  const [dataHistoryComprasCopy, setDataHistoryComprasCopy] = useState<
+    HistoryComprasI[]
+  >([]);
 
   useEffect(() => {
     const result = dataHistoryComprasCopy.filter((item) => {
       // Si status es "allState", no filtramos por estado
-      const statusMatch =
-        dataFilter.status && dataFilter.status !== "allState"
-          ? item.statusEnvio === dataFilter.status
-          : true;
+      // const statusMatch =
+      //   dataFilter.status && dataFilter.status !== "allState"
+      //     ? item.statusEnvio === dataFilter.status
+      //     : true;
 
       const dateMatch =
         dataFilter.startDate && dataFilter.endDate
@@ -69,7 +65,8 @@ const useHistorialDeCompras = () => {
           )
         : true;
 
-      return statusMatch && dateMatch && searchTextMatch;
+      return dateMatch && searchTextMatch;
+      // return statusMatch && dateMatch && searchTextMatch;
     });
 
     setDataHistoryCompras(result);
@@ -87,8 +84,9 @@ const useHistorialDeCompras = () => {
 
       if (resp.status == 200) {
         const data = await resp.data;
-        setDataHistoryCompras(groupById(data.data.data));
-        setDataHistoryComprasCopy(groupById(data.data.data));
+
+        setDataHistoryCompras(data.data.data);
+        setDataHistoryComprasCopy(data.data.data);
       }
     } catch (error) {}
   };
@@ -117,27 +115,27 @@ const useHistorialDeCompras = () => {
 
   //};
 
-  const handleHistoryByUser = async () => {
-    try {
-      const resp = await requestPost(
-        {
-          userId: localStorage.getItem("idUser"),
-          status: "allState",
-        },
-        "/sales/filterSales",
-      );
+  // const handleHistoryByUser = async () => {
+  //   try {
+  //     const resp = await requestPost(
+  //       {
+  //         userId: localStorage.getItem("idUser"),
+  //         status: "allState",
+  //       },
+  //       "/sales/filterSales",
+  //     );
 
-      if (resp.status == 200) {
-        const data = await resp.data;
-        setDataHistoryCompras(groupById(data.data.data));
-        setDataHistoryComprasCopy(groupById(data.data.data));
-      }
-    } catch (error) {
-      setDataHistoryCompras([]);
-    }
-  };
+  //     if (resp.status == 200) {
+  //       const data = await resp.data;
+  //       setDataHistoryCompras(groupById(data.data.data));
+  //       setDataHistoryComprasCopy(groupById(data.data.data));
+  //     }
+  //   } catch (error) {
+  //     setDataHistoryCompras([]);
+  //   }
+  // };
 
-  const showModal = (historyCompra: GroupByIdI) => {
+  const showModal = (historyCompra: HistoryComprasI) => {
     setDataModal({
       isOpen: true,
       message: (
@@ -160,12 +158,40 @@ const useHistorialDeCompras = () => {
     });
   };
 
-  const handleCancelPedido = async (historyCompra: GroupByIdI) => {
+  const handleCancelPedido = async (historyCompra: HistoryComprasI) => {
     try {
       setLoadingCancelledCompra((prev) => ({
         ...prev,
         [historyCompra?.idOrder]: true,
       }));
+
+      const estadosNoCancelables = new Set([
+        "entregado",
+        "cancelado",
+        "disponible",
+        "enviado",
+      ]);
+
+      const tieneEstadoNoCancelable = historyCompra?.products?.some((item) =>
+        estadosNoCancelables.has(item?.statusShip),
+      );
+
+      if (tieneEstadoNoCancelable) {
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "No es posible cancelar la compra",
+          showActions: true,
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+        return;
+      }
 
       const resp = await requestPostPagos(
         {
@@ -280,13 +306,14 @@ const useHistorialDeCompras = () => {
     loadingCancelledCompra,
     showModal,
     // handleOnPeriodo,
-    handleHistoryByUser,
+    // handleHistoryByUser,
     setDataFilter,
     dataFilter,
     // handleOnSelectStatus,
     // handleOnFilter,
     handleOnSearch,
     setDataHistoryCompras,
+    initDataHistory,
   };
 };
 
