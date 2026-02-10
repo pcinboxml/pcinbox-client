@@ -9,6 +9,7 @@ import useService from "@/app/services/useService";
 import useCart from "./useCart";
 import { MdAutorenew, MdClose } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
+import { CheckoutStep } from "../timeline/checkoutSteps";
 // import Link from "next/link";
 
 export const Cart = () => {
@@ -355,6 +356,11 @@ export const ModalCart = ({
               </Link> */}
               <button
                 onClick={() => {
+                  localStorage.setItem(
+                    "checkout_step",
+                    String(CheckoutStep.CONFIRMAR_PRODUCTOS),
+                  );
+
                   onRouterLink("/confirma-productos");
                   onMouseLeaveCart();
                 }}

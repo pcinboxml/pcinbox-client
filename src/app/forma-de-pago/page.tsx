@@ -7,8 +7,12 @@ import useService from "../services/useService";
 import { useEffect } from "react";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const FormaDePago = () => {
+  useCheckoutGuard(CheckoutStep.FORMA_DE_PAGO);
+
   const {
     optionsPago,
     idMethodPay,
@@ -318,6 +322,11 @@ const FormaDePago = () => {
                                         : "",
                       },
                     });
+                    localStorage.setItem(
+                      "checkout_step",
+                      String(CheckoutStep.RESUMEN),
+                    );
+
                     onRouterLink("/resumen");
                   }}
                 >

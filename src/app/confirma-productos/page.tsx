@@ -7,9 +7,12 @@ import useConfirmaProductos from "./useConfirmaProductos";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
-import { useMemo } from "react";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const ConfirmaProducts = () => {
+  useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
+
   const { formatCurrency, onRouterLink, totalPrice } = useService();
   const {
     columns,
@@ -123,7 +126,14 @@ const ConfirmaProducts = () => {
                   )}
                 </button>
                 <button
-                  onClick={() => onRouterLink("/opciones-entrega")}
+                  onClick={() => {
+                    localStorage.setItem(
+                      "checkout_step",
+                      String(CheckoutStep.OPCIONES_ENTREGA),
+                    );
+
+                    onRouterLink("/opciones-entrega");
+                  }}
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
                 >
                   Siguiente paso

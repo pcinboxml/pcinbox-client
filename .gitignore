@@ -9,6 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+.ngrok_segundo.yml
 
 # testing
 /coverage

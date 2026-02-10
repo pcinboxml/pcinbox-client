@@ -81,7 +81,8 @@ const useResumen = () => {
         );
 
         if (resp.status == 200) {
-          window.location.href = resp.data.data.init_point;
+          // window.location.href = resp.data.data.init_point;
+          window.location.href = resp?.data?.data?.sandbox_init_point;
         }
       } catch (error) {
         setLoadingCreateOrder(false);

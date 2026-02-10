@@ -6,19 +6,16 @@ import style from "./historial-de-compras.module.css";
 import useHistorialDeCompras from "./useHistorialCompras";
 import { Alert } from "@mui/material";
 import useService from "../services/useService";
-import { MdAutorenew } from "react-icons/md";
+import { MdAutorenew, MdLocationOn } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
 
 const HistoryShop = () => {
   const {
     dataHistoryCompras,
     initDataHistory,
-    loadingCancelledCompra,
     dataFilter,
-    //handleHistoryByUser,
-    // handleOnSelectStatus,
     showModal,
-    handleOnSearch,
+    showUbicationStore,
     setDataFilter,
 
     setDataHistoryCompras,
@@ -100,7 +97,6 @@ const HistoryShop = () => {
                   status: event.target.value,
                 }));
               }}
-              // onChange={handleOnSelectStatus}
             >
               <option value="allState">Todos los estados</option>
               <option value="entregado">Entregado</option>
@@ -158,6 +154,7 @@ const HistoryShop = () => {
         <div className="my-5 flex flex-col">
           {dataHistoryCompras && dataHistoryCompras.length > 0 ? (
             dataHistoryCompras.map((historyCompra, index) => {
+              console.log(historyCompra);
               return (
                 <div
                   className={`${style.orderCard} my-3`}
@@ -388,6 +385,7 @@ const HistoryShop = () => {
                   </div>
                   <div className={style.orderItems + " flex flex-col"}>
                     {historyCompra.products?.map((d, indexD: number) => {
+                      const address = historyCompra.products[indexD]?.address; // tu objeto de dirección
                       return (
                         <div className={style.item} key={indexD}>
                           <img
@@ -404,40 +402,60 @@ const HistoryShop = () => {
                             <div className={style.itemVariant}>
                               {d.description}
                             </div>
-                            <div className={style.itemMeta}>
-                              <div className={style.itemVariant}>
-                                <span
-                                  style={{
-                                    padding: "5px",
-                                  }}
-                                  className={`text-center rounded  font-bold shrink-0 block ${style.status} ${
-                                    d.statusShip == "procesando"
-                                      ? style.statusProcessing
-                                      : d.statusShip == "enviado"
-                                        ? style.statusShipped
-                                        : d.statusShip == "cancelado"
-                                          ? style.statusCancelled
-                                          : d.statusShip == "entregado"
-                                            ? style.statusDelivered
-                                            : d.statusShip == "disponible"
-                                              ? style.statusDelivered
-                                              : ""
-                                  }`}
-                                >
-                                  ESTATUS: {d.statusShip?.toUpperCase()}
-                                </span>
-                              </div>
-                            </div>
-                            {d.statusShip == "disponible" && (
+
+                            {d.statusShip === "disponible" && (
                               <div className={style.itemMeta}>
                                 <div className={style.itemVariant}>
                                   <Alert severity="success">
-                                    Ya puedes recorger este producto a la
+                                    Ya puedes recoger este producto en la
                                     sucursal PCinBOX-LEON
                                   </Alert>
                                 </div>
                               </div>
                             )}
+
+                            {/* Aquí agregamos la dirección */}
+                            <div className={style.itemMeta}>
+                              <div className={style.itemVariant}>
+                                {address ? (
+                                  <div>
+                                    <strong>Dirección de envío:</strong>
+                                    <div>{address.street}</div>
+                                    <div>{address.cologne}</div>
+                                    <div>
+                                      {address.city}, {address.state}{" "}
+                                      {address.postalCode}
+                                    </div>
+                                    <div>{address.country}</div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center">
+                                    Recoger en Sucursal PCinBOX-LEÓN
+                                    <a
+                                      onClick={() => {
+                                        showUbicationStore(
+                                          String("PCinBOX-León"),
+                                        );
+                                      }}
+                                      style={{
+                                        display: "flex",
+                                        fontSize: "13px",
+                                        fontWeight: "bold",
+                                        textDecoration: "underline",
+                                        alignItems: "center",
+                                        cursor: "pointer",
+                                        marginLeft: "5px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MdLocationOn size={22} />
+                                      Ver Ubicación
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
                             <div className={style.itemMeta}>
                               <div className={style.itemQuantity}>
                                 Cantidad: {d.quantity}
@@ -446,6 +464,27 @@ const HistoryShop = () => {
                                 {formatCurrency(
                                   Number(d.price) * Number(d.quantity),
                                 )}
+                              </div>
+                            </div>
+                            <div className={style.itemMeta}>
+                              <div className={style.itemVariant}>
+                                <span
+                                  style={{ padding: "5px" }}
+                                  className={`text-center rounded font-bold shrink-0 block ${style.status} ${
+                                    d.statusShip === "procesando"
+                                      ? style.statusProcessing
+                                      : d.statusShip === "enviado"
+                                        ? style.statusShipped
+                                        : d.statusShip === "cancelado"
+                                          ? style.statusCancelled
+                                          : d.statusShip === "entregado" ||
+                                              d.statusShip === "disponible"
+                                            ? style.statusDelivered
+                                            : ""
+                                  }`}
+                                >
+                                  ESTATUS: {d.statusShip?.toUpperCase()}
+                                </span>
                               </div>
                             </div>
                           </div>

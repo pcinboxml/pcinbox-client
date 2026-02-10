@@ -301,10 +301,12 @@ export default function AppWrapper({
   useEffect(() => {
     if (!socketPagos.current) return;
 
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (typeof window === "undefined") return;
 
-    const payload: any = jwtDecode(token!);
+    const token = localStorage.getItem("token");
+
+    if (!token || typeof token !== "string") return;
+    const payload: any = jwtDecode(token);
 
     if (!socketPagos.current || !payload?.idUser) return;
 
@@ -332,9 +334,9 @@ export default function AppWrapper({
     });
 
     return () => {
-      socketPagos?.current?.off("connect", () => {
-        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
-      });
+      // socketPagos?.current?.off("connect", () => {
+      //   socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      // });
 
       socketPagos?.current?.off("removeStorageProgressPay2", () => {
         localStorage.removeItem("progressPay2");

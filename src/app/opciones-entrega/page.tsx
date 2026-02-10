@@ -14,9 +14,12 @@ import useOpcionesEntrega from "./useOpcionesEntrega";
 import { useEffect, useMemo, useState } from "react";
 import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
-import ProductI from "../interfaces/products/product.interface";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const OpcionesEntrega = () => {
+  useCheckoutGuard(CheckoutStep.OPCIONES_ENTREGA);
+
   const [pesoPaqueteExpress, setPesoPaqueteExpress] = useState<any[]>([]);
 
   const {
@@ -308,10 +311,10 @@ const OpcionesEntrega = () => {
                       </Alert>
                     ) : null}
                     {totalPrice >= 1000 &&
-                      dataUserAddress &&
-                      dataUserAddress.some((d) =>
-                        CIUDADES_ENVIO_PERSONALIZADO.includes(d.city),
-                      ) &&
+                      // dataUserAddress &&
+                      // dataUserAddress.some((d) =>
+                      //   CIUDADES_ENVIO_PERSONALIZADO.includes(d.city),
+                      // ) &&
                       Number(group.providerId) === 1 && (
                         <div className="flex items-center relative my-4">
                           <input
@@ -1007,6 +1010,11 @@ const OpcionesEntrega = () => {
               handleWriteStorageProgressPay2({
                 dataPurchase,
               });
+
+              localStorage.setItem(
+                "checkout_step",
+                String(CheckoutStep.FORMA_DE_PAGO),
+              );
 
               onRouterLink("/forma-de-pago");
             }}

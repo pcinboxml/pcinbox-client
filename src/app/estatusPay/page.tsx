@@ -20,7 +20,7 @@ const EstatusPayContent = () => {
   const { requestPostPagos } = usePasarelaDePagos();
 
   const [dataPayOpenPay, setDataPayOpenPay] = useState<ChargesOpenPay | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -39,7 +39,7 @@ const EstatusPayContent = () => {
 
         const resp = await requestPostPagos(
           { idTransaction: id },
-          "/openpay/getDataOrderOpenPay"
+          "/openpay/getDataOrderOpenPay",
         );
 
         if (resp.status === 200) {

@@ -17,5 +17,22 @@ export interface HistoryComprasI {
     image_url: string[];
     trackingNumber: any;
     shippingType: any;
+    address: {
+      idAddress: number;
+      userId: number;
+      street: string;
+      noExt: any;
+      noInt: any;
+      cologne: any;
+      city: string;
+      state: string;
+      country: string;
+      postalCode: any;
+      phone1: any;
+      phone2: any;
+      createdAt: any;
+      updatedAt: any;
+      active: number;
+    } | null;
   }[];
 }

@@ -9,8 +9,11 @@ import useStorage from "../services/useStorage";
 import useResumen from "./useResumen";
 import { Alert, Checkbox, FormControlLabel } from "@mui/material";
 import { useEffect, useState } from "react";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const Resumen = () => {
+  useCheckoutGuard(CheckoutStep.RESUMEN);
   const { dataCart } = useTheContext();
   const {
     onRouterLink,
