@@ -45,6 +45,16 @@ const useReview = () => {
       const data = await resp.data;
       if (status == 200) {
         setDataProduct({
+          isPC: data?.data?.data?.isPC,
+          isPc: data?.data?.data?.isPc,
+          caracteristicas: data?.data?.data?.caracteristicas,
+          height: data?.data?.data?.height,
+          idProductExt: data?.data?.data?.idProductExt,
+          largo: data?.data?.data?.largo,
+          product_stock: data?.data?.data?.product_stock,
+          storeId: data?.data?.data?.storeId,
+          upc: data?.data?.data?.upc,
+          width: data?.data?.data?.width,
           createdAt: data.data.data.createdAt,
           description: data.data.data.description,
           idProduct: data.data.data.idProduct,
@@ -56,7 +66,7 @@ const useReview = () => {
           stock: data.data.data.stock,
           reviews: data.data.data.reviews.sort(
             (a: any, b: any) =>
-              new Date(a.date).getTime() - new Date(b.date).getTime()
+              new Date(a.date).getTime() - new Date(b.date).getTime(),
           ),
           categoryId: "",
           quantity: 0,
@@ -77,7 +87,7 @@ const useReview = () => {
           price: productProp.price,
           isDetails: false,
         },
-        "/cart/addProduct"
+        "/cart/addProduct",
       );
 
       setLoadingAddProductCar(false);
@@ -85,13 +95,13 @@ const useReview = () => {
       if (resp.status == 200) {
         setDataCart((prev) => {
           const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(productProp.idProduct)
+            (item) => Number(item.idProduct) === Number(productProp.idProduct),
           );
           if (existingProduct) {
             return prev.map((item) =>
               Number(item.idProduct) == Number(existingProduct.idProduct)
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
-                : item
+                : item,
             );
           } else {
             return [
@@ -110,6 +120,16 @@ const useReview = () => {
                 reviews: productProp.reviews,
                 sku: productProp.sku,
                 quantity: 1,
+                isPC: productProp?.isPC,
+                isPc: productProp?.isPc,
+                caracteristicas: productProp?.caracteristicas,
+                height: productProp?.height,
+                idProductExt: productProp?.idProductExt,
+                largo: productProp?.largo,
+                product_stock: productProp?.product_stock,
+                storeId: productProp?.storeId,
+                upc: productProp?.upc,
+                width: productProp?.width,
               },
             ];
           }
@@ -160,16 +180,16 @@ const useReview = () => {
           value == "1"
             ? [...prev.reviews].sort(
                 (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime()
+                  new Date(a.date).getTime() - new Date(b.date).getTime(),
               )
             : value == "2"
-            ? [...prev.reviews].sort(
-                (a, b) =>
-                  new Date(b.date).getTime() - new Date(a.date).getTime()
-              )
-            : value == "3"
-            ? [...prev.reviews].sort((a, b) => b.rating - a.rating)
-            : [...prev.reviews].sort((a, b) => a.rating - b.rating);
+              ? [...prev.reviews].sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime(),
+                )
+              : value == "3"
+                ? [...prev.reviews].sort((a, b) => b.rating - a.rating)
+                : [...prev.reviews].sort((a, b) => a.rating - b.rating);
 
         return {
           ...prev,
