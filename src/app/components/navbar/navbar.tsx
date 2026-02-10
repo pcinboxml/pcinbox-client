@@ -17,11 +17,9 @@ import { FcGoogle } from "react-icons/fc";
 import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
-import { useSession } from "next-auth/react";
 import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
-import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const {
@@ -61,10 +59,8 @@ const Navbar = () => {
     socketPagos,
   } = useTheContext();
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
-  const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
-  const pathname = usePathname();
 
   const totalPrice = useMemo(() => {
     const total = dataCart
@@ -81,50 +77,10 @@ const Navbar = () => {
     document.addEventListener("click", handleDOM);
     document.addEventListener("scroll", handleDetectedScroll);
     return () => {
-      document.removeEventListener("click", handleDOM),
-        document.removeEventListener("scroll", handleDetectedScroll);
+      (document.removeEventListener("click", handleDOM),
+        document.removeEventListener("scroll", handleDetectedScroll));
     };
   }, []);
-
-  useEffect(() => {
-    const authGoogle = localStorage.getItem("authGoogle");
-
-    if (session && status == "authenticated" && authGoogle == "true") {
-      const token = (session as any)?.token;
-      const idUser = (session as any)?.idUser;
-      const isValidToken = (session as any)?.isValidToken;
-      if (token && token !== "undefined" && token !== "null" && token != null) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("email", session.user?.email!);
-        localStorage.setItem("name", session.user?.name!);
-        localStorage.setItem("idUser", idUser);
-        localStorage.setItem("lastname", "");
-        socketPagos.current?.emit("idUser", idUser);
-
-        if (isValidToken?.idUser) {
-          const now = Math.floor(Date.now() / 1000);
-
-          // validar
-          if (isValidToken?.exp < now) {
-            setHasToken(false);
-          } else {
-            setHasToken(true);
-          }
-        }
-      }
-    } else if (authGoogle == "false") {
-      if (localStorage.getItem("token")) {
-        const validToken = isTokenExpired(localStorage.getItem("token")!);
-
-        socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
-
-        setHasToken(validToken == true ? false : true);
-        // setHasToken(true);
-      } else {
-        setHasToken(false);
-      }
-    }
-  }, [session, status]);
 
   useEffect(() => {
     if (hasToken) {
@@ -295,7 +251,7 @@ const Navbar = () => {
                               className="border"
                               value={formData.email}
                               onChange={(
-                                event: ChangeEvent<HTMLInputElement>
+                                event: ChangeEvent<HTMLInputElement>,
                               ) =>
                                 setFormData((prev) => ({
                                   ...prev,
@@ -313,7 +269,7 @@ const Navbar = () => {
                               className="border"
                               value={formData.password}
                               onChange={(
-                                event: ChangeEvent<HTMLInputElement>
+                                event: ChangeEvent<HTMLInputElement>,
                               ) =>
                                 setFormData((prev) => ({
                                   ...prev,

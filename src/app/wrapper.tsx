@@ -1,11 +1,8 @@
 "use client";
 
-import useCart from "./components/cart/useCart";
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
-import useNavbar from "./components/navbar/useNavbar";
-import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -13,19 +10,71 @@ import { usePathname } from "next/navigation";
 import ProtectedRoute from "./middleware/protectedRoute";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
-import { Monitor, Smartphone } from "lucide-react";
+import { useSession } from "next-auth/react";
 import useStorage from "./services/useStorage";
+import useService from "./services/useService";
+import { Alert } from "@mui/material";
+
+function SesionHandler({ children }: { children: React.ReactNode }) {
+  const { socketPagos, setHasToken } = useTheContext();
+
+  const { data: session, status } = useSession();
+  const { isTokenExpired } = useService();
+
+  useEffect(() => {
+    const authGoogle = localStorage.getItem("authGoogle");
+
+    if (session && status == "authenticated" && authGoogle == "true") {
+      const token = (session as any)?.token;
+      const idUser = (session as any)?.idUser;
+      const isValidToken = (session as any)?.isValidToken;
+      if (token && token !== "undefined" && token !== "null" && token != null) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", session.user?.email!);
+        localStorage.setItem("name", session.user?.name!);
+        localStorage.setItem("idUser", idUser);
+        localStorage.setItem("lastname", "");
+        socketPagos.current?.emit("idUser", idUser);
+
+        if (isValidToken?.idUser) {
+          const now = Math.floor(Date.now() / 1000);
+
+          // validar
+          if (isValidToken?.exp < now) {
+            setHasToken(false);
+          } else {
+            setHasToken(true);
+          }
+        }
+      }
+    } else if (authGoogle == "false") {
+      if (localStorage.getItem("token")) {
+        const validToken = isTokenExpired(localStorage.getItem("token")!);
+
+        socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
+
+        setHasToken(validToken == true ? false : true);
+        // setHasToken(true);
+      } else {
+        setHasToken(false);
+      }
+    }
+  }, [session, status]);
+
+  return <>{children}</>;
+}
 
 export default function AppWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = useState(false);
+
   const pathName = usePathname();
 
   const {
     dataModal,
-    dataNotification,
     hasToken,
     dataCart,
     setDataCart,
@@ -35,38 +84,22 @@ export default function AppWrapper({
     socketPagos,
   } = useTheContext();
 
-  const { addProductFromStorage } = useCart();
-  const { handleGetDataCart } = useNavbar();
   const { handleWriteStorageProgressPay } = useStorage();
   const isMounted = useRef(false);
 
-  const [isDesktop, setIsDesktop] = useState(true);
+  // useEffect(() => {
+  //   if (localStorage.getItem("dataCart") && hasToken == false) {
+  //     const productsStorage = JSON.parse(
+  //       localStorage.getItem("dataCart") || "",
+  //     );
 
-  useEffect(() => {
-    const checkWidth = () => {
-      const width = window.innerWidth;
-      // Solo permitir pantallas grandes (desktop)
-      setIsDesktop(width >= 1024);
-    };
-
-    checkWidth(); // al cargar
-    window.addEventListener("resize", checkWidth); // al redimensionar
-
-    return () => window.removeEventListener("resize", checkWidth);
-  }, []);
-  useEffect(() => {
-    if (localStorage.getItem("dataCart") && hasToken == false) {
-      const productsStorage = JSON.parse(
-        localStorage.getItem("dataCart") || "",
-      );
-
-      setDataCart(productsStorage);
-    } else if (hasToken == true) {
-      addProductFromStorage().then(async (resp) => {
-        await handleGetDataCart();
-      });
-    }
-  }, [hasToken]);
+  //     setDataCart(productsStorage);
+  //   } else if (hasToken == true) {
+  //     addProductFromStorage().then(async (resp) => {
+  //       await handleGetDataCart();
+  //     });
+  //   }
+  // }, [hasToken]);
 
   const totalPrice = useMemo(() => {
     if (!dataCart) return 0;
@@ -328,84 +361,101 @@ export default function AppWrapper({
     };
   }, [socketServer.current, socketPagos?.current]);
 
-  ProtectedRoute(pathName);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  ProtectedRoute();
 
   return (
     <SessionProvider>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-        }}
-      >
-        {pathName != "/estatusMP" &&
-          pathName != "/estatusPay" &&
-          pathName != "/terminos_y_condiciones" &&
-          pathName != "/aviso_privacidad" && <Navbar />}
-        <main
-          className={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? "container"
-              : ""
-          }
-          style={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? { marginTop: "180px" }
-              : {}
-          }
-        >
-          {children}
-
-          <ModalComponent
-            isOpen={dataModal.isOpen}
-            title={dataModal.title}
-            message={dataModal.message}
-            onConfirm={() => dataModal.onConfirm()}
-            onClose={() => dataModal.onClose()}
-            type={dataModal.type}
-            children={dataModal.children}
-            showActions={dataModal.showActions}
-          />
-
-          <Notification dataNotification={dataNotification} />
-
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && <Footer />}
-
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && (
-              <>
-                <span className="block mx-auto my-2 text-center text-[13px]">
-                  © {new Date().getFullYear().toString()} PCinBOX Todos los
-                  derechos reservados, México.
-                </span>
-              </>
-            )}
-        </main>
-
-        <a
+      <SesionHandler>
+        <div
           style={{
-            position: "fixed",
-            bottom: "10px",
-            right: "10px",
-            textDecoration: "none",
-            background: "white",
-            borderRadius: "5px",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
           }}
-          target="_blank"
-          href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
         >
-          <FaWhatsapp
-            size={45}
-            style={{ color: "#25D366", fontSize: "2rem" }}
-          />
-        </a>
-      </div>
+          {pathName != "/estatusMP" &&
+            pathName != "/estatusPay" &&
+            pathName != "/terminos_y_condiciones" &&
+            pathName != "/aviso_privacidad" && <Navbar />}
+          <main
+            className={
+              pathName != "/estatusMP" && pathName != "/estatusPay"
+                ? "container"
+                : ""
+            }
+            style={
+              pathName != "/estatusMP" && pathName != "/estatusPay"
+                ? { marginTop: "180px" }
+                : {}
+            }
+          >
+            {mounted &&
+              (!hasToken &&
+              pathName != "/" &&
+              pathName != "/principal" &&
+              !pathName.startsWith("/result-search-category") &&
+              !pathName.startsWith("/detailsProduct") &&
+              pathName != "/forgotpassword" &&
+              pathName != "/register" ? (
+                <Alert severity="info">Contenido no disponible</Alert>
+              ) : (
+                children
+              ))}
+
+            <ModalComponent
+              isOpen={dataModal.isOpen}
+              title={dataModal.title}
+              message={dataModal.message}
+              onConfirm={() => dataModal.onConfirm()}
+              onClose={() => dataModal.onClose()}
+              type={dataModal.type}
+              children={dataModal.children}
+              showActions={dataModal.showActions}
+            />
+
+            {/* <Notification dataNotification={dataNotification} /> */}
+
+            {pathName != "/estatusMP" &&
+              pathName != "/estatusPay" &&
+              pathName != "/terminos_y_condiciones" &&
+              pathName != "/aviso_privacidad" && <Footer />}
+
+            {pathName != "/estatusMP" &&
+              pathName != "/estatusPay" &&
+              pathName != "/terminos_y_condiciones" &&
+              pathName != "/aviso_privacidad" && (
+                <>
+                  <span className="block mx-auto my-2 text-center text-[13px]">
+                    © {new Date().getFullYear().toString()} PCinBOX Todos los
+                    derechos reservados, México.
+                  </span>
+                </>
+              )}
+          </main>
+
+          <a
+            style={{
+              position: "fixed",
+              bottom: "10px",
+              right: "10px",
+              textDecoration: "none",
+              background: "white",
+              borderRadius: "5px",
+            }}
+            target="_blank"
+            href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
+          >
+            <FaWhatsapp
+              size={45}
+              style={{ color: "#25D366", fontSize: "2rem" }}
+            />
+          </a>
+        </div>
+      </SesionHandler>
     </SessionProvider>
   );
 }
