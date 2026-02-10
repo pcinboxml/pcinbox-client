@@ -163,7 +163,7 @@ const OpcionesEntrega = () => {
                   </Alert>
                 ) : null}
 
-                {totalPrice >= 1000 &&
+                {/* {totalPrice >= 1000 &&
                   dataUserAddress &&
                   dataUserAddress.some(
                     (d) => d.city === "León de los Aldama",
@@ -206,67 +206,10 @@ const OpcionesEntrega = () => {
                                 }
                               }
                             })()}
-                            {/* {optionEnvio == "envioLeon" &&
-                            costoEnvioByZone?.valor == 0
-                              ? "Envío: Gratis"
-                              : `Envío: $(${formatCurrency(
-                                  Number(costoEnvioByZone.valor)
-                                )})`} */}
                           </span>
                         </div>
                       </label>
-
-                      {/* <span
-                        className="absolute right-5 to-5 text-[#808080]"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Gratis
-                      </span> */}
                     </div>
-                  )}
-                {/* {totalPrice >= 1000 &&
-                  dataUserAddress &&
-                  dataUserAddress.some(
-                    (d) => d.city != "León de los Aldama",
-                  ) && (
-                    <>
-                      <div className="flex items-center relative">
-                        <input
-                          type="radio"
-                          name="envio"
-                          id="paqueteexpress"
-                          className="mx-2"
-                          value="paqueteexpress"
-                          checked={optionEnvio === "paqueteexpress"}
-                          onChange={handleOnChangeOptionEnvio}
-                        />
-
-                        <label
-                          className="form-check-label"
-                          htmlFor="paqueteexpress"
-                        >
-                          <div className="w-full flex items-center">
-                            <img
-                              src="/paqueteexpress.png"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "contain",
-                                filter: "grayscale(100%)",
-                              }}
-                              loading="lazy"
-                            />
-                            <span
-                              className="text-[#666666] text-sm mx-2"
-                              style={{ fontWeight: "bold" }}
-                            >
-                              <span style={{ fontWeight: "bold" }}>|</span>{" "}
-                              PaqueteExpress
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                    </>
                   )} */}
 
                 <hr />
