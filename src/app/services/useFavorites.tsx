@@ -42,7 +42,7 @@ const useFavorites = () => {
         {
           idProduct: Number(favorite.idProduct),
         },
-        "/favorites/addFavorites"
+        "/favorites/addFavorites",
       );
 
       setLoadingFavorite(false);
@@ -81,7 +81,7 @@ const useFavorites = () => {
           price: product.products?.price,
           isDetails: false,
         },
-        "/cart/addProduct"
+        "/cart/addProduct",
       );
 
       setLoadingAddCartFavorite(false);
@@ -90,13 +90,13 @@ const useFavorites = () => {
         setDataCart((prev) => {
           const existingProduct = prev.find(
             (item) =>
-              Number(item.idProduct) === Number(product.products?.idProduct)
+              Number(item.idProduct) === Number(product.products?.idProduct),
           );
           if (existingProduct) {
             return prev.map((item) =>
               Number(item.idProduct) == Number(existingProduct.idProduct)
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
-                : item
+                : item,
             );
           } else {
             return [
@@ -118,6 +118,16 @@ const useFavorites = () => {
                 reviews: product.products?.reviews || [],
                 sku: product.products?.sku || "",
                 quantity: 1,
+                isPC: product?.products?.isPC,
+                isPc: product?.products?.isPc,
+                caracteristicas: product?.products?.caracteristicas,
+                height: product?.products?.height,
+                idProductExt: product?.products?.idProductExt,
+                largo: product?.products?.largo,
+                product_stock: product?.products?.product_stock,
+                storeId: product?.products?.storeId,
+                upc: product?.products?.upc,
+                width: product?.products?.width,
               },
             ];
           }
@@ -139,7 +149,7 @@ const useFavorites = () => {
       const orderDate = favoritesCopy.sort(
         (a, b) =>
           new Date(b.createdAt || "").getTime() -
-          new Date(a.createdAt || "").getTime()
+          new Date(a.createdAt || "").getTime(),
       );
       setDataFavorites([...orderDate]); // Aseguramos una nueva referencia
     } else if (value === "z_a") {
@@ -183,13 +193,13 @@ const useFavorites = () => {
     } else if (value === "mayor_precio") {
       const orderByHighPrice = favoritesCopy.sort(
         (a, b) =>
-          Number(b?.products?.price ?? 0) - Number(a?.products?.price ?? 0)
+          Number(b?.products?.price ?? 0) - Number(a?.products?.price ?? 0),
       );
       setDataFavorites([...orderByHighPrice]);
     } else if (value === "menor_precio") {
       const orderByLowPrice = favoritesCopy.sort(
         (a, b) =>
-          Number(a?.products?.price ?? 0) - Number(b?.products?.price ?? 0)
+          Number(a?.products?.price ?? 0) - Number(b?.products?.price ?? 0),
       );
       setDataFavorites([...orderByLowPrice]);
     }
@@ -204,7 +214,7 @@ const useFavorites = () => {
         {
           idFavorite: favorite.idFavorite,
         },
-        "/favorites/removeFavorites"
+        "/favorites/removeFavorites",
       );
 
       if (resp.status == 200) {
