@@ -270,33 +270,21 @@ export default function AppWrapper({
 
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
+    socketPagos?.current?.on("removeStorageProgressPay2", () => {
+      localStorage.removeItem("progressPay2");
+    });
+
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
+      socketPagos?.current?.off("removeStorageProgressPay2", () => {
+        localStorage.removeItem("progressPay2");
+      });
     };
   }, [socketServer.current, socketPagos?.current]);
-
-  // useEffect(() => {
-  //   if (!socketPagos.current) return;
-
-  //   const token =
-  //     typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-  //   if (token) {
-  //     const payload: any = jwtDecode(token);
-  //     if (payload && payload?.idUser) {
-  //       console.log("mandado el user id ", payload?.idUser);
-  //       socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
-  //     }
-  //   }
-
-  //   socketPagos?.current?.on("removeStorageProgressPay2", () => {
-  //     localStorage.removeItem("progressPay2");
-  //   });
-  // }, [socketPagos?.current, hasToken]);
 
   useEffect(() => {
     if (!socketPagos.current) return;
@@ -329,17 +317,9 @@ export default function AppWrapper({
       }
     }
 
-    socketPagos?.current?.on("removeStorageProgressPay2", () => {
-      localStorage.removeItem("progressPay2");
-    });
-
     return () => {
-      // socketPagos?.current?.off("connect", () => {
-      //   socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
-      // });
-
-      socketPagos?.current?.off("removeStorageProgressPay2", () => {
-        localStorage.removeItem("progressPay2");
+      socketPagos?.current?.off("connect", () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
       });
     };
   }, [socketPagos?.current, hasToken]);

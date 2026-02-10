@@ -926,6 +926,8 @@ const OpcionesEntrega = () => {
           <button
             className="bg-[#B92B3D] py-2 px-5 text-white rounded"
             onClick={() => {
+              console.log(groupedProducts);
+              console.log(Object.entries(optionEnvio));
               if (
                 groupedProducts.length !== Object.entries(optionEnvio).length
               ) {
