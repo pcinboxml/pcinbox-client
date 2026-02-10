@@ -71,7 +71,7 @@ const OpcionesEntrega = () => {
 
   return (
     <section>
-      {dataCart && dataCart?.length > 0 ? <ShippingNotice /> : ""}
+      {/* {dataCart && dataCart?.length > 0 ? <ShippingNotice /> : ""} */}
       {dataCart && dataCart.length > 0 ? (
         <TimelineComponent activeStep={1} />
       ) : null}
