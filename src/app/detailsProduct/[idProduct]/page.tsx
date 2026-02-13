@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { Carousel } from "react-responsive-carousel";
 import ReactPlayer from "react-player";
 import { useTheContext } from "@/app/services/globalContext";
+import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 
 const DetailsProduct = () => {
   const {
@@ -29,7 +30,7 @@ const DetailsProduct = () => {
   } = useDetailsProduct();
 
   const { formatCurrency } = useService();
-  const { dataProducts } = useTheContext();
+  const { dataProducts, setDataModal } = useTheContext();
   const router = useParams();
   const { idProduct } = router;
 
@@ -47,7 +48,7 @@ const DetailsProduct = () => {
 
   const dataProduct = useMemo(() => {
     return dataProducts.find(
-      (pro) => Number(pro.idProduct) == Number(idProduct)
+      (pro) => Number(pro.idProduct) == Number(idProduct),
     );
   }, [idProduct, dataProducts]);
 
@@ -124,15 +125,48 @@ const DetailsProduct = () => {
           <button
             className="btnAgregar"
             disabled={loadingAddProduct || dataProduct?.stock! <= 0}
-            onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
+            // onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
+            onClick={() => {
+              if (
+                (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+                dataProduct?.product_stock!.length > 0 &&
+                Number(dataProduct?.providerId) === 3
+              ) {
+                setDataModal({
+                  isOpen: true,
+                  message: (
+                    <div className="w-[800px] border">
+                      <BranchSelector productSelected={dataProduct} />
+                    </div>
+                  ),
+                  title: "",
+                  type: "success",
+                  showActions: false,
+                  onClose: () => {
+                    setDataModal((prev) => ({
+                      ...prev,
+                      isOpen: false,
+                    }));
+                  },
+                  onConfirm: () => {
+                    setDataModal((prev) => ({
+                      ...prev,
+                      isOpen: false,
+                    }));
+                  },
+                });
+              } else {
+                handleAddProductCart(dataProduct!, Number(quantity));
+              }
+            }}
           >
-            {loadingAddProduct ? (
+            {/* {loadingAddProduct ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
             ) : dataProduct?.stock! > 0 ? (
               "Agregar"
             ) : (
               "No disponible"
-            )}
+            )} */}
           </button>
           <br />
 
@@ -235,7 +269,7 @@ const DetailsProduct = () => {
             } catch (error) {
               console.error(
                 "❌ Error al parsear dataProduct.caracteristicas:",
-                error
+                error,
               );
               return null; // evita que React crashee
             }
