@@ -160,13 +160,13 @@ const DetailsProduct = () => {
               }
             }}
           >
-            {/* {loadingAddProduct ? (
+            {loadingAddProduct ? (
               <MdAutorenew size={20} className="m-auto the-spinner" />
             ) : dataProduct?.stock! > 0 ? (
               "Agregar"
             ) : (
               "No disponible"
-            )} */}
+            )}
           </button>
           <br />
 
