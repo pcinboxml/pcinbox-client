@@ -17,7 +17,6 @@ import { FcGoogle } from "react-icons/fc";
 import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
-import { useSession } from "next-auth/react";
 import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
