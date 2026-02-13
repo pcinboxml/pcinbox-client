@@ -55,13 +55,17 @@ const SelectDomicilio = ({
   const filteredAddresses = useMemo(() => {
     if (!dataUserAddress || dataUserAddress.length === 0) return [];
 
-    return dataUserAddress.filter((address) =>
-      selectedOption === "envioLeon"
-        ? esCiudadEnvioPersonalizado(address.city)
-        : !esCiudadEnvioPersonalizado(address.city),
-    );
-  }, [dataUserAddress, selectedOption]);
+    // 1. SI ES ENVÍO PERSONALIZADO, FILTRA POR CIUDADES ESPECÍFICAS
+    if (selectedOption === "envioLeon") {
+      return dataUserAddress.filter((address) =>
+        esCiudadEnvioPersonalizado(address.city),
+      );
+    }
 
+    // 2. PARA CUALQUIER OTRO ENVÍO (PAQUETEEXPRESS, ESTAFETA, ETC.),
+    // MUESTRA TODOS LOS DOMICILIOS SIN FILTRAR POR CIUDAD.
+    return dataUserAddress;
+  }, [dataUserAddress, selectedOption]);
   return (
     <>
       <div className="max-h-[500px] max-w-[550px] overflow-y-auto pr-2 space-y-3">
