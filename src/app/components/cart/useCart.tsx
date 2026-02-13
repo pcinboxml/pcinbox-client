@@ -2,11 +2,13 @@
 import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
+import useStorage from "@/app/services/useStorage";
 import { useState } from "react";
 
 const useCart = () => {
   const { setDataCart, setDataModal, hasToken } = useTheContext();
   const { requestPost } = useService();
+  const { handleWriteStorageDataCart } = useStorage();
 
   const [showDivCart, setShowDivCart] = useState<boolean>(false);
   const [loadingRmAllCart, setLoadingRmAllCart] = useState<boolean>(false);
@@ -22,18 +24,18 @@ const useCart = () => {
   const handleRemoveItemCart = async (
     dataCartProp: ProductI[],
     productProp: ProductI,
-    handleRemoveItemCartProp: any
+    handleRemoveItemCartProp: any,
   ) => {
     if (hasToken) {
       try {
         const resp = await requestPost(
           { idProduct: productProp.idProduct },
-          "/cart/removeProduct"
+          "/cart/removeProduct",
         );
 
         if (resp && resp.status == 200) {
           const removeProduct = dataCartProp.filter(
-            (item: ProductI) => item.idProduct != productProp.idProduct
+            (item: ProductI) => item.idProduct != productProp.idProduct,
           );
 
           if (removeProduct.length === 0) {
@@ -57,7 +59,7 @@ const useCart = () => {
       if (localStorage.getItem("dataCart")) {
         const storage = JSON.parse(localStorage.getItem("dataCart") || "");
         let removeProductStorage = storage.filter(
-          (item: ProductI) => item.idProduct != productProp.idProduct
+          (item: ProductI) => item.idProduct != productProp.idProduct,
         );
 
         setDataCart(removeProductStorage);
@@ -80,7 +82,7 @@ const useCart = () => {
           {
             dataCart: storage,
           },
-          "/cart/addProductFromStorage"
+          "/cart/addProductFromStorage",
         );
 
         if (getStatus.status == 200) {
@@ -92,7 +94,7 @@ const useCart = () => {
 
   const handleRemoveAllCart = async (
     dataCartProp: ProductI[],
-    onMouseLeaveCartProp: any
+    onMouseLeaveCartProp: any,
   ) => {
     if (hasToken) {
       try {
@@ -101,14 +103,14 @@ const useCart = () => {
           {
             dataCart: dataCartProp,
           },
-          "/cart/removeAllCart"
+          "/cart/removeAllCart",
         );
 
         setLoadingRmAllCart(false);
 
         const status = await resp.status;
         if (status == 200) {
-          setDataCart([]);
+          // setDataCart([]);
           onMouseLeaveCartProp();
         }
       } catch (error) {
@@ -128,7 +130,7 @@ const useCart = () => {
       }
     } else {
       if (localStorage.getItem("dataCart")) {
-        setDataCart([]);
+        // setDataCart([]);
         localStorage.setItem("dataCart", JSON.stringify([]));
       }
     }

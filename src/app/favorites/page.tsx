@@ -227,7 +227,7 @@ const Favorites = () => {
                                 />
                               </div>
                               {/* {product.reviews && product.reviews.length > 0 && ( */}
-                              <div className="comments flex">
+                              <div className="comments flex h-[10px]">
                                 <StyledTooltip
                                   title={
                                     <div className="w-full  flex justify-center">
@@ -545,7 +545,8 @@ const Favorites = () => {
                                   src={img}
                                   style={{
                                     objectFit: "contain",
-                                    height: "150px",
+                                    height: "auto",
+                                    maxHeight: "200px",
                                     marginTop: "12px",
                                   }}
                                   loading="lazy"

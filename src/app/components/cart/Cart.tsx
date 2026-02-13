@@ -24,7 +24,11 @@ export const ModalCart = ({
   showDivCart: boolean;
 }) => {
   const { dataCart, setDataCart } = useTheContext();
-  const { dataCartStorege, handleWriteStorageDataCart } = useStorage();
+  const {
+    dataCartStorege,
+    handleRemoveStorageDataCart,
+    handleWriteStorageDataCart,
+  } = useStorage();
   const { formatCurrency, onRouterLink, totalPrice } = useService();
   const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
     useCart();
@@ -69,7 +73,10 @@ export const ModalCart = ({
             <button
               className="border flex justify-center items-center p-2"
               disabled={loadingRmAllCart}
-              onClick={() => handleRemoveAllCart(dataCart, onMouseLeaveCart)}
+              onClick={() => {
+                handleRemoveStorageDataCart();
+                handleRemoveAllCart(dataCart, onMouseLeaveCart);
+              }}
             >
               {loadingRmAllCart ? (
                 <MdAutorenew size={20} className="m-auto the-spinner" />

@@ -131,47 +131,52 @@ const SearchCategoryContent = () => {
     },
   ];
 
-  useEffect(() => {
-    if (!socketServer.current || data.length === 0) return;
-    const socket = socketServer.current;
+  // useEffect(() => {
+  //   if (!socketServer.current || data.length === 0) return;
+  //   const socket = socketServer.current;
 
-    const handlerUpdateProductComponent = (dataSocket: ProductI) => {
-      setData((prev: any) =>
-        prev.map((item: any) =>
-          item.idProduct == dataSocket.idProduct
-            ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
-            : item,
-        ),
-      );
+  //   const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+  //     setData((prev: any) =>
+  //       prev.map((item: any) =>
+  //         item.idProduct == dataSocket.idProduct
+  //           ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
+  //           : item,
+  //       ),
+  //     );
 
-      setDataFavorites((prevFavorites) => {
-        return prevFavorites.map((item: any) => {
-          // Aquí comparamos con la estructura correcta:
-          const match = Number(item.productId) === Number(dataSocket.idProduct);
+  //     setDataFavorites((prevFavorites) => {
+  //       return prevFavorites.map((item: any) => {
+  //         // Aquí comparamos con la estructura correcta:
+  //         const match = Number(item.productId) === Number(dataSocket.idProduct);
 
-          return match
-            ? {
-                ...item,
-                products: {
-                  ...item.products,
-                  stock: Number(dataSocket.stock),
-                  price: Number(dataSocket.price).toString(),
-                },
-              }
-            : item;
-        });
-      });
-    };
+  //         return match
+  //           ? {
+  //               ...item,
+  //               products: {
+  //                 ...item.products,
+  //                 stock: Number(dataSocket.stock),
+  //                 price: Number(dataSocket.price).toString(),
+  //               },
+  //             }
+  //           : item;
+  //       });
+  //     });
+  //   };
 
-    socket.on("updateProductComponent", handlerUpdateProductComponent);
+  //   socket.on("updateProductComponent", handlerUpdateProductComponent);
 
-    return () => {
-      socket.off("updateProductComponent", handlerUpdateProductComponent);
-    };
-  }, [socketServer.current, data]);
+  //   return () => {
+  //     socket.off("updateProductComponent", handlerUpdateProductComponent);
+  //   };
+  // }, [socketServer.current, data]);
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
+    <Tooltip
+      {...props}
+      arrow
+      classes={{ popper: className }}
+      placement="bottom-start"
+    />
   ))(() => ({
     [`& .MuiTooltip-tooltip`]: {
       backgroundColor: "#fff",
@@ -300,20 +305,20 @@ const SearchCategoryContent = () => {
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
             </h3>
 
-            {data && data?.length > 0 ? (
-              <>
-                <div className="mt-4 flex gap-1 items-center justify-between">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Buscar..."
-                      className="border py-1 px-4"
-                      onChange={(event) => {
-                        setSearchText(event.currentTarget.value);
-                      }}
-                      value={searchText}
-                    />
-                    <button
+            {/* {data && data?.length > 0 ? (
+              <> */}
+            <div className="mt-4 flex gap-1 items-center justify-between">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  className="border py-1 px-4"
+                  onChange={(event) => {
+                    setSearchText(event.currentTarget.value);
+                  }}
+                  value={searchText}
+                />
+                {/* <button
                       className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
                       onClick={() => {
                         if (searchText.trim().length < 3) {
@@ -333,39 +338,39 @@ const SearchCategoryContent = () => {
                       }}
                     >
                       Buscar
-                    </button>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <span className="flex shrink-0">Ordenar por:</span>
-                    <select
-                      className="form-select"
-                      defaultValue={""}
-                      onChange={(event) => {
-                        setData((prev) => {
-                          return prev
-                            .slice(startIndex, endIndex)
-                            .sort((a: any, b: any) =>
-                              event.target.value == "1"
-                                ? Number(b.price) - Number(a.price)
-                                : Number(a.price) - Number(b.price),
-                            );
-                        });
-                      }}
-                    >
-                      <option value="" disabled>
-                        Selecciona una opción
-                      </option>
-                      <option value={1}>Mayor precio</option>
-                      <option value={2}>Menor precio</option>
-                    </select>
-                  </div>
-                </div>
+                    </button> */}
+              </div>
+              <div className="flex gap-1 items-center">
+                <span className="flex shrink-0">Ordenar por:</span>
+                <select
+                  className="form-select"
+                  defaultValue={""}
+                  onChange={(event) => {
+                    setData((prev) => {
+                      return prev
+                        .slice(startIndex, endIndex)
+                        .sort((a: any, b: any) =>
+                          event.target.value == "1"
+                            ? Number(b.price) - Number(a.price)
+                            : Number(a.price) - Number(b.price),
+                        );
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Selecciona una opción
+                  </option>
+                  <option value={1}>Mayor precio</option>
+                  <option value={2}>Menor precio</option>
+                </select>
+              </div>
+            </div>
 
-                <hr />
-              </>
-            ) : (
+            <hr />
+            {/* </> */}
+            {/* ) : (
               ""
-            )}
+            )} */}
             <div>
               {data && data.length > 0 ? (
                 data
@@ -433,7 +438,7 @@ const SearchCategoryContent = () => {
                                         />
                                       </div>
                                       {/* {product.reviews && product.reviews.length > 0 && ( */}
-                                      <div className="comments flex">
+                                      <div className="comments flex h-[10px]">
                                         <StyledTooltip
                                           title={
                                             <div className="w-full  flex justify-center">

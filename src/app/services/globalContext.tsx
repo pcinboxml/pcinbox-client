@@ -70,6 +70,7 @@ interface ContextProps {
   dataProducts: ProductI[];
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
   socketPagos: RefObject<typeof Socket | null>;
+  socketCron: RefObject<typeof Socket | null>;
   socketServer: RefObject<typeof Socket | null>;
   showProductsMenu: boolean;
   setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
@@ -145,6 +146,7 @@ const CreateContext = createContext<ContextProps>({
   setDataProducts: () => {},
   socketPagos: { current: null },
   socketServer: { current: null },
+  socketCron: { current: null },
   showProductsMenu: false,
   setShowProductsMenu: () => {},
   dataUserAddress: [],
@@ -216,6 +218,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
+  const socketCron = useRef<typeof Socket | null>(null);
 
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
@@ -224,17 +227,6 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     idAddress: 0,
   });
   const [addressByStore, setAddressByStore] = useState<Record<any, any>>({});
-
-  // const [idAddressEnvio, setIdAddressEnvio] = useState<number>(() => {
-  //   if (typeof window !== "undefined") {
-  //     const stored = localStorage.getItem("progressPay");
-  //     if (stored) {
-  //       const parsed = JSON.parse(stored);
-  //       return parsed?.optionSend?.address ?? 0;
-  //     }
-  //   }
-  //   return 0;
-  // });
 
   const [dataAddress, setDataAddress] = useState<DataSendI>({
     street: "",
@@ -324,9 +316,18 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       timeout: 20000,
     });
 
+    // socketCron.current = io(process.env.NEXT_PUBLIC_SOCKET_CRON || "", {
+    //   reconnection: true,
+    //   reconnectionAttempts: Infinity, // intenta siempre
+    //   reconnectionDelay: 1000, // empieza con 1s
+    //   reconnectionDelayMax: 5000, // máximo 5s
+    //   timeout: 20000,
+    // });
+
     return () => {
       socketServer.current?.disconnect();
       socketPagos.current?.disconnect();
+      // socketCron?.current?.disconnect();
     };
   }, []);
   return (
@@ -355,7 +356,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataProducts,
         socketPagos,
         socketServer,
-
+        socketCron,
         showProductsMenu,
         setShowProductsMenu,
         dataUserAddress,

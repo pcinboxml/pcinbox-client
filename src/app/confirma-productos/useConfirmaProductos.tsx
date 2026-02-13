@@ -6,10 +6,12 @@ import useService from "../services/useService";
 import { useEffect, useState } from "react";
 import GridConfirmaProductos from "./gridConfirmaProductos";
 import axios from "axios";
+import useStorage from "../services/useStorage";
 
 const useConfirmaProductos = () => {
   const { dataCart, setDataCart, setDataModal } = useTheContext();
   const { requestPost, formatCurrency } = useService();
+  const { handleRemoveStorageDataCart } = useStorage();
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
   });
@@ -87,7 +89,9 @@ const useConfirmaProductos = () => {
           setLoadingClearCar(false);
 
           if (resp.status == 200) {
-            setDataCart([]);
+            //  setDataCart([]);
+            handleRemoveStorageDataCart();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }
         } catch (error) {

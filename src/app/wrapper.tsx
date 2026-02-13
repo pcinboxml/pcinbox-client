@@ -1,14 +1,12 @@
 "use client";
 
-import useCart from "./components/cart/useCart";
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
-import useNavbar from "./components/navbar/useNavbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
@@ -33,40 +31,17 @@ export default function AppWrapper({
     setDataFavorites,
     socketServer,
     socketPagos,
+    socketCron,
   } = useTheContext();
 
-  const { addProductFromStorage } = useCart();
-  const { handleGetDataCart } = useNavbar();
-  const { handleWriteStorageProgressPay } = useStorage();
-  const isMounted = useRef(false);
-
-  const [isDesktop, setIsDesktop] = useState(true);
+  const { dataCartStorege } = useStorage();
 
   useEffect(() => {
-    const checkWidth = () => {
-      const width = window.innerWidth;
-      // Solo permitir pantallas grandes (desktop)
-      setIsDesktop(width >= 1024);
-    };
-
-    checkWidth(); // al cargar
-    window.addEventListener("resize", checkWidth); // al redimensionar
-
-    return () => window.removeEventListener("resize", checkWidth);
-  }, []);
-  useEffect(() => {
-    if (localStorage.getItem("dataCart") && hasToken == false) {
-      const productsStorage = JSON.parse(
-        localStorage.getItem("dataCart") || "",
-      );
-
-      setDataCart(productsStorage);
-    } else if (hasToken == true) {
-      addProductFromStorage().then(async (resp) => {
-        await handleGetDataCart();
-      });
+    if (dataCart && hasToken) {
+      localStorage.setItem("dataCartStorage", JSON.stringify(dataCart));
+      setDataCart(dataCart);
     }
-  }, [hasToken]);
+  }, [dataCart, hasToken, dataCartStorege]);
 
   useEffect(() => {
     if (!socketServer.current) return;
@@ -323,6 +298,14 @@ export default function AppWrapper({
       });
     };
   }, [socketPagos?.current, hasToken]);
+
+  useEffect(() => {
+    if (!socketCron.current) return;
+
+    socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+      console.log(dataSocketCron);
+    });
+  }, [socketCron?.current]);
 
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
   useProtectedRoute(pathName);

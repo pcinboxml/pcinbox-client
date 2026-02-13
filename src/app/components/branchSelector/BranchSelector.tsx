@@ -8,9 +8,12 @@ import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
+import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
-  const { handleWriteStorageProgressPay } = useStorage();
+  const { dataCart } = useTheContext();
+  const { handleWriteStorageProgressPay, handleWriteStorageDataCart } =
+    useStorage();
   const {
     handleAddProductCart,
     loadingByBranch,
@@ -226,6 +229,8 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                                     productSelected?.price,
                                     sucursal,
                                   );
+
+                                  //  handleWriteStorageDataCart(dataCart);
 
                                   handleWriteStorageProgressPay({
                                     optionSend: {

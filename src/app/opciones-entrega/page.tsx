@@ -50,6 +50,7 @@ const OpcionesEntrega = () => {
     handleOnChangeSeguroEnvio,
     seguroEnvio,
     showUbicationStore,
+    calcPriceEnvio,
   } = useOpcionesEntrega();
 
   const { handleWriteStorageProgressPay2 } = useStorage();
@@ -354,12 +355,13 @@ const OpcionesEntrega = () => {
                         </div>
                       )}
 
-                    {dataUserAddress &&
-                      dataUserAddress.some((d) =>
-                        CIUDADES_ENVIO_PERSONALIZADO.filter(
-                          (df) => df !== d.city,
-                        ),
-                      ) &&
+                    {
+                      // dataUserAddress &&
+                      //   dataUserAddress.some((d) =>
+                      //     CIUDADES_ENVIO_PERSONALIZADO.filter(
+                      //       (df) => df !== d.city,
+                      //     ),
+                      //   ) &&
                       Number(group.providerId) !== 1 && (
                         <>
                           {(() => {
@@ -455,11 +457,16 @@ const OpcionesEntrega = () => {
                                         <span className="font-bold text-black">
                                           {(() => {
                                             let findDataProductsStoreId =
-                                              dataCart?.filter(
-                                                (d) =>
-                                                  d.storeId ===
-                                                  Number(group.stored),
-                                              );
+                                              dataCart?.filter((d) => {
+                                                if (d.storeId) {
+                                                  if (
+                                                    Number(d.storeId) ===
+                                                    Number(group.storeId)
+                                                  ) {
+                                                    return d;
+                                                  }
+                                                }
+                                              });
 
                                             const totalPriceStoreProvider3 =
                                               Math.round(
@@ -474,7 +481,7 @@ const OpcionesEntrega = () => {
                                                   .map(
                                                     (item) =>
                                                       Number(item.price) *
-                                                      item.quantity,
+                                                      Number(item.quantity),
                                                   )
                                                   .reduce(
                                                     (sum, current) =>
@@ -482,23 +489,22 @@ const OpcionesEntrega = () => {
                                                     0,
                                                   ) +
                                                   Number.EPSILON * 100,
-                                              ) / 100;
+                                              );
 
-                                            return formatCurrency(
-                                              Number(
-                                                seguroEnvio[groupKey]
-                                                  ?.required == "no" ||
-                                                  totalPriceStoreProvider3 <
-                                                    1000
-                                                  ? 15 * (1 + 0.16)
-                                                  : (Math.ceil(
-                                                      totalPriceStoreProvider3,
-                                                    ) /
-                                                      1000) *
-                                                      15 *
-                                                      (1 + 0.16),
-                                              ),
-                                            );
+                                            if (
+                                              seguroEnvio[groupKey]?.required ==
+                                              "no"
+                                            ) {
+                                              return formatCurrency(Number(0));
+                                            } else {
+                                              return formatCurrency(
+                                                Number(
+                                                  calcPriceEnvio(
+                                                    totalPriceStoreProvider3,
+                                                  ),
+                                                ),
+                                              );
+                                            }
                                           })()}
                                         </span>
                                       </div>
@@ -654,11 +660,16 @@ const OpcionesEntrega = () => {
                                           <span className="font-bold text-black">
                                             {(() => {
                                               let findDataProductsStoreId =
-                                                dataCart?.filter(
-                                                  (d) =>
-                                                    d.storeId ===
-                                                    Number(group.stored),
-                                                );
+                                                dataCart?.filter((d) => {
+                                                  if (d.storeId) {
+                                                    if (
+                                                      Number(d.storeId) ===
+                                                      Number(group.storeId)
+                                                    ) {
+                                                      return d;
+                                                    }
+                                                  }
+                                                });
 
                                               const totalPriceStoreProvider3 =
                                                 Math.round(
@@ -673,7 +684,7 @@ const OpcionesEntrega = () => {
                                                     .map(
                                                       (item) =>
                                                         Number(item.price) *
-                                                        item.quantity,
+                                                        Number(item.quantity),
                                                     )
                                                     .reduce(
                                                       (sum, current) =>
@@ -681,23 +692,24 @@ const OpcionesEntrega = () => {
                                                       0,
                                                     ) +
                                                     Number.EPSILON * 100,
-                                                ) / 100;
+                                                );
 
-                                              return formatCurrency(
-                                                Number(
-                                                  seguroEnvio[groupKey]
-                                                    ?.required == "no" ||
-                                                    totalPriceStoreProvider3 <
-                                                      1000
-                                                    ? 15 * (1 + 0.16)
-                                                    : (Math.ceil(
-                                                        totalPriceStoreProvider3,
-                                                      ) /
-                                                        1000) *
-                                                        15 *
-                                                        (1 + 0.16),
-                                                ),
-                                              );
+                                              if (
+                                                seguroEnvio[groupKey]
+                                                  ?.required == "no"
+                                              ) {
+                                                return formatCurrency(
+                                                  Number(0),
+                                                );
+                                              } else {
+                                                return formatCurrency(
+                                                  Number(
+                                                    calcPriceEnvio(
+                                                      totalPriceStoreProvider3,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
                                             })()}
                                           </span>
                                         </div>
@@ -781,7 +793,8 @@ const OpcionesEntrega = () => {
                             );
                           })()}
                         </>
-                      )}
+                      )
+                    }
 
                     <hr />
                   </div>
@@ -926,8 +939,6 @@ const OpcionesEntrega = () => {
           <button
             className="bg-[#B92B3D] py-2 px-5 text-white rounded"
             onClick={() => {
-              console.log(groupedProducts);
-              console.log(Object.entries(optionEnvio));
               if (
                 groupedProducts.length !== Object.entries(optionEnvio).length
               ) {
@@ -995,6 +1006,7 @@ const OpcionesEntrega = () => {
 
               Object.entries(optionEnvio).forEach(([key, shippingMethod]) => {
                 const seguro = seguroEnvio[key];
+
                 const theAddressByStore = addressByStore[key];
                 const theCostoEnvioProductByZone = costoEnvioProductByZone[key];
 

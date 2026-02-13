@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import CartI from "../interfaces/cart/cart.interface";
 import ProductI from "../interfaces/products/product.interface";
+import { useTheContext } from "./globalContext";
 
 interface progressPayI {
   optionSend: {
@@ -35,6 +36,7 @@ interface progressPayI2 {
 }
 
 const useStorage = () => {
+  const { setDataCart } = useTheContext();
   const [dataCartStorege, setDataCartStorege] = useState<ProductI[]>([]);
 
   const [progressPay, setProgressPay] = useState<progressPayI>({
@@ -107,6 +109,7 @@ const useStorage = () => {
         const parsed3 = JSON.parse(stored3);
         // Reemplaza completamente el estado en lugar de concatenar
         setDataCartStorege(parsed3);
+        setDataCart(parsed3);
       }
     } catch (error) {
       console.error("Error parsing dataCartStorage from localStorage:", error);
@@ -156,10 +159,16 @@ const useStorage = () => {
     localStorage.setItem("dataCartStorage", JSON.stringify(updatedCart)); // actualiza storage
   };
 
-  const syncStorageWithGlobalCart = (globalCart: ProductI[]) => {
-    setDataCartStorege(globalCart);
-    localStorage.setItem("dataCartStorage", JSON.stringify(globalCart));
+  const handleRemoveStorageDataCart = () => {
+    setDataCartStorege([]);
+    setDataCart([]);
+    localStorage.removeItem("dataCartStorage");
   };
+
+  // const syncStorageWithGlobalCart = (globalCart: ProductI[]) => {
+  //   setDataCartStorege(globalCart);
+  //   localStorage.setItem("dataCartStorage", JSON.stringify(globalCart));
+  // };
 
   return {
     progressPay,
@@ -168,7 +177,8 @@ const useStorage = () => {
     handleWriteStorageProgressPay,
     handleWriteStorageProgressPay2,
     handleWriteStorageDataCart,
-    syncStorageWithGlobalCart,
+    // syncStorageWithGlobalCart,
+    handleRemoveStorageDataCart,
   };
 };
 

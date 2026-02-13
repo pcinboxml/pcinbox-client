@@ -108,29 +108,22 @@ const useOpcionesEntrega = () => {
       );
 
       if (findDataProductsStoreId && findDataProductsStoreId.length > 0) {
-        const totalPriceStoreProvider3 =
-          Math.round(
-            findDataProductsStoreId
-              ?.filter(
-                (itemF) => itemF.stock != 0 && Number(itemF?.providerId) === 3,
-              )
-              .map((item) => Number(item.price) * item.quantity)
-              .reduce((sum, current) => sum + current, 0) +
-              Number.EPSILON * 100,
-          ) / 100;
+        const totalPriceStoreProvider3 = Math.round(
+          findDataProductsStoreId
+            ?.filter(
+              (itemF) => itemF.stock != 0 && Number(itemF?.providerId) === 3,
+            )
+            .map((item) => Number(item.price) * item.quantity)
+            .reduce((sum, current) => sum + current, 0) +
+            Number.EPSILON * 100,
+        );
 
         setSeguroEnvio((prev) => ({
           ...prev,
           [envioKey]: {
             required: value,
             costo:
-              value === "no"
-                ? 0
-                : totalPriceStoreProvider3 < 1000
-                  ? 15 * (1 + IVA)
-                  : (Math.ceil(totalPriceStoreProvider3) / 1000) *
-                    15 *
-                    (1 + IVA),
+              value === "no" ? 0 : calcPriceEnvio(totalPriceStoreProvider3),
           },
         }));
       }
@@ -497,6 +490,13 @@ const useOpcionesEntrega = () => {
     });
   };
 
+  function calcPriceEnvio(cantidad: number) {
+    if (cantidad < 1) return 0;
+
+    const bloque = Math.ceil(cantidad / 1000);
+    return bloque * 17.4;
+  }
+
   return {
     showUbicationStore,
     handleOnChangeOptionEnvio,
@@ -518,6 +518,7 @@ const useOpcionesEntrega = () => {
     CIUDADES_ENVIO_PERSONALIZADO,
     handleOnChangeSeguroEnvio,
     seguroEnvio,
+    calcPriceEnvio,
   };
 };
 

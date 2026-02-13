@@ -34,6 +34,7 @@ const nextConfig: NextConfig = {
       process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
     NEXT_PUBLIC_SOCKET_PAGOS: process.env.NEXT_PUBLIC_SOCKET_PAGOS,
     NEXT_PUBLIC_STRIPE_PUBLIC_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY,
+    NEXT_PUBLIC_SOCKET_CRON: process.env.NEXT_PUBLIC_SOCKET_CRON,
   },
 
   // async headers() {
