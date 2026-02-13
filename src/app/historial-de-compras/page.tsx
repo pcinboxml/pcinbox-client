@@ -6,18 +6,16 @@ import style from "./historial-de-compras.module.css";
 import useHistorialDeCompras from "./useHistorialCompras";
 import { Alert } from "@mui/material";
 import useService from "../services/useService";
-import { MdAutorenew } from "react-icons/md";
+import { MdAutorenew, MdLocationOn } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
 
 const HistoryShop = () => {
   const {
     dataHistoryCompras,
-    loadingCancelledCompra,
+    initDataHistory,
     dataFilter,
-    handleHistoryByUser,
-    // handleOnSelectStatus,
     showModal,
-    handleOnSearch,
+    showUbicationStore,
     setDataFilter,
 
     setDataHistoryCompras,
@@ -28,7 +26,7 @@ const HistoryShop = () => {
   const { socketPagos } = useTheContext();
 
   useEffect(() => {
-    handleHistoryByUser();
+    initDataHistory();
   }, []);
 
   useEffect(() => {
@@ -39,8 +37,20 @@ const HistoryShop = () => {
     const handler = (data: any) => {
       setDataHistoryCompras((prev) => {
         return prev.map((item) => {
-          if (item.idShipment == data.idShipment) {
-            return { ...item, statusEnvio: data.status };
+          if (item.idOrder === data.idOrder) {
+            return {
+              ...item,
+              products: item.products?.map((product) => {
+                if (product?.idShipment === data?.idShipment) {
+                  return {
+                    ...product,
+                    statusShip: data?.status,
+                  };
+                } else {
+                  return product;
+                }
+              }),
+            };
           }
           return item;
         });
@@ -87,7 +97,6 @@ const HistoryShop = () => {
                   status: event.target.value,
                 }));
               }}
-              // onChange={handleOnSelectStatus}
             >
               <option value="allState">Todos los estados</option>
               <option value="entregado">Entregado</option>
@@ -145,6 +154,7 @@ const HistoryShop = () => {
         <div className="my-5 flex flex-col">
           {dataHistoryCompras && dataHistoryCompras.length > 0 ? (
             dataHistoryCompras.map((historyCompra, index) => {
+              console.log(historyCompra);
               return (
                 <div
                   className={`${style.orderCard} my-3`}
@@ -161,71 +171,64 @@ const HistoryShop = () => {
                           No. Orden #{historyCompra.idOrder}
                         </span>
                         <div className="w-[80%] p-1 flex justify-end gap-3 items-center">
-                          <div
-                            className={`${style.status}  ${
-                              historyCompra.statusEnvio == "procesando"
-                                ? style.statusProcessing
-                                : historyCompra.statusEnvio == "enviado"
-                                ? style.statusShipped
-                                : historyCompra.statusEnvio == "cancelado"
-                                ? style.statusCancelled
-                                : historyCompra.statusEnvio == "entregado"
-                                ? style.statusDelivered
-                                : historyCompra.statusEnvio == "disponible"
-                                ? style.statusDelivered
-                                : ""
-                            } p-2 rounded`}
-                          >
-                            <span className="text-center shrink-0 block">
-                              Estatus: {historyCompra.statusEnvio}
-                            </span>
-                          </div>
-
                           <div>
-                            {(historyCompra.pay_method == "tarjeta_de_debito" ||
-                              historyCompra.pay_method ==
+                            {(historyCompra?.payment_method ==
+                              "tarjeta_de_debito" ||
+                              historyCompra?.payment_method ==
                                 "tarjeta_de_credito") &&
-                            historyCompra.statusEnvio == "cancelado" ? (
+                            historyCompra?.products[0]?.statusShip ==
+                              "cancelado" ? (
                               <p>
                                 Tu reembolso se reflejara de 5 a 10 días habiles
                               </p>
-                            ) : historyCompra.pay_method == "oxxo" &&
-                              historyCompra.statusEnvio == "cancelado" &&
-                              historyCompra.paidAtOxxo == 1 ? (
+                            ) : historyCompra?.payment_method ==
+                                "transferencia_bancaria" &&
+                              historyCompra?.products[0]?.statusShip ==
+                                "cancelado" ? (
                               <p className="text-[16px]">
                                 Comunicate con la sucursal{" "}
                                 <span className="font-bold">PCInbox</span> para
                                 solicitar reembolso de tu pedido. <br />
                               </p>
-                            ) : historyCompra.statusEnvio == "disponible" &&
-                              historyCompra.shipping_method == "sucursal" ? (
-                              <p className="text-[16px]">
-                                Ya puedes recoger el pedido en la sucursal
-                                PCinBox León.
-                              </p>
                             ) : null}
                           </div>
+                          {(() => {
+                            const estadosNoCancelables = new Set([
+                              "entregado",
+                              "cancelado",
+                              "disponible",
+                            ]);
 
+                            const tieneEstadoNoCancelable =
+                              historyCompra?.products?.some((item) =>
+                                estadosNoCancelables.has(item?.statusShip),
+                              );
+
+                            if (!tieneEstadoNoCancelable) {
+                              return (
+                                <button
+                                  onClick={() => showModal(historyCompra)}
+                                  className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
+                                >
+                                  Cancelar compra
+                                </button>
+                              );
+                            }
+                          })()}
+                          {/* 
                           {historyCompra.statusEnvio != "entregado" &&
                           historyCompra.statusEnvio != "cancelado" &&
                           historyCompra.statusEnvio != "disponible" ? (
                             <button
-                              disabled={
-                                loadingCancelledCompra[historyCompra.idOrder]
-                              }
+                            
                               onClick={() => showModal(historyCompra)}
                               className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
                             >
-                              {loadingCancelledCompra[historyCompra.idOrder] ? (
-                                <MdAutorenew
-                                  size={20}
-                                  className="m-auto the-spinner"
-                                />
-                              ) : (
-                                <>Cancelar compra</>
-                              )}
+                              
+                              <>Cancelar compra</>
+                            
                             </button>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       </div>
                       <div className={style.orderDate}>
@@ -234,12 +237,12 @@ const HistoryShop = () => {
                             Compra realizada el{" "}
                             {new Date(
                               historyCompra?.updatedAt ||
-                                historyCompra?.createdAt
+                                historyCompra?.createdAt,
                             ).toLocaleString()}
                           </>
                         }
                       </div>
-                      <div className={style.orderDate}>
+                      {/* <div className={style.orderDate}>
                         {(historyCompra.shipping_method == "envioLeon" ||
                           historyCompra.shipping_method == "paqueteexpress" ||
                           historyCompra.shipping_method == "dhl" ||
@@ -259,11 +262,11 @@ const HistoryShop = () => {
                               <span className="block mx-2 font-bold text-black">
                                 {(() => {
                                   const createdAt = new Date(
-                                    historyCompra.createdAt
+                                    historyCompra.createdAt,
                                   );
                                   const fechaMas7Dias = new Date(createdAt);
                                   fechaMas7Dias.setDate(
-                                    createdAt.getDate() + 7
+                                    createdAt.getDate() + 7,
                                   );
 
                                   const inicio = createdAt.toLocaleDateString(
@@ -272,7 +275,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
                                   const fin = fechaMas7Dias.toLocaleDateString(
                                     "es-ES",
@@ -280,7 +283,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
 
                                   return `${inicio} a ${fin}`;
@@ -344,11 +347,11 @@ const HistoryShop = () => {
                               <span className="block mx-2 font-bold text-black">
                                 {(() => {
                                   const createdAt = new Date(
-                                    historyCompra.createdAt
+                                    historyCompra.createdAt,
                                   );
                                   const fechaMas7Dias = new Date(createdAt);
                                   fechaMas7Dias.setDate(
-                                    createdAt.getDate() + 7
+                                    createdAt.getDate() + 7,
                                   );
 
                                   const inicio = createdAt.toLocaleDateString(
@@ -357,7 +360,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
                                   const fin = fechaMas7Dias.toLocaleDateString(
                                     "es-ES",
@@ -365,7 +368,7 @@ const HistoryShop = () => {
                                       year: "numeric",
                                       month: "2-digit",
                                       day: "2-digit",
-                                    }
+                                    },
                                   );
 
                                   return `${inicio} a ${fin}`;
@@ -377,11 +380,12 @@ const HistoryShop = () => {
                         ) : (
                           ""
                         )}
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className={style.orderItems + " flex flex-col"}>
-                    {historyCompra.products.map((d, indexD) => {
+                    {historyCompra.products?.map((d, indexD: number) => {
+                      const address = historyCompra.products[indexD]?.address; // tu objeto de dirección
                       return (
                         <div className={style.item} key={indexD}>
                           <img
@@ -398,14 +402,89 @@ const HistoryShop = () => {
                             <div className={style.itemVariant}>
                               {d.description}
                             </div>
+
+                            {d.statusShip === "disponible" && (
+                              <div className={style.itemMeta}>
+                                <div className={style.itemVariant}>
+                                  <Alert severity="success">
+                                    Ya puedes recoger este producto en la
+                                    sucursal PCinBOX-LEON
+                                  </Alert>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Aquí agregamos la dirección */}
+                            <div className={style.itemMeta}>
+                              <div className={style.itemVariant}>
+                                {address ? (
+                                  <div>
+                                    <strong>Dirección de envío:</strong>
+                                    <div>{address.street}</div>
+                                    <div>{address.cologne}</div>
+                                    <div>
+                                      {address.city}, {address.state}{" "}
+                                      {address.postalCode}
+                                    </div>
+                                    <div>{address.country}</div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center">
+                                    Recoger en Sucursal PCinBOX-LEÓN
+                                    <a
+                                      onClick={() => {
+                                        showUbicationStore(
+                                          String("PCinBOX-León"),
+                                        );
+                                      }}
+                                      style={{
+                                        display: "flex",
+                                        fontSize: "13px",
+                                        fontWeight: "bold",
+                                        textDecoration: "underline",
+                                        alignItems: "center",
+                                        cursor: "pointer",
+                                        marginLeft: "5px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MdLocationOn size={22} />
+                                      Ver Ubicación
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
                             <div className={style.itemMeta}>
                               <div className={style.itemQuantity}>
                                 Cantidad: {d.quantity}
                               </div>
                               <div className={style.itemPrice}>
                                 {formatCurrency(
-                                  Number(d.price) * Number(d.quantity)
+                                  Number(d.price) * Number(d.quantity),
                                 )}
+                              </div>
+                            </div>
+                            <div className={style.itemMeta}>
+                              <div className={style.itemVariant}>
+                                <span
+                                  style={{ padding: "5px" }}
+                                  className={`text-center rounded font-bold shrink-0 block ${style.status} ${
+                                    d.statusShip === "procesando"
+                                      ? style.statusProcessing
+                                      : d.statusShip === "enviado"
+                                        ? style.statusShipped
+                                        : d.statusShip === "cancelado"
+                                          ? style.statusCancelled
+                                          : d.statusShip === "entregado" ||
+                                              d.statusShip === "disponible"
+                                            ? style.statusDelivered
+                                            : ""
+                                  }`}
+                                >
+                                  ESTATUS: {d.statusShip?.toUpperCase()}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -414,21 +493,21 @@ const HistoryShop = () => {
                     })}
                   </div>
 
-                  {historyCompra.statusEnvio == "entregado" ? (
+                  {/* {historyCompra.statusEnvio == "entregado" ? (
                     <div className={style.orderActions}>
                       <a
                         role="button"
                         className="btn btn-secondary"
                         onClick={() =>
                           onRouterLink(
-                            `/detalles-pedido/${historyCompra.idOrder}`
+                            `/detalles-pedido/${historyCompra.idOrder}`,
                           )
                         }
                       >
                         Ver detalles
                       </a>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
               );
             })

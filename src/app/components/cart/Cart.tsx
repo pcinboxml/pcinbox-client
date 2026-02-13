@@ -8,6 +8,8 @@ import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
 import { MdAutorenew, MdClose } from "react-icons/md";
+import useStorage from "@/app/services/useStorage";
+import { CheckoutStep } from "../timeline/checkoutSteps";
 // import Link from "next/link";
 
 export const Cart = () => {
@@ -22,20 +24,14 @@ export const ModalCart = ({
   showDivCart: boolean;
 }) => {
   const { dataCart, setDataCart } = useTheContext();
-  const { formatCurrency, onRouterLink } = useService();
+  const {
+    dataCartStorege,
+    handleRemoveStorageDataCart,
+    handleWriteStorageDataCart,
+  } = useStorage();
+  const { formatCurrency, onRouterLink, totalPrice } = useService();
   const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
     useCart();
-
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
 
   return (
     <div
@@ -77,7 +73,10 @@ export const ModalCart = ({
             <button
               className="border flex justify-center items-center p-2"
               disabled={loadingRmAllCart}
-              onClick={() => handleRemoveAllCart(dataCart, onMouseLeaveCart)}
+              onClick={() => {
+                handleRemoveStorageDataCart();
+                handleRemoveAllCart(dataCart, onMouseLeaveCart);
+              }}
             >
               {loadingRmAllCart ? (
                 <MdAutorenew size={20} className="m-auto the-spinner" />
@@ -107,11 +106,11 @@ export const ModalCart = ({
           ) : (
             <div className="space-y-4">
               {dataCart &&
-                dataCart.map((product: ProductI, index: number) => {
+                dataCart.map((product: ProductI) => {
                   if (product.stock != 0) {
                     return (
                       <div
-                        key={index}
+                        key={`${product.idProduct}-${product.storeId}`}
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                       >
                         {(product as any).image_url ? (
@@ -156,7 +155,18 @@ export const ModalCart = ({
                             {product.name}
                           </h3>
                           <p className="text-xs text-gray-500 mt-1">
-                            Disponibles: {product.stock} piezas.
+                            Disponibles:{" "}
+                            {(() => {
+                              let findStockStore = product?.product_stock?.find(
+                                (branch) =>
+                                  branch?.branchId == product?.storeId,
+                              );
+
+                              return (
+                                findStockStore?.stock || product?.stock || 0
+                              );
+                            })()}{" "}
+                            piezas.
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
                             SKU: {product.sku}
@@ -169,7 +179,10 @@ export const ModalCart = ({
                             <button
                               onClick={() => {
                                 const updateItems = dataCart.map((item) => {
-                                  if (item.idProduct === product.idProduct) {
+                                  if (
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product?.storeId
+                                  ) {
                                     const newQuantity =
                                       Number(item.quantity) > 1
                                         ? Number(item.quantity) - Number(1)
@@ -181,6 +194,7 @@ export const ModalCart = ({
                                 });
 
                                 setDataCart(updateItems);
+                                handleWriteStorageDataCart(updateItems);
                               }}
                               className="p-1 hover:bg-gray-100 text-gray-600"
                             >
@@ -188,33 +202,78 @@ export const ModalCart = ({
                             </button>
                             <input
                               readOnly
-                              value={
-                                dataCart.find(
+                              value={(() => {
+                                // Buscamos primero en storage
+
+                                const itemStorage = dataCartStorege?.find(
                                   (item) =>
-                                    item.idProduct === product.idProduct,
-                                )?.quantity || 1
-                              }
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId,
+                                );
+                                if (itemStorage) return itemStorage.quantity;
+
+                                // Si no está en storage, buscamos en dataCart
+                                const itemCart = dataCart?.find(
+                                  (item) =>
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId,
+                                );
+                                if (itemCart) return itemCart.quantity;
+
+                                // Si no está en ninguno, devolvemos 1
+                                return 1;
+                              })()}
                               style={{ minWidth: "45px", maxWidth: "55px" }}
                               className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
                             />
 
                             {/*Boton de mas quantity*/}
                             <button
+                              disabled={
+                                Number(product?.providerId) !== 1
+                                  ? product.quantity >=
+                                    (product?.product_stock?.find(
+                                      (branch) =>
+                                        branch?.branchId === product?.storeId,
+                                    )?.stock || 0)
+                                  : Number(product?.stock) === 0
+                              }
                               onClick={() => {
+                                const stockByStore =
+                                  product?.product_stock?.find(
+                                    (branch) =>
+                                      branch?.branchId === product?.storeId,
+                                  )?.stock || 0;
+
                                 const updateItems = dataCart.map((item) => {
-                                  return item.idProduct === product.idProduct
-                                    ? {
-                                        ...item,
-                                        quantity:
-                                          Number(item.quantity) + Number(1) <=
-                                          product.stock
-                                            ? Number(item.quantity) + Number(1)
-                                            : product.stock,
-                                      }
-                                    : { ...item };
+                                  if (
+                                    Number(item?.providerId) !== 1 &&
+                                    item.idProduct === product.idProduct &&
+                                    item.storeId === product.storeId
+                                  ) {
+                                    const newQuantity =
+                                      Number(item.quantity) + 1 <= stockByStore
+                                        ? Number(item.quantity) + 1
+                                        : stockByStore;
+
+                                    return { ...item, quantity: newQuantity };
+                                  } else if (
+                                    Number(item?.providerId) === 1 &&
+                                    item.idProduct === product.idProduct
+                                  ) {
+                                    const newQuantity =
+                                      Number(item.quantity) + 1 <= item.stock
+                                        ? Number(item.quantity) + 1
+                                        : stockByStore;
+
+                                    return { ...item, quantity: newQuantity };
+                                  }
+
+                                  return item;
                                 });
 
                                 setDataCart(updateItems);
+                                handleWriteStorageDataCart(updateItems);
                               }}
                               className="p-1 hover:bg-gray-100 text-gray-600"
                             >
@@ -227,10 +286,19 @@ export const ModalCart = ({
                               {formatCurrency(
                                 Number(
                                   Number(product.price) *
-                                    Number(product.quantity),
+                                    Number(
+                                      // primero busco en storage, si no está uso dataCart
+                                      dataCartStorege.find(
+                                        (item) =>
+                                          item.idProduct ===
+                                            product.idProduct &&
+                                          item.storeId === product.storeId,
+                                      )?.quantity ?? product.quantity,
+                                    ),
                                 ),
                               )}
                             </p>
+
                             <button
                               onClick={() =>
                                 handleRemoveItemCart(
@@ -295,6 +363,11 @@ export const ModalCart = ({
               </Link> */}
               <button
                 onClick={() => {
+                  localStorage.setItem(
+                    "checkout_step",
+                    String(CheckoutStep.CONFIRMAR_PRODUCTOS),
+                  );
+
                   onRouterLink("/confirma-productos");
                   onMouseLeaveCart();
                 }}

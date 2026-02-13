@@ -3,66 +3,16 @@
 import Footer from "./components/footer/Footer";
 import ModalComponent from "./components/modal/ModalComponent";
 import Navbar from "./components/navbar/navbar";
+import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import ProtectedRoute from "./middleware/protectedRoute";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
-import { useSession } from "next-auth/react";
+import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
-import useService from "./services/useService";
-import { Alert } from "@mui/material";
-
-function SesionHandler({ children }: { children: React.ReactNode }) {
-  const { socketPagos, setHasToken } = useTheContext();
-
-  const { data: session, status } = useSession();
-  const { isTokenExpired } = useService();
-
-  useEffect(() => {
-    const authGoogle = localStorage.getItem("authGoogle");
-
-    if (session && status == "authenticated" && authGoogle == "true") {
-      const token = (session as any)?.token;
-      const idUser = (session as any)?.idUser;
-      const isValidToken = (session as any)?.isValidToken;
-      if (token && token !== "undefined" && token !== "null" && token != null) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("email", session.user?.email!);
-        localStorage.setItem("name", session.user?.name!);
-        localStorage.setItem("idUser", idUser);
-        localStorage.setItem("lastname", "");
-        socketPagos.current?.emit("idUser", idUser);
-
-        if (isValidToken?.idUser) {
-          const now = Math.floor(Date.now() / 1000);
-
-          // validar
-          if (isValidToken?.exp < now) {
-            setHasToken(false);
-          } else {
-            setHasToken(true);
-          }
-        }
-      }
-    } else if (authGoogle == "false") {
-      if (localStorage.getItem("token")) {
-        const validToken = isTokenExpired(localStorage.getItem("token")!);
-
-        socketPagos.current?.emit("idUser", localStorage.getItem("idUser"));
-
-        setHasToken(validToken == true ? false : true);
-        // setHasToken(true);
-      } else {
-        setHasToken(false);
-      }
-    }
-  }, [session, status]);
-
-  return <>{children}</>;
-}
+import useProtectedRoute from "./middleware/protectedRoute";
 
 export default function AppWrapper({
   children,
@@ -82,51 +32,17 @@ export default function AppWrapper({
     setDataFavorites,
     socketServer,
     socketPagos,
+    socketCron,
   } = useTheContext();
 
-  const { handleWriteStorageProgressPay } = useStorage();
-  const isMounted = useRef(false);
-
-  // useEffect(() => {
-  //   if (localStorage.getItem("dataCart") && hasToken == false) {
-  //     const productsStorage = JSON.parse(
-  //       localStorage.getItem("dataCart") || "",
-  //     );
-
-  //     setDataCart(productsStorage);
-  //   } else if (hasToken == true) {
-  //     addProductFromStorage().then(async (resp) => {
-  //       await handleGetDataCart();
-  //     });
-  //   }
-  // }, [hasToken]);
-
-  const totalPrice = useMemo(() => {
-    if (!dataCart) return 0;
-
-    const total = dataCart
-      .filter((item) => item.stock !== 0)
-      .reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
+  const { dataCartStorege } = useStorage();
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
+    if (dataCart && hasToken) {
+      localStorage.setItem("dataCartStorage", JSON.stringify(dataCart));
+      setDataCart(dataCart);
     }
-
-    if (dataCart?.length > 0 && totalPrice <= 1000) {
-      handleWriteStorageProgressPay({
-        optionSend: {
-          address: 0,
-          name: "sucursal",
-          costo: 0,
-        },
-      });
-    }
-  }, [totalPrice, dataCart]);
+  }, [dataCart, hasToken, dataCartStorege]);
 
   useEffect(() => {
     if (!socketServer.current) return;
@@ -153,6 +69,8 @@ export default function AppWrapper({
           quantity: data.quantity,
           reviews: [],
           upc: data.upc,
+          isPc: data?.isPc,
+          isPC: data?.isPC,
         },
         ...prev,
       ]);
@@ -326,47 +244,72 @@ export default function AppWrapper({
 
     socket.on("updateCart", handleUpdateCart);
 
-    // socketPagos?.current?.on(
-    //   "removeProgressPay",
-    //   (dataSocket: { idUser: number }) => {
-    //     if (typeof window !== "undefined") {
-    //       const idUser = localStorage.getItem("idUser");
-    //       if (idUser) {
-    //         if (Number(idUser) == Number(dataSocket.idUser)) {
-    //           localStorage.removeItem("progressPay");
-    //         }
-    //       }
-    //     }
-    //   }
-    // );
+    socketPagos?.current?.on("updatedStock", handleUpdatedStock);
+
+    socketPagos?.current?.on("removeStorageProgressPay2", () => {
+      localStorage.removeItem("progressPay2");
+    });
 
     return () => {
       socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
-      // socketPagos?.current?.off(
-      //   "removeProgressPay",
-      //   (dataSocket: { idUser: number }) => {
-      //     if (typeof window !== "undefined") {
-      //       const idUser = localStorage.getItem("idUser");
-      //       if (idUser) {
-      //         if (Number(idUser) == Number(dataSocket.idUser)) {
-      //           localStorage.removeItem("progressPay");
-      //         }
-      //       }
-      //     }
-      //   }
-      // );
+      socketPagos?.current?.off("updatedStock", handleUpdatedStock);
+      socketPagos?.current?.off("removeStorageProgressPay2", () => {
+        localStorage.removeItem("progressPay2");
+      });
     };
   }, [socketServer.current, socketPagos?.current]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!socketPagos.current) return;
 
-  ProtectedRoute();
+    if (typeof window === "undefined") return;
 
+    const token = localStorage.getItem("token");
+
+    if (!token || typeof token !== "string") return;
+    const payload: any = jwtDecode(token);
+
+    if (!socketPagos.current || !payload?.idUser) return;
+
+    if (token) {
+      const payload: any = jwtDecode(token);
+
+      if (payload && payload?.idUser) {
+        socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
+      }
+
+      const joinRoom = () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      };
+
+      socketPagos.current?.on("connect", joinRoom);
+
+      // si ya está conectado
+      if (socketPagos.current?.connected) {
+        joinRoom();
+      }
+    }
+
+    return () => {
+      socketPagos?.current?.off("connect", () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      });
+    };
+  }, [socketPagos?.current, hasToken]);
+
+  useEffect(() => {
+    if (!socketCron.current) return;
+
+    socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+      console.log(dataSocketCron);
+    });
+  }, [socketCron?.current]);
+
+  // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
+  useProtectedRoute(pathName);
   return (
     <SessionProvider>
       <SesionHandler>

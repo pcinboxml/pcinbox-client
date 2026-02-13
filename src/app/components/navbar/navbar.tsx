@@ -20,6 +20,8 @@ import useCart from "../cart/useCart";
 import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
+import { usePathname } from "next/navigation";
+import useStorage from "@/app/services/useStorage";
 
 const Navbar = () => {
   const {
@@ -38,6 +40,7 @@ const Navbar = () => {
   } = useNavbar();
 
   const { onRouterLink, formatCurrency, Logout, isTokenExpired } = useService();
+  const { dataCartStorege } = useStorage();
   const {
     messageError,
     showAlert,
@@ -52,26 +55,20 @@ const Navbar = () => {
 
   const {
     dataCart,
+    setDataCart,
     setHasToken,
     hasToken,
     rutaImgPerfil,
     dataFavorites,
     socketPagos,
   } = useTheContext();
+  const [totalItems, setTotalItems] = useState<number>(0);
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+  const { totalPrice } = useService();
+  const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
-
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
+  const { handleWriteStorageDataCart } = useStorage();
 
   useEffect(() => {
     document.addEventListener("click", handleDOM);
@@ -83,10 +80,67 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    const authGoogle = localStorage.getItem("authGoogle");
+
+    if (session && status == "authenticated" && authGoogle == "true") {
+      const token = (session as any)?.token;
+      const idUser = (session as any)?.idUser;
+      const isValidToken = (session as any)?.isValidToken;
+      if (token && token !== "undefined" && token !== "null" && token != null) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", session.user?.email!);
+        localStorage.setItem("name", session.user?.name!);
+        localStorage.setItem("idUser", idUser);
+        localStorage.setItem("lastname", "");
+
+        if (isValidToken?.idUser) {
+          const now = Math.floor(Date.now() / 1000);
+
+          // validar
+          if (isValidToken?.exp < now) {
+            setHasToken(false);
+          } else {
+            setHasToken(true);
+          }
+        }
+      }
+    } else if (authGoogle == "false") {
+      if (localStorage.getItem("token")) {
+        const validToken = isTokenExpired(localStorage.getItem("token")!);
+
+        setHasToken(validToken == true ? false : true);
+        // setHasToken(true);
+      } else {
+        setHasToken(false);
+      }
+    }
+  }, [session, status]);
+
+  useEffect(() => {
     if (hasToken) {
       getPhotoUser();
     }
   }, [hasToken]);
+
+  // useEffect(() => {
+  //   if (dataCart.length === 0 && dataCartStorege.length > 0) {
+  //     setDataCart(dataCartStorege);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    // Siempre prioriza dataCart sobre dataCartStorege
+    const items = dataCart;
+
+    const total = items
+      .filter((item) => Number(item.stock) !== 0)
+      .reduce((acc, item) => acc + Number(item.quantity), 0);
+
+    setTotalItems(total);
+
+    // Sincroniza el storage con el estado global
+    // handleWriteStorageDataCart(dataCart);
+  }, [dataCart, dataCartStorege]);
 
   return (
     <header className="main-header" ref={navRef}>
@@ -121,17 +175,14 @@ const Navbar = () => {
               onMouseLeaveCart={onMouseLeaveCart}
             />
 
-            {dataCart &&
-            dataCart.filter((itemF) => itemF.stock != 0).length > 0 ? (
+            {totalItems > 0 && (
               <span
                 className="absolute badge badge-car"
                 style={{ background: "#bb3d4b" }}
               >
-                {dataCart
-                  .filter((itemF) => itemF.stock != 0)
-                  .reduce((acc, item) => acc + Number(item.quantity), 0)}
+                {totalItems}
               </span>
-            ) : null}
+            )}
           </div>
 
           <div className="container-cash">

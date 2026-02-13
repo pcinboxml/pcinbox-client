@@ -3,6 +3,7 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { GlobalProvider } from "./services/globalContext";
+import useProtectedRoute from "./middleware/protectedRoute";
 
 export const metadata = {
   title: "PCInbox",

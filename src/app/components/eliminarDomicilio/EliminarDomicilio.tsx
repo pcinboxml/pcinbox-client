@@ -13,7 +13,7 @@ const EliminarDomicilio = ({
   setOptionEnvio,
 }: {
   address: AddressI;
-  setOptionEnvio: Dispatch<SetStateAction<string>>;
+  setOptionEnvio: Dispatch<SetStateAction<Record<any, any>>>;
 }) => {
   const { requestPost } = useService();
   const { setDataUserAddress, setDataModal } = useTheContext();
@@ -62,14 +62,14 @@ const EliminarDomicilio = ({
                 {
                   idAddress: address.idAddress,
                 },
-                "/address/removeAddress"
+                "/address/removeAddress",
               );
               setLoadingRemoveAddress(false);
 
               if (resp.status == 200) {
                 const data = await resp.data;
                 setDataUserAddress(data.data.data);
-                setOptionEnvio("");
+                //   setOptionEnvio(address?.);
                 handleWriteStorageProgressPay({
                   optionSend: {
                     name: "",

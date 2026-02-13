@@ -70,6 +70,7 @@ interface ContextProps {
   dataProducts: ProductI[];
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
   socketPagos: RefObject<typeof Socket | null>;
+  socketCron: RefObject<typeof Socket | null>;
   socketServer: RefObject<typeof Socket | null>;
   showProductsMenu: boolean;
   setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
@@ -103,8 +104,8 @@ interface ContextProps {
       }[]
     >
   >;
-  idAddressEnvio: number;
-  setIdAddressEnvio: Dispatch<SetStateAction<number>>;
+  addressByStore: any;
+  setAddressByStore: Dispatch<SetStateAction<Record<any, any>>>;
 }
 
 const CreateContext = createContext<ContextProps>({
@@ -145,6 +146,7 @@ const CreateContext = createContext<ContextProps>({
   setDataProducts: () => {},
   socketPagos: { current: null },
   socketServer: { current: null },
+  socketCron: { current: null },
   showProductsMenu: false,
   setShowProductsMenu: () => {},
   dataUserAddress: [],
@@ -171,8 +173,11 @@ const CreateContext = createContext<ContextProps>({
   setPostalCodes: () => {},
   dataCategories: [],
   setDataCategories: () => {},
-  idAddressEnvio: 0,
-  setIdAddressEnvio: () => {},
+  addressByStore: 0,
+  setAddressByStore: () => {},
+
+  // idAddressEnvio: 0,
+  // setIdAddressEnvio: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
@@ -213,6 +218,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const socketServer = useRef<typeof Socket | null>(null);
   const socketPagos = useRef<typeof Socket | null>(null);
+  const socketCron = useRef<typeof Socket | null>(null);
 
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
@@ -220,16 +226,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     edit: false,
     idAddress: 0,
   });
-  const [idAddressEnvio, setIdAddressEnvio] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("progressPay");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return parsed?.optionSend?.address ?? 0;
-      }
-    }
-    return 0;
-  });
+  const [addressByStore, setAddressByStore] = useState<Record<any, any>>({});
+
   const [dataAddress, setDataAddress] = useState<DataSendI>({
     street: "",
     noExt: "",
@@ -263,7 +261,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
           setDataProducts(data.data);
           if (mounted) setDataProducts(data.data);
-        }
+        },
       );
     };
 
@@ -318,9 +316,18 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       timeout: 20000,
     });
 
+    // socketCron.current = io(process.env.NEXT_PUBLIC_SOCKET_CRON || "", {
+    //   reconnection: true,
+    //   reconnectionAttempts: Infinity, // intenta siempre
+    //   reconnectionDelay: 1000, // empieza con 1s
+    //   reconnectionDelayMax: 5000, // máximo 5s
+    //   timeout: 20000,
+    // });
+
     return () => {
       socketServer.current?.disconnect();
       socketPagos.current?.disconnect();
+      // socketCron?.current?.disconnect();
     };
   }, []);
   return (
@@ -349,7 +356,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataProducts,
         socketPagos,
         socketServer,
-
+        socketCron,
         showProductsMenu,
         setShowProductsMenu,
         dataUserAddress,
@@ -362,8 +369,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setPostalCodes,
         dataCategories,
         setDataCategories,
-        idAddressEnvio,
-        setIdAddressEnvio,
+        addressByStore,
+        setAddressByStore,
       }}
     >
       {children}

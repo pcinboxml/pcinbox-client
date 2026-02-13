@@ -18,7 +18,7 @@ const steps = [
   { label: "Finaliza tu orden" },
 ];
 
-const CustomConnector = styled(StepConnector)(({ theme }) => ({
+const CustomConnector = styled(StepConnector)(({ theme }: { theme: any }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 22,
   },
@@ -79,7 +79,7 @@ const TimelineComponent = ({ activeStep }: { activeStep: any }) => {
         {steps.map((step, index) => (
           <Step key={step.label}>
             <StepLabel
-              StepIconComponent={(props) => (
+              StepIconComponent={(props: any) => (
                 <StepIconComponent
                   active={index === activeStep}
                   completed={index < activeStep}

@@ -41,7 +41,7 @@ const useCard = () => {
       const stored = localStorage.getItem("dataCart");
       const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
       const existingProductIndex = products.findIndex(
-        (p: any) => p.idProduct == product.idProduct
+        (p: any) => p.idProduct == product.idProduct,
       );
 
       if (existingProductIndex != -1) {
@@ -80,7 +80,7 @@ const useCard = () => {
           price: product.price,
           isDetails: false,
         },
-        "/cart/addProduct"
+        "/cart/addProduct",
       );
 
       setLoadingAgregar(false);
@@ -99,13 +99,13 @@ const useCard = () => {
 
         setDataCart((prev) => {
           const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(product.idProduct)
+            (item) => Number(item.idProduct) === Number(product.idProduct),
           );
           if (existingProduct) {
             return prev.map((item) =>
               Number(item.idProduct) == Number(existingProduct.idProduct)
                 ? { ...item, quantity: Number(item.quantity) + Number(1) }
-                : item
+                : item,
             );
           } else {
             return [
@@ -124,6 +124,16 @@ const useCard = () => {
                 reviews: product.reviews,
                 sku: product.sku,
                 quantity: 1,
+                isPC: product?.isPC,
+                isPc: product?.isPc,
+                caracteristicas: product?.caracteristicas,
+                height: product?.height,
+                idProductExt: product?.idProductExt,
+                product_stock: product?.product_stock,
+                largo: product?.largo,
+                storeId: product?.storeId,
+                upc: product?.upc,
+                width: product?.width,
               },
             ];
           }
@@ -146,7 +156,7 @@ const useCard = () => {
   const calcPorcentaje = (
     product: ProductI,
     dataProducts: ProductI[],
-    progressRating: any
+    progressRating: any,
   ) => {
     const ratingCount = product.reviews.reduce((acc, item) => {
       if (item.rating === progressRating.rating) {
@@ -162,7 +172,7 @@ const useCard = () => {
           item.reviews.filter(
             (r) =>
               r.rating === progressRating.rating &&
-              item.idProduct == product.idProduct
+              item.idProduct == product.idProduct,
           ).length
         );
       } else {

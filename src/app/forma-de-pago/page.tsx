@@ -4,56 +4,36 @@ import TimelineComponent from "../components/timeline/TimelineComponent";
 import useFormaDePago from "./useFormaDePago";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { useEffect, useMemo } from "react";
-import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import { useEffect } from "react";
 import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
-import ListCardsSave from "../components/listCardsSave/ListCardsSave";
-
-import { MdAdd, MdDelete, MdRemove } from "react-icons/md";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const FormaDePago = () => {
+  useCheckoutGuard(CheckoutStep.FORMA_DE_PAGO);
+
   const {
     optionsPago,
     idMethodPay,
     handleSelectOptionPay,
     handleSelectOptionPayById,
-    handleRegisterCard,
-    getValuesStorage,
-    handleRemoveCard,
+    getValuesStorage2,
   } = useFormaDePago();
-  const { selectedCard, dataCart, setDataModal, setDataCard, dataCard } =
-    useTheContext();
+
+  const { selectedCard, dataCart, setDataModal, dataCard } = useTheContext();
   const { onRouterLink } = useService();
 
   // const { requestPostPagos } = usePasarelaDePagos();
 
-  const { progressPay, handleWriteStorageProgressPay } = useStorage();
-
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
+  const {
+    progressPay,
+    handleWriteStorageProgressPay,
+    handleWriteStorageProgressPay2,
+  } = useStorage();
 
   useEffect(() => {
-    // requestPostPagos(
-    //   {
-    //     userId: localStorage.getItem("idUser"),
-    //   },
-    //   "/stripe/getCardByUser"
-    // ).then((resp) => {
-    //   if (resp?.status == 200) {
-    //     setDataCard(resp.data.data.data);
-    //   }
-    // });
-
-    getValuesStorage();
+    getValuesStorage2();
   }, []);
 
   return (
@@ -305,21 +285,48 @@ const FormaDePago = () => {
                           idMethodPay == 1
                             ? "tarjeta_debito_credito"
                             : idMethodPay == 2
-                            ? "transferencia"
-                            : idMethodPay == 3
-                            ? "efectivo_al_recoger"
-                            : idMethodPay == 4
-                            ? "tarjeta_al_recoger"
-                            : idMethodPay == 6
-                            ? "mercadopago"
-                            : idMethodPay == 5
-                            ? "efectivo"
-                            : idMethodPay == 7
-                            ? "openpay"
-                            : "",
+                              ? "transferencia"
+                              : idMethodPay == 3
+                                ? "efectivo_al_recoger"
+                                : idMethodPay == 4
+                                  ? "tarjeta_al_recoger"
+                                  : idMethodPay == 6
+                                    ? "mercadopago"
+                                    : idMethodPay == 5
+                                      ? "efectivo"
+                                      : idMethodPay == 7
+                                        ? "openpay"
+                                        : "",
                         idCard: selectedCard,
                       },
                     });
+
+                    handleWriteStorageProgressPay2({
+                      pay: {
+                        id: idMethodPay,
+                        name:
+                          idMethodPay == 1
+                            ? "tarjeta_debito_credito"
+                            : idMethodPay == 2
+                              ? "transferencia"
+                              : idMethodPay == 3
+                                ? "efectivo_al_recoger"
+                                : idMethodPay == 4
+                                  ? "tarjeta_al_recoger"
+                                  : idMethodPay == 6
+                                    ? "mercadopago"
+                                    : idMethodPay == 5
+                                      ? "efectivo"
+                                      : idMethodPay == 7
+                                        ? "openpay"
+                                        : "",
+                      },
+                    });
+                    localStorage.setItem(
+                      "checkout_step",
+                      String(CheckoutStep.RESUMEN),
+                    );
+
                     onRouterLink("/resumen");
                   }}
                 >

@@ -57,11 +57,8 @@ export default function ShippingNotice() {
             <p className="text-gray-700">
               Realizamos envíos únicamente a{" "}
               <span className="font-medium">León</span> y en otros destinos
-              específicos.
-              <span
-                className="inline-block mx-2"
-                style={{ marginBottom: "10px" }}
-              >
+              específicos.{"  "}
+              <span style={{ marginBottom: "10px" }}>
                 <a
                   href="#"
                   role="button"
@@ -142,10 +139,7 @@ export default function ShippingNotice() {
               </span>
             </p>
 
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{ marginTop: "-20px" }}
-            >
+            <div className="flex items-center gap-2 text-sm">
               <svg
                 className="w-5 h-5 text-indigo-600"
                 fill="none"

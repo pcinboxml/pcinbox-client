@@ -3,13 +3,15 @@
 import { useTheContext } from "../services/globalContext";
 import { useMediaQuery } from "@mui/material";
 import useService from "../services/useService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GridConfirmaProductos from "./gridConfirmaProductos";
 import axios from "axios";
+import useStorage from "../services/useStorage";
 
 const useConfirmaProductos = () => {
   const { dataCart, setDataCart, setDataModal } = useTheContext();
   const { requestPost, formatCurrency } = useService();
+  const { handleRemoveStorageDataCart } = useStorage();
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
     noSsr: true,
   });
@@ -19,6 +21,8 @@ const useConfirmaProductos = () => {
     useState<boolean>(false);
   const [loadingCotizacion, setLoadingCotizacion] = useState<boolean>(false);
 
+  const [rowsConfirmProducts, setRowsConfirmProducts] = useState<any[]>([]);
+
   const handleRemoveProduct = async (idProduct: string) => {
     try {
       setLoadingRemoveProduct(true);
@@ -27,13 +31,13 @@ const useConfirmaProductos = () => {
         {
           idProduct: idProduct,
         },
-        "/cart/removeProduct"
+        "/cart/removeProduct",
       );
       setLoadingRemoveProduct(false);
 
       if (resp && resp.status == 200) {
         const removeProduct = dataCart.filter(
-          (item) => item.idProduct != idProduct
+          (item) => item.idProduct != idProduct,
         );
         setDataCart(removeProduct);
       }
@@ -41,25 +45,32 @@ const useConfirmaProductos = () => {
       setLoadingRemoveProduct(false);
     }
   };
+
+  useEffect(() => {
+    if (dataCart && dataCart.length > 0) {
+      setRowsConfirmProducts(
+        dataCart.map((itemCart) => ({
+          id: itemCart.idProduct,
+          products: `${itemCart.name} ${itemCart.description}`,
+          quantity: Number(itemCart.quantity),
+          sucursal: itemCart.product_stock,
+          storeId: itemCart?.storeId,
+          totalConIva: Number(itemCart.price),
+          total: Number(itemCart.price) * Number(itemCart.quantity),
+          action: 1,
+        })),
+      );
+    }
+  }, [dataCart]);
+
   const { columns } = GridConfirmaProductos({
     isSmallScreen,
     formatCurrency,
     loadingRemoveProduct,
     handleRemoveProduct,
+    rowsConfirmProducts,
+    setRowsConfirmProducts,
   });
-
-  const rows = dataCart.map((itemCart) => ({
-    id: itemCart.idProduct,
-    products: `${itemCart.name} ${itemCart.description}`,
-    quantity: Number(itemCart.quantity),
-    sucursal: "León",
-    // totalSinIva: Number(itemCart.price) * Number(itemCart.quantity),
-    // totalConIva: Number(itemCart.price) * Number(itemCart.quantity) * 1.16, //antes
-    totalConIva: Number(itemCart.price),
-    total: Number(itemCart.price) * Number(itemCart.quantity),
-    // importConIva: Number(itemCart.price) * Number(itemCart.quantity) * 0.16,
-    action: 1,
-  }));
 
   const handleShowModalVaciarCarrito = () => {
     setDataModal({
@@ -78,7 +89,9 @@ const useConfirmaProductos = () => {
           setLoadingClearCar(false);
 
           if (resp.status == 200) {
-            setDataCart([]);
+            //  setDataCart([]);
+            handleRemoveStorageDataCart();
+
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }
         } catch (error) {
@@ -105,7 +118,7 @@ const useConfirmaProductos = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (resp.status == 200) {
@@ -151,7 +164,7 @@ const useConfirmaProductos = () => {
   };
 
   return {
-    rows,
+    rowsConfirmProducts,
     columns,
     loadingClearCar,
     loadingCotizacion,

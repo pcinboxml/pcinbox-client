@@ -12,6 +12,7 @@ import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
 import ProductI from "../interfaces/products/product.interface";
 import { useState } from "react";
+import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const Favorites = () => {
   const {
@@ -21,7 +22,7 @@ const Favorites = () => {
     loadingAddId,
     loadingRemoveId,
   } = useFavorites();
-  const { dataFavorites, dataProducts } = useTheContext();
+  const { dataFavorites, dataProducts, setDataModal } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
@@ -76,7 +77,7 @@ const Favorites = () => {
     }[],
     dataProducts: ProductI[],
     progressRating: any,
-    idProduct: number
+    idProduct: number,
   ) => {
     const ratingCount = reviews?.reduce((acc, item) => {
       if (item.rating === progressRating.rating) {
@@ -92,7 +93,7 @@ const Favorites = () => {
           item.reviews.filter(
             (r) =>
               r.rating === progressRating.rating &&
-              item.idProduct == String(idProduct)
+              item.idProduct == String(idProduct),
           ).length
         );
       } else {
@@ -208,7 +209,7 @@ const Favorites = () => {
                               ? favorite?.products?.reviews.reduce(
                                   (sum: any, review: any) =>
                                     sum + review.rating,
-                                  0
+                                  0,
                                 ) / favorite?.products?.reviews?.length!
                               : 0;
                           return (
@@ -226,7 +227,7 @@ const Favorites = () => {
                                 />
                               </div>
                               {/* {product.reviews && product.reviews.length > 0 && ( */}
-                              <div className="comments flex">
+                              <div className="comments flex h-[10px]">
                                 <StyledTooltip
                                   title={
                                     <div className="w-full  flex justify-center">
@@ -280,7 +281,7 @@ const Favorites = () => {
                                                               ?.reviews!,
                                                             dataProducts,
                                                             progressRating,
-                                                            favorite.productId
+                                                            favorite.productId,
                                                           ).percentage,
                                                           height: "15px",
                                                           top: "0",
@@ -298,7 +299,7 @@ const Favorites = () => {
                                                             ?.reviews!,
                                                           dataProducts,
                                                           progressRating,
-                                                          favorite.productId
+                                                          favorite.productId,
                                                         ).rating
                                                       }
                                                     </div>
@@ -315,7 +316,7 @@ const Favorites = () => {
                                                         {favorite?.products?.reviews.reduce(
                                                           (
                                                             acc: any,
-                                                            item: any
+                                                            item: any,
                                                           ) => {
                                                             if (
                                                               item.rating ===
@@ -325,21 +326,21 @@ const Favorites = () => {
                                                             }
                                                             return acc;
                                                           },
-                                                          0
+                                                          0,
                                                         )}
                                                         )
                                                       </span>
                                                     </div>
                                                   </div>
                                                 );
-                                              }
+                                              },
                                             )}
 
                                           <a
                                             role="button"
                                             onClick={() =>
                                               onRouterLink(
-                                                `/review?idProduct=${favorite?.products?.idProduct}`
+                                                `/review?idProduct=${favorite?.products?.idProduct}`,
                                               )
                                             }
                                             style={{
@@ -378,7 +379,7 @@ const Favorites = () => {
                                     .filter(
                                       (itemF: any) =>
                                         itemF.productId ==
-                                        favorite?.products?.idProduct
+                                        favorite?.products?.idProduct,
                                     )
                                     .length.toLocaleString()}{" "}
                                   opiniones
@@ -397,7 +398,7 @@ const Favorites = () => {
                               ? (() => {
                                   try {
                                     const caracs = JSON.parse(
-                                      favorite?.products?.caracteristicas
+                                      favorite?.products?.caracteristicas,
                                     );
                                     if (
                                       Array.isArray(caracs) &&
@@ -446,30 +447,40 @@ const Favorites = () => {
                             }
                             className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
                             onClick={() => {
-                              // setDataModal({
-                              //   isOpen: true,
-                              //   message: (
-                              //     <BranchSelector
-                              //       productSelected={item}
-                              //     />
-                              //   ),
-                              //   title: "",
-                              //   type: "success",
-                              //   showActions: false,
-                              //   onClose: () => {
-                              //     setDataModal((prev) => ({
-                              //       ...prev,
-                              //       isOpen: false,
-                              //     }));
-                              //   },
-                              //   onConfirm: () => {
-                              //     setDataModal((prev) => ({
-                              //       ...prev,
-                              //       isOpen: false,
-                              //     }));
-                              //   },
-                              // });
-                              handleAddFavoriteCart(favorite);
+                              if (
+                                (favorite?.products?.isPC == 0 ||
+                                  favorite?.products?.isPc == 0) &&
+                                favorite?.products?.product_stock!.length > 0 &&
+                                Number(favorite?.products?.providerId) === 3
+                              ) {
+                                setDataModal({
+                                  isOpen: true,
+                                  message: (
+                                    <div className="w-[800px] border">
+                                      <BranchSelector
+                                        productSelected={favorite?.products}
+                                      />
+                                    </div>
+                                  ),
+                                  title: "",
+                                  type: "success",
+                                  showActions: false,
+                                  onClose: () => {
+                                    setDataModal((prev) => ({
+                                      ...prev,
+                                      isOpen: false,
+                                    }));
+                                  },
+                                  onConfirm: () => {
+                                    setDataModal((prev) => ({
+                                      ...prev,
+                                      isOpen: false,
+                                    }));
+                                  },
+                                });
+                              } else {
+                                handleAddFavoriteCart(favorite);
+                              }
                             }}
                           >
                             {loadingAddId == favorite.products?.idProduct ? (
@@ -521,7 +532,7 @@ const Favorites = () => {
                       showArrows={true}
                       onClickItem={() => {
                         onRouterLink(
-                          `/detailsProduct/${favorite?.products?.idProduct}`
+                          `/detailsProduct/${favorite?.products?.idProduct}`,
                         );
                       }}
                     >
@@ -534,13 +545,14 @@ const Favorites = () => {
                                   src={img}
                                   style={{
                                     objectFit: "contain",
-                                    height: "150px",
+                                    height: "auto",
+                                    maxHeight: "200px",
                                     marginTop: "12px",
                                   }}
                                   loading="lazy"
                                 />
                               </div>
-                            )
+                            ),
                           )
                         : [<div key="no-img">Sin imágenes</div>]}
                     </Carousel>

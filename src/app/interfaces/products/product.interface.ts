@@ -17,6 +17,8 @@ export default interface ProductI {
   width?: any;
   height?: any;
   largo?: any;
+  isPc: any;
+  isPC: any;
   product_stock?: {
     idProductStock: number;
     branchId: number;
@@ -38,4 +40,5 @@ export default interface ProductI {
     date: string;
     reviewerName: string;
   }[];
+  storeId?: number;
 }

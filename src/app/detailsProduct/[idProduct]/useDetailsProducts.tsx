@@ -59,7 +59,7 @@ const useDetailsProduct = () => {
 
   const handleAddProductCart = async (
     dataProduct: ProductI,
-    quantityProp: number
+    quantityProp: number,
   ) => {
     try {
       setLoadingAddProduct(true);
@@ -71,7 +71,7 @@ const useDetailsProduct = () => {
           price: dataProduct.price,
           isDetails: true,
         },
-        "/cart/addProduct"
+        "/cart/addProduct",
       );
 
       setLoadingAddProduct(false);
@@ -90,7 +90,7 @@ const useDetailsProduct = () => {
 
         setDataCart((prev) => {
           const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(dataProduct.idProduct)
+            (item) => Number(item.idProduct) === Number(dataProduct.idProduct),
           );
           if (existingProduct) {
             return prev.map((item) =>
@@ -101,7 +101,7 @@ const useDetailsProduct = () => {
                       ? quantityProp + Number(item.quantity)
                       : 1,
                   }
-                : item
+                : item,
             );
           } else {
             return [
@@ -120,6 +120,16 @@ const useDetailsProduct = () => {
                 reviews: dataProduct.reviews,
                 quantity: quantityProp ? quantityProp : 1,
                 sku: dataProduct.sku,
+                isPC: dataProduct?.isPC,
+                isPc: dataProduct?.isPc,
+                caracteristicas: dataProduct?.caracteristicas,
+                height: dataProduct?.height,
+                idProductExt: dataProduct?.idProductExt,
+                largo: dataProduct?.largo,
+                storeId: dataProduct?.storeId,
+                upc: dataProduct?.upc,
+                width: dataProduct?.width,
+                product_stock: dataProduct?.product_stock,
               },
             ];
           }
@@ -150,7 +160,7 @@ const useDetailsProduct = () => {
 
   const handleKeyBoard = (
     event: React.KeyboardEvent<HTMLInputElement>,
-    dataProduct: ProductI
+    dataProduct: ProductI,
   ) => {
     if (quantity != "" && quantity != 0 && event.key == "Enter") {
       handleAddProductCart(dataProduct, Number(quantity));

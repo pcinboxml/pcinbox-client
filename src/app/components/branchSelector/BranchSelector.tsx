@@ -8,9 +8,12 @@ import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
+import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
-  const { handleWriteStorageProgressPay } = useStorage();
+  const { dataCart } = useTheContext();
+  const { handleWriteStorageProgressPay, handleWriteStorageDataCart } =
+    useStorage();
   const {
     handleAddProductCart,
     loadingByBranch,
@@ -21,14 +24,21 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
   const { formatCurrency } = useService();
 
   const branches = useMemo(() => {
-    return productSelected.product_stock?.map((prodStock) => ({
-      ...prodStock,
-      id: prodStock.idProductStock,
-      name: prodStock.branches?.name,
-      price: productSelected.price,
-      stock: prodStock.stock,
-      action: 1,
-    }));
+    return productSelected.product_stock
+      ?.filter(
+        (productStockFilter) =>
+          productStockFilter.branches?.providerId ==
+          Number(productSelected?.providerId),
+      )
+      .map((prodStock) => ({
+        ...prodStock,
+        id: prodStock.idProductStock,
+        idBranche: prodStock?.branchId,
+        name: prodStock.branches?.name,
+        price: productSelected.price,
+        stock: prodStock.stock,
+        action: 1,
+      }));
   }, [productSelected]);
 
   return (
@@ -94,10 +104,12 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                 {branches
                   .filter((branch) => {
                     if (Number(productSelected?.providerId) == 3) {
-                      const name = branch?.branches?.name?.toLowerCase();
+                      const name = branch?.branches?.name;
                       return (
                         branch?.branches?.providerId === 3 &&
-                        ["leon", "gdl", "santafe", "arboledas"].includes(name!)
+                        ["leon", "Arboledas", "santafe", "dicoags2"].includes(
+                          name!,
+                        )
                       );
                     } else {
                       return branch;
@@ -127,8 +139,8 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                                   return "PCinBOX-SFD";
                                 case "leon":
                                   return "PCinBOX-León";
-                                case "gdl":
-                                  return "PCinBOX-GD";
+                                case "dicoags2":
+                                  return "PCinBOX-AG2D";
                                 case "Arboledas":
                                   return "PCinBOX-AGD";
                               }
@@ -217,6 +229,8 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                                     productSelected?.price,
                                     sucursal,
                                   );
+
+                                  //  handleWriteStorageDataCart(dataCart);
 
                                   handleWriteStorageProgressPay({
                                     optionSend: {

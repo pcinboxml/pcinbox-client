@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import {
-  GroupByIdI,
-  HistoryComprasI,
-} from "../interfaces/compras/historyCompras.interface";
+import ProductI from "../interfaces/products/product.interface";
+import { useMemo } from "react";
+import useStorage from "./useStorage";
 
 const useService = () => {
   const pathName = usePathname();
 
-  const { setDataModal } = useTheContext();
+  const { setDataModal, dataCart } = useTheContext();
+  const { dataCartStorege } = useStorage();
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -78,7 +78,7 @@ const useService = () => {
       //     type: "error",
       //   });
       // }
-    }
+    },
   );
 
   const router = useRouter();
@@ -98,7 +98,7 @@ const useService = () => {
 
   const requestGet = async (
     endPoint: string,
-    showErrorSesion: boolean = false
+    showErrorSesion: boolean = false,
   ) => {
     try {
       const res = await api.get(endPoint, {
@@ -221,7 +221,7 @@ const useService = () => {
       if (existingGroup) {
         // Buscar si ya existe ese producto en el grupo
         const existingProduct = existingGroup.products.find(
-          (p: any) => p.idProduct === item.idProduct
+          (p: any) => p.idProduct === item.idProduct,
         );
 
         if (existingProduct) {
@@ -259,6 +259,113 @@ const useService = () => {
     return Array.from(map.values());
   };
 
+  function calcPesoPaquete(
+    products: ProductI[],
+    storeId: any,
+    tipoEnvio: "terrestre" | "aereo" = "terrestre",
+  ) {
+    const FACTOR = tipoEnvio === "aereo" ? 6000 : 5000;
+
+    if (typeof window === "undefined") {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    const stored = localStorage.getItem("progressPay2");
+
+    // Si NO hay localStorage → calcula todo
+    if (!stored) {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    let jsonParsed: any;
+
+    try {
+      jsonParsed = JSON.parse(stored);
+    } catch {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    // Si no existe optionEnvio → calcula todo
+    if (!jsonParsed?.optionEnvio) {
+      return calcularTodos(products, FACTOR, storeId);
+    }
+
+    const valores = Object.entries(jsonParsed.optionEnvio).flatMap(
+      ([key, value]) => {
+        if (value !== "paqueteexpress") return [];
+
+        const [idProduct] = key.split("-");
+
+        return products
+          .filter((product) => Number(product.idProduct) === Number(idProduct))
+          .map((product) => {
+            const pesoVolumetrico =
+              (product.largo * product.width * product.height) / FACTOR;
+
+            return {
+              idProduct: product.idProduct,
+              pesoVolumetrico:
+                Number(pesoVolumetrico.toFixed(2)) *
+                Number(product.quantity ?? 1),
+            };
+          });
+      },
+    );
+
+    // Si optionEnvio existe pero no tiene paqueteexpress → fallback
+    return valores.length ? valores : calcularTodos(products, FACTOR, storeId);
+  }
+
+  function calcularTodos(products: ProductI[], factor: number, storeId: any) {
+    return products && products.length > 0
+      ? products.map((product) => {
+          const pesoVolumetrico =
+            (product.largo * product.width * product.height) / factor;
+
+          return {
+            idProduct: product.idProduct,
+            storeId: storeId,
+            pesoVolumetrico:
+              Number(pesoVolumetrico.toFixed(2)) *
+              Number(product.quantity ?? 1),
+          };
+        })
+      : [];
+  }
+
+  const tarifasPaqueteExpress = [
+    { max: 5, price: 303 }, // 1 a 5 kg
+    { max: 10, price: 329 }, // 6 a 10 kg
+    { max: 15, price: 396 }, // 11 a 15 kg
+  ];
+
+  function calcularPrecioPorVolumen(volumenCm3: number) {
+    const factorConversion = 5000;
+    const pesoVolumetrico = Math.ceil(volumenCm3 / factorConversion);
+
+    const tarifa = tarifasPaqueteExpress.find((t) => pesoVolumetrico <= t.max);
+
+    return {
+      tarifa,
+      pesoVolumetrico,
+      excede: !tarifa,
+    };
+  }
+
+  // const cartItems = dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
+  const cartItems = dataCart;
+
+  const totalPrice = useMemo(() => {
+    const total = cartItems
+      ? cartItems
+          .filter((itemF) => itemF.stock != 0)
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart, dataCartStorege]);
+
   return {
     groupById,
     requestGet,
@@ -270,6 +377,10 @@ const useService = () => {
     Logout,
     handleGetAuth,
     isTokenExpired,
+    tarifasPaqueteExpress,
+    totalPrice,
+    calcPesoPaquete,
+    calcularPrecioPorVolumen,
   };
 };
 

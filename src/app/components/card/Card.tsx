@@ -153,7 +153,7 @@ const Card = ({
                                   width: calcPorcentaje(
                                     product,
                                     dataProducts,
-                                    progressRating
+                                    progressRating,
                                   ).percentage,
                                   height: "15px",
                                   top: "0",
@@ -169,7 +169,7 @@ const Card = ({
                                 calcPorcentaje(
                                   product,
                                   dataProducts,
-                                  progressRating
+                                  progressRating,
                                 ).rating
                               }
                             </div>

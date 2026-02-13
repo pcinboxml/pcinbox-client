@@ -7,6 +7,8 @@ import useReview from "./useReview";
 import useService from "../services/useService";
 import usePaginationComponent from "../components/pagination/usePaginationComponent";
 import PaginationComponent from "../components/pagination/PaginationComponent";
+import BranchSelector from "../components/branchSelector/BranchSelector";
+import { useTheContext } from "../services/globalContext";
 
 const Reviews = () => {
   const {
@@ -18,6 +20,8 @@ const Reviews = () => {
     loadingAddProductCar,
     ReviewsRating,
   } = useReview();
+
+  const { setDataModal } = useTheContext();
 
   const { formatCurrency, onRouterLink } = useService();
   const { startIndex, endIndex, page, handleChangePage } =
@@ -80,7 +84,38 @@ const Reviews = () => {
           <div className="w-full mt-5 flex justify-center">
             <button
               disabled={loadingAddProductCar || dataProduct?.stock == 0}
-              onClick={() => handleAddProductCart(dataProduct!)}
+              onClick={() => {
+                if (
+                  (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+                  dataProduct?.product_stock!.length > 0
+                ) {
+                  setDataModal({
+                    isOpen: true,
+                    message: (
+                      <div className="w-[800px] border">
+                        <BranchSelector productSelected={dataProduct} />
+                      </div>
+                    ),
+                    title: "",
+                    type: "success",
+                    showActions: false,
+                    onClose: () => {
+                      setDataModal((prev) => ({
+                        ...prev,
+                        isOpen: false,
+                      }));
+                    },
+                    onConfirm: () => {
+                      setDataModal((prev) => ({
+                        ...prev,
+                        isOpen: false,
+                      }));
+                    },
+                  });
+                } else {
+                  handleAddProductCart(dataProduct!);
+                }
+              }}
               className="bg-[#bb3d4b] text-white font-bold rounded p-2"
             >
               {loadingAddProductCar ? (
@@ -183,7 +218,7 @@ const Reviews = () => {
                       : dataProduct?.imageUrl
                   }&description=${
                     dataProduct?.description || dataProduct?.name
-                  }`
+                  }`,
                 )
               }
             >

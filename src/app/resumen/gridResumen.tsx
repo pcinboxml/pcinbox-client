@@ -2,6 +2,7 @@
 
 import ProductI from "../interfaces/products/product.interface";
 import useService from "../services/useService";
+import useStorage from "../services/useStorage";
 
 const GridResumen = ({
   dataCart,
@@ -11,12 +12,17 @@ const GridResumen = ({
   isSmallScreen: boolean;
 }) => {
   const { formatCurrency } = useService();
+  const { dataCartStorege } = useStorage();
+
+  // const items =
+  //   dataCartStorege && dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
 
   const rows = dataCart.map((itemCart) => ({
     id: itemCart.idProduct,
     products: `${itemCart.name} ${itemCart.description}`,
     quantity: Number(itemCart.quantity),
-    sucursal: "Leon",
+    sucursal: itemCart.product_stock,
+    storeId: Number(itemCart?.storeId),
     price: Number(itemCart.price) * Number(itemCart.quantity),
     // import: Number(itemCart.price) * Number(itemCart.quantity) * 1.16,
   }));
@@ -76,16 +82,66 @@ const GridResumen = ({
       flex: isSmallScreen ? undefined : 1,
       width: isSmallScreen ? 100 : undefined,
       renderCell: (params: any) => {
-        if (params.value) {
+        if (
+          params.value &&
+          Array.isArray(params?.value) &&
+          params?.value?.length > 0
+        ) {
           return (
             <div className="flex justify-center items-center min-h-[100%]">
-              <span
-                className="text-[#808080] block text-center"
-                style={{ fontSize: "18px", fontWeight: "600" }}
-              >
-                León
-              </span>
+              {(() => {
+                return (
+                  <span
+                    className="text-[#808080] block text-center"
+                    style={{ fontSize: "18px", fontWeight: "600" }}
+                  >
+                    {(() => {
+                      if (Array.isArray(params.value)) {
+                        let branchesProvider3 = params.value.filter(
+                          (vf: any) => vf.branches.providerId === 3,
+                        );
+
+                        if (branchesProvider3.length > 0) {
+                          let findSucursal = branchesProvider3?.find(
+                            (fb: any) => fb?.branchId === params.row.storeId,
+                          );
+
+                          if (findSucursal) {
+                            switch (findSucursal?.branches?.name) {
+                              case "santafe":
+                                return "PCinBOX-SFD";
+                              case "leon":
+                                return "PCinBOX-León";
+                              case "dicoags2":
+                                return "PCinBOX-AG2D";
+                              case "Arboledas":
+                                return "PCinBOX-AGD";
+                              default:
+                                return findSucursal?.branches?.name;
+                            }
+                          } else {
+                            return "PCinBOX-León";
+                          }
+                        } else {
+                          return "PCinBOX-León";
+                        }
+                      } else {
+                        return "PCinBOX-León";
+                      }
+                    })()}
+                  </span>
+                );
+              })()}
             </div>
+          );
+        } else {
+          return (
+            <span
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
+            >
+              {"PCinBOX-León"}
+            </span>
           );
         }
       },

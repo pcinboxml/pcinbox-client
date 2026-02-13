@@ -94,6 +94,16 @@ const useResultSearchCategory = () => {
                 reviews: productProp.reviews,
                 sku: productProp.sku,
                 quantity: 1, // cantidad inicial
+                isPC: productProp?.isPC,
+                isPc: productProp?.isPc,
+                caracteristicas: productProp?.caracteristicas,
+                height: productProp?.height,
+                idProductExt: productProp?.idProductExt,
+                largo: productProp?.largo,
+                storeId: productProp?.storeId,
+                upc: productProp?.upc,
+                width: productProp?.width,
+                product_stock: productProp?.product_stock,
               },
             ];
           }

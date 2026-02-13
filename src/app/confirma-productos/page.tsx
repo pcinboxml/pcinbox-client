@@ -7,13 +7,16 @@ import useConfirmaProductos from "./useConfirmaProductos";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
-import { useMemo } from "react";
+import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 
 const ConfirmaProducts = () => {
-  const { formatCurrency, onRouterLink } = useService();
+  useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
+
+  const { formatCurrency, onRouterLink, totalPrice } = useService();
   const {
     columns,
-    rows,
+    rowsConfirmProducts,
     loadingClearCar,
     loadingCotizacion,
     handleGenerateCotizacion,
@@ -21,22 +24,12 @@ const ConfirmaProducts = () => {
   } = useConfirmaProductos();
   const { dataCart } = useTheContext();
 
-  const totalPrice = useMemo(() => {
-    const total = dataCart
-      ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
-      : 0;
-
-    return Math.round((total + Number.EPSILON) * 100) / 100;
-  }, [dataCart]);
-
   return (
     <section>
       {dataCart && dataCart.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
+
           <div className="container-tabla  w-[90%] mx-auto my-3">
             <div
               className="header-container-tabla w-[100%] p-2 bg-[#666666]"
@@ -55,7 +48,10 @@ const ConfirmaProducts = () => {
             </div>
             {dataCart && dataCart.length > 0 ? (
               <div className="content-tabla-confirma-productos">
-                <Table rowsDataGrid={rows} columnsDataGrid={columns} />
+                <Table
+                  rowsDataGrid={rowsConfirmProducts}
+                  columnsDataGrid={columns}
+                />
               </div>
             ) : (
               <Alert severity="info">No hay datos para mostrar</Alert>
@@ -130,7 +126,14 @@ const ConfirmaProducts = () => {
                   )}
                 </button>
                 <button
-                  onClick={() => onRouterLink("/opciones-entrega")}
+                  onClick={() => {
+                    localStorage.setItem(
+                      "checkout_step",
+                      String(CheckoutStep.OPCIONES_ENTREGA),
+                    );
+
+                    onRouterLink("/opciones-entrega");
+                  }}
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
                 >
                   Siguiente paso
