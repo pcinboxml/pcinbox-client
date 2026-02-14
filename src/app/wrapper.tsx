@@ -19,11 +19,12 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = useState(false);
+
   const pathName = usePathname();
 
   const {
     dataModal,
-    dataNotification,
     hasToken,
     dataCart,
     setDataCart,
@@ -311,80 +312,93 @@ export default function AppWrapper({
   useProtectedRoute(pathName);
   return (
     <SessionProvider>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-        }}
-      >
-        {pathName != "/estatusMP" &&
-          pathName != "/estatusPay" &&
-          pathName != "/terminos_y_condiciones" &&
-          pathName != "/aviso_privacidad" && <Navbar />}
-        <main
-          className={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? "container"
-              : ""
-          }
-          style={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? { marginTop: "180px" }
-              : {}
-          }
-        >
-          {children}
-
-          <ModalComponent
-            isOpen={dataModal.isOpen}
-            title={dataModal.title}
-            message={dataModal.message}
-            onConfirm={() => dataModal.onConfirm()}
-            onClose={() => dataModal.onClose()}
-            type={dataModal.type}
-            children={dataModal.children}
-            showActions={dataModal.showActions}
-          />
-
-          <Notification dataNotification={dataNotification} />
-
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && <Footer />}
-
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && (
-              <>
-                <span className="block mx-auto my-2 text-center text-[13px]">
-                  © {new Date().getFullYear().toString()} PCinBOX Todos los
-                  derechos reservados, México.
-                </span>
-              </>
-            )}
-        </main>
-
-        <a
+      <SesionHandler>
+        <div
           style={{
-            position: "fixed",
-            bottom: "10px",
-            right: "10px",
-            textDecoration: "none",
-            background: "white",
-            borderRadius: "5px",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
           }}
-          target="_blank"
-          href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
         >
-          <FaWhatsapp
-            size={45}
-            style={{ color: "#25D366", fontSize: "2rem" }}
-          />
-        </a>
-      </div>
+          {pathName != "/estatusMP" &&
+            pathName != "/estatusPay" &&
+            pathName != "/terminos_y_condiciones" &&
+            pathName != "/aviso_privacidad" && <Navbar />}
+          <main
+            className={
+              pathName != "/estatusMP" && pathName != "/estatusPay"
+                ? "container"
+                : ""
+            }
+            style={
+              pathName != "/estatusMP" && pathName != "/estatusPay"
+                ? { marginTop: "180px" }
+                : {}
+            }
+          >
+            {mounted &&
+              (!hasToken &&
+              pathName != "/" &&
+              pathName != "/principal" &&
+              !pathName.startsWith("/result-search-category") &&
+              !pathName.startsWith("/detailsProduct") &&
+              pathName != "/forgotpassword" &&
+              pathName != "/register" ? (
+                <Alert severity="info">Contenido no disponible</Alert>
+              ) : (
+                children
+              ))}
+
+            <ModalComponent
+              isOpen={dataModal.isOpen}
+              title={dataModal.title}
+              message={dataModal.message}
+              onConfirm={() => dataModal.onConfirm()}
+              onClose={() => dataModal.onClose()}
+              type={dataModal.type}
+              children={dataModal.children}
+              showActions={dataModal.showActions}
+            />
+
+            {/* <Notification dataNotification={dataNotification} /> */}
+
+            {pathName != "/estatusMP" &&
+              pathName != "/estatusPay" &&
+              pathName != "/terminos_y_condiciones" &&
+              pathName != "/aviso_privacidad" && <Footer />}
+
+            {pathName != "/estatusMP" &&
+              pathName != "/estatusPay" &&
+              pathName != "/terminos_y_condiciones" &&
+              pathName != "/aviso_privacidad" && (
+                <>
+                  <span className="block mx-auto my-2 text-center text-[13px]">
+                    © {new Date().getFullYear().toString()} PCinBOX Todos los
+                    derechos reservados, México.
+                  </span>
+                </>
+              )}
+          </main>
+
+          <a
+            style={{
+              position: "fixed",
+              bottom: "10px",
+              right: "10px",
+              textDecoration: "none",
+              background: "white",
+              borderRadius: "5px",
+            }}
+            target="_blank"
+            href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
+          >
+            <FaWhatsapp
+              size={45}
+              style={{ color: "#25D366", fontSize: "2rem" }}
+            />
+          </a>
+        </div>
+      </SesionHandler>
     </SessionProvider>
   );
 }
