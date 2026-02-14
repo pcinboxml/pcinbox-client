@@ -22,6 +22,7 @@ import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import { usePathname } from "next/navigation";
 import useStorage from "@/app/services/useStorage";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const {
