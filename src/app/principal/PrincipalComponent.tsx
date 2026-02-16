@@ -5,12 +5,9 @@ import Card from "../components/card/Card";
 import PaginationComponent from "../components/pagination/PaginationComponent";
 import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
-import { usePathname } from "next/navigation";
-import SubMenuProductos from "../components/subMenuProductos/SubMenuProductos";
 import usePcGamers from "./usePcGamers";
 
 const PrincipalComponent = () => {
-  const pathName = usePathname();
   const { dataProducts } = useTheContext();
 
   const tipos = [
@@ -100,7 +97,7 @@ const PrincipalComponent = () => {
                     onChange={handlePageChange}
                   />
                 </div>
-              )
+              ),
           )}
         </div>
       </div>

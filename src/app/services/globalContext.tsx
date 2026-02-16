@@ -19,7 +19,6 @@ import io from "socket.io-client";
 import { AddressI } from "../interfaces/address/address.interface";
 import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
-import useFavorites from "./useFavorites";
 import useService from "./useService";
 import useProveedores from "./proveedores/useProveedores";
 
@@ -52,10 +51,8 @@ interface ContextProps {
   setDataCart: Dispatch<SetStateAction<ProductI[]>>;
   priceCart: number;
   setPriceCart: Dispatch<SetStateAction<number>>;
-
   hasToken: boolean | null;
   setHasToken: Dispatch<SetStateAction<boolean | null>>;
-
   dataNotification: NotificationData;
   setDataNotification: Dispatch<SetStateAction<NotificationData>>;
   rutaImgPerfil: string;
