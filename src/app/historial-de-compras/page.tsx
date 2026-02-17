@@ -509,7 +509,7 @@ const HistoryShop = () => {
                                       d.shipping_method === "estafeta"
                                         ? `https://www.estafeta.com/rastrear-envio?rastreo=true`
                                         : d.shipping_method === "paqueteexpress"
-                                          ? `https://www.paqueteexpress.com.mx/rastreo/?guia=${d.trackingNumber}`
+                                          ? `https://drenvio.com/es-MX/paqueterias/rastreo/paquetexpress`
                                           : "" // Vacio por el metodo no permitido
                                     }
                                     target="_blank"
