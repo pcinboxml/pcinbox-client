@@ -215,20 +215,6 @@ const HistoryShop = () => {
                               );
                             }
                           })()}
-                          {/* 
-                          {historyCompra.statusEnvio != "entregado" &&
-                          historyCompra.statusEnvio != "cancelado" &&
-                          historyCompra.statusEnvio != "disponible" ? (
-                            <button
-                            
-                              onClick={() => showModal(historyCompra)}
-                              className="bg-[#bb3d4b] text-white font-bold p-2 rounded"
-                            >
-                              
-                              <>Cancelar compra</>
-                            
-                            </button>
-                          ) : null} */}
                         </div>
                       </div>
                       <div className={style.orderDate}>
@@ -487,6 +473,57 @@ const HistoryShop = () => {
                                 </span>
                               </div>
                             </div>
+
+                            {d.status === "paid" &&
+                              (d.shipping_method === "paqueteexpress" ||
+                                d.shipping_method === "estafeta") &&
+                              d.trackingNumber && (
+                                <div
+                                  style={{
+                                    marginTop: "8px",
+                                    fontSize: "14px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    flexWrap: "wrap",
+                                  }}
+                                >
+                                  <span style={{ color: "#64748b" }}>
+                                    🚚{" "}
+                                    {d.shipping_method === "estafeta"
+                                      ? "Estafeta"
+                                      : "Paquete Express"}
+                                  </span>
+
+                                  <span
+                                    style={{
+                                      fontWeight: 600,
+                                      color: "#0f172a",
+                                    }}
+                                  >
+                                    {d.trackingNumber}
+                                  </span>
+
+                                  <a
+                                    href={
+                                      d.shipping_method === "estafeta"
+                                        ? `https://www.estafeta.com/rastrear-envio?rastreo=true`
+                                        : d.shipping_method === "paqueteexpress"
+                                          ? `https://drenvio.com/es-MX/paqueterias/rastreo/paquetexpress`
+                                          : "" // Vacio por el metodo no permitido
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#2563eb",
+                                      fontWeight: 500,
+                                      textDecoration: "none",
+                                    }}
+                                  >
+                                    Dar seguimiento →
+                                  </a>
+                                </div>
+                              )}
                           </div>
                         </div>
                       );

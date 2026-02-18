@@ -112,7 +112,7 @@ const GridConfirmaProductos = ({
                 // 1️⃣ Filtrar sucursales permitidas
                 const sucursalesValidas = Array.isArray(params.value)
                   ? params.value.filter((sucursal: any) =>
-                      ["leon", "Arboledas", "santafe", "dicoags2"].includes(
+                      ["leon2", "Arboledas", "santafe", "dicoags2"].includes(
                         sucursal?.branches?.name,
                       ),
                     )
