@@ -137,7 +137,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                               switch (sucursal?.branches.name) {
                                 case "santafe":
                                   return "PCinBOX-SFD";
-                                case "leon":
+                                case "leon2":
                                   return "PCinBOX-León";
                                 case "dicoags2":
                                   return "PCinBOX-AG2D";
