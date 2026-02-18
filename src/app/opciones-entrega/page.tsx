@@ -377,68 +377,78 @@ const OpcionesEntrega = () => {
                             const { tarifa, pesoVolumetrico, excede } =
                               calcularPrecioPorVolumen(Number(findVolement));
 
+                            {
+                              console.log(group);
+                            }
+
                             return (
                               <>
-                                {!excede && tarifa && tarifa.max < 21 && (
-                                  <div className="flex items-center relative">
-                                    <input
-                                      type="radio"
-                                      style={{
-                                        marginRight: "10px",
-                                      }}
-                                      name={`envio-pe-${groupKey}`}
-                                      id={`envio-pe-${groupKey}`}
-                                      value="paqueteexpress"
-                                      checked={
-                                        optionEnvio[groupKey] ===
-                                        "paqueteexpress"
-                                      }
-                                      onChange={(event) =>
-                                        handleOnChangeOptionEnvio(
-                                          event,
-                                          groupKey,
-                                        )
-                                      }
-                                    />
+                                {!excede &&
+                                  tarifa &&
+                                  tarifa.max < 21 &&
+                                  (group?.storeId === 5 ||
+                                    group?.storeId === 6) && ( //Validar que solo se enviaran por paqueteria en sucurslaes especificas como SAnta fe y leon de DICO
+                                    <div className="flex items-center relative">
+                                      <input
+                                        type="radio"
+                                        style={{
+                                          marginRight: "10px",
+                                        }}
+                                        name={`envio-pe-${groupKey}`}
+                                        id={`envio-pe-${groupKey}`}
+                                        value="paqueteexpress"
+                                        checked={
+                                          optionEnvio[groupKey] ===
+                                          "paqueteexpress"
+                                        }
+                                        onChange={(event) =>
+                                          handleOnChangeOptionEnvio(
+                                            event,
+                                            groupKey,
+                                          )
+                                        }
+                                      />
 
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor={`envio-pe-${groupKey}`}
-                                    >
-                                      <div className="w-full flex items-center">
-                                        <img
-                                          src="/paqueteexpress.png"
-                                          style={{
-                                            width: "50px",
-                                            height: "50px",
-                                            objectFit: "contain",
-                                            filter: "grayscale(100%)",
-                                          }}
-                                          loading="lazy"
-                                        />
-                                        <span
-                                          className="text-[#666666] text-sm mx-2"
-                                          style={{ fontWeight: "bold" }}
-                                        >
-                                          <span style={{ fontWeight: "bold" }}>
-                                            |
-                                          </span>{" "}
-                                          Paquete Express
-                                        </span>
+                                      <label
+                                        className="form-check-label"
+                                        htmlFor={`envio-pe-${groupKey}`}
+                                      >
+                                        <div className="w-full flex items-center">
+                                          <img
+                                            src="/paqueteexpress.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "50px",
+                                              objectFit: "contain",
+                                              filter: "grayscale(100%)",
+                                            }}
+                                            loading="lazy"
+                                          />
+                                          <span
+                                            className="text-[#666666] text-sm mx-2"
+                                            style={{ fontWeight: "bold" }}
+                                          >
+                                            <span
+                                              style={{ fontWeight: "bold" }}
+                                            >
+                                              |
+                                            </span>{" "}
+                                            Paquete Express
+                                          </span>
 
-                                        <span>
-                                          {(() => {
-                                            return formatCurrency(
-                                              calcularPrecioPorVolumen(
-                                                Number(findVolement),
-                                              )?.tarifa?.price!,
-                                            );
-                                          })()}
-                                        </span>
-                                      </div>
-                                    </label>
-                                  </div>
-                                )}
+                                          <span>
+                                            {(() => {
+                                              return formatCurrency(
+                                                calcularPrecioPorVolumen(
+                                                  Number(findVolement),
+                                                )?.tarifa?.price!,
+                                              );
+                                            })()}
+                                          </span>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  )}
                                 {excede && (
                                   <Alert severity="warning">
                                     El volumen ({pesoVolumetrico} kg) excede el
@@ -590,205 +600,209 @@ const OpcionesEntrega = () => {
                                       </div>
                                     </Alert>
                                   )}
-                                {!excede && tarifa && tarifa.max < 6 && (
-                                  <>
-                                    <div className="flex items-center relative ">
-                                      <input
-                                        type="radio"
-                                        style={{
-                                          marginRight: "10px",
-                                        }}
-                                        name={`envio-e-${groupKey}`}
-                                        id={`envio-e-${groupKey}`}
-                                        value="estafeta"
-                                        checked={
-                                          optionEnvio[groupKey] === "estafeta"
-                                        }
-                                        onChange={(event) =>
-                                          handleOnChangeOptionEnvio(
-                                            event,
-                                            groupKey,
-                                          )
-                                        }
-                                      />
+                                {!excede &&
+                                  tarifa &&
+                                  tarifa.max < 6 &&
+                                  (group?.storeId === 5 ||
+                                    group?.storeId === 6) && ( //Validacion para solo envio por paqueteria en Sucursales en Especifico (Santa Fe y Leon) de Dico
+                                    <>
+                                      <div className="flex items-center relative ">
+                                        <input
+                                          type="radio"
+                                          style={{
+                                            marginRight: "10px",
+                                          }}
+                                          name={`envio-e-${groupKey}`}
+                                          id={`envio-e-${groupKey}`}
+                                          value="estafeta"
+                                          checked={
+                                            optionEnvio[groupKey] === "estafeta"
+                                          }
+                                          onChange={(event) =>
+                                            handleOnChangeOptionEnvio(
+                                              event,
+                                              groupKey,
+                                            )
+                                          }
+                                        />
 
-                                      <label
-                                        className="form-check-label"
-                                        htmlFor={`envio-e-${groupKey}`}
-                                      >
-                                        <div className="w-full flex items-center">
-                                          <img
-                                            src="/estafeta.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "50px",
-                                              objectFit: "contain",
-                                              filter: "grayscale(100%)",
-                                            }}
-                                            loading="lazy"
-                                          />
+                                        <label
+                                          className="form-check-label"
+                                          htmlFor={`envio-e-${groupKey}`}
+                                        >
+                                          <div className="w-full flex items-center">
+                                            <img
+                                              src="/estafeta.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "50px",
+                                                objectFit: "contain",
+                                                filter: "grayscale(100%)",
+                                              }}
+                                              loading="lazy"
+                                            />
 
-                                          <span
-                                            className="text-[#666666] text-sm mx-2"
-                                            style={{ fontWeight: "bold" }}
-                                          >
                                             <span
+                                              className="text-[#666666] text-sm mx-2"
                                               style={{ fontWeight: "bold" }}
                                             >
-                                              |
-                                            </span>{" "}
-                                            Estafeta
-                                          </span>
-
-                                          <span>
-                                            {(() => {
-                                              return formatCurrency(
-                                                Number(178.0),
-                                              );
-                                            })()}
-                                          </span>
-                                        </div>
-                                      </label>
-                                    </div>
-
-                                    {optionEnvio[groupKey] === "estafeta" && (
-                                      <Alert
-                                        severity="info"
-                                        className="flex justify-center relative"
-                                      >
-                                        <div className="flex items-center mx-2 absolute top-2 right-2">
-                                          <span className="font-bold text-black">
-                                            {(() => {
-                                              let findDataProductsStoreId =
-                                                dataCart?.filter((d) => {
-                                                  if (d.storeId) {
-                                                    if (
-                                                      Number(d.storeId) ===
-                                                      Number(group.storeId)
-                                                    ) {
-                                                      return d;
-                                                    }
-                                                  }
-                                                });
-
-                                              const totalPriceStoreProvider3 =
-                                                Math.round(
-                                                  findDataProductsStoreId
-                                                    ?.filter(
-                                                      (itemF) =>
-                                                        itemF.stock != 0 &&
-                                                        Number(
-                                                          itemF?.providerId,
-                                                        ) === 3,
-                                                    )
-                                                    .map(
-                                                      (item) =>
-                                                        Number(item.price) *
-                                                        Number(item.quantity),
-                                                    )
-                                                    .reduce(
-                                                      (sum, current) =>
-                                                        sum + current,
-                                                      0,
-                                                    ) +
-                                                    Number.EPSILON * 100,
-                                                );
-
-                                              if (
-                                                seguroEnvio[groupKey]
-                                                  ?.required == "no"
-                                              ) {
-                                                return formatCurrency(
-                                                  Number(0),
-                                                );
-                                              } else {
-                                                return formatCurrency(
-                                                  Number(
-                                                    calcPriceEnvio(
-                                                      totalPriceStoreProvider3,
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            })()}
-                                          </span>
-                                        </div>
-                                        <div className="flex relative flex-col">
-                                          <span className="font-bold text-black text-center">
-                                            ¿Deseas seguro de envío?
-                                          </span>
-
-                                          <div className="flex justify-center">
-                                            <div className="flex items-center relative">
-                                              <input
-                                                type="radio"
-                                                style={{
-                                                  marginRight: "5px",
-                                                }}
-                                                name={`seguro-${groupKey}`}
-                                                id={`seguro-si-${groupKey}`}
-                                                value="si"
-                                                checked={
-                                                  seguroEnvio[groupKey]
-                                                    ?.required === "si"
-                                                }
-                                                onChange={(event) => {
-                                                  handleOnChangeSeguroEnvio(
-                                                    event,
-                                                    groupKey,
-                                                  );
-                                                }}
-                                              />
-                                              <label
-                                                htmlFor={`seguro-si-${groupKey}`}
+                                              <span
+                                                style={{ fontWeight: "bold" }}
                                               >
-                                                SI
-                                              </label>
-                                            </div>
-                                            <span
-                                              style={{
-                                                marginLeft: "5px",
-                                                display: "inline-block",
-                                                marginRight: "5px",
-                                                color: "black",
-                                                fontWeight: "bold",
-                                              }}
-                                            >
-                                              |
+                                                |
+                                              </span>{" "}
+                                              Estafeta
                                             </span>
 
-                                            <div className="flex items-center relative">
-                                              <input
-                                                type="radio"
-                                                style={{
-                                                  marginRight: "5px",
-                                                }}
-                                                name={`seguro-${groupKey}`}
-                                                id={`seguro-no-${groupKey}`}
-                                                value="no"
-                                                checked={
-                                                  seguroEnvio[groupKey]
-                                                    ?.required === "no"
-                                                }
-                                                onChange={(event) => {
-                                                  handleOnChangeSeguroEnvio(
-                                                    event,
-                                                    groupKey,
+                                            <span>
+                                              {(() => {
+                                                return formatCurrency(
+                                                  Number(178.0),
+                                                );
+                                              })()}
+                                            </span>
+                                          </div>
+                                        </label>
+                                      </div>
+
+                                      {optionEnvio[groupKey] === "estafeta" && (
+                                        <Alert
+                                          severity="info"
+                                          className="flex justify-center relative"
+                                        >
+                                          <div className="flex items-center mx-2 absolute top-2 right-2">
+                                            <span className="font-bold text-black">
+                                              {(() => {
+                                                let findDataProductsStoreId =
+                                                  dataCart?.filter((d) => {
+                                                    if (d.storeId) {
+                                                      if (
+                                                        Number(d.storeId) ===
+                                                        Number(group.storeId)
+                                                      ) {
+                                                        return d;
+                                                      }
+                                                    }
+                                                  });
+
+                                                const totalPriceStoreProvider3 =
+                                                  Math.round(
+                                                    findDataProductsStoreId
+                                                      ?.filter(
+                                                        (itemF) =>
+                                                          itemF.stock != 0 &&
+                                                          Number(
+                                                            itemF?.providerId,
+                                                          ) === 3,
+                                                      )
+                                                      .map(
+                                                        (item) =>
+                                                          Number(item.price) *
+                                                          Number(item.quantity),
+                                                      )
+                                                      .reduce(
+                                                        (sum, current) =>
+                                                          sum + current,
+                                                        0,
+                                                      ) +
+                                                      Number.EPSILON * 100,
                                                   );
+
+                                                if (
+                                                  seguroEnvio[groupKey]
+                                                    ?.required == "no"
+                                                ) {
+                                                  return formatCurrency(
+                                                    Number(0),
+                                                  );
+                                                } else {
+                                                  return formatCurrency(
+                                                    Number(
+                                                      calcPriceEnvio(
+                                                        totalPriceStoreProvider3,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              })()}
+                                            </span>
+                                          </div>
+                                          <div className="flex relative flex-col">
+                                            <span className="font-bold text-black text-center">
+                                              ¿Deseas seguro de envío?
+                                            </span>
+
+                                            <div className="flex justify-center">
+                                              <div className="flex items-center relative">
+                                                <input
+                                                  type="radio"
+                                                  style={{
+                                                    marginRight: "5px",
+                                                  }}
+                                                  name={`seguro-${groupKey}`}
+                                                  id={`seguro-si-${groupKey}`}
+                                                  value="si"
+                                                  checked={
+                                                    seguroEnvio[groupKey]
+                                                      ?.required === "si"
+                                                  }
+                                                  onChange={(event) => {
+                                                    handleOnChangeSeguroEnvio(
+                                                      event,
+                                                      groupKey,
+                                                    );
+                                                  }}
+                                                />
+                                                <label
+                                                  htmlFor={`seguro-si-${groupKey}`}
+                                                >
+                                                  SI
+                                                </label>
+                                              </div>
+                                              <span
+                                                style={{
+                                                  marginLeft: "5px",
+                                                  display: "inline-block",
+                                                  marginRight: "5px",
+                                                  color: "black",
+                                                  fontWeight: "bold",
                                                 }}
-                                              />
-                                              <label
-                                                htmlFor={`seguro-no-${groupKey}`}
                                               >
-                                                NO
-                                              </label>
+                                                |
+                                              </span>
+
+                                              <div className="flex items-center relative">
+                                                <input
+                                                  type="radio"
+                                                  style={{
+                                                    marginRight: "5px",
+                                                  }}
+                                                  name={`seguro-${groupKey}`}
+                                                  id={`seguro-no-${groupKey}`}
+                                                  value="no"
+                                                  checked={
+                                                    seguroEnvio[groupKey]
+                                                      ?.required === "no"
+                                                  }
+                                                  onChange={(event) => {
+                                                    handleOnChangeSeguroEnvio(
+                                                      event,
+                                                      groupKey,
+                                                    );
+                                                  }}
+                                                />
+                                                <label
+                                                  htmlFor={`seguro-no-${groupKey}`}
+                                                >
+                                                  NO
+                                                </label>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      </Alert>
-                                    )}
-                                  </>
-                                )}
+                                        </Alert>
+                                      )}
+                                    </>
+                                  )}
                               </>
                             );
                           })()}
