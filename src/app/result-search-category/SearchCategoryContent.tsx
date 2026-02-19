@@ -29,7 +29,7 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts } = useTheContext();
+  const { dataProducts, socketCron } = useTheContext();
 
   const {
     startIndex,
@@ -108,6 +108,126 @@ const SearchCategoryContent = () => {
 
     setData(filtered);
   }, [searchText, dataCopy]);
+
+  useEffect(() => {
+    if (!socketCron?.current) return;
+
+    socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+      if (Array.isArray(dataSocketCron)) {
+        setData((prevData: any) =>
+          prevData.map((pdp: any) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+            if (!findIdProduct) return pdp;
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx: any) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+
+        setDataCopy((prevData: any) =>
+          prevData.map((pdp: any) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+            if (!findIdProduct) return pdp;
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx: any) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+      }
+    });
+
+    return () => {
+      socketCron?.current?.off("updatedStockCron", (dataSocketCron: any) => {
+        if (Array.isArray(dataSocketCron)) {
+          setData((prevData: any) =>
+            prevData.map((pdp: any) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+              if (!findIdProduct) return pdp;
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx: any) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+
+          setDataCopy((prevData: any) =>
+            prevData.map((pdp: any) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+              if (!findIdProduct) return pdp;
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx: any) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+        }
+      });
+    };
+  }, [socketCron?.current]);
 
   const ratingProgress = [
     {
