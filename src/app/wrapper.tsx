@@ -303,6 +303,7 @@ export default function AppWrapper({
     if (!socketCron.current) return;
 
     socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+      console.log(dataSocketCron);
       if (Array.isArray(dataSocketCron)) {
         setDataProducts((prevDataProducts) =>
           prevDataProducts.map((pdp) => {
@@ -315,6 +316,8 @@ export default function AppWrapper({
             const branchesEntries = findIdProduct?.branches
               ? Object.entries(findIdProduct.branches)
               : [];
+
+            console.log(branchesEntries);
 
             return {
               ...pdp,
@@ -393,7 +396,6 @@ export default function AppWrapper({
           }),
         );
       }
-      console.log(dataSocketCron);
     });
   }, [socketCron?.current]);
 
