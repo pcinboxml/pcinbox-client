@@ -29,12 +29,13 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketServer, setDataFavorites } = useTheContext();
+  const { dataProducts } = useTheContext();
 
   const {
     startIndex,
     endIndex,
     page,
+    setPage,
     handleChangePage,
     itemsPerPage,
     loadingAddProductCar,
@@ -131,45 +132,6 @@ const SearchCategoryContent = () => {
     },
   ];
 
-  // useEffect(() => {
-  //   if (!socketServer.current || data.length === 0) return;
-  //   const socket = socketServer.current;
-
-  //   const handlerUpdateProductComponent = (dataSocket: ProductI) => {
-  //     setData((prev: any) =>
-  //       prev.map((item: any) =>
-  //         item.idProduct == dataSocket.idProduct
-  //           ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
-  //           : item,
-  //       ),
-  //     );
-
-  //     setDataFavorites((prevFavorites) => {
-  //       return prevFavorites.map((item: any) => {
-  //         // Aquí comparamos con la estructura correcta:
-  //         const match = Number(item.productId) === Number(dataSocket.idProduct);
-
-  //         return match
-  //           ? {
-  //               ...item,
-  //               products: {
-  //                 ...item.products,
-  //                 stock: Number(dataSocket.stock),
-  //                 price: Number(dataSocket.price).toString(),
-  //               },
-  //             }
-  //           : item;
-  //       });
-  //     });
-  //   };
-
-  //   socket.on("updateProductComponent", handlerUpdateProductComponent);
-
-  //   return () => {
-  //     socket.off("updateProductComponent", handlerUpdateProductComponent);
-  //   };
-  // }, [socketServer.current, data]);
-
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
       {...props}
@@ -227,14 +189,6 @@ const SearchCategoryContent = () => {
       rating: progressRating.rating,
     };
   };
-
-  // useEffect(() => {
-  //   setData((prev) => {
-  //     return prev
-  //       .slice(startIndex, endIndex)
-  //       .sort((a: any, b: any) => Number(b.price) - Number(a.price));
-  //   });
-  // }, []);
 
   return (
     <section>
@@ -347,13 +301,18 @@ const SearchCategoryContent = () => {
                   defaultValue={""}
                   onChange={(event) => {
                     setData((prev) => {
-                      return prev
-                        .slice(startIndex, endIndex)
-                        .sort((a: any, b: any) =>
-                          event.target.value == "1"
-                            ? Number(b.price) - Number(a.price)
-                            : Number(a.price) - Number(b.price),
-                        );
+                      // Copiamos todo el array antes de ordenar
+                      const sorted = [...prev].sort(
+                        (a: any, b: any) =>
+                          event.target.value === "1"
+                            ? Number(b.price) - Number(a.price) // mayor a menor
+                            : Number(a.price) - Number(b.price), // menor a mayor
+                      );
+
+                      setPage(1);
+
+                      // Si necesitas slice, hazlo después
+                      return sorted;
                     });
                   }}
                 >
