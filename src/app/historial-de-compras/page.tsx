@@ -154,7 +154,6 @@ const HistoryShop = () => {
         <div className="my-5 flex flex-col">
           {dataHistoryCompras && dataHistoryCompras.length > 0 ? (
             dataHistoryCompras.map((historyCompra, index) => {
-              console.log(historyCompra);
               return (
                 <div
                   className={`${style.orderCard} my-3`}

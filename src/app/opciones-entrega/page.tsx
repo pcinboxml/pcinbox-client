@@ -377,10 +377,6 @@ const OpcionesEntrega = () => {
                             const { tarifa, pesoVolumetrico, excede } =
                               calcularPrecioPorVolumen(Number(findVolement));
 
-                            {
-                              console.log(group);
-                            }
-
                             return (
                               <>
                                 {!excede && tarifa && tarifa.max < 21 && (

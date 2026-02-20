@@ -271,7 +271,7 @@ const useOpcionesEntrega = () => {
       const resp = await requestGet("/address/hasAddressUser");
       if (resp.status == 200) {
         const data: AddressI[] = await resp.data.data.data;
-        console.log(data);
+
         setDataUserAddress(data);
       }
     } catch (error: any) {
