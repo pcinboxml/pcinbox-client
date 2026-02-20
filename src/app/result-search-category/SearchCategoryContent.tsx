@@ -29,12 +29,13 @@ const SearchCategoryContent = () => {
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketServer, setDataFavorites } = useTheContext();
+  const { dataProducts, socketCron } = useTheContext();
 
   const {
     startIndex,
     endIndex,
     page,
+    setPage,
     handleChangePage,
     itemsPerPage,
     loadingAddProductCar,
@@ -108,6 +109,126 @@ const SearchCategoryContent = () => {
     setData(filtered);
   }, [searchText, dataCopy]);
 
+  useEffect(() => {
+    if (!socketCron?.current) return;
+
+    socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+      if (Array.isArray(dataSocketCron)) {
+        setData((prevData: any) =>
+          prevData.map((pdp: any) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+            if (!findIdProduct) return pdp;
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx: any) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+
+        setDataCopy((prevData: any) =>
+          prevData.map((pdp: any) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+            if (!findIdProduct) return pdp;
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx: any) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+      }
+    });
+
+    return () => {
+      socketCron?.current?.off("updatedStockCron", (dataSocketCron: any) => {
+        if (Array.isArray(dataSocketCron)) {
+          setData((prevData: any) =>
+            prevData.map((pdp: any) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+              if (!findIdProduct) return pdp;
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx: any) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+
+          setDataCopy((prevData: any) =>
+            prevData.map((pdp: any) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+              if (!findIdProduct) return pdp;
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx: any) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+        }
+      });
+    };
+  }, [socketCron?.current]);
+
   const ratingProgress = [
     {
       id: 1,
@@ -130,45 +251,6 @@ const SearchCategoryContent = () => {
       rating: 1,
     },
   ];
-
-  // useEffect(() => {
-  //   if (!socketServer.current || data.length === 0) return;
-  //   const socket = socketServer.current;
-
-  //   const handlerUpdateProductComponent = (dataSocket: ProductI) => {
-  //     setData((prev: any) =>
-  //       prev.map((item: any) =>
-  //         item.idProduct == dataSocket.idProduct
-  //           ? { ...item, stock: dataSocket.stock, price: dataSocket.price }
-  //           : item,
-  //       ),
-  //     );
-
-  //     setDataFavorites((prevFavorites) => {
-  //       return prevFavorites.map((item: any) => {
-  //         // Aquí comparamos con la estructura correcta:
-  //         const match = Number(item.productId) === Number(dataSocket.idProduct);
-
-  //         return match
-  //           ? {
-  //               ...item,
-  //               products: {
-  //                 ...item.products,
-  //                 stock: Number(dataSocket.stock),
-  //                 price: Number(dataSocket.price).toString(),
-  //               },
-  //             }
-  //           : item;
-  //       });
-  //     });
-  //   };
-
-  //   socket.on("updateProductComponent", handlerUpdateProductComponent);
-
-  //   return () => {
-  //     socket.off("updateProductComponent", handlerUpdateProductComponent);
-  //   };
-  // }, [socketServer.current, data]);
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
@@ -227,14 +309,6 @@ const SearchCategoryContent = () => {
       rating: progressRating.rating,
     };
   };
-
-  // useEffect(() => {
-  //   setData((prev) => {
-  //     return prev
-  //       .slice(startIndex, endIndex)
-  //       .sort((a: any, b: any) => Number(b.price) - Number(a.price));
-  //   });
-  // }, []);
 
   return (
     <section>
@@ -347,13 +421,18 @@ const SearchCategoryContent = () => {
                   defaultValue={""}
                   onChange={(event) => {
                     setData((prev) => {
-                      return prev
-                        .slice(startIndex, endIndex)
-                        .sort((a: any, b: any) =>
-                          event.target.value == "1"
-                            ? Number(b.price) - Number(a.price)
-                            : Number(a.price) - Number(b.price),
-                        );
+                      // Copiamos todo el array antes de ordenar
+                      const sorted = [...prev].sort(
+                        (a: any, b: any) =>
+                          event.target.value === "1"
+                            ? Number(b.price) - Number(a.price) // mayor a menor
+                            : Number(a.price) - Number(b.price), // menor a mayor
+                      );
+
+                      setPage(1);
+
+                      // Si necesitas slice, hazlo después
+                      return sorted;
                     });
                   }}
                 >

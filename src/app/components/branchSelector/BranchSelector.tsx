@@ -107,9 +107,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                       const name = branch?.branches?.name;
                       return (
                         branch?.branches?.providerId === 3 &&
-                        ["leon2", "Arboledas", "santafe", "dicoags2"].includes(
-                          name!,
-                        )
+                        ["leon2", "santafe"].includes(name!)
                       );
                     } else {
                       return branch;

@@ -303,8 +303,192 @@ export default function AppWrapper({
     if (!socketCron.current) return;
 
     socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
-      console.log(dataSocketCron);
+      if (Array.isArray(dataSocketCron)) {
+        setDataProducts((prevDataProducts) =>
+          prevDataProducts.map((pdp) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+
+            if (!findIdProduct) return pdp;
+
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+
+        setDataCart((prevDataCart) =>
+          prevDataCart.map((pdp) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+            );
+
+            if (!findIdProduct) return pdp;
+
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.product_stock?.map((xx) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+        setDataFavorites((prevDataFavorites) =>
+          prevDataFavorites.map((pdp) => {
+            const findIdProduct = dataSocketCron?.find(
+              (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
+            );
+
+            if (!findIdProduct) return pdp;
+
+            const branchesEntries = findIdProduct?.branches
+              ? Object.entries(findIdProduct.branches)
+              : [];
+
+            return {
+              ...pdp,
+              stock: Number(findIdProduct.stock),
+              product_stock: pdp.products?.product_stock?.map((xx) => {
+                if (!xx) return xx; // por si xx es undefined
+                const branchStock = branchesEntries.find(
+                  ([nameBranch]) => nameBranch === xx.branches?.name,
+                );
+
+                return {
+                  ...xx,
+                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                };
+              }),
+            };
+          }),
+        );
+      }
     });
+
+    return () => {
+      socketCron?.current?.off("updatedStockCron", (dataSocketCron: any) => {
+        if (Array.isArray(dataSocketCron)) {
+          setDataProducts((prevDataProducts) =>
+            prevDataProducts.map((pdp) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+
+              if (!findIdProduct) return pdp;
+
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+
+          setDataCart((prevDataCart) =>
+            prevDataCart.map((pdp) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+              );
+
+              if (!findIdProduct) return pdp;
+
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.product_stock?.map((xx) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+          setDataFavorites((prevDataFavorites) =>
+            prevDataFavorites.map((pdp) => {
+              const findIdProduct = dataSocketCron?.find(
+                (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
+              );
+
+              if (!findIdProduct) return pdp;
+
+              const branchesEntries = findIdProduct?.branches
+                ? Object.entries(findIdProduct.branches)
+                : [];
+
+              return {
+                ...pdp,
+                stock: Number(findIdProduct.stock),
+                product_stock: pdp.products?.product_stock?.map((xx) => {
+                  if (!xx) return xx; // por si xx es undefined
+                  const branchStock = branchesEntries.find(
+                    ([nameBranch]) => nameBranch === xx.branches?.name,
+                  );
+
+                  return {
+                    ...xx,
+                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
+                  };
+                }),
+              };
+            }),
+          );
+        }
+      });
+    };
   }, [socketCron?.current]);
 
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
