@@ -75,6 +75,7 @@ export const ModalCart = ({
               disabled={loadingRmAllCart}
               onClick={() => {
                 handleRemoveStorageDataCart();
+                localStorage.removeItem("progressPay2");
                 handleRemoveAllCart(dataCart, onMouseLeaveCart);
               }}
             >

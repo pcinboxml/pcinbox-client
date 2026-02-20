@@ -91,6 +91,7 @@ const useConfirmaProductos = () => {
           if (resp.status == 200) {
             //  setDataCart([]);
             handleRemoveStorageDataCart();
+            localStorage.removeItem("progressPay2");
 
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }
