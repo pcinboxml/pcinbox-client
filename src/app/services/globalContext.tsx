@@ -21,6 +21,7 @@ import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 import useService from "./useService";
 import useProveedores from "./proveedores/useProveedores";
+import { usePathname } from "next/navigation";
 
 type ModalType = "success" | "error" | "warning" | "info";
 
@@ -178,6 +179,8 @@ const CreateContext = createContext<ContextProps>({
 });
 
 export const GlobalProvider = ({ children }: { children: any }) => {
+  const pathName = usePathname();
+
   //Data para los modales
   const [dataModal, setDataModal] = useState<ModalData>({
     isOpen: false,
@@ -249,51 +252,67 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
 
     const getListProducts = async () => {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`).then(
-        async (res) => {
-          const data = await res.json();
-
-          setDataProducts(data.data);
-          if (mounted) setDataProducts(data.data);
-        },
-      );
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`,
+          { signal: controller.signal },
+        );
+        const data = await res.json();
+        setDataProducts(data.data);
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          console.error(error);
+        }
+      }
     };
 
     const handleGetDataFavorites = async () => {
       try {
         const resp = await requestGet("/favorites/getFavoritesUser");
-
-        if (resp.status == 200) {
-          const data = await resp.data;
-          setDataFavorites(data.data.data);
+        if (resp.status === 200) {
+          setDataFavorites(resp.data.data.data);
         }
-      } catch (error) {
+      } catch {
         setDataFavorites([]);
       }
     };
 
+    if (pathName === "/" || pathName === "/principal") {
+      getListProducts();
+    }
+
+    if (pathName === "/favorites") {
+      handleGetDataFavorites();
+    }
+
+    return () => {
+      controller.abort();
+    };
+  }, [pathName]);
+
+  useEffect(() => {
+    let mounted = false;
+
     const getDataCategories = async () => {
       try {
         const resp = await requestGetProveedor("/getAllCategoriPrincipal");
-        if (resp.status == 200) {
-          const data = resp.data;
-
-          setDataCategories(data.data.data);
+        if (resp.status === 200) {
+          setDataCategories(resp.data.data.data);
         }
-      } catch (error) {
+      } catch {
         setDataCategories([]);
       }
     };
 
-    getListProducts();
-    handleGetDataFavorites();
-    getDataCategories();
+    if (!dataCategories || dataCategories.length === 0) {
+      getDataCategories();
+    }
 
     return () => {
-      mounted = false;
+      mounted = true;
     };
   }, []);
 

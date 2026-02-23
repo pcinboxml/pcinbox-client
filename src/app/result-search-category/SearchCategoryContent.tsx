@@ -312,7 +312,7 @@ const SearchCategoryContent = () => {
 
   return (
     <section>
-      {!loadingData ? (
+      {!loadingData && data && data.length > 0 ? (
         <div className="mt-2 w-full grid grid-cols-[auto_1fr] gap-2">
           {marcas &&
             marcas?.length > 0 &&
@@ -392,27 +392,6 @@ const SearchCategoryContent = () => {
                   }}
                   value={searchText}
                 />
-                {/* <button
-                      className="py-1 px-4 rounded text-white bg-[#BB3D4B] cursor-pointer"
-                      onClick={() => {
-                        if (searchText.trim().length < 3) {
-                          setData(dataCopy);
-                          return;
-                        }
-
-                        const term = searchText.toLowerCase().trim();
-
-                        const filtered = dataCopy.filter(
-                          (item: any) =>
-                            item.name.toLowerCase().includes(term) ||
-                            item.sku.toLowerCase().includes(term),
-                        );
-
-                        setData(filtered);
-                      }}
-                    >
-                      Buscar
-                    </button> */}
               </div>
               <div className="flex gap-1 items-center">
                 <span className="flex shrink-0">Ordenar por:</span>
@@ -454,6 +433,12 @@ const SearchCategoryContent = () => {
               {data && data.length > 0 ? (
                 data
                   .slice(startIndex, endIndex)
+                  .sort((a: any, b: any) => {
+                    // Primero los que tienen stock > 0
+                    if (a.stock > 0 && b.stock === 0) return -1;
+                    if (a.stock === 0 && b.stock > 0) return 1;
+                    return 0; // Mantiene el orden original si ambos son iguales
+                  })
                   .map((item: any, index: number) => {
                     return (
                       <div key={index}>
@@ -693,56 +678,58 @@ const SearchCategoryContent = () => {
 
                               <div className="grid grid-cols-[1fr_1fr_auto] my-1">
                                 {item?.caracteristicas &&
-                                  item?.caracteristicas?.length > 0 && (
-                                    <div>
-                                      <ul>
-                                        {item?.caracteristicas
-                                          ? (() => {
-                                              try {
-                                                const caracs = JSON.parse(
-                                                  item.caracteristicas,
-                                                );
-                                                if (
-                                                  Array.isArray(caracs) &&
-                                                  caracs.length > 0
-                                                ) {
-                                                  return caracs
-                                                    .slice(0, 6)
-                                                    .map(
-                                                      (
-                                                        carac: any,
-                                                        index: number,
-                                                      ) => (
-                                                        <li
-                                                          key={index}
-                                                          className="flex gap-2 items-end"
-                                                        >
-                                                          <span className="font-bold text-black text-[13px]">
-                                                            {carac.prop}:
-                                                          </span>
-                                                          <span className="italic text-[13px]">
-                                                            {carac.value &&
-                                                            carac?.value
-                                                              ?.length > 70
-                                                              ? `${carac?.value?.slice(
-                                                                  0,
-                                                                  70,
-                                                                )}...`
-                                                              : carac?.value}
-                                                          </span>
-                                                        </li>
-                                                      ),
-                                                    );
-                                                }
-                                                return "Sin caracteristicas disponibles";
-                                              } catch (e) {
-                                                return "Sin caracteristicas disponibles";
+                                item?.caracteristicas?.length > 0 ? (
+                                  <div>
+                                    <ul>
+                                      {item?.caracteristicas
+                                        ? (() => {
+                                            try {
+                                              const caracs = JSON.parse(
+                                                item.caracteristicas,
+                                              );
+                                              if (
+                                                Array.isArray(caracs) &&
+                                                caracs.length > 0
+                                              ) {
+                                                return caracs
+                                                  .slice(0, 6)
+                                                  .map(
+                                                    (
+                                                      carac: any,
+                                                      index: number,
+                                                    ) => (
+                                                      <li
+                                                        key={index}
+                                                        className="flex gap-2 items-end"
+                                                      >
+                                                        <span className="font-bold text-black text-[13px]">
+                                                          {carac.prop}:
+                                                        </span>
+                                                        <span className="italic text-[13px]">
+                                                          {carac.value &&
+                                                          carac?.value?.length >
+                                                            70
+                                                            ? `${carac?.value?.slice(
+                                                                0,
+                                                                70,
+                                                              )}...`
+                                                            : carac?.value}
+                                                        </span>
+                                                      </li>
+                                                    ),
+                                                  );
                                               }
-                                            })()
-                                          : "Sin caracteristicas disponibles"}
-                                      </ul>
-                                    </div>
-                                  )}
+                                              return "Sin caracteristicas disponibles";
+                                            } catch (e) {
+                                              return "Sin caracteristicas disponibles";
+                                            }
+                                          })()
+                                        : "Sin caracteristicas disponibles"}
+                                    </ul>
+                                  </div>
+                                ) : (
+                                  "Sin caracteristicas disponibles"
+                                )}
                                 <div className="px-3">
                                   <span className="text-[20px] font-bold">
                                     {formatCurrency(Number(item.price))}
