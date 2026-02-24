@@ -280,7 +280,11 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       }
     };
 
-    if (pathName === "/" || pathName === "/principal") {
+    if (
+      pathName === "/" ||
+      pathName === "/principal" ||
+      pathName.startsWith("/detailsProduct/")
+    ) {
       getListProducts();
     }
 
