@@ -194,7 +194,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                             type="number"
                             min="1"
                             max={sucursal.stock}
-                            value={quantities[sucursal.id] ?? ""}
+                            value={quantities[sucursal.id] ?? 1}
                             onChange={(e) =>
                               handleChangeQuantity(sucursal.id, e.target.value)
                             }

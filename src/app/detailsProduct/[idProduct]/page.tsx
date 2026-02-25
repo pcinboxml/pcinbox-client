@@ -1,7 +1,7 @@
 "use client";
 import "./detailsProduct.css";
 import useDetailsProduct from "./useDetailsProducts";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useService from "../../services/useService";
 import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
 import useFavorites from "../../services/useFavorites";
@@ -11,8 +11,12 @@ import { Carousel } from "react-responsive-carousel";
 import ReactPlayer from "react-player";
 import { useTheContext } from "@/app/services/globalContext";
 import BranchSelector from "@/app/components/branchSelector/BranchSelector";
+import useProveedores from "@/app/services/proveedores/useProveedores";
+import ProductI from "@/app/interfaces/products/product.interface";
 
 const DetailsProduct = () => {
+  const [dataProduct, setDataProduct] = useState<ProductI | null>();
+
   const {
     quantity,
     loadingAddProduct,
@@ -30,7 +34,8 @@ const DetailsProduct = () => {
   } = useDetailsProduct();
 
   const { formatCurrency } = useService();
-  const { dataProducts, setDataModal } = useTheContext();
+  const { requestGetProveedor } = useProveedores();
+  const { setDataModal } = useTheContext();
   const router = useParams();
   const { idProduct } = router;
 
@@ -46,11 +51,11 @@ const DetailsProduct = () => {
   const fechaActualFormateada = dateCurrent.toLocaleDateString();
   const fechaFuturaFormateada = dateSend.toLocaleDateString();
 
-  const dataProduct = useMemo(() => {
-    return dataProducts.find(
-      (pro) => Number(pro.idProduct) == Number(idProduct),
-    );
-  }, [idProduct, dataProducts]);
+  // const dataProduct = useMemo(() => {
+  //   return dataProducts.find(
+  //     (pro) => Number(pro.idProduct) == Number(idProduct),
+  //   );
+  // }, [idProduct, dataProducts]);
 
   // useEffect(() => {
   //   if (idProduct) {
@@ -60,6 +65,23 @@ const DetailsProduct = () => {
   // }, []);
 
   useEffect(() => {
+    if (idProduct) {
+      const fnGetDataProduct = async () => {
+        try {
+          const resp = await requestGetProveedor(`/getProduct/${idProduct}`);
+          resp.status == 200
+            ? setDataProduct(resp.data.data.data)
+            : setDataProduct(null);
+        } catch (error: any) {
+          setDataProduct(null);
+        }
+      };
+
+      fnGetDataProduct();
+    }
+  }, [idProduct]);
+
+  useEffect(() => {
     if (dataProduct?.imageUrl) {
       setChangeImg(dataProduct.imageUrl[0]);
     }
@@ -67,328 +89,328 @@ const DetailsProduct = () => {
 
   return (
     <div className="container-all white p-4">
-      <div className="flex justify-center gap-2 mt-4 container-detail1">
-        <div className="container-detail border p-3">
-          <h3 className="title-product">{dataProduct?.name}</h3>
-          {dataProduct?.description && dataProduct?.description.length > 100 ? (
-            <span
-              title={dataProduct.description}
-              className="text-[#808080] text-[16px] mt-2"
-            >
-              Descripción: {`${dataProduct.description.slice(0, 100)}...`}
-            </span>
-          ) : dataProduct?.description &&
-            dataProduct.description.length < 100 ? (
-            <span className="text-[#808080] text-[16px]">
-              Descripción: {dataProduct.description}
-            </span>
-          ) : null}
+      {dataProduct === null ? (
+        <Alert severity="info">Sin contenido disponible</Alert>
+      ) : (
+        <>
+          <div className="flex justify-center gap-2 mt-4 container-detail1">
+            <div className="container-detail border p-3">
+              <h3 className="title-product">{dataProduct?.name}</h3>
+              {dataProduct?.description &&
+              dataProduct?.description.length > 100 ? (
+                <span
+                  title={dataProduct.description}
+                  className="text-[#808080] text-[16px] mt-2"
+                >
+                  Descripción: {`${dataProduct.description.slice(0, 100)}...`}
+                </span>
+              ) : dataProduct?.description &&
+                dataProduct.description.length < 100 ? (
+                <span className="text-[#808080] text-[16px]">
+                  Descripción: {dataProduct.description}
+                </span>
+              ) : null}
 
-          <span className="code-product mt-2 block">{dataProduct?.sku}</span>
+              <span className="code-product mt-2 block">
+                {dataProduct?.sku}
+              </span>
 
-          <span className="price-product mt-2">
-            {formatCurrency(Number(dataProduct?.price))}
-          </span>
-          {/* <span className="plazos-product">Hasta 18 pagos en $125.00</span>
+              <span className="price-product mt-2">
+                {formatCurrency(Number(dataProduct?.price))}
+              </span>
+              {/* <span className="plazos-product">Hasta 18 pagos en $125.00</span>
           <br /> */}
 
-          {/* <span className="costo-envio-product">Costo de envío: $155.00</span> */}
-          <span className="fecha-entrega-product mt-2">
-            Fecha de entrega tentativa:{" "}
-            <span>
-              del {fechaActualFormateada} al {fechaFuturaFormateada}
-            </span>
-          </span>
-          <span className="stock-product mt-2">
-            En stock: {dataProduct?.stock} pzas.
-          </span>
+              {/* <span className="costo-envio-product">Costo de envío: $155.00</span> */}
+              <span className="fecha-entrega-product mt-2">
+                Fecha de entrega tentativa:{" "}
+                <span>
+                  del {fechaActualFormateada} al {fechaFuturaFormateada}
+                </span>
+              </span>
+              <span className="stock-product mt-2">
+                En stock: {dataProduct?.stock} pzas.
+              </span>
 
-          <div className="textfield flex mt-1">
-            <button
-              className="border"
-              onClick={() => handleAdd(dataProduct!.stock)}
-            >
-              +
-            </button>
-            <input
-              type="number"
-              className="border text-center"
-              value={quantity}
-              onChange={handleOnChange}
-              onKeyUp={(event) => handleKeyBoard(event, dataProduct!)}
-            />
-            <button className="border" onClick={handleSubstract}>
-              -
-            </button>
-          </div>
-
-          <button
-            className="btnAgregar"
-            disabled={loadingAddProduct || dataProduct?.stock! <= 0}
-            // onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
-            onClick={() => {
-              if (
-                (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
-                dataProduct?.product_stock!.length > 0 &&
-                Number(dataProduct?.providerId) === 3
-              ) {
-                setDataModal({
-                  isOpen: true,
-                  message: (
-                    <div className="w-[800px] border">
-                      <BranchSelector productSelected={dataProduct} />
-                    </div>
-                  ),
-                  title: "",
-                  type: "success",
-                  showActions: false,
-                  onClose: () => {
-                    setDataModal((prev) => ({
-                      ...prev,
-                      isOpen: false,
-                    }));
-                  },
-                  onConfirm: () => {
-                    setDataModal((prev) => ({
-                      ...prev,
-                      isOpen: false,
-                    }));
-                  },
-                });
-              } else {
-                handleAddProductCart(dataProduct!, Number(quantity));
-              }
-            }}
-          >
-            {loadingAddProduct ? (
-              <MdAutorenew size={20} className="m-auto the-spinner" />
-            ) : dataProduct?.stock! > 0 ? (
-              "Agregar"
-            ) : (
-              "No disponible"
-            )}
-          </button>
-          <br />
-
-          <button
-            className="btnAgregarFavoritos"
-            disabled={loadingFavorite}
-            onClick={() => handleAddFavorites(dataProduct!)}
-          >
-            {loadingFavorite ? (
-              <MdAutorenew size={20} className="m-auto the-spinner" />
-            ) : (
-              <div className="flex gap-2">
-                Agregar a favoritos
-                <MdFavorite size={20} />
+              <div className="textfield flex mt-1">
+                <button
+                  className="border"
+                  onClick={() => handleAdd(dataProduct!.stock)}
+                >
+                  +
+                </button>
+                <input
+                  type="number"
+                  className="border text-center"
+                  value={quantity}
+                  onChange={handleOnChange}
+                  onKeyUp={(event) => handleKeyBoard(event, dataProduct!)}
+                />
+                <button className="border" onClick={handleSubstract}>
+                  -
+                </button>
               </div>
-            )}
-          </button>
-        </div>
-        <div
-          className="container-img border"
-          // onClick={() => {
-          //   setOpenModal(true);
-          // }}
-        >
-          <Carousel
-            showIndicators={true}
-            showThumbs={false}
-            showStatus={false}
-            showArrows={true}
-            onClickItem={() => {
-              //onRouterLink(`/detailsProduct/${dataProduct.idProduct}`);
-              setOpenModal(true);
-            }}
-          >
-            {dataProduct?.imageUrl && dataProduct.imageUrl.length > 0
-              ? dataProduct.imageUrl.map((img: string, i: number) => (
-                  <div
-                    key={i}
-                    className="flex justify-center items-center"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
-                    <img
-                      src={img}
-                      style={{ objectFit: "contain", cursor: "pointer" }}
-                      loading="lazy"
-                    />
+
+              <button
+                className="btnAgregar"
+                disabled={loadingAddProduct || dataProduct?.stock! <= 0}
+                // onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
+                onClick={() => {
+                  if (
+                    (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+                    dataProduct?.product_stock!.length > 0 &&
+                    Number(dataProduct?.providerId) === 3
+                  ) {
+                    setDataModal({
+                      isOpen: true,
+                      message: (
+                        <div className="w-[800px] border">
+                          <BranchSelector productSelected={dataProduct} />
+                        </div>
+                      ),
+                      title: "",
+                      type: "success",
+                      showActions: false,
+                      onClose: () => {
+                        setDataModal((prev) => ({
+                          ...prev,
+                          isOpen: false,
+                        }));
+                      },
+                      onConfirm: () => {
+                        setDataModal((prev) => ({
+                          ...prev,
+                          isOpen: false,
+                        }));
+                      },
+                    });
+                  } else {
+                    handleAddProductCart(dataProduct!, Number(quantity));
+                  }
+                }}
+              >
+                {loadingAddProduct ? (
+                  <MdAutorenew size={20} className="m-auto the-spinner" />
+                ) : dataProduct?.stock! > 0 ? (
+                  "Agregar"
+                ) : (
+                  "No disponible"
+                )}
+              </button>
+              <br />
+
+              <button
+                className="btnAgregarFavoritos"
+                disabled={loadingFavorite}
+                onClick={() => handleAddFavorites(dataProduct!)}
+              >
+                {loadingFavorite ? (
+                  <MdAutorenew size={20} className="m-auto the-spinner" />
+                ) : (
+                  <div className="flex gap-2">
+                    Agregar a favoritos
+                    <MdFavorite size={20} />
                   </div>
-                ))
-              : [<div key="no-img">Sin imágenes</div>]}
-          </Carousel>
-          {/* {dataProduct.imageUrl && (
+                )}
+              </button>
+            </div>
+            <div
+              className="container-img border"
+              // onClick={() => {
+              //   setOpenModal(true);
+              // }}
+            >
+              <Carousel
+                showIndicators={true}
+                showThumbs={false}
+                showStatus={false}
+                showArrows={true}
+                onClickItem={() => {
+                  //onRouterLink(`/detailsProduct/${dataProduct.idProduct}`);
+                  setOpenModal(true);
+                }}
+              >
+                {dataProduct?.imageUrl && dataProduct.imageUrl.length > 0
+                  ? dataProduct.imageUrl.map((img: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex justify-center items-center"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <img
+                          src={img}
+                          style={{ objectFit: "contain", cursor: "pointer" }}
+                          loading="lazy"
+                        />
+                      </div>
+                    ))
+                  : [<div key="no-img">Sin imágenes</div>]}
+              </Carousel>
+              {/* {dataProduct.imageUrl && (
             <img
               src={dataProduct.imageUrl[0]}
               alt="Imagen"
               style={{ cursor: "pointer" }}
             />
           )} */}
-        </div>
-      </div>
-
-      <div className="w-full flex container-detail2">
-        <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
-          <h4>Descripción</h4>
-          <br />
-          <br />
-
-          {(() => {
-            try {
-              // 1️⃣ Verificamos que exista
-              if (!dataProduct?.caracteristicas) return null;
-
-              // 2️⃣ Si es string, intentamos parsear
-              const caracteristicas =
-                typeof dataProduct.caracteristicas === "string"
-                  ? JSON.parse(dataProduct.caracteristicas)
-                  : dataProduct.caracteristicas;
-
-              // 3️⃣ Si no es array o está vacío, no renderizamos nada
-              if (
-                !Array.isArray(caracteristicas) ||
-                caracteristicas.length === 0
-              )
-                return null;
-
-              // 4️⃣ Renderizamos el array
-              return caracteristicas.map((item: any, indexCa: number) => (
-                <div
-                  key={indexCa}
-                  className="w-full flex justify-center items-center flex-col mb-3"
-                >
-                  <label htmlFor="">{item.prop}</label>
-                  <div className="content-description flex flex-col items-center justify-start">
-                    {item.value}
-                  </div>
-                </div>
-              ));
-            } catch (error) {
-              console.error(
-                "❌ Error al parsear dataProduct.caracteristicas:",
-                error,
-              );
-              return null; // evita que React crashee
-            }
-          })()}
-        </div>
-        {idProduct?.toString() == "14" ? (
-          <div className="w-[30%] border mt-2 flex justify-center p-2 containerTikTok">
-            <ReactPlayer
-              autoPlay={true}
-              src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"
-              width={"100%"}
-              controls
-              height={"100%"}
-            />
-          </div>
-        ) : null}
-      </div>
-
-      <div className="w-[70%] mt-2">
-        <span
-          style={{ fontSize: "12px", fontWeight: "bold", fontStyle: "italic" }}
-        >
-          Las imágenes publicadas son meramente ilustrativas y puede variar el
-          modelo de acuerdo a nuestro inventario al dia.
-        </span>
-      </div>
-
-      {/* <div className="content-history">
-        <div id="container-img">
-          <img src="/banner2.png" alt="" />
-        </div>
-        <div className="history">
-          <div className="head-container">
-            <span>Historial de compras</span>
+            </div>
           </div>
 
-          <div className="items-history">
-          
-          </div>
-        </div>
-      </div> */}
+          <div className="w-full flex container-detail2">
+            <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
+              <h4>Descripción</h4>
+              <br />
+              <br />
 
-      <Modal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        sx={{
-          zIndex: "9999",
-          overflow: "visible !important",
-          "& .MuiBackdrop-root": {
-            overflow: "visible !important",
-          },
-        }}
-        children={
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "90%",
+              {(() => {
+                try {
+                  // 1️⃣ Verificamos que exista
+                  if (!dataProduct?.caracteristicas) return null;
 
-              bgcolor: "white",
-              boxShadow: 24,
-              p: 4,
-              borderRadius: "8px",
-            }}
-          >
-            <button
-              onClick={() => setOpenModal(false)}
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-              }}
-              aria-label="Cerrar modal"
-            >
-              <MdClose size={24} color="#333" />
-            </button>
-            <div className="w-full border grid grid-cols-[1fr_1fr] h-[400px] relative">
-              <div className="flex justify-center items-center">
-                <img
-                  src={changeImg}
-                  alt="Image"
-                  style={{
-                    width: "100%",
-                    height: "400px",
-                    objectFit: "contain",
-                  }}
+                  // 2️⃣ Si es string, intentamos parsear
+                  const caracteristicas =
+                    typeof dataProduct.caracteristicas === "string"
+                      ? JSON.parse(dataProduct.caracteristicas)
+                      : dataProduct.caracteristicas;
+
+                  // 3️⃣ Si no es array o está vacío, no renderizamos nada
+                  if (
+                    !Array.isArray(caracteristicas) ||
+                    caracteristicas.length === 0
+                  )
+                    return null;
+
+                  // 4️⃣ Renderizamos el array
+                  return caracteristicas.map((item: any, indexCa: number) => (
+                    <div
+                      key={indexCa}
+                      className="w-full flex justify-center items-center flex-col mb-3"
+                    >
+                      <label htmlFor="">{item.prop}</label>
+                      <div className="content-description flex flex-col items-center justify-start">
+                        {item.value}
+                      </div>
+                    </div>
+                  ));
+                } catch (error) {
+                  console.error(
+                    "❌ Error al parsear dataProduct.caracteristicas:",
+                    error,
+                  );
+                  return null; // evita que React crashee
+                }
+              })()}
+            </div>
+            {idProduct?.toString() == "14" ? (
+              <div className="w-[30%] border mt-2 flex justify-center p-2 containerTikTok">
+                <ReactPlayer
+                  autoPlay={true}
+                  src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"
+                  width={"100%"}
+                  controls
+                  height={"100%"}
                 />
               </div>
-              <div className="flex flex-wrap justify-start items-start p-2 gap-2">
-                {dataProduct?.imageUrl.length > 0
-                  ? dataProduct?.imageUrl.map((img: string, index: number) => {
-                      return (
-                        <div
-                          className="p-3 rounded hover:shadow-2xl hover:rounded"
-                          key={index}
-                        >
-                          <img
-                            src={img}
-                            key={index}
-                            style={{ cursor: "pointer", height: "150px" }}
-                            onClick={() => setChangeImg(img)}
-                            loading="lazy"
-                          />
-                        </div>
-                      );
-                    })
-                  : null}
-              </div>
-            </div>
-          </Box>
-        }
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      ></Modal>
+            ) : null}
+          </div>
+
+          <div className="w-[70%] mt-2">
+            <span
+              style={{
+                fontSize: "12px",
+                fontWeight: "bold",
+                fontStyle: "italic",
+              }}
+            >
+              Las imágenes publicadas son meramente ilustrativas y puede variar
+              el modelo de acuerdo a nuestro inventario al dia.
+            </span>
+          </div>
+
+          <Modal
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            sx={{
+              zIndex: "9999",
+              overflow: "visible !important",
+              "& .MuiBackdrop-root": {
+                overflow: "visible !important",
+              },
+            }}
+            children={
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "90%",
+
+                  bgcolor: "white",
+                  boxShadow: 24,
+                  p: 4,
+                  borderRadius: "8px",
+                }}
+              >
+                <button
+                  onClick={() => setOpenModal(false)}
+                  style={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  aria-label="Cerrar modal"
+                >
+                  <MdClose size={24} color="#333" />
+                </button>
+                <div className="w-full border grid grid-cols-[1fr_1fr] h-[400px] relative">
+                  <div className="flex justify-center items-center">
+                    <img
+                      src={changeImg}
+                      alt="Image"
+                      style={{
+                        width: "100%",
+                        height: "400px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-wrap justify-start items-start p-2 gap-2">
+                    {dataProduct?.imageUrl.length > 0
+                      ? dataProduct?.imageUrl.map(
+                          (img: string, index: number) => {
+                            return (
+                              <div
+                                className="p-3 rounded hover:shadow-2xl hover:rounded"
+                                key={index}
+                              >
+                                <img
+                                  src={img}
+                                  key={index}
+                                  style={{ cursor: "pointer", height: "150px" }}
+                                  onClick={() => setChangeImg(img)}
+                                  loading="lazy"
+                                />
+                              </div>
+                            );
+                          },
+                        )
+                      : null}
+                  </div>
+                </div>
+              </Box>
+            }
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          ></Modal>
+        </>
+      )}
     </div>
   );
 };
