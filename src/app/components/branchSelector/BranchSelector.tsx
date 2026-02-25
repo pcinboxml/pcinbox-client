@@ -210,39 +210,31 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                           />
                           <button
                             onClick={() => {
-                              if (
-                                quantities[sucursal.id] != undefined &&
-                                Number(quantities[sucursal.id]) > 0 &&
-                                Number(sucursal?.stock) > 0
-                              ) {
-                                if (
-                                  Number(quantities[sucursal.id]) >
-                                  sucursal?.stock
-                                ) {
-                                  return;
-                                } else {
-                                  handleAddProductCart(
-                                    productSelected,
-                                    Number(quantities[sucursal.id]),
-                                    productSelected?.price,
-                                    sucursal,
-                                  );
+                              const quantity = Number(
+                                quantities[sucursal.id] ?? 1,
+                              );
+                              const stock = Number(sucursal?.stock ?? 0);
 
-                                  //  handleWriteStorageDataCart(dataCart);
+                              if (quantity <= 0 || stock <= 0) return;
+                              if (quantity > stock) return;
 
-                                  handleWriteStorageProgressPay({
-                                    optionSend: {
-                                      storeIdDico:
-                                        sucursal?.branches?.providerId === 3
-                                          ? branchesDico?.find(
-                                              (br) =>
-                                                br?.name == sucursal?.name!,
-                                            )?.idStore
-                                          : 0,
-                                    },
-                                  });
-                                }
-                              }
+                              handleAddProductCart(
+                                productSelected,
+                                quantity,
+                                productSelected?.price,
+                                sucursal,
+                              );
+
+                              handleWriteStorageProgressPay({
+                                optionSend: {
+                                  storeIdDico:
+                                    sucursal?.branches?.providerId === 3
+                                      ? branchesDico?.find(
+                                          (br) => br?.name == sucursal?.name!,
+                                        )?.idStore
+                                      : 0,
+                                },
+                              });
                             }}
                             disabled={
                               sucursal.stock === 0 ||
