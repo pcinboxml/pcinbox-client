@@ -78,8 +78,9 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
         loading={isLoading}
         noOptionsText="Sin resultados disponibles"
         sx={{ width: "100%" }}
-        renderOption={(props, option: ProductI) => (
+        renderOption={(props, option: any) => (
           <Box
+            component="li" // 🔹 indica que Box será un <li>
             {...props}
             key={option.idProduct}
             sx={{ display: "flex", alignItems: "center", gap: 1, py: 1 }}
