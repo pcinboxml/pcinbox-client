@@ -2,6 +2,7 @@ import AppWrapper from "./wrapper";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GlobalProvider } from "./services/globalContext";
+import { ReactQueryProvider } from "./providers/ReactQueryProvider";
 
 export const metadata = {
   title: "PCInbox",
@@ -21,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <GlobalProvider>
-          <AppWrapper children={children} />
-        </GlobalProvider>
+        <ReactQueryProvider>
+          <GlobalProvider>
+            <AppWrapper children={children} />
+          </GlobalProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

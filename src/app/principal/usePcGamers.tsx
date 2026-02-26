@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
 
 interface UseProductsParams {
@@ -7,67 +7,41 @@ interface UseProductsParams {
 }
 
 const usePcGamers = ({ tipo, itemsPerPage = 8 }: UseProductsParams) => {
-  const { dataProducts } = useTheContext();
+  const [products, setProducts] = useState<any[]>([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const filteredProducts = useMemo(() => {
-    if (!dataProducts || dataProducts.length === 0) return [];
+  useEffect(() => {
+    const controller = new AbortController();
 
-    return dataProducts.filter((item) => {
+    const getListProducts = async () => {
       try {
-        if (!item.caracteristicas) return false;
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct?page=${page}&limit=${itemsPerPage}&tipo=${tipo}`,
+          { signal: controller.signal },
+        );
 
-        // Asegurarse de que sea un array
-        let caracteristicasArray: any[] = [];
+        const data = await res.json();
 
-        if (typeof item.caracteristicas === "string") {
-          // Evitar parsear strings vacíos
-          if (
-            item.caracteristicas.trim() === "" ||
-            item.caracteristicas === "[]"
-          ) {
-            return false;
-          }
-          caracteristicasArray = JSON.parse(item.caracteristicas);
-        } else if (Array.isArray(item.caracteristicas)) {
-          caracteristicasArray = item.caracteristicas;
-        } else {
-          return false;
+        setProducts(data?.data ?? []); // 👈 nunca undefined
+        setTotalPages(data?.totalPages ?? 0);
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          console.error(error);
         }
-
-        // Verificar que realmente sea un array después del parse
-        if (!Array.isArray(caracteristicasArray)) return false;
-
-        const tipoProp = caracteristicasArray.find(
-          (c: any) => c.prop === "tipo"
-        );
-        return tipoProp?.value === tipo;
-      } catch (error) {
-        console.error(
-          "Error parseando caracteristicas:",
-          error,
-          item.caracteristicas
-        );
-        return false;
       }
-    });
-  }, [dataProducts, tipo]);
+    };
 
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+    getListProducts();
 
-  const currentPageProducts = filteredProducts.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
+    return () => controller.abort();
+  }, [tipo, page, itemsPerPage]);
 
   return {
     page,
     totalPages,
-    handlePageChange,
-    currentPageProducts,
+    handlePageChange: (_: any, value: number) => setPage(value),
+    currentPageProducts: products, // 👈 siempre array
   };
 };
 
