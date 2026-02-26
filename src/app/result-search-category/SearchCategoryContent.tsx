@@ -843,69 +843,85 @@ const SearchCategoryContent = () => {
                                 })()}
                               </div>
 
-                              <div className="grid grid-cols-[1fr_1fr_auto] my-1">
-                                {item?.caracteristicas &&
-                                item?.caracteristicas?.length > 0 ? (
-                                  <div>
-                                    <ul>
-                                      {item?.caracteristicas
-                                        ? (() => {
-                                            try {
-                                              const caracs = JSON.parse(
-                                                item.caracteristicas,
-                                              );
-                                              if (
-                                                Array.isArray(caracs) &&
-                                                caracs.length > 0
-                                              ) {
-                                                return caracs
-                                                  .slice(0, 6)
-                                                  .map(
-                                                    (
-                                                      carac: any,
-                                                      index: number,
-                                                    ) => (
-                                                      <li
-                                                        key={index}
-                                                        className="flex gap-2 items-end"
+                              <div className="grid grid-cols-[1fr_1fr_auto] my-1 gap-4">
+                                {/* Características */}
+                                <div>
+                                  {item?.caracteristicas ? (
+                                    (() => {
+                                      try {
+                                        const caracs = JSON.parse(
+                                          item.caracteristicas,
+                                        );
+                                        if (
+                                          Array.isArray(caracs) &&
+                                          caracs.length > 0
+                                        ) {
+                                          return (
+                                            <ul className="space-y-1">
+                                              {caracs
+                                                .slice(0, 6)
+                                                .map(
+                                                  (
+                                                    carac: any,
+                                                    index: number,
+                                                  ) => (
+                                                    <li
+                                                      key={index}
+                                                      className="grid grid-cols-[minmax(120px,max-content)_1fr] gap-2 items-start text-[13px]"
+                                                    >
+                                                      {/* Clave */}
+                                                      <span
+                                                        className="font-bold text-black"
+                                                        style={{
+                                                          marginTop: "5px",
+                                                        }}
                                                       >
-                                                        <span className="font-bold text-black text-[13px]">
-                                                          {carac.prop}:
-                                                        </span>
-                                                        <span className="italic text-[13px]">
+                                                        {carac.prop}:{" "}
+                                                        <span className="italic break-words font-normal">
                                                           {carac.value &&
-                                                          carac?.value?.length >
+                                                          carac.value.length >
                                                             70
-                                                            ? `${carac?.value?.slice(
-                                                                0,
-                                                                70,
-                                                              )}...`
-                                                            : carac?.value}
+                                                            ? `${carac.value.slice(0, 70)}...`
+                                                            : carac.value ||
+                                                              "—"}
                                                         </span>
-                                                      </li>
-                                                    ),
-                                                  );
-                                              }
-                                              return "Sin caracteristicas disponibles";
-                                            } catch (e) {
-                                              return "Sin caracteristicas disponibles";
-                                            }
-                                          })()
-                                        : "Sin caracteristicas disponibles"}
-                                    </ul>
-                                  </div>
-                                ) : (
-                                  "Sin caracteristicas disponibles"
-                                )}
+                                                      </span>
+
+                                                      {/* Valor */}
+                                                    </li>
+                                                  ),
+                                                )}
+                                            </ul>
+                                          );
+                                        }
+                                        return (
+                                          <span>
+                                            Sin características disponibles
+                                          </span>
+                                        );
+                                      } catch (e) {
+                                        return (
+                                          <span>
+                                            Sin características disponibles
+                                          </span>
+                                        );
+                                      }
+                                    })()
+                                  ) : (
+                                    <span>Sin características disponibles</span>
+                                  )}
+                                </div>
+
+                                {/* Precio y stock */}
                                 <div className="px-3">
                                   <span className="text-[20px] font-bold">
                                     {formatCurrency(Number(item.price))}
                                   </span>
                                   <br />
-                                  {/* <span>Costo de envio: $160</span> */}
-                                  {/* <br /> */}
                                   <span>Disponibles: {item.stock} piezas</span>
                                 </div>
+
+                                {/* Botón */}
                                 <div>
                                   <button
                                     disabled={
@@ -913,7 +929,7 @@ const SearchCategoryContent = () => {
                                       item.stock == 0 ||
                                       item.stock == "0"
                                     }
-                                    className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
+                                    className="bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2"
                                     onClick={() => {
                                       if (
                                         (item?.isPC == 0 || item?.isPc == 0) &&
@@ -932,18 +948,16 @@ const SearchCategoryContent = () => {
                                           title: "",
                                           type: "success",
                                           showActions: false,
-                                          onClose: () => {
+                                          onClose: () =>
                                             setDataModal((prev) => ({
                                               ...prev,
                                               isOpen: false,
-                                            }));
-                                          },
-                                          onConfirm: () => {
+                                            })),
+                                          onConfirm: () =>
                                             setDataModal((prev) => ({
                                               ...prev,
                                               isOpen: false,
-                                            }));
-                                          },
+                                            })),
                                         });
                                       } else {
                                         handleAddProductCart(item);
@@ -951,27 +965,21 @@ const SearchCategoryContent = () => {
                                     }}
                                   >
                                     {item?.isPC == 0 &&
-                                    loadingAddProductCar[item.idProduct] ==
-                                      true &&
+                                    loadingAddProductCar[item.idProduct] &&
                                     Number(item?.providerId) === 3 ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
                                       />
+                                    ) : item.stock == "0" || item.stock == 0 ? (
+                                      "No disponible"
                                     ) : (
                                       <>
-                                        {item.stock == "0" ||
-                                        item.stock == 0 ? (
-                                          "No disponible"
-                                        ) : (
-                                          <>
-                                            Agregar al carrito
-                                            <MdShoppingCart
-                                              size={20}
-                                              color="white"
-                                            />
-                                          </>
-                                        )}
+                                        Agregar al carrito
+                                        <MdShoppingCart
+                                          size={20}
+                                          color="white"
+                                        />
                                       </>
                                     )}
                                   </button>
