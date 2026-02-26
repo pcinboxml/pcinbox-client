@@ -33,7 +33,11 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
           <ul>
             {dataCategories && dataCategories.length > 0
               ? dataCategories.map((categoria) => {
-                  if (categoria.name != "" && categoria.name != null) {
+                  if (
+                    categoria.name != "" &&
+                    categoria.name != null &&
+                    categoria.name != "MOTHERBOARDS"
+                  ) {
                     return (
                       <li key={categoria.idCategorie}>
                         <a
