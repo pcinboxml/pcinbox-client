@@ -152,36 +152,17 @@ const useCard = () => {
       });
     }
   };
-
   const calcPorcentaje = (
     product: ProductI,
-    dataProducts: ProductI[],
-    progressRating: any,
+    progressRating: { rating: number },
   ) => {
-    const ratingCount = product.reviews.reduce((acc, item) => {
-      if (item.rating === progressRating.rating) {
-        return acc + 1;
-      }
-      return acc;
-    }, 0);
-
-    const totalRatingCount = dataProducts.reduce((acc, item) => {
-      if (item.reviews) {
-        return (
-          acc +
-          item.reviews.filter(
-            (r) =>
-              r.rating === progressRating.rating &&
-              item.idProduct == product.idProduct,
-          ).length
-        );
-      } else {
-        return 0;
-      }
-    }, 0);
+    const totalReviews = product.reviews.length; // total de reviews del producto
+    const ratingCount = product.reviews.filter(
+      (r) => r.rating === progressRating.rating,
+    ).length;
 
     const percentage =
-      totalRatingCount > 0 ? (ratingCount / totalRatingCount) * 100 : 0;
+      totalReviews > 0 ? (ratingCount / totalReviews) * 100 : 0;
 
     return {
       percentage,

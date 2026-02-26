@@ -6,10 +6,23 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
 import usePcGamers from "./usePcGamers";
+import useProducts from "../hooks/products";
+import { useState } from "react";
 
 const PrincipalComponent = () => {
   const { dataProducts } = useTheContext();
+  const [pages, setPages] = useState<Record<string, number>>({});
+  const itemsPerPage = 8;
 
+  const { products } = useProducts();
+
+  const handlePageChange =
+    (tipo: string) => (_: React.ChangeEvent<unknown>, value: number) => {
+      setPages((prev) => ({
+        ...prev,
+        [tipo]: value,
+      }));
+    };
   const tipos = [
     { tipo: "Oficina y Gaming", label: "Laptops, Escritorios y sillas Gamer" },
     { tipo: "workStation", label: "PC Estación de trabajo" },
@@ -20,30 +33,46 @@ const PrincipalComponent = () => {
   ];
 
   const productosPorTipo = tipos.map(({ tipo, label }) => {
-    const { currentPageProducts, page, totalPages, handlePageChange } =
-      usePcGamers({ tipo });
+    const filtrados = products.filter((item) => {
+      if (!item.caracteristicas) return false;
+
+      try {
+        const arr =
+          typeof item.caracteristicas === "string"
+            ? JSON.parse(item.caracteristicas)
+            : item.caracteristicas;
+
+        const tipoProp = arr.find((c: any) => c.prop === "tipo");
+        return tipoProp?.value === tipo;
+      } catch {
+        return false;
+      }
+    });
+
+    const page = pages[tipo] || 1;
+    const totalPages = Math.ceil(filtrados.length / itemsPerPage);
+
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+
+    const currentPageProducts = filtrados.slice(start, end);
+
     return {
       tipo,
       label,
       currentPageProducts,
       page,
       totalPages,
-      handlePageChange,
     };
   });
-
   return (
     <section className="mb-4">
       <div className="content-main">
-        {dataProducts && dataProducts.length > 0 ? (
-          <div className="list-products">
-            <img src="/banner0.png" className="banner0" />
-            <img src="/banner1.png" className="banner1" />
-            <img src="/banner2.png" className="banner2" />
-          </div>
-        ) : (
-          ""
-        )}
+        <div className="list-products">
+          <img src="/banner0.png" className="banner0" />
+          <img src="/banner1.png" className="banner1" />
+          <img src="/banner2.png" className="banner2" />
+        </div>
 
         <div className="content-index relative">
           {/* {pathName == "/principal" || pathName == "/" ? (
@@ -58,23 +87,16 @@ const PrincipalComponent = () => {
             />
           ) : null} */}
           <div className="container-carousel">
-            {dataProducts && dataProducts.length > 0 ? (
-              <Carousel />
-            ) : (
+            {/* {dataProducts && dataProducts.length > 0 ? ( */}
+            <Carousel />
+            {/* ) : (
               <div className="w-full flex justify-end p-2">
                 <Alert severity="info">Sin contenido disponible</Alert>
               </div>
-            )}
+            )} */}
           </div>
           {productosPorTipo.map(
-            ({
-              tipo,
-              label,
-              currentPageProducts,
-              page,
-              totalPages,
-              handlePageChange,
-            }) =>
+            ({ tipo, label, currentPageProducts, page, totalPages }) =>
               currentPageProducts.length > 0 && (
                 <div key={tipo}>
                   <div className="head-container">
@@ -83,19 +105,17 @@ const PrincipalComponent = () => {
 
                   <div className="container-destacado">
                     {currentPageProducts.map((product) => (
-                      <Card
-                        key={product.idProduct}
-                        product={product}
-                        dataProducts={dataProducts}
-                      />
+                      <Card key={product.idProduct} product={product} />
                     ))}
                   </div>
 
-                  <PaginationComponent
-                    page={page}
-                    count={totalPages}
-                    onChange={handlePageChange}
-                  />
+                  {totalPages > 1 && (
+                    <PaginationComponent
+                      page={page}
+                      count={totalPages}
+                      onChange={handlePageChange(tipo)}
+                    />
+                  )}
                 </div>
               ),
           )}

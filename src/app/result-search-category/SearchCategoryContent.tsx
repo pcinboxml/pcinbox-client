@@ -20,12 +20,13 @@ import BranchSelector from "../components/branchSelector/BranchSelector";
 // import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const SearchCategoryContent = () => {
-  const { setDataModal } = useTheContext();
+  const { setDataModal, socketPagos, socketServer, setDataFavorites } =
+    useTheContext();
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const { requestPostProveedor } = useProveedores();
-  const [data, setData] = useState([]);
-  const [dataCopy, setDataCopy] = useState([]);
+  const [data, setData] = useState<ProductI[]>([]);
+  const [dataCopy, setDataCopy] = useState<ProductI[]>([]);
   const [marcas, setMarcas] = useState([]);
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
@@ -229,6 +230,172 @@ const SearchCategoryContent = () => {
     };
   }, [socketCron?.current]);
 
+  useEffect(() => {
+    if (!socketServer.current) return;
+    if (!socketPagos.current) return;
+
+    const socket = socketServer.current;
+
+    const handlerUpdateProduct = (data: ProductI) => {
+      setDataCopy((prev) =>
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(data.idProduct);
+
+          return match
+            ? {
+                ...item,
+                name: data.name,
+                description: data.description,
+                caracteristicas: data.caracteristicas,
+                price: Number(data.price).toString(),
+                stock: Number(data.stock),
+                sku: data.sku,
+              }
+            : item;
+        }),
+      );
+      setData((prev) =>
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(data.idProduct);
+
+          return match
+            ? {
+                ...item,
+                name: data.name,
+                description: data.description,
+                caracteristicas: data.caracteristicas,
+                price: Number(data.price).toString(),
+                stock: Number(data.stock),
+                sku: data.sku,
+              }
+            : item;
+        }),
+      );
+    };
+
+    const handlerUpdateProductComponent = (dataSocket: ProductI) => {
+      setDataCopy((prev) =>
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                name: dataSocket.name,
+                description: dataSocket.description,
+                caracteristicas: dataSocket.caracteristicas,
+                price: Number(dataSocket.price).toString(),
+                stock: Number(dataSocket.stock),
+                sku: dataSocket.sku,
+              }
+            : item;
+        }),
+      );
+
+      setData((prev) =>
+        prev.map((item) => {
+          const match = Number(item.idProduct) === Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                name: dataSocket.name,
+                description: dataSocket.description,
+                caracteristicas: dataSocket.caracteristicas,
+                price: Number(dataSocket.price).toString(),
+                stock: Number(dataSocket.stock),
+                sku: dataSocket.sku,
+              }
+            : item;
+        }),
+      );
+      setDataFavorites((prevFavorites) => {
+        return prevFavorites.map((item: any) => {
+          // Aquí comparamos con la estructura correcta:
+          const match = Number(item.productId) == Number(dataSocket.idProduct);
+
+          return match
+            ? {
+                ...item,
+                products: {
+                  ...item.products,
+                  stock: Number(dataSocket.stock),
+                  price: Number(dataSocket.price).toString(),
+                },
+              }
+            : item;
+        });
+      });
+    };
+
+    const handleUpdatedStock = (
+      dataSocket: { idProduct: number; stock: Number }[],
+    ) => {
+      setDataCopy((prev) =>
+        prev.map((item) => {
+          let findIdProduct = dataSocket.find(
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
+          );
+
+          if (findIdProduct) {
+            return {
+              ...item,
+              stock:
+                item?.stock == 0
+                  ? 0
+                  : Number(item?.stock - Number(findIdProduct.stock)),
+            };
+          }
+
+          return item;
+        }),
+      );
+
+      setData((prev) =>
+        prev.map((item) => {
+          let findIdProduct = dataSocket.find(
+            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
+          );
+
+          if (findIdProduct) {
+            return {
+              ...item,
+              stock:
+                item?.stock == 0
+                  ? 0
+                  : Number(item?.stock - Number(findIdProduct.stock)),
+            };
+          }
+
+          return item;
+        }),
+      );
+    };
+
+    socket.on("updateProductComponent", handlerUpdateProductComponent);
+
+    //socket.on("newProduct", handlerNewProduct);
+    socket.on("updateProduct", handlerUpdateProduct);
+
+    //socket.on("updateCart", handleUpdateCart);
+
+    socketPagos?.current?.on("updatedStock", handleUpdatedStock);
+
+    socketPagos?.current?.on("removeStorageProgressPay2", () => {
+      localStorage.removeItem("progressPay2");
+    });
+
+    return () => {
+      //  socket.off("newProduct", handlerNewProduct);
+      socket.off("updateProduct", handlerUpdateProduct);
+      // socket.off("updateCart", handleUpdateCart);
+      socket.off("updateProductComponent", handlerUpdateProductComponent);
+      socketPagos?.current?.off("updatedStock", handleUpdatedStock);
+      socketPagos?.current?.off("removeStorageProgressPay2", () => {
+        localStorage.removeItem("progressPay2");
+      });
+    };
+  }, [socketServer.current, socketPagos?.current]);
   const ratingProgress = [
     {
       id: 1,

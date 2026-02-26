@@ -254,20 +254,20 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   useEffect(() => {
     const controller = new AbortController();
 
-    const getListProducts = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`,
-          { signal: controller.signal },
-        );
-        const data = await res.json();
-        setDataProducts(data.data);
-      } catch (error: any) {
-        if (error.name !== "AbortError") {
-          console.error(error);
-        }
-      }
-    };
+    // const getListProducts = async () => {
+    //   try {
+    //     const res = await fetch(
+    //       `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`,
+    //       { signal: controller.signal },
+    //     );
+    //     const data = await res.json();
+    //     setDataProducts(data.data);
+    //   } catch (error: any) {
+    //     if (error.name !== "AbortError") {
+    //       console.error(error);
+    //     }
+    //   }
+    // };
 
     const handleGetDataFavorites = async () => {
       try {
@@ -280,13 +280,13 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       }
     };
 
-    if (
-      pathName === "/" ||
-      pathName === "/principal" ||
-      pathName.startsWith("/detailsProduct/")
-    ) {
-      getListProducts();
-    }
+    // if (
+    //   pathName === "/" ||
+    //   pathName === "/principal" ||
+    //   pathName.startsWith("/detailsProduct/")
+    // ) {
+    //   getListProducts();
+    // }
 
     if (pathName === "/favorites") {
       handleGetDataFavorites();
@@ -296,10 +296,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       controller.abort();
     };
   }, [pathName]);
-
   useEffect(() => {
-    let mounted = false;
-
     const getDataCategories = async () => {
       try {
         const resp = await requestGetProveedor("/getAllCategoriPrincipal");
@@ -311,14 +308,11 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       }
     };
 
+    // Solo hacemos fetch si no hay categorías guardadas
     if (!dataCategories || dataCategories.length === 0) {
       getDataCategories();
     }
-
-    return () => {
-      mounted = true;
-    };
-  }, []);
+  }, [dataCategories]);
 
   useEffect(() => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "", {

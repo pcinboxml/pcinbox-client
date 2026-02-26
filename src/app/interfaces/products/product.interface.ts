@@ -37,7 +37,7 @@ export default interface ProductI {
     rating: number;
     title: string;
     description: string;
-    date: string;
+    date: any;
     reviewerName: string;
   }[];
   storeId?: number;

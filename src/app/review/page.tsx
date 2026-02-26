@@ -273,7 +273,8 @@ const Reviews = () => {
                       color: "#BB3D4B",
                     }}
                   />
-                  <span>{new Date(review.date).toLocaleDateString()}</span>
+
+                  <span>{new Date(review.date).toLocaleString()}</span>
                 </div>
 
                 <div className="w-full pl-2 mx-4">

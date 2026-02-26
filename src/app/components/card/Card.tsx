@@ -26,13 +26,7 @@ const StyledTooltip = styled(({ className, ...props }: any) => (
   },
 }));
 
-const Card = ({
-  product,
-  dataProducts,
-}: {
-  product: ProductI;
-  dataProducts: ProductI[];
-}) => {
+const Card = ({ product }: { product: ProductI }) => {
   const { onRouterLink, formatCurrency } = useService();
   const {
     handleAddProductCart,
@@ -152,7 +146,7 @@ const Card = ({
                                 style={{
                                   width: calcPorcentaje(
                                     product,
-                                    dataProducts,
+
                                     progressRating,
                                   ).percentage,
                                   height: "15px",
@@ -168,7 +162,7 @@ const Card = ({
                               {
                                 calcPorcentaje(
                                   product,
-                                  dataProducts,
+
                                   progressRating,
                                 ).rating
                               }

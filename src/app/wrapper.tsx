@@ -27,11 +27,11 @@ export default function AppWrapper({
     hasToken,
     dataCart,
     setDataCart,
-    setDataProducts,
+    //setDataProducts,
     setDataFavorites,
     socketServer,
     socketPagos,
-    socketCron,
+    // socketCron,
   } = useTheContext();
 
   const { dataCartStorege } = useStorage();
@@ -49,50 +49,50 @@ export default function AppWrapper({
 
     const socket = socketServer.current;
 
-    const handlerNewProduct = (data: ProductI) => {
-      setDataProducts((prev) => [
-        {
-          idProduct: data.idProduct,
-          idProductExt: data.idProductExt,
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          stock: data.stock,
-          sku: data.sku,
-          rating: data.rating,
-          imageUrl: data.imageUrl,
-          createdAt: data.createdAt,
-          categoryId: data.categoryId,
-          providerId: data.providerId,
-          caracteristicas: data.caracteristicas,
-          quantity: data.quantity,
-          reviews: [],
-          upc: data.upc,
-          isPc: data?.isPc,
-          isPC: data?.isPC,
-        },
-        ...prev,
-      ]);
-    };
+    // const handlerNewProduct = (data: ProductI) => {
+    //   setDataProducts((prev) => [
+    //     {
+    //       idProduct: data.idProduct,
+    //       idProductExt: data.idProductExt,
+    //       name: data.name,
+    //       description: data.description,
+    //       price: data.price,
+    //       stock: data.stock,
+    //       sku: data.sku,
+    //       rating: data.rating,
+    //       imageUrl: data.imageUrl,
+    //       createdAt: data.createdAt,
+    //       categoryId: data.categoryId,
+    //       providerId: data.providerId,
+    //       caracteristicas: data.caracteristicas,
+    //       quantity: data.quantity,
+    //       reviews: [],
+    //       upc: data.upc,
+    //       isPc: data?.isPc,
+    //       isPC: data?.isPC,
+    //     },
+    //     ...prev,
+    //   ]);
+    // };
 
     const handlerUpdateProduct = (data: ProductI) => {
-      setDataProducts((prev) =>
-        prev.map((item) => {
-          const match = Number(item.idProduct) === Number(data.idProduct);
+      // setDataProducts((prev) =>
+      //   prev.map((item) => {
+      //     const match = Number(item.idProduct) === Number(data.idProduct);
 
-          return match
-            ? {
-                ...item,
-                name: data.name,
-                description: data.description,
-                caracteristicas: data.caracteristicas,
-                price: Number(data.price).toString(),
-                stock: Number(data.stock),
-                sku: data.sku,
-              }
-            : item;
-        }),
-      );
+      //     return match
+      //       ? {
+      //           ...item,
+      //           name: data.name,
+      //           description: data.description,
+      //           caracteristicas: data.caracteristicas,
+      //           price: Number(data.price).toString(),
+      //           stock: Number(data.stock),
+      //           sku: data.sku,
+      //         }
+      //       : item;
+      //   }),
+      // );
 
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
@@ -134,23 +134,23 @@ export default function AppWrapper({
     };
 
     const handlerUpdateProductComponent = (dataSocket: ProductI) => {
-      setDataProducts((prev) =>
-        prev.map((item) => {
-          const match = Number(item.idProduct) === Number(dataSocket.idProduct);
+      // setDataProducts((prev) =>
+      //   prev.map((item) => {
+      //     const match = Number(item.idProduct) === Number(dataSocket.idProduct);
 
-          return match
-            ? {
-                ...item,
-                name: dataSocket.name,
-                description: dataSocket.description,
-                caracteristicas: dataSocket.caracteristicas,
-                price: Number(dataSocket.price).toString(),
-                stock: Number(dataSocket.stock),
-                sku: dataSocket.sku,
-              }
-            : item;
-        }),
-      );
+      //     return match
+      //       ? {
+      //           ...item,
+      //           name: dataSocket.name,
+      //           description: dataSocket.description,
+      //           caracteristicas: dataSocket.caracteristicas,
+      //           price: Number(dataSocket.price).toString(),
+      //           stock: Number(dataSocket.stock),
+      //           sku: dataSocket.sku,
+      //         }
+      //       : item;
+      //   }),
+      // );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           // Aquí comparamos con la estructura correcta:
@@ -173,25 +173,25 @@ export default function AppWrapper({
     const handleUpdatedStock = (
       dataSocket: { idProduct: number; stock: Number }[],
     ) => {
-      setDataProducts((prev) =>
-        prev.map((item) => {
-          let findIdProduct = dataSocket.find(
-            (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
-          );
+      // setDataProducts((prev) =>
+      //   prev.map((item) => {
+      //     let findIdProduct = dataSocket.find(
+      //       (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
+      //     );
 
-          if (findIdProduct) {
-            return {
-              ...item,
-              stock:
-                item?.stock == 0
-                  ? 0
-                  : Number(item?.stock - Number(findIdProduct.stock)),
-            };
-          }
+      //     if (findIdProduct) {
+      //       return {
+      //         ...item,
+      //         stock:
+      //           item?.stock == 0
+      //             ? 0
+      //             : Number(item?.stock - Number(findIdProduct.stock)),
+      //       };
+      //     }
 
-          return item;
-        }),
-      );
+      //     return item;
+      //   }),
+      // );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           let findIdProduct = dataSocket.find(
@@ -238,7 +238,7 @@ export default function AppWrapper({
 
     socket.on("updateProductComponent", handlerUpdateProductComponent);
 
-    socket.on("newProduct", handlerNewProduct);
+    //socket.on("newProduct", handlerNewProduct);
     socket.on("updateProduct", handlerUpdateProduct);
 
     socket.on("updateCart", handleUpdateCart);
@@ -250,7 +250,7 @@ export default function AppWrapper({
     });
 
     return () => {
-      socket.off("newProduct", handlerNewProduct);
+      // socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
@@ -299,197 +299,197 @@ export default function AppWrapper({
     };
   }, [socketPagos?.current, hasToken]);
 
-  useEffect(() => {
-    if (!socketCron.current) return;
+  // useEffect(() => {
+  //   if (!socketCron.current) return;
 
-    socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
-      if (Array.isArray(dataSocketCron)) {
-        setDataProducts((prevDataProducts) =>
-          prevDataProducts.map((pdp) => {
-            const findIdProduct = dataSocketCron?.find(
-              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
-            );
+  //   socketCron?.current?.on("updatedStockCron", (dataSocketCron: any) => {
+  //     if (Array.isArray(dataSocketCron)) {
+  //       setDataProducts((prevDataProducts) =>
+  //         prevDataProducts.map((pdp) => {
+  //           const findIdProduct = dataSocketCron?.find(
+  //             (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+  //           );
 
-            if (!findIdProduct) return pdp;
+  //           if (!findIdProduct) return pdp;
 
-            const branchesEntries = findIdProduct?.branches
-              ? Object.entries(findIdProduct.branches)
-              : [];
+  //           const branchesEntries = findIdProduct?.branches
+  //             ? Object.entries(findIdProduct.branches)
+  //             : [];
 
-            return {
-              ...pdp,
-              stock: Number(findIdProduct.stock),
-              product_stock: pdp.product_stock?.map((xx) => {
-                if (!xx) return xx; // por si xx es undefined
-                const branchStock = branchesEntries.find(
-                  ([nameBranch]) => nameBranch === xx.branches?.name,
-                );
+  //           return {
+  //             ...pdp,
+  //             stock: Number(findIdProduct.stock),
+  //             product_stock: pdp.product_stock?.map((xx) => {
+  //               if (!xx) return xx; // por si xx es undefined
+  //               const branchStock = branchesEntries.find(
+  //                 ([nameBranch]) => nameBranch === xx.branches?.name,
+  //               );
 
-                return {
-                  ...xx,
-                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                };
-              }),
-            };
-          }),
-        );
+  //               return {
+  //                 ...xx,
+  //                 stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //               };
+  //             }),
+  //           };
+  //         }),
+  //       );
 
-        setDataCart((prevDataCart) =>
-          prevDataCart.map((pdp) => {
-            const findIdProduct = dataSocketCron?.find(
-              (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
-            );
+  //       setDataCart((prevDataCart) =>
+  //         prevDataCart.map((pdp) => {
+  //           const findIdProduct = dataSocketCron?.find(
+  //             (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+  //           );
 
-            if (!findIdProduct) return pdp;
+  //           if (!findIdProduct) return pdp;
 
-            const branchesEntries = findIdProduct?.branches
-              ? Object.entries(findIdProduct.branches)
-              : [];
+  //           const branchesEntries = findIdProduct?.branches
+  //             ? Object.entries(findIdProduct.branches)
+  //             : [];
 
-            return {
-              ...pdp,
-              stock: Number(findIdProduct.stock),
-              product_stock: pdp.product_stock?.map((xx) => {
-                if (!xx) return xx; // por si xx es undefined
-                const branchStock = branchesEntries.find(
-                  ([nameBranch]) => nameBranch === xx.branches?.name,
-                );
+  //           return {
+  //             ...pdp,
+  //             stock: Number(findIdProduct.stock),
+  //             product_stock: pdp.product_stock?.map((xx) => {
+  //               if (!xx) return xx; // por si xx es undefined
+  //               const branchStock = branchesEntries.find(
+  //                 ([nameBranch]) => nameBranch === xx.branches?.name,
+  //               );
 
-                return {
-                  ...xx,
-                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                };
-              }),
-            };
-          }),
-        );
-        setDataFavorites((prevDataFavorites) =>
-          prevDataFavorites.map((pdp) => {
-            const findIdProduct = dataSocketCron?.find(
-              (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
-            );
+  //               return {
+  //                 ...xx,
+  //                 stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //               };
+  //             }),
+  //           };
+  //         }),
+  //       );
+  //       setDataFavorites((prevDataFavorites) =>
+  //         prevDataFavorites.map((pdp) => {
+  //           const findIdProduct = dataSocketCron?.find(
+  //             (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
+  //           );
 
-            if (!findIdProduct) return pdp;
+  //           if (!findIdProduct) return pdp;
 
-            const branchesEntries = findIdProduct?.branches
-              ? Object.entries(findIdProduct.branches)
-              : [];
+  //           const branchesEntries = findIdProduct?.branches
+  //             ? Object.entries(findIdProduct.branches)
+  //             : [];
 
-            return {
-              ...pdp,
-              stock: Number(findIdProduct.stock),
-              product_stock: pdp.products?.product_stock?.map((xx) => {
-                if (!xx) return xx; // por si xx es undefined
-                const branchStock = branchesEntries.find(
-                  ([nameBranch]) => nameBranch === xx.branches?.name,
-                );
+  //           return {
+  //             ...pdp,
+  //             stock: Number(findIdProduct.stock),
+  //             product_stock: pdp.products?.product_stock?.map((xx) => {
+  //               if (!xx) return xx; // por si xx es undefined
+  //               const branchStock = branchesEntries.find(
+  //                 ([nameBranch]) => nameBranch === xx.branches?.name,
+  //               );
 
-                return {
-                  ...xx,
-                  stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                };
-              }),
-            };
-          }),
-        );
-      }
-    });
+  //               return {
+  //                 ...xx,
+  //                 stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //               };
+  //             }),
+  //           };
+  //         }),
+  //       );
+  //     }
+  //   });
 
-    return () => {
-      socketCron?.current?.off("updatedStockCron", (dataSocketCron: any) => {
-        if (Array.isArray(dataSocketCron)) {
-          setDataProducts((prevDataProducts) =>
-            prevDataProducts.map((pdp) => {
-              const findIdProduct = dataSocketCron?.find(
-                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
-              );
+  //   return () => {
+  //     socketCron?.current?.off("updatedStockCron", (dataSocketCron: any) => {
+  //       if (Array.isArray(dataSocketCron)) {
+  //         setDataProducts((prevDataProducts) =>
+  //           prevDataProducts.map((pdp) => {
+  //             const findIdProduct = dataSocketCron?.find(
+  //               (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+  //             );
 
-              if (!findIdProduct) return pdp;
+  //             if (!findIdProduct) return pdp;
 
-              const branchesEntries = findIdProduct?.branches
-                ? Object.entries(findIdProduct.branches)
-                : [];
+  //             const branchesEntries = findIdProduct?.branches
+  //               ? Object.entries(findIdProduct.branches)
+  //               : [];
 
-              return {
-                ...pdp,
-                stock: Number(findIdProduct.stock),
-                product_stock: pdp.product_stock?.map((xx) => {
-                  if (!xx) return xx; // por si xx es undefined
-                  const branchStock = branchesEntries.find(
-                    ([nameBranch]) => nameBranch === xx.branches?.name,
-                  );
+  //             return {
+  //               ...pdp,
+  //               stock: Number(findIdProduct.stock),
+  //               product_stock: pdp.product_stock?.map((xx) => {
+  //                 if (!xx) return xx; // por si xx es undefined
+  //                 const branchStock = branchesEntries.find(
+  //                   ([nameBranch]) => nameBranch === xx.branches?.name,
+  //                 );
 
-                  return {
-                    ...xx,
-                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                  };
-                }),
-              };
-            }),
-          );
+  //                 return {
+  //                   ...xx,
+  //                   stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //                 };
+  //               }),
+  //             };
+  //           }),
+  //         );
 
-          setDataCart((prevDataCart) =>
-            prevDataCart.map((pdp) => {
-              const findIdProduct = dataSocketCron?.find(
-                (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
-              );
+  //         setDataCart((prevDataCart) =>
+  //           prevDataCart.map((pdp) => {
+  //             const findIdProduct = dataSocketCron?.find(
+  //               (dsc) => Number(dsc?.idProduct) === Number(pdp?.idProduct),
+  //             );
 
-              if (!findIdProduct) return pdp;
+  //             if (!findIdProduct) return pdp;
 
-              const branchesEntries = findIdProduct?.branches
-                ? Object.entries(findIdProduct.branches)
-                : [];
+  //             const branchesEntries = findIdProduct?.branches
+  //               ? Object.entries(findIdProduct.branches)
+  //               : [];
 
-              return {
-                ...pdp,
-                stock: Number(findIdProduct.stock),
-                product_stock: pdp.product_stock?.map((xx) => {
-                  if (!xx) return xx; // por si xx es undefined
-                  const branchStock = branchesEntries.find(
-                    ([nameBranch]) => nameBranch === xx.branches?.name,
-                  );
+  //             return {
+  //               ...pdp,
+  //               stock: Number(findIdProduct.stock),
+  //               product_stock: pdp.product_stock?.map((xx) => {
+  //                 if (!xx) return xx; // por si xx es undefined
+  //                 const branchStock = branchesEntries.find(
+  //                   ([nameBranch]) => nameBranch === xx.branches?.name,
+  //                 );
 
-                  return {
-                    ...xx,
-                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                  };
-                }),
-              };
-            }),
-          );
-          setDataFavorites((prevDataFavorites) =>
-            prevDataFavorites.map((pdp) => {
-              const findIdProduct = dataSocketCron?.find(
-                (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
-              );
+  //                 return {
+  //                   ...xx,
+  //                   stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //                 };
+  //               }),
+  //             };
+  //           }),
+  //         );
+  //         setDataFavorites((prevDataFavorites) =>
+  //           prevDataFavorites.map((pdp) => {
+  //             const findIdProduct = dataSocketCron?.find(
+  //               (dsc) => Number(dsc?.idProduct) === Number(pdp?.productId),
+  //             );
 
-              if (!findIdProduct) return pdp;
+  //             if (!findIdProduct) return pdp;
 
-              const branchesEntries = findIdProduct?.branches
-                ? Object.entries(findIdProduct.branches)
-                : [];
+  //             const branchesEntries = findIdProduct?.branches
+  //               ? Object.entries(findIdProduct.branches)
+  //               : [];
 
-              return {
-                ...pdp,
-                stock: Number(findIdProduct.stock),
-                product_stock: pdp.products?.product_stock?.map((xx) => {
-                  if (!xx) return xx; // por si xx es undefined
-                  const branchStock = branchesEntries.find(
-                    ([nameBranch]) => nameBranch === xx.branches?.name,
-                  );
+  //             return {
+  //               ...pdp,
+  //               stock: Number(findIdProduct.stock),
+  //               product_stock: pdp.products?.product_stock?.map((xx) => {
+  //                 if (!xx) return xx; // por si xx es undefined
+  //                 const branchStock = branchesEntries.find(
+  //                   ([nameBranch]) => nameBranch === xx.branches?.name,
+  //                 );
 
-                  return {
-                    ...xx,
-                    stock: branchStock ? Number(branchStock[1]) : xx.stock,
-                  };
-                }),
-              };
-            }),
-          );
-        }
-      });
-    };
-  }, [socketCron?.current]);
+  //                 return {
+  //                   ...xx,
+  //                   stock: branchStock ? Number(branchStock[1]) : xx.stock,
+  //                 };
+  //               }),
+  //             };
+  //           }),
+  //         );
+  //       }
+  //     });
+  //   };
+  // }, [socketCron?.current]);
 
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
   useProtectedRoute();
