@@ -10,7 +10,9 @@ import {
   MdAutorenew,
   MdShoppingCart,
   MdStar,
+  MdFilterList,
 } from "react-icons/md";
+
 import useResultSearchCategory from "./useResultSearchCategory";
 import { useSearchParams } from "next/navigation";
 import PaginationComponent from "../components/pagination/PaginationComponent";
@@ -28,6 +30,10 @@ const SearchCategoryContent = () => {
   const [data, setData] = useState<ProductI[]>([]);
   const [dataCopy, setDataCopy] = useState<ProductI[]>([]);
   const [marcas, setMarcas] = useState([]);
+  const [marca, setMarca] = useState<any>("");
+  const [processorBrand, setProcessorBrand] = useState<"INTEL" | "AMD" | null>(
+    null,
+  );
   const [searchText, setSearchText] = useState<string>("");
   const { formatCurrency, onRouterLink } = useService();
   const { dataProducts, socketCron } = useTheContext();
@@ -85,13 +91,45 @@ const SearchCategoryContent = () => {
   };
 
   const handleOnSelectMarca = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event?.target?.value) {
-      const filtered = dataCopy.filter(
-        (item: any) => item.marcaId == event.target.value,
-      );
-      setData(filtered);
-    }
+    setMarca(Number(event.target.value));
   };
+
+  const handleOnSelectMarcaProcesadorMadre = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const type = event.target.value === "1" ? "INTEL" : "AMD";
+    setProcessorBrand(type);
+  };
+
+  useEffect(() => {
+    let filtered = [...dataCopy];
+
+    // filtro por marca
+    if (marca) {
+      filtered = filtered.filter((item: any) => item.marcaId == marca);
+    }
+
+    // filtro por fabricante procesador
+    if (processorBrand) {
+      filtered = filtered.filter((item: any) => {
+        const caract =
+          typeof item.caracteristicas === "string"
+            ? JSON.parse(item.caracteristicas)
+            : item.caracteristicas;
+
+        return (
+          Array.isArray(caract) &&
+          caract.some(
+            (c: any) =>
+              c.prop === "Fabricante de procesador" &&
+              c.value?.toLowerCase() === processorBrand?.toLowerCase(),
+          )
+        );
+      });
+    }
+
+    setData(filtered);
+  }, [marca, processorBrand, dataCopy]);
 
   useEffect(() => {
     if (searchText.trim().length < 3) {
@@ -479,12 +517,34 @@ const SearchCategoryContent = () => {
 
   return (
     <section>
-      {!loadingData && data && data.length > 0 ? (
+      {!loadingData ? (
         <div className="mt-2 w-full grid grid-cols-[auto_1fr] gap-2">
           {marcas &&
             marcas?.length > 0 &&
             (marcas as any)?.[0]?.idMarca != null && (
-              <aside className="border p-3">
+              <aside className="border p-3 relative">
+                <button
+                  style={{
+                    padding: "5px",
+                    marginLeft: "auto",
+                    marginBottom: "10px",
+                  }}
+                  onClick={() => {
+                    if (categoryId == "10") {
+                      setProcessorBrand(null);
+                      setMarca(null);
+                    } else {
+                      setMarca(null);
+                    }
+                  }}
+                  className="bg-[#BB3D4B] rounded text-white font-bold block right-0"
+                >
+                  <span className="flex justify-center gap-2">
+                    {" "}
+                    Resetar Filtro
+                    <MdFilterList size={22} />
+                  </span>
+                </button>
                 <span className="block text-left text-[#BB3D4B] font-bold">
                   Marcas
                 </span>
@@ -497,26 +557,26 @@ const SearchCategoryContent = () => {
                     {(() => {
                       return (
                         marcas &&
-                        marcas.map((marca: any, indexMarca: number) => {
+                        marcas.map((m: any, indexMarca: number) => {
                           return (
                             <li key={indexMarca} className="px-2">
                               <label
-                                htmlFor={`marca${marca.idMarca}`}
+                                htmlFor={`marca${m.idMarca}`}
                                 className=" cursor-pointer"
                               >
                                 <input
                                   type="radio"
-                                  id={`marca${marca.idMarca}`}
+                                  id={`marca${m.idMarca}`}
                                   name="marca"
-                                  value={marca.idMarca}
+                                  value={m.idMarca}
+                                  checked={Number(marca) === m.idMarca}
                                   onChange={handleOnSelectMarca}
                                 />
-                                <span className="mx-1">{marca.name}</span>
+                                <span className="mx-1">{m.name}</span>
                                 <span className="mx-1">
                                   {(() => {
                                     let longitudProductMarca = dataCopy.filter(
-                                      (item: any) =>
-                                        item.marcaId == marca.idMarca,
+                                      (item: any) => item.marcaId == m.idMarca,
                                     ).length;
 
                                     return `(${Number(
@@ -532,6 +592,142 @@ const SearchCategoryContent = () => {
                     })()}
                   </ul>
                 </div>
+
+                {categoryId == "10" && ( //categoryId == 33 para local y categoryId == 10 para prod
+                  <div className="mt-3">
+                    <span className="block text-left text-[#BB3D4B] font-bold">
+                      Marca del procesador
+                    </span>
+
+                    <div>
+                      <ul
+                        style={{
+                          paddingLeft: "0px",
+                        }}
+                      >
+                        <li className="px-2">
+                          <label
+                            htmlFor={`marca-procesador-madre-intel`}
+                            className=" cursor-pointer"
+                          >
+                            <input
+                              type="radio"
+                              id={`marca-procesador-madre-intel`}
+                              name="marca-procesador"
+                              checked={processorBrand === "INTEL"}
+                              disabled={(() => {
+                                let lengthIntel = dataCopy.filter(
+                                  (item: any) => {
+                                    const caract =
+                                      typeof item?.caracteristicas === "string"
+                                        ? JSON.parse(item.caracteristicas)
+                                        : item.caracteristicas;
+
+                                    if (!Array.isArray(caract)) return false;
+
+                                    return caract.some(
+                                      (c: any) =>
+                                        c.prop === "Fabricante de procesador" &&
+                                        c.value?.toLowerCase() ===
+                                          "INTEL".toLowerCase(), // o "INTEL"
+                                    );
+                                  },
+                                ).length;
+                                return lengthIntel === 0 ? true : false;
+                              })()}
+                              value={1}
+                              onChange={handleOnSelectMarcaProcesadorMadre}
+                            />
+                            <span className="mx-1">{"INTEL"}</span>
+                            <span className="mx-1">
+                              {(() => {
+                                let lengthIntel = dataCopy.filter(
+                                  (item: any) => {
+                                    const caract =
+                                      typeof item?.caracteristicas === "string"
+                                        ? JSON.parse(item.caracteristicas)
+                                        : item.caracteristicas;
+
+                                    if (!Array.isArray(caract)) return false;
+
+                                    return caract.some(
+                                      (c: any) =>
+                                        c.prop === "Fabricante de procesador" &&
+                                        c.value?.toLowerCase() ===
+                                          "INTEL"?.toLowerCase(), // o "INTEL"
+                                    );
+                                  },
+                                ).length;
+                                return `(${Number(
+                                  lengthIntel,
+                                ).toLocaleString()})`;
+                              })()}
+                            </span>
+                          </label>
+                        </li>
+
+                        <li className="px-2">
+                          <label
+                            htmlFor={`marca-procesador-madre-amd`}
+                            className=" cursor-pointer"
+                          >
+                            <input
+                              type="radio"
+                              id={`marca-procesador-madre-amd`}
+                              name="marca-procesador"
+                              value={2}
+                              checked={processorBrand === "AMD"}
+                              disabled={(() => {
+                                let lengthAMD = dataCopy.filter((item: any) => {
+                                  const caract =
+                                    typeof item?.caracteristicas === "string"
+                                      ? JSON.parse(item.caracteristicas)
+                                      : item.caracteristicas;
+
+                                  if (!Array.isArray(caract)) return false;
+
+                                  return caract.some(
+                                    (c: any) =>
+                                      c.prop === "Fabricante de procesador" &&
+                                      c.value?.toLowerCase() ===
+                                        "AMD"?.toLowerCase(), // o "INTEL"
+                                  );
+                                }).length;
+
+                                return lengthAMD === 0 ? true : false;
+                              })()}
+                              onChange={handleOnSelectMarcaProcesadorMadre}
+                            />
+                            <span className="mx-1">{"AMD"}</span>
+                            <span className="mx-1">
+                              {(() => {
+                                let lengthAMD = dataCopy.filter((item: any) => {
+                                  const caract =
+                                    typeof item?.caracteristicas === "string"
+                                      ? JSON.parse(item.caracteristicas)
+                                      : item.caracteristicas;
+
+                                  if (!Array.isArray(caract)) return false;
+
+                                  return caract.some(
+                                    (c: any) =>
+                                      c.prop === "Fabricante de procesador" &&
+                                      c.value?.toLowerCase() ===
+                                        "AMD"?.toLowerCase(), // o "INTEL"
+                                  );
+                                }).length;
+
+                                return `(${Number(
+                                  lengthAMD,
+                                ).toLocaleString()})`;
+                              })()}
+                            </span>
+                          </label>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </aside>
             )}
 
@@ -548,50 +744,54 @@ const SearchCategoryContent = () => {
 
             {/* {data && data?.length > 0 ? (
               <> */}
-            <div className="mt-4 flex gap-1 items-center justify-between">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  className="border py-1 px-4"
-                  onChange={(event) => {
-                    setSearchText(event.currentTarget.value);
-                  }}
-                  value={searchText}
-                />
-              </div>
-              <div className="flex gap-1 items-center">
-                <span className="flex shrink-0">Ordenar por:</span>
-                <select
-                  className="form-select"
-                  defaultValue={""}
-                  onChange={(event) => {
-                    setData((prev) => {
-                      // Copiamos todo el array antes de ordenar
-                      const sorted = [...prev].sort(
-                        (a: any, b: any) =>
-                          event.target.value === "1"
-                            ? Number(b.price) - Number(a.price) // mayor a menor
-                            : Number(a.price) - Number(b.price), // menor a mayor
-                      );
+            {data && data?.length > 0 && (
+              <>
+                <div className="mt-4 flex gap-1 items-center justify-between">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Buscar..."
+                      className="border py-1 px-4"
+                      onChange={(event) => {
+                        setSearchText(event.currentTarget.value);
+                      }}
+                      value={searchText}
+                    />
+                  </div>
+                  <div className="flex gap-1 items-center">
+                    <span className="flex shrink-0">Ordenar por:</span>
+                    <select
+                      className="form-select"
+                      defaultValue={""}
+                      onChange={(event) => {
+                        setData((prev) => {
+                          // Copiamos todo el array antes de ordenar
+                          const sorted = [...prev].sort(
+                            (a: any, b: any) =>
+                              event.target.value === "1"
+                                ? Number(b.price) - Number(a.price) // mayor a menor
+                                : Number(a.price) - Number(b.price), // menor a mayor
+                          );
 
-                      setPage(1);
+                          setPage(1);
 
-                      // Si necesitas slice, hazlo después
-                      return sorted;
-                    });
-                  }}
-                >
-                  <option value="" disabled>
-                    Selecciona una opción
-                  </option>
-                  <option value={1}>Mayor precio</option>
-                  <option value={2}>Menor precio</option>
-                </select>
-              </div>
-            </div>
+                          // Si necesitas slice, hazlo después
+                          return sorted;
+                        });
+                      }}
+                    >
+                      <option value="" disabled>
+                        Selecciona una opción
+                      </option>
+                      <option value={1}>Mayor precio</option>
+                      <option value={2}>Menor precio</option>
+                    </select>
+                  </div>
+                </div>
 
-            <hr />
+                <hr />
+              </>
+            )}
             {/* </> */}
             {/* ) : (
               ""
@@ -846,12 +1046,18 @@ const SearchCategoryContent = () => {
                               <div className="grid grid-cols-[1fr_1fr_auto] my-1 gap-4">
                                 {/* Características */}
                                 <div>
-                                  {item?.caracteristicas ? (
+                                  {item?.caracteristicas &&
+                                  (typeof item?.caracteristicas === "object" ||
+                                    typeof item?.caracteristicas ===
+                                      "string") ? (
                                     (() => {
                                       try {
-                                        const caracs = JSON.parse(
-                                          item.caracteristicas,
-                                        );
+                                        const caracs =
+                                          typeof item?.caracteristicas ===
+                                          "string"
+                                            ? JSON.parse(item.caracteristicas)
+                                            : item?.caracteristicas;
+
                                         if (
                                           Array.isArray(caracs) &&
                                           caracs.length > 0
