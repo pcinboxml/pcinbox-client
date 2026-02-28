@@ -67,6 +67,9 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
       <Autocomplete
         disablePortal
         forcePopupIcon
+        isOptionEqualToValue={(option: any, value: any) =>
+          option.idProduct === value.idProduct
+        }
         options={inputValue.length >= 3 ? searchResults : []}
         getOptionLabel={(option: ProductI) => option.name ?? option.upc ?? ""}
         filterOptions={filterOptions}
@@ -137,7 +140,6 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
                       </span>
                     </InputAdornment>
                   )}
-                  {params.InputProps.endAdornment}
                 </>
               ),
             }}
