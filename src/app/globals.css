@@ -222,3 +222,12 @@ section {
     @apply bg-background text-foreground;
   }
 }
+.main-content {
+  margin-top: 180px;
+}
+
+@media (max-width: 991px) {
+  .main-content {
+    margin-top: 100px;
+  }
+}

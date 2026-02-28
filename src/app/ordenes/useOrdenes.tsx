@@ -38,13 +38,15 @@ const useOrdenes = () => {
     return {
       id: itemCart.idProduct,
       img:
-        (itemCart as any).image_url ||
-        (itemCart.imageUrl &&
-          Array.isArray((itemCart as any).image_url || itemCart.imageUrl) &&
-          itemCart.imageUrl.length > 0)
-          ? (itemCart as any).image_url[0] || itemCart.imageUrl[0]
-          : (itemCart as any).image_url || itemCart.imageUrl,
-      description: itemCart.description,
+        (itemCart as any)?.image_url?.[0] ??
+        itemCart?.imageUrl?.[0] ??
+        (itemCart as any)?.image_url ??
+        itemCart?.imageUrl ??
+        "",
+      description:
+        (itemCart?.name && itemCart?.name?.length > 50
+          ? itemCart?.name?.slice(0, 50)
+          : itemCart?.name) || itemCart.description,
       quantity: Number(itemCart.quantity),
       unitPrice: Number(itemCart.price),
       totalPrice: Number(itemCart.quantity) * Number(itemCart.price),
