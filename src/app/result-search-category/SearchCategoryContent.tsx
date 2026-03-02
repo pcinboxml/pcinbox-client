@@ -35,6 +35,7 @@ const SearchCategoryContent = () => {
     null,
   );
   const [searchText, setSearchText] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<any>("");
   const { formatCurrency, onRouterLink } = useService();
   const { dataProducts, socketCron } = useTheContext();
 
@@ -457,6 +458,24 @@ const SearchCategoryContent = () => {
     },
   ];
 
+  useEffect(() => {
+    if (orderBy) {
+      setData((prev) => {
+        // Copiamos todo el array antes de ordenar
+        const sorted = [...prev].sort(
+          (a: any, b: any) =>
+            orderBy === "1"
+              ? Number(b.price) - Number(a.price) // mayor a menor
+              : Number(a.price) - Number(b.price), // menor a mayor
+        );
+
+        setPage(1);
+
+        // Si necesitas slice, hazlo después
+        return sorted;
+      });
+    }
+  }, [orderBy]);
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
       {...props}
@@ -533,8 +552,10 @@ const SearchCategoryContent = () => {
                     if (categoryId == "10") {
                       setProcessorBrand(null);
                       setMarca(null);
+                      setOrderBy("");
                     } else {
                       setMarca(null);
+                      setOrderBy("");
                     }
                   }}
                   className="bg-[#BB3D4B] rounded text-white font-bold block right-0"
@@ -762,29 +783,16 @@ const SearchCategoryContent = () => {
                     <span className="flex shrink-0">Ordenar por:</span>
                     <select
                       className="form-select"
-                      defaultValue={""}
+                      value={orderBy}
                       onChange={(event) => {
-                        setData((prev) => {
-                          // Copiamos todo el array antes de ordenar
-                          const sorted = [...prev].sort(
-                            (a: any, b: any) =>
-                              event.target.value === "1"
-                                ? Number(b.price) - Number(a.price) // mayor a menor
-                                : Number(a.price) - Number(b.price), // menor a mayor
-                          );
-
-                          setPage(1);
-
-                          // Si necesitas slice, hazlo después
-                          return sorted;
-                        });
+                        setOrderBy(event?.target?.value);
                       }}
                     >
                       <option value="" disabled>
                         Selecciona una opción
                       </option>
-                      <option value={1}>Mayor precio</option>
-                      <option value={2}>Menor precio</option>
+                      <option value={"1"}>Mayor precio</option>
+                      <option value={"2"}>Menor precio</option>
                     </select>
                   </div>
                 </div>
