@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 interface ProductPageProps {
-  params: { identifier: string; slug?: string };
+  params: { identifier: any };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -39,13 +39,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const product = await getProduct(identifier);
-
-  const slug =
-    params.slug ||
-    product.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
 
   return (
     <>
