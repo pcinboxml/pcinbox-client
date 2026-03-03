@@ -46,7 +46,8 @@ const useResultSearchCategory = () => {
       // Llamada al backend
       const resp = await requestPost(
         {
-          product: productProp,
+          // product: productProp,
+          idProduct: productProp?.idProduct,
           quantity: 1,
           price: productProp.price,
           isDetails: false,
