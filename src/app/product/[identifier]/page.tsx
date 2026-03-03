@@ -1,16 +1,18 @@
 import Head from "next/head";
 
 interface ProductPageProps {
-  params: { identifier: any };
+  params: Promise<{ identifier: string }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const identifier = params.identifier;
+  const { identifier } = await params;
 
   async function getProduct(id: string) {
     const searchTerm = decodeURIComponent(identifier);
+    //Prod `https://server-proveedores-a69933baa01a.herokuapp.com/api/v1/getProductGoogleSearchConsole/${searchTerm}`
+    //Local `http://localhost:8001/api/v1/getProductGoogleSearchConsole/${searchTerm}`
     const res = await fetch(
-      `http://localhost:8001/api/v1/getProductGoogleSearchConsole/${searchTerm}`,
+      `https://server-proveedores-a69933baa01a.herokuapp.com/api/v1/getProductGoogleSearchConsole/${searchTerm}`,
       { cache: "no-store" },
     );
 
@@ -48,11 +50,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
           name="description"
           content={product.description?.slice(0, 160) || ""}
         />
+
+        {/*
+        //Prod `https://www.pcinbox.com.mx/product/${identifier}`
+        //Local `http://localhost:3000/product/${identifier}`
+        */}
         <link
           rel="canonical"
-          href={`http://localhost:3000/product/${identifier}`}
+          href={`https://www.pcinbox.com.mx/product/${identifier}`}
         />
       </Head>
+
+      {/*
+        //Prod `https://www.pcinbox.com.mx/product/${identifier}`
+        //Local `http://localhost:3000/product/${identifier}`
+        */}
 
       <script
         type="application/ld+json"
@@ -67,7 +79,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             mpn: product.upc,
             offers: {
               "@type": "Offer",
-              url: `http://localhost:3000/product/${identifier}`,
+              url: `https://www.pcinbox.com.mx/product/${identifier}`,
               priceCurrency: "MXN",
               price: product.price,
               availability:
@@ -79,14 +91,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
 
-      <h1>{product.name}</h1>
-      <p>{product.description}</p>
-      <p>SKU: {product.sku}</p>
-      <p>UPC: {product.upc}</p>
-      <p>Stock: {product.stock}</p>
-      <p>Precio: ${product.price}</p>
-      {product.image_url?.[0] && (
-        <img src={product.image_url[0]} alt={product.name} />
+      <h1>{product?.name}</h1>
+      <p>{product?.description}</p>
+      <p>SKU: {product?.sku}</p>
+      <p>UPC: {product?.upc}</p>
+      <p>Stock: {product?.stock}</p>
+      <p>Precio: ${product?.price}</p>
+      {product?.image_url?.[0] && (
+        <img src={product?.image_url[0]} alt={product?.name} />
       )}
     </>
   );
