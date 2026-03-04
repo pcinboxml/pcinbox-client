@@ -106,6 +106,16 @@
   }
 }
 
+@media (max-width: 996px) {
+  .section > div:nth-of-type(1) {
+    display: none !important;
+  }
+
+  .section > div:nth-of-type(2) {
+    width: 100% !important;
+  }
+}
+
 @media (max-width: 992px) {
   .containerDatosPersonales form {
     width: auto;

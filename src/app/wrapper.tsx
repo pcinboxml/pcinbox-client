@@ -6,7 +6,7 @@ import Navbar from "./components/navbar/navbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
@@ -528,7 +528,7 @@ export default function AppWrapper({
             showActions={dataModal.showActions}
           />
 
-          <Notification dataNotification={dataNotification} />
+          {/* <Notification dataNotification={dataNotification} /> */}
 
           {pathName != "/estatusMP" &&
             pathName != "/estatusPay" &&

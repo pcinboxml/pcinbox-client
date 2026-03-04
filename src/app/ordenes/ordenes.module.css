@@ -2,3 +2,13 @@
   display: flex;
   columns: 2;
 }
+
+@media (max-width: 996px) {
+  .section > div:nth-of-type(1) {
+    display: none !important;
+  }
+
+  .section > div:nth-of-type(2) {
+    width: 100% !important;
+  }
+}

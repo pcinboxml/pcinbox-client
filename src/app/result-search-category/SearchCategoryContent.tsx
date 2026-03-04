@@ -1,5 +1,6 @@
 "use client";
 
+import "./result-search-category.module.css";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
 import useProveedores from "../services/proveedores/useProveedores";
@@ -1211,6 +1212,7 @@ const SearchCategoryContent = () => {
                                     (img: string, i: number) => (
                                       <div key={i}>
                                         <img
+                                          className="img"
                                           src={img}
                                           style={{
                                             objectFit: "contain",

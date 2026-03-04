@@ -1,0 +1,111 @@
+/* ============================= */
+/* MOBILE FIRST (default) */
+/* ============================= */
+
+/* Fuerza el grid principal a 1 columna en móvil */
+.grid {
+  width: 100%;
+}
+
+/* Cuando usas grid-cols-[1fr_auto] */
+@media (max-width: 767px) {
+  .grid[class*="grid-cols-[1fr_auto]"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Imagen abajo pasa arriba */
+  .w-\[150px\] {
+    width: 100% !important;
+    margin-top: 16px;
+  }
+
+  /* Grid rating 3 columnas -> 1 columna */
+  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Grid características/precio/botón */
+  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  /* Tooltip ancho fijo 800px */
+  .w-\[800px\] {
+    width: 95vw !important;
+    max-width: 95vw !important;
+  }
+
+  /* Botón ocupa todo el ancho */
+  button.bg-\[\#BB3D4B\] {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  /* Imagen del carousel más grande en móvil */
+  .img {
+    height: 200px !important;
+  }
+}
+
+/* ============================= */
+/* TABLET */
+/* ============================= */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid[class*="grid-cols-[1fr_auto]"] {
+    grid-template-columns: 1fr 200px !important;
+  }
+
+  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .w-\[150px\] {
+    width: 200px !important;
+  }
+
+  .img {
+    height: 170px !important;
+  }
+
+  .w-\[800px\] {
+    width: 600px !important;
+    max-width: 95vw !important;
+  }
+}
+
+/* ============================= */
+/* DESKTOP */
+/* ============================= */
+
+@media (min-width: 1024px) {
+  .grid[class*="grid-cols-[1fr_auto]"] {
+    grid-template-columns: 1fr auto !important;
+  }
+
+  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
+    grid-template-columns: 1fr 1fr 1fr !important;
+  }
+
+  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
+    grid-template-columns: 1fr 1fr auto !important;
+  }
+
+  .w-\[150px\] {
+    width: 150px !important;
+  }
+
+  .img {
+    height: 150px !important;
+  }
+
+  .w-\[800px\] {
+    width: 800px !important;
+  }
+}

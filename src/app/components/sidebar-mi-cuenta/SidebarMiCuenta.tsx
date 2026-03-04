@@ -16,7 +16,7 @@ const SidebarMiCuenta = () => {
   }, []);
 
   return (
-    <aside className="w-[100%]">
+    <aside className={`w-[100%] ${styles.aside}`}>
       <ul className="flex w-full flex-col pl-0" style={{ paddingLeft: "0px" }}>
         <li>
           <a
