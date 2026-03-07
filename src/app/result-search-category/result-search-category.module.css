@@ -1,111 +1,425 @@
-/* ============================= */
-/* MOBILE FIRST (default) */
-/* ============================= */
+/* ============================================================
+   result-search-category.module.css
+   Mobile-first responsive — carousel siempre visible
+   Breakpoints: <640 | 640-767 | 768-1023 | 1024+
+   ============================================================ */
 
-/* Fuerza el grid principal a 1 columna en móvil */
-.grid {
+/* ─── Sección raíz ─────────────────────────────────────────── */
+.section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ─── Layout principal (sidebar + contenido) ───────────────── */
+/* Móvil: columna única */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+/* ─── Botón toggle de filtros (oculto en desktop) ──────────── */
+.filterToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background-color: #bb3d4b;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 14px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────── */
+/* Oculto por defecto en móvil */
+.sidebar {
+  display: none;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.sidebarOpen {
+  display: block;
+}
+
+/* Botón reset dentro del sidebar */
+.resetFilterBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 10px;
+  margin-left: auto;
+  margin-bottom: 10px;
+  background-color: #bb3d4b;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sidebarTitle {
+  display: block;
+  text-align: left;
+  color: #bb3d4b;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.marcaList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.marcaLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 8px;
+  gap: 4px;
+}
+
+/* ─── Contenido principal ───────────────────────────────────── */
+.mainContent {
+  min-width: 0; /* evita overflow en grid */
+  padding: 0 4px;
+}
+
+.categoryTitle {
+  color: #bb3d4b;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* ─── Barra búsqueda + ordenar ──────────────────────────────── */
+.searchBar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 4px 16px;
+  box-sizing: border-box;
+}
+
+.sortWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sortLabel {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Fila del producto ─────────────────────────────────────── */
+/*
+  Móvil (<640px): 1 columna, carousel debajo
+  640-767px:      imagen fija 130px a la derecha
+  768-1023px:     imagen fija 160px a la derecha
+  1024+:          imagen fija 160px a la derecha (desktop)
+*/
+.productRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+/* ─── Info del producto (columna izquierda) ─────────────────── */
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.itemComponent {
+  padding: 8px;
+}
+
+.productName {
+  color: #bb3d4b;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 6px;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+/* ─── Grid SKU + Rating ─────────────────────────────────────── */
+.skuRatingGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+/* ─── Grid Características / Precio / Botón ─────────────────── */
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+/* ─── Botón agregar al carrito ──────────────────────────────── */
+.addToCartWrapper {
   width: 100%;
 }
 
-/* Cuando usas grid-cols-[1fr_auto] */
-@media (max-width: 767px) {
-  .grid[class*="grid-cols-[1fr_auto]"] {
-    grid-template-columns: 1fr !important;
+.addToCartBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background-color: #bb3d4b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.addToCartBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Carousel wrapper — SIEMPRE visible ───────────────────── */
+/*
+  En móvil (<640px) va debajo del info (1 columna)
+  Desde 640px en adelante va a la derecha (columna fija)
+  NUNCA se oculta — esa era la causa del bug a ~980px
+*/
+.carouselWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.carouselSlide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.productImg {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  margin-top: 12px;
+  display: block;
+}
+
+/* ─── BranchSelector modal ──────────────────────────────────── */
+.branchSelectorWrapper {
+  width: 95vw;
+  max-width: 95vw;
+  border: 1px solid #e0e0e0;
+}
+
+/* ─── Paginación ────────────────────────────────────────────── */
+.paginationWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px;
+}
+
+/* ============================================================
+   BREAKPOINT: 640px — imagen a la derecha, tamaño reducido
+   ============================================================ */
+@media (min-width: 640px) {
+  .productRow {
+    /* imagen fija 130px siempre a la derecha */
+    grid-template-columns: 1fr 130px;
+    gap: 8px;
   }
 
-  /* Imagen abajo pasa arriba */
-  .w-\[150px\] {
-    width: 100% !important;
-    margin-top: 16px;
+  .carouselWrapper {
+    width: 130px;
   }
 
-  /* Grid rating 3 columnas -> 1 columna */
-  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
-    grid-template-columns: 1fr !important;
+  .productImg {
+    height: 130px;
+  }
+
+  .searchBar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .searchInput {
+    width: auto;
+  }
+}
+
+/* ============================================================
+   BREAKPOINT: 768px — tablet
+   ============================================================ */
+@media (min-width: 768px) {
+  /* Mostrar sidebar permanentemente */
+  .filterToggle {
+    display: none;
+  }
+
+  .sidebar {
+    display: block;
+    width: 200px;
+    min-width: 180px;
+  }
+
+  /* Layout: sidebar + contenido */
+  .mainGrid {
+    grid-template-columns: 200px 1fr;
+  }
+
+  /* Imagen más grande en tablet */
+  .productRow {
+    grid-template-columns: 1fr 160px;
     gap: 12px;
   }
 
-  /* Grid características/precio/botón */
-  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
-    grid-template-columns: 1fr !important;
-    gap: 16px;
+  .carouselWrapper {
+    width: 160px;
   }
 
-  /* Tooltip ancho fijo 800px */
-  .w-\[800px\] {
-    width: 95vw !important;
-    max-width: 95vw !important;
+  .productImg {
+    height: 160px;
   }
 
-  /* Botón ocupa todo el ancho */
-  button.bg-\[\#BB3D4B\] {
-    width: 100% !important;
+  /* SKU + Rating en fila */
+  .skuRatingGrid {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* Características + Precio en 2 columnas, botón abajo full width */
+  .detailGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .addToCartWrapper {
+    grid-column: 1 / -1;
+    width: auto;
+  }
+
+  .addToCartBtn {
+    width: auto;
     justify-content: center;
   }
 
-  /* Imagen del carousel más grande en móvil */
-  .img {
-    height: 200px !important;
+  .branchSelectorWrapper {
+    width: 560px;
+    max-width: 95vw;
   }
 }
 
-/* ============================= */
-/* TABLET */
-/* ============================= */
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .grid[class*="grid-cols-[1fr_auto]"] {
-    grid-template-columns: 1fr 200px !important;
+/* ============================================================
+   BREAKPOINT: 900px — zona problemática ~980px
+   Refuerzo explícito para que el carousel NO desaparezca
+   ============================================================ */
+@media (min-width: 900px) {
+  .productRow {
+    grid-template-columns: 1fr 160px !important;
   }
 
-  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
-    grid-template-columns: 1fr 1fr !important;
+  .carouselWrapper {
+    width: 160px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
-  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .w-\[150px\] {
-    width: 200px !important;
-  }
-
-  .img {
-    height: 170px !important;
-  }
-
-  .w-\[800px\] {
-    width: 600px !important;
-    max-width: 95vw !important;
+  .productImg {
+    height: 160px;
   }
 }
 
-/* ============================= */
-/* DESKTOP */
-/* ============================= */
-
+/* ============================================================
+   BREAKPOINT: 1024px — desktop
+   ============================================================ */
 @media (min-width: 1024px) {
-  .grid[class*="grid-cols-[1fr_auto]"] {
-    grid-template-columns: 1fr auto !important;
+  .filterToggle {
+    display: none;
   }
 
-  .grid[class*="grid-cols-[1fr_1fr_1fr]"] {
-    grid-template-columns: 1fr 1fr 1fr !important;
+  .sidebar {
+    display: block;
+    width: auto;
+    min-width: 200px;
   }
 
-  .grid[class*="grid-cols-[1fr_1fr_auto]"] {
-    grid-template-columns: 1fr 1fr auto !important;
+  .mainGrid {
+    grid-template-columns: auto 1fr;
   }
 
-  .w-\[150px\] {
-    width: 150px !important;
+  .productRow {
+    grid-template-columns: 1fr 160px;
+    gap: 16px;
   }
 
-  .img {
-    height: 150px !important;
+  .carouselWrapper {
+    width: 160px;
+    display: flex;
+    align-items: flex-start;
   }
 
-  .w-\[800px\] {
-    width: 800px !important;
+  .productImg {
+    height: 150px;
+  }
+
+  /* SKU + Rating + tercera columna vacía */
+  .skuRatingGrid {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* Características + Precio + Botón en 3 columnas */
+  .detailGrid {
+    grid-template-columns: 1fr 1fr auto;
+  }
+
+  .addToCartWrapper {
+    grid-column: auto;
+    width: auto;
+  }
+
+  .addToCartBtn {
+    width: auto;
+  }
+
+  .branchSelectorWrapper {
+    width: 800px;
+    max-width: 800px;
+  }
+
+  .itemComponent {
+    padding: 12px;
   }
 }
