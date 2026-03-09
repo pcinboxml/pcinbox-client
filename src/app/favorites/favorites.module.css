@@ -1,3 +1,91 @@
+/* ============================================================
+   favorites.module.css
+   Mobile-first — carousel siempre visible
+   Breakpoints: <640 | 640px | 768px | 900px | 1024px
+   ============================================================ */
+
+/* ─── Ordenar grid ──────────────────────────────────────────── */
+.ordenarGrid {
+  display: grid;
+  grid-template-columns: 100px 150px;
+}
+
+/* ─── Fila del producto ─────────────────────────────────────── */
+/* Móvil: 1 columna, carousel debajo */
+.productRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+/* ─── Grid SKU + Rating ─────────────────────────────────────── */
+/* Móvil: columna única */
+.skuRatingGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 6px 0;
+}
+
+/* ─── Grid Características / Precio / Botones ───────────────── */
+/* Móvil: columna única */
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+/* ─── Botones (agregar + eliminar) ──────────────────────────── */
+.btnsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.addToCartBtn {
+  width: 100% !important;
+  justify-content: center;
+}
+
+.removeBtn {
+  width: 100% !important;
+}
+
+/* ─── Carousel wrapper — SIEMPRE visible ───────────────────── */
+.carouselWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.carouselSlide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.productImg {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  max-height: 200px;
+  margin-top: 12px;
+  display: block;
+}
+
+/* ─── BranchSelector modal ──────────────────────────────────── */
+.branchSelectorWrapper {
+  width: 95vw;
+  max-width: 95vw;
+  border: 1px solid #e0e0e0;
+}
+
+/* ─── containerImgProduct (clase original conservada) ───────── */
 .containerImgProduct {
   max-height: 200px;
   max-width: 350px;
@@ -8,4 +96,146 @@
   align-items: center;
   padding-left: 8px;
   padding-right: 8px;
+}
+
+/* ============================================================
+   640px — imagen a la derecha, tamaño reducido
+   ============================================================ */
+@media (min-width: 640px) {
+  .productRow {
+    grid-template-columns: 1fr 130px;
+    gap: 8px;
+  }
+
+  .carouselWrapper {
+    width: 130px;
+  }
+
+  .productImg {
+    height: 130px;
+  }
+
+  .addToCartBtn {
+    width: auto !important;
+  }
+
+  .removeBtn {
+    width: auto !important;
+  }
+}
+
+/* ============================================================
+   768px — tablet
+   ============================================================ */
+@media (min-width: 768px) {
+  .productRow {
+    grid-template-columns: 1fr 160px;
+    gap: 12px;
+  }
+
+  .carouselWrapper {
+    width: 160px;
+  }
+
+  .productImg {
+    height: 160px;
+  }
+
+  /* SKU + Rating en fila */
+  .skuRatingGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Características + Precio en 2 columnas, botones abajo */
+  .detailGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btnsWrapper {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    gap: 8px;
+    width: auto;
+  }
+
+  .addToCartBtn {
+    width: auto !important;
+  }
+
+  .removeBtn {
+    width: auto !important;
+  }
+
+  .branchSelectorWrapper {
+    width: 560px;
+    max-width: 95vw;
+  }
+}
+
+/* ============================================================
+   900px — refuerzo zona ~980px para que el carousel no desaparezca
+   ============================================================ */
+@media (min-width: 900px) {
+  .productRow {
+    grid-template-columns: 1fr 160px !important;
+  }
+
+  .carouselWrapper {
+    width: 160px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .productImg {
+    height: 160px;
+  }
+}
+
+/* ============================================================
+   1024px — desktop
+   ============================================================ */
+@media (min-width: 1024px) {
+  .productRow {
+    grid-template-columns: 1fr 160px;
+    gap: 16px;
+  }
+
+  .carouselWrapper {
+    width: 160px;
+    align-items: flex-start;
+  }
+
+  .productImg {
+    height: 150px;
+  }
+
+  /* SKU + Rating + 3ra columna */
+  .skuRatingGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* Características + Precio + Botones en 3 columnas */
+  .detailGrid {
+    grid-template-columns: 1fr 1fr auto;
+  }
+
+  .btnsWrapper {
+    grid-column: auto;
+    flex-direction: column;
+    width: auto;
+  }
+
+  .addToCartBtn {
+    width: auto !important;
+  }
+
+  .removeBtn {
+    width: auto !important;
+  }
+
+  .branchSelectorWrapper {
+    width: 800px;
+    max-width: 800px;
+  }
 }

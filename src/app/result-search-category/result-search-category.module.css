@@ -252,6 +252,12 @@
 /* ============================================================
    BREAKPOINT: 640px — imagen a la derecha, tamaño reducido
    ============================================================ */
+
+@media (max-width: 640px) {
+  .sortWrapper {
+    width: 100%;
+  }
+}
 @media (min-width: 640px) {
   .productRow {
     /* imagen fija 130px siempre a la derecha */

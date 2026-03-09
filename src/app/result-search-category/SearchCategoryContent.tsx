@@ -26,6 +26,7 @@ const SearchCategoryContent = () => {
     useTheContext();
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [filterValue, setFilterValue] = useState<any>("");
   const { requestPostProveedor } = useProveedores();
   const [data, setData] = useState<ProductI[]>([]);
   const [dataCopy, setDataCopy] = useState<ProductI[]>([]);
@@ -356,9 +357,10 @@ const SearchCategoryContent = () => {
                   onClick={() => {
                     setProcessorBrand(null);
                     setMarca(null);
+                    setFilterValue("");
                   }}
                 >
-                  Resetar Filtro
+                  Resetear Filtro
                   <MdFilterList size={22} />
                 </button>
 
@@ -450,7 +452,14 @@ const SearchCategoryContent = () => {
 
             {data && data?.length > 0 && (
               <>
-                <div className={styles.searchBar}>
+                <div
+                  className={`${styles.searchBar}`}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                  }}
+                >
                   <input
                     type="text"
                     placeholder="Buscar..."
@@ -464,8 +473,10 @@ const SearchCategoryContent = () => {
                     <span className={styles.sortLabel}>Ordenar por:</span>
                     <select
                       className="form-select"
-                      defaultValue={""}
+                      value={filterValue}
                       onChange={(event) => {
+                        setFilterValue(event.target?.value);
+
                         setData((prev) => {
                           const sorted = [...prev].sort((a: any, b: any) =>
                             event.target.value === "1"
