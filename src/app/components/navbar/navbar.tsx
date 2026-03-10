@@ -7,6 +7,7 @@ import {
   MdList,
   MdAutorenew,
   MdFavorite,
+  MdLaptop,
 } from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
@@ -62,6 +63,7 @@ const Navbar = () => {
     rutaImgPerfil,
     dataFavorites,
     socketPagos,
+    dataCategories,
   } = useTheContext();
   const [totalItems, setTotalItems] = useState<number>(0);
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
@@ -266,6 +268,25 @@ const Navbar = () => {
             </ul> 
           </div> */}
         </div>
+        <button
+          className="bg-[#BB3D4B] rounded text-white font-bold flex items-center gap-2 px-3 py-2 whitespace-nowrap"
+          style={{
+            marginLeft: "-40px",
+          }}
+          onClick={() => {
+            let findIdCategory = dataCategories.find(
+              (category) => category.name === "LAPTOPS",
+            );
+            if (findIdCategory) {
+              onRouterLink(
+                `/result-search-category?categoryId=${findIdCategory?.idCategorie}`,
+              );
+            }
+          }}
+        >
+          Gama de Laptops 2026 <MdLaptop size={26} />
+        </button>
+
         {/* <div
           className="container-products"
           style={{ position: "relative", zIndex: 100 }} // Asegúrate del zIndex

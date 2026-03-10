@@ -1148,7 +1148,7 @@ const SearchCategoryContent = () => {
                                       if (
                                         (item?.isPC == 0 || item?.isPc == 0) &&
                                         item?.product_stock.length > 0 &&
-                                        Number(item?.providerId) === 3
+                                        Number(item?.providerId) != 1
                                       ) {
                                         setDataModal({
                                           isOpen: true,
@@ -1180,7 +1180,7 @@ const SearchCategoryContent = () => {
                                   >
                                     {item?.isPC == 0 &&
                                     loadingAddProductCar[item.idProduct] &&
-                                    Number(item?.providerId) === 3 ? (
+                                    Number(item?.providerId) != 1 ? (
                                       <MdAutorenew
                                         size={20}
                                         className="m-auto the-spinner"
