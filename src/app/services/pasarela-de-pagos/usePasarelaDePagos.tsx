@@ -25,12 +25,12 @@ const usePasarelaDePagos = () => {
           message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
           title: "Sesión expirada",
           onClose: () => {
-            location.href = "/principal";
+            //location.href = "/principal";
             localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            location.href = "/principal";
+            //location.href = "/principal";
             localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
@@ -52,7 +52,7 @@ const usePasarelaDePagos = () => {
           type: "error",
         });
       }
-    }
+    },
   );
 
   const requestGetPagos = async (endpoint: string, blob: boolean = false) => {
