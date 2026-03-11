@@ -1,19 +1,15 @@
 "use client";
 
 import ProductI from "@/app/interfaces/products/product.interface";
-import Table from "../table/Table";
 import GridBranchSelector from "./gridBranchSelector";
 import { Alert } from "@mui/material";
 import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
-import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
-  const { dataCart } = useTheContext();
-  const { handleWriteStorageProgressPay, handleWriteStorageDataCart } =
-    useStorage();
+  const { handleWriteStorageProgressPay } = useStorage();
   const {
     handleAddProductCart,
     loadingByBranch,
@@ -25,11 +21,14 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
 
   const branches = useMemo(() => {
     return productSelected.product_stock
-      ?.filter(
-        (productStockFilter) =>
-          productStockFilter.branches?.providerId ==
-          Number(productSelected?.providerId),
-      )
+      ?.filter((productStockFilter) => {
+        if (
+          Number(productStockFilter.branches?.providerId) ==
+          Number(productSelected?.providerId)
+        ) {
+          return productStockFilter;
+        }
+      })
       .map((prodStock) => ({
         ...prodStock,
         id: prodStock.idProductStock,
@@ -143,7 +142,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                                   return "PCinBOX-AGD";
                               }
                             } else if (sucursal?.branches?.providerId === 2) {
-                              return `PC-${sucursal?.name}`;
+                              return `PCinBOX-${sucursal?.name}`;
                             }
                           })()}
                         </span>
@@ -216,7 +215,26 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                               const stock = Number(sucursal?.stock ?? 0);
 
                               if (quantity <= 0 || stock <= 0) return;
-                              if (quantity > stock) return;
+
+                              const stored =
+                                localStorage.getItem("dataCartStorage");
+                              const cartProducts = stored
+                                ? JSON.parse(stored)
+                                : [];
+
+                              const existing = cartProducts.find(
+                                (item: any) =>
+                                  item.idProduct ===
+                                    productSelected.idProduct &&
+                                  item.storeId === sucursal.idBranche,
+                              );
+
+                              const currentQuantity = existing?.quantity ?? 0;
+                              console.log(Number(currentQuantity));
+                              console.log("stock", stock);
+                              if (Number(currentQuantity + quantity) > stock) {
+                                return; // ya llegaste al límite
+                              }
 
                               handleAddProductCart(
                                 productSelected,

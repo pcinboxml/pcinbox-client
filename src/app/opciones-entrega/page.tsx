@@ -362,7 +362,7 @@ const OpcionesEntrega = () => {
                       //       (df) => df !== d.city,
                       //     ),
                       //   ) &&
-                      Number(group.providerId) !== 1 && (
+                      Number(group.providerId) === 3 && (
                         <>
                           {(() => {
                             const findVolement = group.products.reduce(

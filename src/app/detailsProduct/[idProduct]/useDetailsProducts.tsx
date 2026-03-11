@@ -62,6 +62,37 @@ const useDetailsProduct = () => {
     quantityProp: number,
   ) => {
     try {
+      const stored = localStorage.getItem("dataCartStorage");
+      const products: (typeof dataProduct)[] = stored ? JSON.parse(stored) : [];
+
+      const existingProductIndex = products.findIndex(
+        (p: any) =>
+          Number(p.idProduct) === Number(dataProduct.idProduct) &&
+          Number(p.storeId) === Number(dataProduct.storeId),
+      );
+
+      const stock = Number(dataProduct?.stock);
+
+      if (existingProductIndex !== -1) {
+        const currentQuantity = products[existingProductIndex].quantity;
+
+        // Validar límite de stock
+        if (currentQuantity >= stock) {
+          return;
+        }
+
+        products[existingProductIndex].quantity += 1;
+      } else {
+        // Si el stock es 0 tampoco agregar
+        if (stock <= 0) return;
+
+        products.push({
+          ...dataProduct,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem("dataCartStorage", JSON.stringify(products));
       setLoadingAddProduct(true);
 
       const resp = await requestPost(

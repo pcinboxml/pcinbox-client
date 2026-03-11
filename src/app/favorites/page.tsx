@@ -451,7 +451,7 @@ const Favorites = () => {
                                 (favorite?.products?.isPC == 0 ||
                                   favorite?.products?.isPc == 0) &&
                                 favorite?.products?.product_stock!.length > 0 &&
-                                Number(favorite?.products?.providerId) === 3
+                                Number(favorite?.products?.providerId) != 1
                               ) {
                                 setDataModal({
                                   isOpen: true,

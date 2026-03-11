@@ -36,7 +36,8 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
                   if (
                     categoria.name != "" &&
                     categoria.name != null &&
-                    categoria.name != "MOTHERBOARDS"
+                    categoria.name != "MOTHERBOARDS" &&
+                    categoria.name != "MINI PCS Y PORTATILES"
                   ) {
                     return (
                       <li key={categoria.idCategorie}>

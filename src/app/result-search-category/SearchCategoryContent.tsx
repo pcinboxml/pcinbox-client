@@ -37,7 +37,7 @@ const SearchCategoryContent = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [orderBy, setOrderBy] = useState<any>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketCron } = useTheContext();
+  const { dataProducts, socketCron, dataCategories } = useTheContext();
 
   const {
     startIndex,
@@ -549,14 +549,28 @@ const SearchCategoryContent = () => {
                     marginBottom: "10px",
                   }}
                   onClick={() => {
-                    if (categoryId == "10") {
-                      setProcessorBrand(null);
-                      setMarca(null);
-                      setOrderBy("");
-                    } else {
-                      setMarca(null);
-                      setOrderBy("");
+                    if (dataCategories) {
+                      let findCategory = dataCategories.find(
+                        (categori) =>
+                          Number(categori.idCategorie) === Number(categoryId),
+                      );
+                      if (
+                        findCategory &&
+                        findCategory.name === "TARJETAS MADRE"
+                      ) {
+                        setProcessorBrand(null);
+                        setMarca(null);
+                        setOrderBy("");
+                      }
                     }
+                    // if (categoryId == "10") {
+                    //   setProcessorBrand(null);
+                    //   setMarca(null);
+                    //   setOrderBy("");
+                    // } else {
+                    //   setMarca(null);
+                    //   setOrderBy("");
+                    // }
                   }}
                   className="bg-[#BB3D4B] rounded text-white font-bold block right-0"
                 >
