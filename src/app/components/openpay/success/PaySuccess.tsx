@@ -72,10 +72,11 @@ const PaySuccess = ({
       {/* Card principal — ocupa todo en móvil, max-lg en desktop */}
       <div className="w-full max-w-lg relative z-10">
         <div
-          className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl animate-[slideUp_0.5s_ease] overflow-y-auto"
+          className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl animate-[slideUp_0.5s_ease]"
           style={{
             padding: "12px",
-            maxHeight: "95vh",
+            // maxHeight: "95vh",
+            height: "auto",
           }}
         >
           {/* Icono de éxito */}
