@@ -231,3 +231,9 @@ section {
     margin-top: 100px !important;
   }
 }
+
+@media (max-width: 768px) {
+  #TimelineComponent {
+    display: none;
+  }
+}

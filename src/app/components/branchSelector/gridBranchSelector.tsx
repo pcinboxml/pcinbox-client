@@ -28,7 +28,7 @@ const GridBranchSelector = () => {
 
       const resp = await requestPost(
         {
-          product: product,
+          idProduct: Number(product?.idProduct),
           quantity: quantity,
           price: product.price,
           isDetails: false,

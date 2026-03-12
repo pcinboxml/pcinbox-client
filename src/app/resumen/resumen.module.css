@@ -1,0 +1,19 @@
+@media (max-width: 769px) {
+  .rowButtonsActions {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px !important;
+  }
+
+  .rowButtonsActions > * {
+    width: 70%;
+  }
+
+  .rowButtonsActions > label {
+    display: flex;
+    justify-content: center;
+  }
+}
