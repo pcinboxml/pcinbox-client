@@ -16,6 +16,11 @@ const handler = NextAuth({
           image: profile.picture,
         };
       },
+      authorization: {
+        params: {
+          prompt: "select_account consent",
+        },
+      },
     }),
   ],
 
@@ -37,7 +42,7 @@ const handler = NextAuth({
               email: user.email,
               name: user.name,
             }),
-          }
+          },
         );
         const status = await resp.status;
         const data = await resp.json();
@@ -45,7 +50,7 @@ const handler = NextAuth({
         if (status == 200) {
           const isValidToken = verify(
             data.data.token,
-            process.env.NEXT_PUBLIC_KEY_JWT || ""
+            process.env.NEXT_PUBLIC_KEY_JWT || "",
           );
 
           (user as any).idUser = Number(data.data.idUser.toString());
@@ -57,7 +62,9 @@ const handler = NextAuth({
           return true;
         } else {
           throw new Error(
-            data?.message || data?.data?.message || "Error interno del servidor"
+            data?.message ||
+              data?.data?.message ||
+              "Error interno del servidor",
           );
         }
       }

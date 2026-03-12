@@ -23,12 +23,12 @@ const useProveedores = () => {
           message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
           title: "Sesión expirada",
           onClose: () => {
-            location.href = "/principal";
+            //location.href = "/principal";
             localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            location.href = "/principal";
+            //location.href = "/principal";
             localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
@@ -50,7 +50,7 @@ const useProveedores = () => {
           type: "error",
         });
       }
-    }
+    },
   );
 
   const { setDataModal } = useTheContext();

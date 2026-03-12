@@ -1,6 +1,7 @@
 "use client";
 import { useTheContext } from "@/app/services/globalContext";
 import { usePathname } from "next/navigation";
+import style from "./submenuproducts.module.css";
 
 const SubMenuProductos = ({
   forceVisible,
@@ -36,7 +37,7 @@ const SubMenuProductos = ({
         }}
       >
         <div
-          className={`menu1 h-[100%] max-h-[550px] ${forceVisible ? "w-full" : "w-[150px]"}  overflow-y-auto overflow-x-hidden`}
+          className={`${style.menu1} h-[100%] max-h-[550px] ${forceVisible ? "w-full" : "w-[150px]"}  overflow-y-auto overflow-x-hidden`}
           style={{
             padding: forceVisible ? "10px" : "2px",
           }}

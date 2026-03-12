@@ -30,7 +30,6 @@ const GridBranchSelector = () => {
         {
           idProduct: Number(product?.idProduct),
           quantity: quantity,
-          price: product.price,
           isDetails: false,
           storeId: sucursal?.idBranche,
         },
