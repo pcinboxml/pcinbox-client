@@ -1,13 +1,14 @@
 "use client";
 
 import { Alert } from "@mui/material";
-import { Clock, Copy, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import Barcode from "react-barcode";
 import usePayEnd from "./usePayEnd";
 import { MdAutorenew, MdCopyAll } from "react-icons/md";
 import useService from "../services/useService";
 import useStorage from "../services/useStorage";
+import styles from "./pay-end.module.css";
 
 function DetailRow({
   label,
@@ -64,9 +65,7 @@ const PayEnd = () => {
     }
 
     if (methodPayParam) {
-      // if (methodPayParam == "oxxo") {
       handleGetOrderCash(idParam, idOrderParam);
-      // }
       setMethodPay(methodPayParam);
     }
 
@@ -82,28 +81,22 @@ const PayEnd = () => {
   }, []);
 
   return (
-    <section
-      style={{
-        width: "80%",
-        margin: "50px auto",
-      }}
-    >
+    <section className={styles.section}>
       {idOrder == "" || dataOrderCash == null ? (
         <Alert severity="info">Contenido no disponible</Alert>
       ) : (
         <div className="w-full">
           <span
             className="text-[#808080] font-bold block text-center text-[18px]"
-            style={{
-              fontStyle: "italic",
-            }}
+            style={{ fontStyle: "italic" }}
           >
             ¡Todo Listo!
           </span>
 
           <div className="mt-3 w-full">
+            {/* Header tabla */}
             <div
-              className="header-container-tabla w-[100%] p-2 bg-[#666666] flex items-center"
+              className="header-container-tabla w-full p-2 bg-[#666666] flex items-center"
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
@@ -116,16 +109,15 @@ const PayEnd = () => {
                 style={{ objectFit: "contain", marginLeft: "10px" }}
                 loading="lazy"
               />
-
               <span className="font-bold text-white mx-2">|</span>
-              <span className="mx-2 font-[100] text-white">
+              <span className="mx-2 font-[100] text-white text-sm">
                 PEDIDO REALIZADO CORRECTAMENTE
               </span>
             </div>
 
             {methodPay == "oxxo" ? (
               <div className="w-full mt-2">
-                {/* Código de barras */}
+                {/* Código de barras OXXO */}
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <h3 className="font-bold text-gray-800 mb-3 text-center">
                     Código de Barras
@@ -136,29 +128,27 @@ const PayEnd = () => {
                       Total a pagar:{" "}
                       <span className="text-black font-bold">
                         {formatCurrency(
-                          Number(dataOrderCash.amount.toFixed(2))
+                          Number(dataOrderCash.amount.toFixed(2)),
                         )}{" "}
                         pesos
                       </span>
                     </span>
                   ) : null}
 
-                  {/* Simulación visual del código de barras */}
                   <div className="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300 mb-3">
-                    <div className="flex justify-center mb-2">
-                      {/* Representación visual del código de barras */}
+                    {/* Barcode responsive */}
+                    <div className={styles.barcodeWrapper}>
                       <Barcode
                         value={dataOrderCash?.payment_method.reference}
                       />
                     </div>
 
-                    {/* Número del código de barras */}
                     <div className="text-center">
                       <button
                         disabled={loadingDownloadBar}
                         onClick={() =>
                           handleDownloadBar(
-                            dataOrderCash?.payment_method.reference
+                            dataOrderCash?.payment_method.reference,
                           )
                         }
                         className="flex items-center justify-center mx-auto my-2 px-3 py-1 bg-[#606060] text-white text-xs rounded"
@@ -185,39 +175,15 @@ const PayEnd = () => {
                       Guarda el siguiente número de pedido de la sucursal
                       PCINBOX Léon y sigue los pasos que se describen debajo:
                     </span>
-
                     <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
                       # {dataOrderCash?.order_id}
                     </span>
                   </div>
                 ) : null}
-
-                {/* Información de expiración */}
-                {/* <div className="p-4 border-b border-gray-200 bg-red-50">
-                  <div className="flex items-center justify-center mb-2">
-                    <Clock className="w-5 h-5 text-red-600 mr-2" />
-                    <span className="font-bold text-red-700 mx-2">
-                      ¡IMPORTANTE!
-                    </span>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-sm text-red-700 mb-1 flex justify-center items-end">
-                      <span className="text-[18px]">Fecha límite de pago:</span>
-                      <span className="text-[18px] mx-2 font-bold text-red-800">
-                        {formatDate(Number(expired))}
-                      </span>
-                    </div>
-
-                    <div className="text-xs text-red-600 mt-1">
-                      Después de esta fecha el código expirará
-                    </div>
-                  </div>
-                </div> */}
               </div>
             ) : (
               <div className="w-full mt-2 mb-5">
-                <p className="text-[24px] text-[#666666] pl-2 font-bold">
+                <p className={styles.orderTitle}>
                   Guarda el siguiente número de pedido de la sucursal{" "}
                   <b className="text-[black] font-black">PCINBOX </b>
                   León y sigue los pasos que se describen debajo:
@@ -227,7 +193,6 @@ const PayEnd = () => {
                   <span className="text-[#BB3D4B] font-bold text-[25px] block text-center">
                     {idOrder}
                   </span>
-
                   <MdCopyAll
                     size={40}
                     color="#BB3D4B"
@@ -236,13 +201,15 @@ const PayEnd = () => {
                     onClick={() => handleCopy(idOrder)}
                   />
                 </div>
-                <div className="w-full flex justify-center">
+
+                {/* Barcode responsive */}
+                <div className={styles.barcodeWrapper}>
                   <Barcode value={idOrder} />
                 </div>
 
                 {dataOrderCash?.payment_method?.type == "bank_transfer" ||
                 dataOrderCash?.payment_method.type === "bank_account" ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3 mt-3">
                     <span className="text-[20px] text-black font-bold">
                       Datos Bancarios para hacer la transferencia
                     </span>
@@ -257,7 +224,6 @@ const PayEnd = () => {
                         mono
                       />
                     )}
-
                     <DetailRow
                       label="Referencia"
                       value={dataOrderCash?.payment_method?.name!}
@@ -274,24 +240,25 @@ const PayEnd = () => {
             )}
           </div>
 
+          {/* Instrucciones */}
           <div className="w-full my-4">
             <span className="block text-[#606060] text-[17px] text-center">
               Por favor lee atentamente y sigue los pasos que correspondan con
               las características de tu pedido.
             </span>
 
+            {/* Bloque: paso a recoger sin pago */}
             <div
-              className="header-container-tabla mt-3 w-[100%] p-2 bg-[#666666] flex items-center"
+              className="header-container-tabla mt-3 w-full p-2 bg-[#666666] flex items-center"
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
               }}
             >
-              <span className="mx-2 font-[100] text-white">
+              <span className="mx-2 font-[100] text-white text-sm">
                 PEDIDOS CON FORMA DE ENTREGA "PASO A RECOGER" SIN PAGO EN LÍNEA
               </span>
             </div>
-
             <div className="w-full mt-1">
               <span className="block text-[#808080] text-[15px]">
                 1. Anota el número de pedido o imprime ésta pantalla
@@ -306,14 +273,15 @@ const PayEnd = () => {
               </span>
             </div>
 
+            {/* Bloque: paso a recoger con pago */}
             <div
-              className="header-container-tabla mt-3 w-[100%] p-2 bg-[#666666] flex items-center"
+              className="header-container-tabla mt-3 w-full p-2 bg-[#666666] flex items-center"
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
               }}
             >
-              <span className="mx-2 font-[100] text-white">
+              <span className="mx-2 font-[100] text-white text-sm">
                 PEDIDOS CON FORMA DE ENTREGA "PASO A RECOGER" CON PAGO EN LÍNEA
               </span>
             </div>
@@ -332,14 +300,15 @@ const PayEnd = () => {
               </span>
             </div>
 
+            {/* Bloque: envío a domicilio */}
             <div
-              className="header-container-tabla mt-3 w-[100%] p-2 bg-[#666666] flex items-center"
+              className="header-container-tabla mt-3 w-full p-2 bg-[#666666] flex items-center"
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
               }}
             >
-              <span className="mx-2 font-[100] text-white">
+              <span className="mx-2 font-[100] text-white text-sm">
                 PEDIDOS CON FORMA DE ENTREGA "ENVIAR A DOMICILIO"
               </span>
             </div>
@@ -349,19 +318,20 @@ const PayEnd = () => {
               </span>
               <span className="block text-[#808080] text-[15px]">
                 8. La paquetería te pedirá ver la tarjeta de crédito o débito y
-                una identificación. Si l atarjeta de crédito o débito está
+                una identificación. Si la tarjeta de crédito o débito está
                 personalizada, los nombres de estas deberán coincidir.
               </span>
             </div>
 
+            {/* Bloque: notas */}
             <div
-              className="header-container-tabla mt-3 w-[100%] p-2 bg-[#666666] flex items-center"
+              className="header-container-tabla mt-3 w-full p-2 bg-[#666666] flex items-center"
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
               }}
             >
-              <span className="mx-2 font-[100] text-white">NOTAS</span>
+              <span className="mx-2 font-[100] text-white text-sm">NOTAS</span>
             </div>
             <div className="w-full mt-1">
               <span className="block text-[#808080] text-[15px]">
@@ -371,13 +341,8 @@ const PayEnd = () => {
                 habiles, sin embargo, por circunstacia ajena a las paqueterías,
                 en ocasiones la entrega puede tomar más tiempo del estimado. En
                 estos casos, las circunstancias son ajenas a{" "}
-                <span className="text-[black] font-bold ">PCINBOX</span>
+                <span className="text-[black] font-bold">PCINBOX</span>
               </span>
-              {/* <span className="block text-[#808080] text-[15px]">
-                2. La paquetería te pedirá ver la tarjeta de crédito o débito y
-                una identificación. Si l atarjeta de crédito o débito está
-                personalizada, los nombres de estas deberán coincidir.
-              </span> */}
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { Alert, Rating } from "@mui/material";
 import { useEffect, useState } from "react";
 import useWriteReview from "./useWriteReview";
 import { MdAutorenew } from "react-icons/md";
+import styles from "./write-review.module.css";
 
 const WriteReview = () => {
   const { setDataAddReview, handleAddReview, loadingAddReview, dataAddReview } =
@@ -34,29 +35,34 @@ const WriteReview = () => {
     if (imageUrl) {
       setImageUrl(imageUrl);
     }
-
     if (descrip) {
       setDescription(descrip);
     }
   }, []);
 
   return idProduct ? (
-    <section>
-      <span className="text-[#bb3d4b] text-[17px] font-bold block text-start">
+    <section className={styles.section}>
+      <span className={styles.pageTitle}>
         Escribe tu opinión acerca de este producto:
       </span>
 
-      <div className="flex items-center mt-2">
-        <img src={image_url} alt="" width={200} height={200} loading="lazy" />
-
-        <p className="text-[18px] text-[#606060] font-bold mx-3">
-          {description}
-        </p>
+      {/* Imagen + descripción del producto */}
+      <div className={styles.productPreview}>
+        <img
+          src={image_url}
+          alt=""
+          width={200}
+          height={200}
+          className={styles.productImg}
+          loading="lazy"
+        />
+        <p className={styles.productDescription}>{description}</p>
       </div>
 
-      <div className="w-full grid grid-cols-[1fr_auto]">
+      {/* Título de opinión + Rating */}
+      <div className={styles.titleRatingGrid}>
         <div className="p-1">
-          <label htmlFor="" className="text-[#808080] text-[16px]">
+          <label className="text-[#808080] text-[16px]">
             Título de tu opinión del producto:
           </label>
           <input
@@ -72,15 +78,13 @@ const WriteReview = () => {
           />
         </div>
 
-        <div className="flex flex-col p-1">
-          <label htmlFor="" className="text-[#606060] font-bold">
+        <div className={styles.ratingBlock}>
+          <label className="text-[#606060] font-bold">
             Califica el producto de acuerdo al rango
           </label>
           <Rating
             size="large"
-            sx={{
-              color: "#bb3d4b",
-            }}
+            sx={{ color: "#bb3d4b" }}
             value={dataAddReview.rating}
             onChange={(e, value) => {
               if (value) {
@@ -91,11 +95,10 @@ const WriteReview = () => {
         </div>
       </div>
 
+      {/* Textarea opinión */}
       <div className="w-full mt-5">
         <span className="text-[#808080]">Tu opinión sobre el producto</span>
         <textarea
-          name=""
-          id=""
           className="form-control"
           value={dataAddReview.message}
           placeholder="Excelente producto"
@@ -106,9 +109,10 @@ const WriteReview = () => {
               message: event.target.value,
             }))
           }
-        ></textarea>
+        />
       </div>
 
+      {/* Nombre publicado */}
       <div className="w-full mt-3">
         <span className="text-[#606060] font-bold text-[17px]">
           Tu opinión será publicada como{" "}
@@ -116,6 +120,7 @@ const WriteReview = () => {
         </span>
       </div>
 
+      {/* Botón enviar */}
       <div className="w-full mt-3">
         <button
           disabled={loadingAddReview}

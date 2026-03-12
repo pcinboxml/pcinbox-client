@@ -169,8 +169,8 @@ const HistoryShop = () => {
                           {" "}
                           No. Orden #{historyCompra.idOrder}
                         </span>
-                        <div className="w-[80%] p-1 flex justify-end gap-3 items-center">
-                          <div>
+                        <div className={`${style.contentHeaderCard}`}>
+                          <div style={{ marginRight: "5px" }}>
                             {(historyCompra?.payment_method ==
                               "tarjeta_de_debito" ||
                               historyCompra?.payment_method ==

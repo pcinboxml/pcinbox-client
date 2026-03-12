@@ -53,7 +53,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
           </span>
 
           <div className="mt-2 p-2">
-            <table style={{ width: "750px", borderCollapse: "collapse" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8f9fa" }}>
                   <th

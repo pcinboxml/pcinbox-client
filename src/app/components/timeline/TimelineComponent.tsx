@@ -70,48 +70,50 @@ const StepIconComponent = ({
 // COMPONENTE PRINCIPAL
 const TimelineComponent = ({ activeStep }: { activeStep: any }) => {
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
-      <Stepper
-        alternativeLabel
-        activeStep={activeStep}
-        connector={<CustomConnector />}
-      >
-        {steps.map((step, index) => (
-          <Step key={step.label}>
-            <StepLabel
-              StepIconComponent={(props: any) => (
-                <StepIconComponent
-                  active={index === activeStep}
-                  completed={index < activeStep}
-                />
-              )}
-            >
-              <Typography
-                sx={{
-                  mt: 2,
-                  fontSize: "13px",
-                  fontWeight: index === activeStep ? 700 : 400,
-                  fontStyle: "italic",
-                  color: index === activeStep ? "#990000" : "black",
-                }}
+    <div id="TimelineComponent">
+      <Box sx={{ width: "100%", mt: 4 }}>
+        <Stepper
+          alternativeLabel
+          activeStep={activeStep}
+          connector={<CustomConnector />}
+        >
+          {steps.map((step, index) => (
+            <Step key={step.label}>
+              <StepLabel
+                StepIconComponent={(props: any) => (
+                  <StepIconComponent
+                    active={index === activeStep}
+                    completed={index < activeStep}
+                  />
+                )}
               >
-                Paso {index + 1}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "13px",
-                  fontWeight: index === activeStep ? 700 : 400,
-                  fontStyle: "italic",
-                  color: index === activeStep ? "#990000" : "black",
-                }}
-              >
-                {step.label}
-              </Typography>
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-    </Box>
+                <Typography
+                  sx={{
+                    mt: 2,
+                    fontSize: "13px",
+                    fontWeight: index === activeStep ? 700 : 400,
+                    fontStyle: "italic",
+                    color: index === activeStep ? "#990000" : "black",
+                  }}
+                >
+                  Paso {index + 1}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                    fontWeight: index === activeStep ? 700 : 400,
+                    fontStyle: "italic",
+                    color: index === activeStep ? "#990000" : "black",
+                  }}
+                >
+                  {step.label}
+                </Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+    </div>
   );
 };
 

@@ -330,18 +330,18 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       timeout: 20000,
     });
 
-    socketCron.current = io(process.env.NEXT_PUBLIC_SOCKET_CRON || "", {
-      reconnection: true,
-      reconnectionAttempts: Infinity, // intenta siempre
-      reconnectionDelay: 1000, // empieza con 1s
-      reconnectionDelayMax: 5000, // máximo 5s
-      timeout: 20000,
-    });
+    // socketCron.current = io(process.env.NEXT_PUBLIC_SOCKET_CRON || "", {
+    //   reconnection: true,
+    //   reconnectionAttempts: Infinity, // intenta siempre
+    //   reconnectionDelay: 1000, // empieza con 1s
+    //   reconnectionDelayMax: 5000, // máximo 5s
+    //   timeout: 20000,
+    // });
 
     return () => {
       socketServer.current?.disconnect();
       socketPagos.current?.disconnect();
-      socketCron?.current?.disconnect();
+      // socketCron?.current?.disconnect();
     };
   }, []);
   return (

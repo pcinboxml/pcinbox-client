@@ -1,0 +1,95 @@
+/* ============================================================
+   write-review.module.css
+   Mobile-first responsive
+   Breakpoints: <640 | 640px | 768px
+   ============================================================ */
+
+/* ─── Sección raíz ──────────────────────────────────────────── */
+.section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ─── Título de página ──────────────────────────────────────── */
+.pageTitle {
+  color: #bb3d4b;
+  font-size: 17px;
+  font-weight: bold;
+  display: block;
+  text-align: start;
+  margin-bottom: 8px;
+}
+
+/* ─── Preview imagen + descripción ─────────────────────────── */
+/* Móvil: columna, imagen centrada */
+.productPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.productImg {
+  object-fit: contain;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+.productDescription {
+  font-size: 18px;
+  color: #606060;
+  font-weight: bold;
+  margin: 0;
+  word-break: break-word;
+  text-align: center;
+}
+
+/* ─── Grid título de opinión + Rating ───────────────────────── */
+/* Móvil: columna única */
+.titleRatingGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ─── Bloque del rating ─────────────────────────────────────── */
+.ratingBlock {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  gap: 4px;
+}
+
+/* ============================================================
+   640px — imagen a la izquierda, descripción a la derecha
+   ============================================================ */
+@media (min-width: 640px) {
+  .productPreview {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .productDescription {
+    text-align: left;
+    margin-left: 12px;
+  }
+
+  /* Título + Rating en 2 columnas */
+  .titleRatingGrid {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+/* ============================================================
+   768px — tablet y mayor
+   ============================================================ */
+@media (min-width: 768px) {
+  .productImg {
+    width: 200px;
+    height: 200px;
+  }
+}

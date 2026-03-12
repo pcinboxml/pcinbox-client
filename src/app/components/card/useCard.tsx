@@ -75,7 +75,7 @@ const useCard = () => {
 
       const resp = await requestPost(
         {
-          idProduct: product?.idProduct,
+          idProduct: Number(product?.idProduct),
           quantity: 1,
           price: product.price,
           isDetails: false,

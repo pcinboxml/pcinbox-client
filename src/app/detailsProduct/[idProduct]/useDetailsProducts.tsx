@@ -66,7 +66,7 @@ const useDetailsProduct = () => {
 
       const resp = await requestPost(
         {
-          idProduct: dataProduct?.idProduct,
+          idProduct: Number(dataProduct?.idProduct),
           quantity: quantityProp,
           price: dataProduct.price,
           isDetails: true,
