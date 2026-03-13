@@ -420,9 +420,9 @@ const SearchCategoryContent = () => {
 
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
-    socketPagos?.current?.on("removeStorageProgressPay2", () => {
-      localStorage.removeItem("progressPay2");
-    });
+    // socketPagos?.current?.on("removeStorageProgressPay2", () => {
+    //   localStorage.removeItem("progressPay2");
+    // });
 
     return () => {
       //  socket.off("newProduct", handlerNewProduct);
@@ -430,9 +430,9 @@ const SearchCategoryContent = () => {
       // socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
-      socketPagos?.current?.off("removeStorageProgressPay2", () => {
-        localStorage.removeItem("progressPay2");
-      });
+      // socketPagos?.current?.off("removeStorageProgressPay2", () => {
+      //   localStorage.removeItem("progressPay2");
+      // });
     };
   }, [socketServer.current, socketPagos?.current]);
   const ratingProgress = [

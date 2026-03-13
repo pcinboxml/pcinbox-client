@@ -44,6 +44,44 @@ export default function AppWrapper({
   }, [dataCart, hasToken, dataCartStorege]);
 
   useEffect(() => {
+    if (!socketPagos.current) return;
+
+    if (typeof window === "undefined") return;
+
+    const token = localStorage.getItem("token");
+
+    if (!token || typeof token !== "string") return;
+    const payload: any = jwtDecode(token);
+
+    if (!socketPagos.current || !payload?.idUser) return;
+
+    if (token) {
+      const payload: any = jwtDecode(token);
+
+      if (payload && payload?.idUser) {
+        socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
+      }
+
+      const joinRoom = () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      };
+
+      socketPagos.current?.on("connect", joinRoom);
+
+      // si ya está conectado
+      if (socketPagos.current?.connected) {
+        joinRoom();
+      }
+    }
+
+    return () => {
+      socketPagos?.current?.off("connect", () => {
+        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
+      });
+    };
+  }, [socketPagos?.current, hasToken]);
+
+  useEffect(() => {
     if (!socketServer.current) return;
     if (!socketPagos.current) return;
 
@@ -246,7 +284,9 @@ export default function AppWrapper({
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
     socketPagos?.current?.on("removeStorageProgressPay2", () => {
+      console.log();
       localStorage.removeItem("progressPay2");
+      localStorage.setItem("dataCartStorage", JSON.stringify([]));
     });
 
     return () => {
@@ -257,47 +297,10 @@ export default function AppWrapper({
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
       socketPagos?.current?.off("removeStorageProgressPay2", () => {
         localStorage.removeItem("progressPay2");
+        localStorage.setItem("dataCartStorage", JSON.stringify([]));
       });
     };
   }, [socketServer.current, socketPagos?.current]);
-
-  useEffect(() => {
-    if (!socketPagos.current) return;
-
-    if (typeof window === "undefined") return;
-
-    const token = localStorage.getItem("token");
-
-    if (!token || typeof token !== "string") return;
-    const payload: any = jwtDecode(token);
-
-    if (!socketPagos.current || !payload?.idUser) return;
-
-    if (token) {
-      const payload: any = jwtDecode(token);
-
-      if (payload && payload?.idUser) {
-        socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
-      }
-
-      const joinRoom = () => {
-        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
-      };
-
-      socketPagos.current?.on("connect", joinRoom);
-
-      // si ya está conectado
-      if (socketPagos.current?.connected) {
-        joinRoom();
-      }
-    }
-
-    return () => {
-      socketPagos?.current?.off("connect", () => {
-        socketPagos?.current?.emit("idUser", `user-${payload.idUser}`);
-      });
-    };
-  }, [socketPagos?.current, hasToken]);
 
   // useEffect(() => {
   //   if (!socketCron.current) return;

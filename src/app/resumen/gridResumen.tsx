@@ -101,6 +101,10 @@ const GridResumen = ({
                           (vf: any) => vf.branches.providerId === 3,
                         );
 
+                        let branchesProvider2 = params.value.filter(
+                          (vf: any) => vf.branches.providerId === 2,
+                        );
+
                         if (branchesProvider3.length > 0) {
                           let findSucursal = branchesProvider3?.find(
                             (fb: any) => fb?.branchId === params.row.storeId,
@@ -116,6 +120,24 @@ const GridResumen = ({
                                 return "PCinBOX-AG2D";
                               case "Arboledas":
                                 return "PCinBOX-AGD";
+                              default:
+                                return findSucursal?.branches?.name;
+                            }
+                          } else {
+                            return "PCinBOX-León";
+                          }
+                        }
+                        if (branchesProvider2?.length > 0) {
+                          let findSucursal = branchesProvider2?.find(
+                            (fb: any) => fb?.branchId === params.row.storeId,
+                          );
+                          if (findSucursal) {
+                            switch (findSucursal?.branches?.name) {
+                              case "GDL":
+                                return "PCinBOX-GDL";
+                              case "CDMX":
+                                return "PCinBOX-CDMX";
+
                               default:
                                 return findSucursal?.branches?.name;
                             }

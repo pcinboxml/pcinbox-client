@@ -136,7 +136,7 @@ const PayEnd = () => {
                       Total a pagar:{" "}
                       <span className="text-black font-bold">
                         {formatCurrency(
-                          Number(dataOrderCash.amount.toFixed(2))
+                          Number(dataOrderCash.amount.toFixed(2)),
                         )}{" "}
                         pesos
                       </span>
@@ -158,7 +158,7 @@ const PayEnd = () => {
                         disabled={loadingDownloadBar}
                         onClick={() =>
                           handleDownloadBar(
-                            dataOrderCash?.payment_method.reference
+                            dataOrderCash?.payment_method.reference,
                           )
                         }
                         className="flex items-center justify-center mx-auto my-2 px-3 py-1 bg-[#606060] text-white text-xs rounded"
@@ -179,18 +179,18 @@ const PayEnd = () => {
                   </div>
                 </div>
 
-                {progressPay?.optionSend?.name ? (
-                  <div className="w-full my-3">
-                    <span className="text-[20px] text-[#606060] font-bold block text-center">
-                      Guarda el siguiente número de pedido de la sucursal
-                      PCINBOX Léon y sigue los pasos que se describen debajo:
-                    </span>
+                {/* {progressPay?.optionSend?.name ? ( */}
+                <div className="w-full my-3">
+                  <span className="text-[20px] text-[#606060] font-bold block text-center">
+                    Guarda el siguiente número de pedido de la sucursal PCINBOX
+                    Léon y sigue los pasos que se describen debajo:
+                  </span>
 
-                    <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
-                      # {dataOrderCash?.order_id}
-                    </span>
-                  </div>
-                ) : null}
+                  <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
+                    # {dataOrderCash?.order_id}
+                  </span>
+                </div>
+                {/* ) : null} */}
 
                 {/* Información de expiración */}
                 {/* <div className="p-4 border-b border-gray-200 bg-red-50">
