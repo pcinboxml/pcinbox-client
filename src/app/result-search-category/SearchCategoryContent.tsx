@@ -39,7 +39,7 @@ const SearchCategoryContent = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<any>("");
   const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketCron } = useTheContext();
+  const { dataProducts, socketCron, dataCategories } = useTheContext();
 
   const {
     startIndex,
@@ -260,15 +260,18 @@ const SearchCategoryContent = () => {
     socket.on("updateProductComponent", handlerUpdateProductComponent);
     socket.on("updateProduct", handlerUpdateProduct);
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
-    socketPagos?.current?.on("removeStorageProgressPay2", () => {
-      localStorage.removeItem("progressPay2");
-    });
+
+    // socketPagos?.current?.on("removeStorageProgressPay2", () => {
+    //   localStorage.removeItem("progressPay2");
+    // });
 
     return () => {
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
-      socketPagos?.current?.off("removeStorageProgressPay2");
+      // socketPagos?.current?.off("removeStorageProgressPay2", () => {
+      //   localStorage.removeItem("progressPay2");
+      // });
     };
   }, [socketServer.current, socketPagos?.current]);
 
@@ -374,9 +377,28 @@ const SearchCategoryContent = () => {
                 <button
                   className={styles.resetFilterBtn}
                   onClick={() => {
-                    setProcessorBrand(null);
-                    setMarca(null);
-                    setFilterValue("");
+                    if (dataCategories) {
+                      let findCategory = dataCategories.find(
+                        (categori) =>
+                          Number(categori.idCategorie) === Number(categoryId),
+                      );
+                      if (
+                        findCategory &&
+                        findCategory.name === "TARJETAS MADRE"
+                      ) {
+                        setProcessorBrand(null);
+                        setMarca(null);
+                        setOrderBy("");
+                      }
+                    }
+                    // if (categoryId == "10") {
+                    //   setProcessorBrand(null);
+                    //   setMarca(null);
+                    //   setOrderBy("");
+                    // } else {
+                    //   setMarca(null);
+                    //   setOrderBy("");
+                    // }
                   }}
                 >
                   Resetear Filtro
@@ -929,24 +951,61 @@ const SearchCategoryContent = () => {
                                     } else {
                                       handleAddProductCart(item);
                                     }
-                                  }}
-                                >
-                                  {item?.isPC == 0 &&
-                                  loadingAddProductCar[item.idProduct] &&
-                                  Number(item?.providerId) === 3 ? (
-                                    <MdAutorenew
-                                      size={20}
-                                      className="m-auto the-spinner"
-                                    />
-                                  ) : item.stock == "0" || item.stock == 0 ? (
-                                    "No disponible"
-                                  ) : (
-                                    <>
-                                      Agregar al carrito
-                                      <MdShoppingCart size={20} color="white" />
-                                    </>
-                                  )}
-                                </button>
+                                    className="bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2"
+                                    onClick={() => {
+                                      if (
+                                        (item?.isPC == 0 || item?.isPc == 0) &&
+                                        item?.product_stock.length > 0 &&
+                                        Number(item?.providerId) != 1
+                                      ) {
+                                        setDataModal({
+                                          isOpen: true,
+                                          message: (
+                                            <div className="w-[800px] border">
+                                              <BranchSelector
+                                                productSelected={item}
+                                              />
+                                            </div>
+                                          ),
+                                          title: "",
+                                          type: "success",
+                                          showActions: false,
+                                          onClose: () =>
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            })),
+                                          onConfirm: () =>
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            })),
+                                        });
+                                      } else {
+                                        handleAddProductCart(item);
+                                      }
+                                    }}
+                                  >
+                                    {item?.isPC == 0 &&
+                                    loadingAddProductCar[item.idProduct] &&
+                                    Number(item?.providerId) != 1 ? (
+                                      <MdAutorenew
+                                        size={20}
+                                        className="m-auto the-spinner"
+                                      />
+                                    ) : item.stock == "0" || item.stock == 0 ? (
+                                      "No disponible"
+                                    ) : (
+                                      <>
+                                        Agregar al carrito
+                                        <MdShoppingCart
+                                          size={20}
+                                          color="white"
+                                        />
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>

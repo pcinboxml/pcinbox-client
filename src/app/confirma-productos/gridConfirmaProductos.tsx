@@ -92,11 +92,27 @@ const GridConfirmaProductos = ({
             <div className="flex justify-center items-center min-h-[100%]">
               {(() => {
                 // 1️⃣ Filtrar sucursales permitidas
-                const sucursalesValidas = Array.isArray(params.value)
-                  ? params.value.filter((sucursal: any) =>
-                      ["leon2", "santafe"].includes(sucursal?.branches?.name),
-                    )
-                  : [];
+                // const sucursalesValidas = Array.isArray(params.value)
+                //   ? params.value.filter((sucursal: any) =>
+                //       ["leon2", "santafe"].includes(sucursal?.branches?.name),
+                //     )
+                //   : params.value;
+
+                let sucursalesValidas = [];
+
+                if (Array.isArray(params.value)) {
+                  sucursalesValidas = params.value.filter((branch: any) => {
+                    if (branch?.branches?.providerId === 3) {
+                      return ["leon2", "santafe"].includes(
+                        branch?.branches?.name,
+                      );
+                    } else if (branch?.branches?.providerId === 2) {
+                      return branch;
+                    } else {
+                      return [];
+                    }
+                  });
+                }
 
                 // 2️⃣ Verificar si el storeId actual existe en las opciones
                 const storeIdValido = sucursalesValidas.some(
@@ -109,6 +125,7 @@ const GridConfirmaProductos = ({
                   : sucursalesValidas[0]?.branchId?.toString() || "";
 
                 // 4️⃣ Si no hay sucursales válidas, mostrar fallback
+                console.log(sucursalesValidas);
                 if (sucursalesValidas.length === 0) {
                   return (
                     <span
@@ -144,6 +161,10 @@ const GridConfirmaProductos = ({
                               return "PCinBOX-AG2D";
                             case "Arboledas":
                               return "PCinBOX-AGD";
+                            case "CDMX":
+                              return "PCinBOX-CDMX";
+                            case "GDL":
+                              return "PCinBOX-GDL";
                             default:
                               return sucursal.branches.name;
                           }

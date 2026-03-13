@@ -7,7 +7,7 @@ import { useState } from "react";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
 const useCard = () => {
-  const { setDataCart, setDataModal, setDataNotification, hasToken } =
+  const { setDataCart, setDataModal, setDataNotification, hasToken, dataCart } =
     useTheContext();
   const { requestPost } = useService();
 
@@ -38,39 +38,89 @@ const useCard = () => {
 
   const handleAddProductCart = async (product: ProductI) => {
     if (!hasToken) {
-      const stored = localStorage.getItem("dataCart");
+      setDataModal({
+        isOpen: true,
+        message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
+        title: "Sesión expirada",
+        onClose: () => {
+          // location.href = "/principal";
+          localStorage.clear();
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        onConfirm: async () => {
+          // location.href = "/principal";
+          localStorage.clear();
+
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+        type: "info",
+      });
+
+      return;
+      // const stored = localStorage.getItem("dataCart");
+      // const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
+      // const existingProductIndex = products.findIndex(
+      //   (p: any) => p.idProduct == product.idProduct,
+      // );
+
+      // if (existingProductIndex != -1) {
+      //   products[existingProductIndex].quantity += 1;
+      // } else {
+      //   products.push({
+      //     ...product,
+      //     quantity: 1,
+      //   });
+      // }
+
+      // localStorage.setItem("dataCart", JSON.stringify(products));
+
+      // setDataNotification({
+      //   open: true,
+      //   handleClose: () =>
+      //     setDataNotification((prevNoti) => ({
+      //       ...prevNoti,
+      //       open: false,
+      //     })),
+      //   message: `${product.name} agregado al carrito correctamente`,
+      //   type: "success",
+      // });
+
+      // setDataCart(JSON.parse(localStorage.getItem("dataCart") || "") || []);
+      // return;
+    }
+
+    try {
+      const stored = localStorage.getItem("dataCartStorage");
       const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
+
       const existingProductIndex = products.findIndex(
-        (p: any) => p.idProduct == product.idProduct,
+        (p: any) =>
+          Number(p.idProduct) === Number(product.idProduct) &&
+          Number(p.storeId) === Number(product.storeId),
       );
 
-      if (existingProductIndex != -1) {
+      const stock = Number(product?.stock);
+
+      if (existingProductIndex !== -1) {
+        const currentQuantity = products[existingProductIndex].quantity;
+
+        // Validar límite de stock
+        if (currentQuantity >= stock) {
+          return;
+        }
+
         products[existingProductIndex].quantity += 1;
       } else {
+        // Si el stock es 0 tampoco agregar
+        if (stock <= 0) return;
+
         products.push({
           ...product,
           quantity: 1,
         });
       }
 
-      localStorage.setItem("dataCart", JSON.stringify(products));
-
-      setDataNotification({
-        open: true,
-        handleClose: () =>
-          setDataNotification((prevNoti) => ({
-            ...prevNoti,
-            open: false,
-          })),
-        message: `${product.name} agregado al carrito correctamente`,
-        type: "success",
-      });
-
-      setDataCart(JSON.parse(localStorage.getItem("dataCart") || "") || []);
-      return;
-    }
-
-    try {
+      localStorage.setItem("dataCartStorage", JSON.stringify(products));
       setLoadingAgregar(true);
 
       const resp = await requestPost(

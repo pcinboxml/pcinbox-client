@@ -62,33 +62,87 @@ const GridResumen = ({
       flex: 1,
       minWidth: 150,
       renderCell: (params: any) => {
-        const sucursalName = (() => {
-          if (Array.isArray(params.value)) {
-            const branchesProvider3 = params.value.filter(
-              (vf: any) => vf.branches.providerId === 3,
-            );
-            const findSucursal = branchesProvider3.find(
-              (fb: any) => fb.branchId === params.row.storeId,
-            );
-            switch (findSucursal?.branches?.name) {
-              case "santafe":
-                return "PCinBOX-SFD";
-              case "leon2":
-                return "PCinBOX-León";
-              case "dicoags2":
-                return "PCinBOX-AG2D";
-              case "Arboledas":
-                return "PCinBOX-AGD";
-              default:
-                return "PCinBOX-León";
-            }
-          }
-          return "PCinBOX-León";
-        })();
-        return (
-          <div className="flex justify-center items-center min-h-[100%] p-1">
-            <span className="text-center text-sm md:text-base text-[#808080]">
-              {sucursalName}
+        if (
+          params.value &&
+          Array.isArray(params?.value) &&
+          params?.value?.length > 0
+        ) {
+          return (
+            <div className="flex justify-center items-center min-h-[100%]">
+              {(() => {
+                return (
+                  <span
+                    className="text-[#808080] block text-center"
+                    style={{ fontSize: "18px", fontWeight: "600" }}
+                  >
+                    {(() => {
+                      if (Array.isArray(params.value)) {
+                        let branchesProvider3 = params.value.filter(
+                          (vf: any) => vf.branches.providerId === 3,
+                        );
+
+                        let branchesProvider2 = params.value.filter(
+                          (vf: any) => vf.branches.providerId === 2,
+                        );
+
+                        if (branchesProvider3.length > 0) {
+                          let findSucursal = branchesProvider3?.find(
+                            (fb: any) => fb?.branchId === params.row.storeId,
+                          );
+
+                          if (findSucursal) {
+                            switch (findSucursal?.branches?.name) {
+                              case "santafe":
+                                return "PCinBOX-SFD";
+                              case "leon2":
+                                return "PCinBOX-León";
+                              case "dicoags2":
+                                return "PCinBOX-AG2D";
+                              case "Arboledas":
+                                return "PCinBOX-AGD";
+                              default:
+                                return findSucursal?.branches?.name;
+                            }
+                          } else {
+                            return "PCinBOX-León";
+                          }
+                        }
+                        if (branchesProvider2?.length > 0) {
+                          let findSucursal = branchesProvider2?.find(
+                            (fb: any) => fb?.branchId === params.row.storeId,
+                          );
+                          if (findSucursal) {
+                            switch (findSucursal?.branches?.name) {
+                              case "GDL":
+                                return "PCinBOX-GDL";
+                              case "CDMX":
+                                return "PCinBOX-CDMX";
+
+                              default:
+                                return findSucursal?.branches?.name;
+                            }
+                          } else {
+                            return "PCinBOX-León";
+                          }
+                        } else {
+                          return "PCinBOX-León";
+                        }
+                      } else {
+                        return "PCinBOX-León";
+                      }
+                    })()}
+                  </span>
+                );
+              })()}
+            </div>
+          );
+        } else {
+          return (
+            <span
+              className="text-[#808080] block text-center"
+              style={{ fontSize: "18px", fontWeight: "600" }}
+            >
+              {"PCinBOX-León"}
             </span>
           </div>
         );

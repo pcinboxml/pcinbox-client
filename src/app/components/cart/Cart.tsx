@@ -255,17 +255,19 @@ export const ModalCart = ({
                                     const newQuantity =
                                       Number(item.quantity) + 1 <= stockByStore
                                         ? Number(item.quantity) + 1
-                                        : stockByStore;
+                                        : item.quantity;
 
                                     return { ...item, quantity: newQuantity };
-                                  } else if (
+                                  }
+
+                                  if (
                                     Number(item?.providerId) === 1 &&
                                     item.idProduct === product.idProduct
                                   ) {
                                     const newQuantity =
                                       Number(item.quantity) + 1 <= item.stock
                                         ? Number(item.quantity) + 1
-                                        : stockByStore;
+                                        : item.quantity;
 
                                     return { ...item, quantity: newQuantity };
                                   }

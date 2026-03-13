@@ -158,6 +158,7 @@
   width: 75%;
   display: flex;
   justify-content: center;
+  align-items: flex-end;
 }
 
 .container-submenu .icon-hamburguer {

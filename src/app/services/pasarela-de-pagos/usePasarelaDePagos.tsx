@@ -30,7 +30,7 @@ const usePasarelaDePagos = () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },
           onConfirm: async () => {
-            //location.href = "/principal";
+            // location.href = "/principal";
             localStorage.clear();
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           },

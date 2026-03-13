@@ -308,23 +308,25 @@ const useHistorialDeCompras = () => {
 
       if (resp.status == 200) {
         const data = resp.data;
+        console.log(data.data.data.idOrder);
 
         setDataHistoryCompras((prevHistoryCompras) => {
           return prevHistoryCompras.map((historyCompra) => {
             if (
-              Number(historyCompra.idOrder) == Number(data.data.data.idOrder)
+              Number(historyCompra.idOrder) === Number(data.data.data.idOrder)
             ) {
               return {
                 ...historyCompra,
-                state: "cancelado",
-                statusEnvio: "cancelado",
+                products: historyCompra.products?.map((product) => ({
+                  ...product,
+                  statusShip: "cancelado",
+                })),
               };
-            } else {
-              return historyCompra;
             }
+
+            return historyCompra;
           });
         });
-
         setDataModal({
           isOpen: true,
           type: "success",

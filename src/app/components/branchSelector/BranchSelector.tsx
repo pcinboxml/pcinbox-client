@@ -7,12 +7,9 @@ import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
-import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
-  const { dataCart } = useTheContext();
-  const { handleWriteStorageProgressPay, handleWriteStorageDataCart } =
-    useStorage();
+  const { handleWriteStorageProgressPay } = useStorage();
   const {
     handleAddProductCart,
     loadingByBranch,
@@ -24,11 +21,14 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
 
   const branches = useMemo(() => {
     return productSelected.product_stock
-      ?.filter(
-        (productStockFilter) =>
-          productStockFilter.branches?.providerId ==
-          Number(productSelected?.providerId),
-      )
+      ?.filter((productStockFilter) => {
+        if (
+          Number(productStockFilter.branches?.providerId) ==
+          Number(productSelected?.providerId)
+        ) {
+          return productStockFilter;
+        }
+      })
       .map((prodStock) => ({
         ...prodStock,
         id: prodStock.idProductStock,
@@ -209,25 +209,155 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
                       marginBottom: "12px",
                     }}
                   >
-                    <div>
-                      <span style={{ fontSize: "12px", color: "#868e96" }}>
-                        Stock
-                      </span>
-                      <p style={{ fontWeight: 700, color: "black", margin: 0 }}>
-                        {sucursal.stock}
-                      </p>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "12px", color: "#868e96" }}>
-                        Precio
-                      </span>
-                      <p
-                        style={{ fontWeight: 600, color: "#4a5568", margin: 0 }}
+                    Precio
+                  </th>
+                  <th
+                    style={{
+                      padding: "12px",
+                      textAlign: "left",
+                      borderBottom: "2px solid #dee2e6",
+                      color: "#495057",
+                      fontWeight: 600,
+                    }}
+                  ></th>
+                </tr>
+              </thead>
+              <tbody>
+                {branches
+                  .filter((branch) => {
+                    if (Number(productSelected?.providerId) == 3) {
+                      const name = branch?.branches?.name;
+                      return (
+                        branch?.branches?.providerId === 3 &&
+                        ["leon2", "santafe"].includes(name!)
+                      );
+                    } else {
+                      return branch;
+                    }
+                  })
+                  .map((sucursal, indexBranches: number) => (
+                    <tr
+                      key={sucursal.id + indexBranches}
+                      style={{ borderBottom: "1px solid #e9ecef" }}
+                    >
+                      <td
+                        style={{
+                          padding: "12px",
+                          color: "#495057",
+                        }}
                       >
-                        {formatCurrency(Number(sucursal?.price))}
-                      </p>
-                    </div>
-                  </div>
+                        <span
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                          }}
+                        >
+                          {(() => {
+                            if (sucursal?.branches?.providerId === 3) {
+                              switch (sucursal?.branches.name) {
+                                case "santafe":
+                                  return "PCinBOX-SFD";
+                                case "leon2":
+                                  return "PCinBOX-León";
+                                case "dicoags2":
+                                  return "PCinBOX-AG2D";
+                                case "Arboledas":
+                                  return "PCinBOX-AGD";
+                              }
+                            } else if (sucursal?.branches?.providerId === 2) {
+                              return `PCinBOX-${sucursal?.name}`;
+                            }
+                          })()}
+                        </span>
+                      </td>
+                      <td
+                        style={{
+                          padding: "12px",
+                          color: "black",
+                          fontWeight: 600,
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                          }}
+                        >
+                          {" "}
+                          {sucursal.stock}
+                        </span>
+                      </td>
+                      <td
+                        style={{
+                          padding: "12px",
+                          color: "#4a5568",
+                          fontSize: "16px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                          }}
+                        >
+                          {" "}
+                          {formatCurrency(Number(sucursal?.price))}
+                        </span>
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
+                          }}
+                        >
+                          <input
+                            type="number"
+                            min="1"
+                            max={sucursal.stock}
+                            value={quantities[sucursal.id] ?? 1}
+                            onChange={(e) =>
+                              handleChangeQuantity(sucursal.id, e.target.value)
+                            }
+                            disabled={sucursal.stock === 0}
+                            style={{
+                              width: "60px",
+                              padding: "8px",
+                              border: "2px solid #dee2e6",
+                              borderRadius: "4px",
+                              textAlign: "center",
+                              opacity: sucursal.stock === 0 ? 0.5 : 1,
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              const quantity = Number(
+                                quantities[sucursal.id] ?? 1,
+                              );
+                              const stock = Number(sucursal?.stock ?? 0);
+
+                              if (quantity <= 0 || stock <= 0) return;
+
+                              const stored =
+                                localStorage.getItem("dataCartStorage");
+                              const cartProducts = stored
+                                ? JSON.parse(stored)
+                                : [];
+
+                              const existing = cartProducts.find(
+                                (item: any) =>
+                                  item.idProduct ===
+                                    productSelected.idProduct &&
+                                  item.storeId === sucursal.idBranche,
+                              );
+
+                              const currentQuantity = existing?.quantity ?? 0;
+                              console.log(Number(currentQuantity));
+                              console.log("stock", stock);
+                              if (Number(currentQuantity + quantity) > stock) {
+                                return; // ya llegaste al límite
+                              }
 
                   {/* Cantidad + botón agregar */}
                   <QuantityCartRow

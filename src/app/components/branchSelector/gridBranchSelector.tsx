@@ -49,45 +49,35 @@ const GridBranchSelector = () => {
               Number(item.storeId) === Number(sucursal.idBranche),
           );
 
+          const stock =
+            product.product_stock?.find(
+              (b) => b.branchId === sucursal.idBranche,
+            )?.stock ?? 0;
+
           if (existingProduct) {
+            const newQuantity = Math.min(
+              Number(existingProduct.quantity) + Number(quantity),
+              stock,
+            );
+
             return prev.map((item) =>
               Number(item.idProduct) === Number(product.idProduct) &&
               Number(item.storeId) === Number(sucursal.idBranche)
-                ? {
-                    ...item,
-                    quantity: Number(item.quantity) + Number(quantity),
-                  }
+                ? { ...item, quantity: newQuantity }
                 : item,
             );
-          } else {
-            return [
-              ...prev,
-              {
-                ...product,
-                product_stock: product?.product_stock,
-                categoryId: product.categoryId,
-                createdAt: product.createdAt,
-                description: product.description,
-                idProduct: product.idProduct,
-                idProductExt: product.idProductExt,
-                caracteristicas: product.caracteristicas,
-                height: product.height,
-                largo: product.largo,
-                upc: product.upc,
-                width: product.width,
-                imageUrl: product.imageUrl || (product as any).image_url,
-                name: product.name,
-                price: product.price,
-                providerId: product.providerId,
-                stock: product.stock,
-                rating: product.rating,
-                reviews: product.reviews,
-                sku: product.sku,
-                quantity: quantity,
-                storeId: sucursal.idBranche,
-              },
-            ];
           }
+
+          const newQuantity = Math.min(quantity, stock);
+
+          return [
+            ...prev,
+            {
+              ...product,
+              quantity: newQuantity,
+              storeId: sucursal.idBranche,
+            },
+          ];
         });
 
         setDataModal((prev) => ({ ...prev, isOpen: false }));

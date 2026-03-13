@@ -159,7 +159,7 @@ const DetailsProduct = () => {
                   if (
                     (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
                     dataProduct?.product_stock!.length > 0 &&
-                    Number(dataProduct?.providerId) === 3
+                    Number(dataProduct?.providerId) !== 1
                   ) {
                     setDataModal({
                       isOpen: true,

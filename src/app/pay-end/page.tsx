@@ -169,17 +169,41 @@ const PayEnd = () => {
                   </div>
                 </div>
 
-                {progressPay?.optionSend?.name ? (
-                  <div className="w-full my-3">
-                    <span className="text-[20px] text-[#606060] font-bold block text-center">
-                      Guarda el siguiente número de pedido de la sucursal
-                      PCINBOX Léon y sigue los pasos que se describen debajo:
-                    </span>
-                    <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
-                      # {dataOrderCash?.order_id}
+                {/* {progressPay?.optionSend?.name ? ( */}
+                <div className="w-full my-3">
+                  <span className="text-[20px] text-[#606060] font-bold block text-center">
+                    Guarda el siguiente número de pedido de la sucursal PCINBOX
+                    Léon y sigue los pasos que se describen debajo:
+                  </span>
+
+                  <span className="block mt-2 font-bold text-center text-[#BB3D4B] text-[25px]">
+                    # {dataOrderCash?.order_id}
+                  </span>
+                </div>
+                {/* ) : null} */}
+
+                {/* Información de expiración */}
+                {/* <div className="p-4 border-b border-gray-200 bg-red-50">
+                  <div className="flex items-center justify-center mb-2">
+                    <Clock className="w-5 h-5 text-red-600 mr-2" />
+                    <span className="font-bold text-red-700 mx-2">
+                      ¡IMPORTANTE!
                     </span>
                   </div>
-                ) : null}
+
+                  <div className="text-center">
+                    <div className="text-sm text-red-700 mb-1 flex justify-center items-end">
+                      <span className="text-[18px]">Fecha límite de pago:</span>
+                      <span className="text-[18px] mx-2 font-bold text-red-800">
+                        {formatDate(Number(expired))}
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-red-600 mt-1">
+                      Después de esta fecha el código expirará
+                    </div>
+                  </div>
+                </div> */}
               </div>
             ) : (
               <div className="w-full mt-2 mb-5">

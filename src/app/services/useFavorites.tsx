@@ -71,6 +71,42 @@ const useFavorites = () => {
 
   const handleAddFavoriteCart = async (product: FavoritesI) => {
     try {
+      const stored = localStorage.getItem("dataCartStorage");
+      const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
+
+      const existingProductIndex = products.findIndex(
+        (p: any) =>
+          Number(p.idProduct) === Number(product.productId) &&
+          Number(p.storeId) === Number(product.products?.storeId),
+      );
+
+      const stock = Number(product?.products?.stock);
+
+      if (existingProductIndex !== -1) {
+        const currentQuantity =
+          products[existingProductIndex].products?.quantity;
+
+        // Validar límite de stock
+        if (currentQuantity! >= stock) {
+          return;
+        }
+
+        const current = products[existingProductIndex]?.products?.quantity;
+        if (current != null) {
+          products[existingProductIndex].products!.quantity = current + 1;
+        }
+      } else {
+        // Si el stock es 0 tampoco agregar
+        if (stock <= 0) return;
+
+        products.push({
+          ...product.products,
+          quantity: 1,
+        } as FavoritesI & { quantity: number });
+      }
+
+      localStorage.setItem("dataCartStorage", JSON.stringify(products));
+
       setLoadingAddId(String(product.productId) || null);
       setLoadingAddCartFavorite(true);
 
