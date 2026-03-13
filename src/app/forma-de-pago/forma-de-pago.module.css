@@ -1,0 +1,13 @@
+@media (max-width: 769px) {
+  .labelPago > div span {
+    display: none;
+  }
+
+  .labelPago {
+    width: 100% !important;
+  }
+
+  .labelPago > div {
+    justify-content: center;
+  }
+}

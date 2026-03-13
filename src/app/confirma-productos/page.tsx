@@ -9,6 +9,7 @@ import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
+import style from "./confirma-productos.module.css";
 
 const ConfirmaProducts = () => {
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
@@ -102,7 +103,9 @@ const ConfirmaProducts = () => {
             ) : null} */}
 
             {dataCart && dataCart.length > 0 && (
-              <div className="w-full flex justify-end items-center  gap-5 mt-4">
+              <div
+                className={`w-full flex justify-end items-center  gap-5 mt-4 ${style.containerButtonsActions}`}
+              >
                 <button
                   className="border py-2 px-3 rounded"
                   onClick={handleShowModalVaciarCarrito}

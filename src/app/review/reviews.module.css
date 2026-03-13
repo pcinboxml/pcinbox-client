@@ -1,0 +1,421 @@
+/* ============================================================
+   reviews.module.css
+   Mobile-first responsive
+   Breakpoints: <640 | 640px | 768px | 1024px
+   ============================================================ */
+
+/* ─── Sección raíz ──────────────────────────────────────────── */
+.section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ─── Título de página ──────────────────────────────────────── */
+.pageTitle {
+  color: #bb3d4b;
+  font-size: 17px;
+  font-weight: bold;
+  display: block;
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* ─── Layout superior: tarjeta + opiniones ──────────────────── */
+/* Móvil: columna única apilada */
+.topLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ─── Tarjeta del producto ──────────────────────────────────── */
+.productCard {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.productCardName {
+  font-weight: bold;
+  font-size: 15px;
+  display: block;
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.productCardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.productCardImg {
+  object-fit: contain;
+  width: 160px;
+  height: 160px;
+}
+
+.productCardPrice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.priceText {
+  color: #bb3d4b;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.stockText {
+  color: #606060;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.addToCartCenter {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.addToCartBtn {
+  background-color: #bb3d4b;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 280px;
+}
+
+.addToCartBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.addToCartBtnInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ─── BranchSelector modal ──────────────────────────────────── */
+.branchSelectorWrapper {
+  width: 95vw;
+  max-width: 95vw;
+  border: 1px solid #e0e0e0;
+}
+
+/* ─── Panel de opiniones (rating bars + experiencia) ────────── */
+.opinionesPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 16px;
+}
+
+/* Cabecera del rating */
+.ratingHeader {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ratingHeaderCount {
+  color: #606060;
+  font-weight: bold;
+  font-size: 15px;
+  margin-left: 8px;
+}
+
+.ratingStarsLabel {
+  color: #000;
+  font-size: 13px;
+}
+
+/* Fila de cada barra de rating */
+.ratingBarRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+
+.ratingBarBg {
+  width: 160px;
+  height: 15px;
+  border-radius: 5px;
+  background: #e7e7e7;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ratingBarNumber {
+  font-size: 15px;
+  color: #606060;
+  font-weight: bold;
+  min-width: 14px;
+  text-align: center;
+}
+
+.ratingBarCount {
+  color: #ccc;
+  font-size: 13px;
+  margin-left: 2px;
+}
+
+/* Caja "escribe tu opinión" */
+.experienciaBox {
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 120px;
+  justify-content: center;
+}
+
+.experienciaTitle {
+  color: #bb3d4b;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+}
+
+.writeReviewBtn {
+  padding: 8px 16px;
+  background-color: #bb3d4b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ─── Lista de opiniones ────────────────────────────────────── */
+.listOpiniones {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.listOpinionesHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.opinionesCount {
+  color: #808080;
+  display: block;
+  margin-top: 16px;
+}
+
+.ordenarWrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ordenarLabel {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Fila de cada reseña ───────────────────────────────────── */
+/* Móvil: columna única */
+.reviewRow {
+  width: 100%;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.reviewerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+
+.reviewerName {
+  color: #606060;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: #999;
+}
+
+.reviewContent {
+  width: 100%;
+}
+
+.reviewTitle {
+  color: #606060;
+  font-weight: bold;
+  font-size: 16px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.reviewDescription {
+  font-size: 13px;
+  color: #808080;
+  margin: 0;
+}
+
+/* ─── Paginación ────────────────────────────────────────────── */
+.paginationWrapper {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   640px — pantallas medianas
+   ============================================================ */
+@media (min-width: 640px) {
+  .productCardBody {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .productCardPrice {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .addToCartBtn {
+    width: auto;
+  }
+
+  .reviewRow {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .reviewerInfo {
+    width: 150px;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .reviewContent {
+    padding-left: 8px;
+  }
+
+  .listOpinionesHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ratingBarBg {
+    width: 200px;
+  }
+}
+
+/* ============================================================
+   768px — tablet
+   El topLayout pasa a fila (tarjeta | panel),
+   pero el opinionesPanel se mantiene en columna para evitar
+   que la caja "experiencia" quede cortada en ~967px
+   ============================================================ */
+@media (min-width: 768px) {
+  .topLayout {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .productCard {
+    width: 340px;
+    flex-shrink: 0;
+  }
+
+  /* Panel en columna: rating bars arriba, experiencia abajo */
+  .opinionesPanel {
+    flex: 1;
+    min-width: 0; /* evita overflow en flex */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .experienciaBox {
+    width: 100%; /* ocupa todo el ancho disponible */
+    min-height: 120px;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .branchSelectorWrapper {
+    width: 560px;
+    max-width: 95vw;
+  }
+
+  .ratingBarBg {
+    width: 180px;
+  }
+}
+
+/* ============================================================
+   1024px — desktop
+   Aquí sí hay espacio suficiente para poner el panel en fila
+   ============================================================ */
+@media (min-width: 1024px) {
+  .productCard {
+    width: 400px;
+  }
+
+  /* Ahora sí en fila: rating bars a la izquierda, experiencia a la derecha */
+  .opinionesPanel {
+    width: 500px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .experienciaBox {
+    width: auto;
+    min-width: 200px;
+    height: 150px;
+  }
+
+  .branchSelectorWrapper {
+    width: 800px;
+    max-width: 800px;
+  }
+
+  .ratingBarBg {
+    width: 200px;
+  }
+}

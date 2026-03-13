@@ -9,6 +9,7 @@ import useStorage from "../services/useStorage";
 import { Alert } from "@mui/material";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
+import style from "./forma-de-pago.module.css";
 
 const FormaDePago = () => {
   useCheckoutGuard(CheckoutStep.FORMA_DE_PAGO);
@@ -118,7 +119,7 @@ const FormaDePago = () => {
                             />
 
                             <label
-                              className="form-check-label"
+                              className={`form-check-label ${style.labelPago}`}
                               htmlFor={pag_.value}
                             >
                               <div className="w-full flex items-center">

@@ -145,6 +145,8 @@ const Navbar = () => {
     // handleWriteStorageDataCart(dataCart);
   }, [dataCart, dataCartStorege]);
 
+  // En tu componente Navbar.tsx
+
   return (
     <header className="main-header" ref={navRef}>
       <div className="flex justify-between px-5 py-1 bg-[#bb3d4b]">
@@ -213,7 +215,7 @@ const Navbar = () => {
             onMouseLeave={onMouseLeaveProducts}
           >
             Productos
-            {showProductsMenu && <SubMenuProductos />}
+            {/* {showProductsMenu && <SubMenuProductos  />} */}
           </button>
 
           {/* <div

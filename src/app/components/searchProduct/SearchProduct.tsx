@@ -148,7 +148,10 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
       />
       <button
         type="submit"
-        className="ml-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        style={{
+          marginLeft: "2px",
+        }}
+        className="ml-2 px-4 py-1 bg-[#BB3D4B] text-white rounded transition-colors"
       >
         Buscar
       </button>

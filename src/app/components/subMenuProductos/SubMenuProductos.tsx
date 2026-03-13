@@ -1,15 +1,22 @@
 "use client";
 import { useTheContext } from "@/app/services/globalContext";
 import { usePathname } from "next/navigation";
+import style from "./submenuproducts.module.css";
 
-const SubMenuProductos = ({ styles }: { styles?: any }) => {
+const SubMenuProductos = ({
+  forceVisible,
+  styles,
+}: {
+  styles?: any;
+  forceVisible: boolean;
+}) => {
   const { showProductsMenu, dataCategories } = useTheContext();
   const pathname = usePathname();
 
   // const [subMenus, setSubMenus] = useState<{ content: any }[]>([]);
 
   const isVisible =
-    pathname === "/principal" || pathname === "/" || showProductsMenu;
+    forceVisible || pathname === "/principal" || showProductsMenu;
 
   return (
     <div
@@ -29,7 +36,12 @@ const SubMenuProductos = ({ styles }: { styles?: any }) => {
           flexWrap: "nowrap",
         }}
       >
-        <div className="menu1 h-[100%] max-h-[550px] w-[150px]  overflow-y-auto overflow-x-hidden">
+        <div
+          className={`${style.menu1} h-[100%] max-h-[550px] ${forceVisible ? "w-full" : "w-[150px]"}  overflow-y-auto overflow-x-hidden`}
+          style={{
+            padding: forceVisible ? "10px" : "2px",
+          }}
+        >
           <ul>
             {dataCategories && dataCategories.length > 0
               ? dataCategories.map((categoria) => {
