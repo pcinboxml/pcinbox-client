@@ -191,7 +191,7 @@ const NavbarResponsive = () => {
               {showProductsMenu && <SubMenuProductos forceVisible={false} />}
             </button>
           </div>
-          {/* <div>
+          <div>
             <button
               className="bg-[#BB3D4B] rounded text-white font-bold flex items-center gap-2 px-3 py-2 whitespace-nowrap"
               style={{
@@ -211,7 +211,7 @@ const NavbarResponsive = () => {
             >
               Gama de Laptops 2026 <MdLaptop size={26} />
             </button>
-          </div> */}
+          </div>
           <div className="container-submenu">
             <div className="submenu">
               <ul>
@@ -697,7 +697,7 @@ const NavbarResponsive = () => {
                     />
                   </button>
 
-                  {/* <button
+                  <button
                     className="bg-[#BB3D4B] rounded text-white font-bold flex items-center gap-2 px-3 py-2 whitespace-nowrap"
                     style={{
                       marginLeft: "-10px",
@@ -715,7 +715,7 @@ const NavbarResponsive = () => {
                     }}
                   >
                     Gama de Laptops 2026 <MdLaptop size={26} />
-                  </button> */}
+                  </button>
                 </nav>
 
                 {!hasToken && (
