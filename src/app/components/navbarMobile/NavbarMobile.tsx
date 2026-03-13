@@ -14,6 +14,7 @@ import {
   MdPerson,
   MdHome,
   MdChevronRight,
+  MdLaptop,
 } from "react-icons/md";
 import useNavbar from "./../navbar/useNavbar";
 import useService from "@/app/services/useService";
@@ -64,6 +65,7 @@ const NavbarResponsive = () => {
     hasToken,
     rutaImgPerfil,
     dataFavorites,
+    dataCategories,
   } = useTheContext();
 
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -189,6 +191,27 @@ const NavbarResponsive = () => {
               {showProductsMenu && <SubMenuProductos forceVisible={false} />}
             </button>
           </div>
+          {/* <div>
+            <button
+              className="bg-[#BB3D4B] rounded text-white font-bold flex items-center gap-2 px-3 py-2 whitespace-nowrap"
+              style={{
+                marginLeft: "-10px",
+              }}
+              onClick={() => {
+                let findIdCategory = dataCategories.find(
+                  (category) => category.name === "LAPTOPS",
+                );
+                if (findIdCategory) {
+                  onRouterLink(
+                    `/result-search-category?categoryId=${findIdCategory?.idCategorie}`,
+                  );
+                  closeMobileMenu();
+                }
+              }}
+            >
+              Gama de Laptops 2026 <MdLaptop size={26} />
+            </button>
+          </div> */}
           <div className="container-submenu">
             <div className="submenu">
               <ul>
@@ -673,6 +696,26 @@ const NavbarResponsive = () => {
                       className="ml-auto"
                     />
                   </button>
+
+                  {/* <button
+                    className="bg-[#BB3D4B] rounded text-white font-bold flex items-center gap-2 px-3 py-2 whitespace-nowrap"
+                    style={{
+                      marginLeft: "-10px",
+                    }}
+                    onClick={() => {
+                      let findIdCategory = dataCategories.find(
+                        (category) => category.name === "LAPTOPS",
+                      );
+                      if (findIdCategory) {
+                        onRouterLink(
+                          `/result-search-category?categoryId=${findIdCategory?.idCategorie}`,
+                        );
+                        closeMobileMenu();
+                      }
+                    }}
+                  >
+                    Gama de Laptops 2026 <MdLaptop size={26} />
+                  </button> */}
                 </nav>
 
                 {!hasToken && (
