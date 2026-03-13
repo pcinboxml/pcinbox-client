@@ -23,12 +23,12 @@ const Register = () => {
 
   return (
     <section
-      className={`border flex section`}
+      className={`border flex ${styles.section}`}
       style={{
         marginBottom: "80px",
       }}
     >
-      <div className="w-[50%]">
+      <div className={`w-[50%] ${styles.containerImg}`}>
         <img
           className={styles.img}
           src="/pc_gamer.jpeg"
