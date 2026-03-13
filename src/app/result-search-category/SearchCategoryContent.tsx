@@ -37,6 +37,7 @@ const SearchCategoryContent = () => {
   );
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [orderBy, setOrderBy] = useState<any>("");
   const { formatCurrency, onRouterLink } = useService();
   const { dataProducts, socketCron } = useTheContext();
 
@@ -279,6 +280,24 @@ const SearchCategoryContent = () => {
     { id: 5, rating: 1 },
   ];
 
+  useEffect(() => {
+    if (orderBy) {
+      setData((prev) => {
+        // Copiamos todo el array antes de ordenar
+        const sorted = [...prev].sort(
+          (a: any, b: any) =>
+            orderBy === "1"
+              ? Number(b.price) - Number(a.price) // mayor a menor
+              : Number(a.price) - Number(b.price), // menor a mayor
+        );
+
+        setPage(1);
+
+        // Si necesitas slice, hazlo después
+        return sorted;
+      });
+    }
+  }, [orderBy]);
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
       {...props}
@@ -491,8 +510,8 @@ const SearchCategoryContent = () => {
                       <option value="" disabled>
                         Selecciona una opción
                       </option>
-                      <option value={1}>Mayor precio</option>
-                      <option value={2}>Menor precio</option>
+                      <option value={"1"}>Mayor precio</option>
+                      <option value={"2"}>Menor precio</option>
                     </select>
                   </div>
                 </div>
