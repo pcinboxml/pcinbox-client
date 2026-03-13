@@ -253,7 +253,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
 /* ─── Subcomponente reutilizable para input cantidad + botón ─── */
 interface QuantityCartRowProps {
   sucursal: any;
-  quantities: Record<number, number>;
+  quantities: Record<number, number | "">;
   loadingByBranch: Record<number, boolean>;
   handleChangeQuantity: (id: number, value: string) => void;
   onAddToCart: (sucursal: any) => void;
