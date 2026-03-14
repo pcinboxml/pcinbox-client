@@ -16,6 +16,7 @@ import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
+import style from "./opciones-entrega.module.css";
 
 const OpcionesEntrega = () => {
   useCheckoutGuard(CheckoutStep.OPCIONES_ENTREGA);
@@ -208,7 +209,7 @@ const OpcionesEntrega = () => {
                 />
               </div>
 
-              <div className="content-tabla-opciones-entrega">
+              <div className={style.contentTablaOpcionesEntrega}>
                 <div className="grid grid-cols-[1fr_1fr] w-full">
                   <div className="productos p-3 overflow-y-auto max-h-[250px]">
                     {group.products.map((product: any) => (

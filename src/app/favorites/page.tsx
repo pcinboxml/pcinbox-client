@@ -11,8 +11,8 @@ import useService from "../services/useService";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
 import ProductI from "../interfaces/products/product.interface";
-import { useState } from "react";
 import BranchSelector from "../components/branchSelector/BranchSelector";
+import styles from "./favorites.module.css";
 
 const Favorites = () => {
   const {
@@ -43,26 +43,11 @@ const Favorites = () => {
   }));
 
   const ratingProgress = [
-    {
-      id: 1,
-      rating: 5,
-    },
-    {
-      id: 2,
-      rating: 4,
-    },
-    {
-      id: 3,
-      rating: 3,
-    },
-    {
-      id: 4,
-      rating: 2,
-    },
-    {
-      id: 5,
-      rating: 1,
-    },
+    { id: 1, rating: 5 },
+    { id: 2, rating: 4 },
+    { id: 3, rating: 3 },
+    { id: 4, rating: 2 },
+    { id: 5, rating: 1 },
   ];
 
   const calcPorcentaje = (
@@ -112,20 +97,13 @@ const Favorites = () => {
 
   return (
     <section>
-      <h5
-        style={{
-          color: "#bb3d4b",
-          fontWeight: "bold",
-        }}
-      >
-        Mis Favoritos
-      </h5>
+      <h5 style={{ color: "#bb3d4b", fontWeight: "bold" }}>Mis Favoritos</h5>
 
       <br />
 
       {dataFavorites && dataFavorites.length > 0 ? (
         <div className="w-full flex justify-end items-center p-2">
-          <div className="grid grid-cols-[100px_150px]">
+          <div className={styles.ordenarGrid}>
             <div className="flex justify-end px-1">
               <label htmlFor="fecha" className="col-form-label">
                 Ordenar:
@@ -146,18 +124,6 @@ const Favorites = () => {
               </select>
             </div>
           </div>
-          {/* <div className="grid grid-cols-[100px_200px]">
-            <div className="flex justify-end px-1">
-              <label htmlFor="filtro" className="col-form-label">
-                Filtrar:
-              </label>
-            </div>
-            <div>
-              <select name="filtro" id="filtro" className="form-select">
-                <option value="todos_los_productos">Todos los productos</option>
-              </select>
-            </div>
-          </div> */}
         </div>
       ) : (
         <Alert severity="info">No hay datos para mostrar</Alert>
@@ -169,25 +135,25 @@ const Favorites = () => {
           dataFavorites.map((favorite, index) => {
             return (
               <div key={index}>
-                <div className="grid grid-cols-[1fr_auto] gap-4">
+                {/* ── Fila del producto ── */}
+                <div className={styles.productRow}>
+                  {/* Columna izquierda: info */}
                   <div className="flex flex-col">
                     <div className="item-component p-3">
+                      {/* Nombre */}
                       <a
                         role="button"
                         onClick={() => {
                           onRouterLink(`/detailsProduct/${favorite.productId}`);
                         }}
                         className="text-[#BB3D4B] font-bold"
-                        style={{
-                          color: "#BB3D4B",
-                        }}
+                        style={{ color: "#BB3D4B" }}
                       >
                         {favorite?.products?.name}
                       </a>
-                      {/* <span className="text-[#BB3D4B] font-bold">
-                                {item.name}
-                              </span> */}
-                      <div className="grid grid-cols-[1fr_1fr_1fr] my-1">
+
+                      {/* SKU + Rating */}
+                      <div className={styles.skuRatingGrid}>
                         <div className="flex">
                           {favorite?.products?.upc && (
                             <div className="flex flex-col gap-1">
@@ -203,6 +169,7 @@ const Favorites = () => {
                             </div>
                           )}
                         </div>
+
                         {(() => {
                           const promedioRating =
                             favorite?.products?.reviews?.length! > 0
@@ -221,16 +188,13 @@ const Favorites = () => {
                                   readOnly
                                   value={promedioRating}
                                   size="medium"
-                                  sx={{
-                                    color: "#BB3D4B",
-                                  }}
+                                  sx={{ color: "#BB3D4B" }}
                                 />
                               </div>
-                              {/* {product.reviews && product.reviews.length > 0 && ( */}
                               <div className="comments flex h-[10px]">
                                 <StyledTooltip
                                   title={
-                                    <div className="w-full  flex justify-center">
+                                    <div className="w-full flex justify-center">
                                       <Box>
                                         <div className="w-full flex items-center">
                                           <Rating
@@ -238,23 +202,19 @@ const Favorites = () => {
                                             readOnly
                                             size="medium"
                                             precision={0.5}
-                                            sx={{
-                                              color: "#BB3D4B",
-                                            }}
+                                            sx={{ color: "#BB3D4B" }}
                                           />
-
                                           <span className="text-[#666666] font-bold text-[18px] block mx-2">
                                             {favorite?.products?.reviews?.length.toLocaleString()}{" "}
                                             Opiniones
                                           </span>
                                         </div>
                                         <div className="mt-2">
-                                          <span className="text-[#808080] text-[16px] ">
+                                          <span className="text-[#808080] text-[16px]">
                                             {favorite?.products?.rating}{" "}
                                             estrellas
                                           </span>
                                         </div>
-
                                         <div className="mt-3 grid grid-cols[1fr_auto] w-full">
                                           {ratingProgress &&
                                             ratingProgress.map(
@@ -309,7 +269,6 @@ const Favorites = () => {
                                                         size={20}
                                                       />
                                                     </div>
-
                                                     <div>
                                                       <span className="text-[#ccc] text-[13px] mx-1">
                                                         (
@@ -335,7 +294,6 @@ const Favorites = () => {
                                                 );
                                               },
                                             )}
-
                                           <a
                                             role="button"
                                             onClick={() =>
@@ -385,13 +343,14 @@ const Favorites = () => {
                                   opiniones
                                 </a>
                               </div>
-                              {/* )} */}
                             </div>
                           );
                         })()}
                       </div>
 
-                      <div className="grid grid-cols-[1fr_1fr_auto] my-1">
+                      {/* Características / Precio / Botones */}
+                      <div className={styles.detailGrid}>
+                        {/* Características */}
                         <div>
                           <ul>
                             {favorite?.products?.caracteristicas
@@ -428,24 +387,26 @@ const Favorites = () => {
                               : "Sin caracteristicas disponibles"}
                           </ul>
                         </div>
+
+                        {/* Precio */}
                         <div className="px-3">
                           <span className="text-[20px] font-bold">
                             {formatCurrency(Number(favorite?.products?.price))}
                           </span>
                           <br />
-                          {/* <span>Costo de envio: $160</span> */}
-                          {/* <br /> */}
                           <span>
                             Disponibles: {favorite?.products?.stock} piezas
                           </span>
                         </div>
-                        <div>
+
+                        {/* Botones */}
+                        <div className={styles.btnsWrapper}>
                           <button
                             disabled={
                               loadingAddId == favorite.products?.idProduct ||
                               favorite?.products?.stock == 0
                             }
-                            className="bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2"
+                            className={`bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2 ${styles.addToCartBtn}`}
                             onClick={() => {
                               if (
                                 (favorite?.products?.isPC == 0 ||
@@ -456,7 +417,9 @@ const Favorites = () => {
                                 setDataModal({
                                   isOpen: true,
                                   message: (
-                                    <div className="w-[800px] border">
+                                    <div
+                                      className={styles.branchSelectorWrapper}
+                                    >
                                       <BranchSelector
                                         productSelected={favorite?.products}
                                       />
@@ -503,7 +466,7 @@ const Favorites = () => {
                           </button>
 
                           <button
-                            className="border bg-white text-black rounded px-2 py-2 my-2"
+                            className={`border bg-white text-black rounded px-2 py-2 my-2 ${styles.removeBtn}`}
                             disabled={
                               loadingRemoveId === favorite?.products?.idProduct
                             }
@@ -524,7 +487,8 @@ const Favorites = () => {
                     </div>
                   </div>
 
-                  <div className="w-[150px] flex justify-center items-center">
+                  {/* Columna derecha: Carousel — SIEMPRE visible */}
+                  <div className={styles.carouselWrapper}>
                     <Carousel
                       showIndicators={true}
                       showThumbs={false}
@@ -540,15 +504,10 @@ const Favorites = () => {
                       (favorite?.products as any).image_url.length > 0
                         ? (favorite?.products as any).image_url.map(
                             (img: string, i: number) => (
-                              <div key={i}>
+                              <div key={i} className={styles.carouselSlide}>
                                 <img
                                   src={img}
-                                  style={{
-                                    objectFit: "contain",
-                                    height: "auto",
-                                    maxHeight: "200px",
-                                    marginTop: "12px",
-                                  }}
+                                  className={styles.productImg}
                                   loading="lazy"
                                 />
                               </div>

@@ -213,6 +213,9 @@ section {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+.main-content {
+  margin-top: 180px !important;
+}
 
 @layer base {
   * {
@@ -220,5 +223,17 @@ section {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media (max-width: 996px) {
+  .main-content {
+    margin-top: 100px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #TimelineComponent {
+    display: none;
   }
 }

@@ -6,13 +6,14 @@ import Navbar from "./components/navbar/navbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
 import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
 import useProtectedRoute from "./middleware/protectedRoute";
+import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 
 export default function AppWrapper({
   children,
@@ -496,6 +497,7 @@ export default function AppWrapper({
 
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
   useProtectedRoute();
+
   return (
     <SessionProvider>
       <div
@@ -508,17 +510,12 @@ export default function AppWrapper({
         {pathName != "/estatusMP" &&
           pathName != "/estatusPay" &&
           pathName != "/terminos_y_condiciones" &&
-          pathName != "/aviso_privacidad" && <Navbar />}
+          pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
           className={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? "container"
+            pathName !== "/estatusMP" && pathName !== "/estatusPay"
+              ? "container main-content"
               : ""
-          }
-          style={
-            pathName != "/estatusMP" && pathName != "/estatusPay"
-              ? { marginTop: "180px" }
-              : {}
           }
         >
           {children}
@@ -534,7 +531,7 @@ export default function AppWrapper({
             showActions={dataModal.showActions}
           />
 
-          <Notification dataNotification={dataNotification} />
+          {/* <Notification dataNotification={dataNotification} /> */}
 
           {pathName != "/estatusMP" &&
             pathName != "/estatusPay" &&

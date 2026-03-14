@@ -112,8 +112,8 @@ const useFavorites = () => {
 
       const resp = await requestPost(
         {
-          // product: product.products,
-          idProduct: product?.products?.idProduct,
+          idProduct: Number(product?.products?.idProduct),
+          //product: product.products,
           quantity: 1,
           price: product.products?.price,
           isDetails: false,

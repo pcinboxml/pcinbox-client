@@ -27,3 +27,9 @@
   color: #bb3d4b !important;
   font-weight: 600 !important;
 }
+
+@media (max-width: 996px) {
+  .aside {
+    display: none;
+  }
+}

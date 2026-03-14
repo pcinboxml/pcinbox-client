@@ -1,0 +1,82 @@
+/* ============================================================
+   pay-end.module.css
+   Mobile-first responsive
+   Breakpoints: <640 | 640px | 1024px
+   ============================================================ */
+
+/* ─── Sección raíz ──────────────────────────────────────────── */
+/*
+  Móvil:   ancho 100%, sin margin lateral
+  Tablet:  ancho 95%, centrado
+  Desktop: ancho 80%, centrado (igual que el original)
+*/
+.section {
+  width: 100%;
+  margin: 24px auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ─── Título del pedido (texto largo) ───────────────────────── */
+/*
+  En móvil el texto de 24px se ve muy grande.
+  Lo reducimos un poco y permitimos que se envuelva.
+*/
+.orderTitle {
+  font-size: 18px;
+  color: #666666;
+  font-weight: bold;
+  padding-left: 8px;
+  word-break: break-word;
+}
+
+/* ─── Barcode wrapper ───────────────────────────────────────── */
+/*
+  El componente <Barcode> genera un SVG/canvas con ancho fijo.
+  En móvil lo escalamos para que no se desborde.
+*/
+.barcodeWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+/* Escala el SVG/canvas del barcode para que quepa en pantallas pequeñas */
+.barcodeWrapper > svg,
+.barcodeWrapper > canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* ============================================================
+   640px — tablet pequeña
+   ============================================================ */
+@media (min-width: 640px) {
+  .section {
+    width: 95%;
+    padding: 0 8px;
+    margin: 36px auto;
+  }
+
+  .orderTitle {
+    font-size: 20px;
+  }
+}
+
+/* ============================================================
+   1024px — desktop (comportamiento original)
+   ============================================================ */
+@media (min-width: 1024px) {
+  .section {
+    width: 80%;
+    padding: 0;
+    margin: 50px auto;
+  }
+
+  .orderTitle {
+    font-size: 24px;
+  }
+}
