@@ -261,17 +261,10 @@ const SearchCategoryContent = () => {
     socket.on("updateProduct", handlerUpdateProduct);
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
-    // socketPagos?.current?.on("removeStorageProgressPay2", () => {
-    //   localStorage.removeItem("progressPay2");
-    // });
-
     return () => {
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
-      // socketPagos?.current?.off("removeStorageProgressPay2", () => {
-      //   localStorage.removeItem("progressPay2");
-      // });
     };
   }, [socketServer.current, socketPagos?.current]);
 
@@ -286,21 +279,17 @@ const SearchCategoryContent = () => {
   useEffect(() => {
     if (orderBy) {
       setData((prev) => {
-        // Copiamos todo el array antes de ordenar
-        const sorted = [...prev].sort(
-          (a: any, b: any) =>
-            orderBy === "1"
-              ? Number(b.price) - Number(a.price) // mayor a menor
-              : Number(a.price) - Number(b.price), // menor a mayor
+        const sorted = [...prev].sort((a: any, b: any) =>
+          orderBy === "1"
+            ? Number(b.price) - Number(a.price)
+            : Number(a.price) - Number(b.price),
         );
-
         setPage(1);
-
-        // Si necesitas slice, hazlo después
         return sorted;
       });
     }
   }, [orderBy]);
+
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
       {...props}
@@ -359,7 +348,6 @@ const SearchCategoryContent = () => {
         <div className={`mt-2 w-full ${hasSidebar ? styles.mainGrid : ""}`}>
           {hasSidebar && (
             <>
-              {/* Botón toggle — solo visible en móvil/tablet (<1024px) */}
               <button
                 className={styles.filterToggle}
                 onClick={() => setSidebarOpen((prev) => !prev)}
@@ -370,7 +358,6 @@ const SearchCategoryContent = () => {
                 </span>
               </button>
 
-              {/* Sidebar */}
               <aside
                 className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
               >
@@ -387,18 +374,10 @@ const SearchCategoryContent = () => {
                         findCategory.name === "TARJETAS MADRE"
                       ) {
                         setProcessorBrand(null);
-                        setMarca(null);
-                        setOrderBy("");
                       }
                     }
-                    // if (categoryId == "10") {
-                    //   setProcessorBrand(null);
-                    //   setMarca(null);
-                    //   setOrderBy("");
-                    // } else {
-                    //   setMarca(null);
-                    //   setOrderBy("");
-                    // }
+                    setMarca(null);
+                    setOrderBy("");
                   }}
                 >
                   Resetear Filtro
@@ -485,7 +464,6 @@ const SearchCategoryContent = () => {
             </>
           )}
 
-          {/* Contenido principal */}
           <div className={styles.mainContent}>
             <h3 className={styles.categoryTitle}>
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
@@ -517,7 +495,6 @@ const SearchCategoryContent = () => {
                       value={filterValue}
                       onChange={(event) => {
                         setFilterValue(event.target?.value);
-
                         setData((prev) => {
                           const sorted = [...prev].sort((a: any, b: any) =>
                             event.target.value === "1"
@@ -552,12 +529,9 @@ const SearchCategoryContent = () => {
                   })
                   .map((item: any, index: number) => (
                     <div key={index}>
-                      {/* ====== Fila del producto ====== */}
                       <div className={styles.productRow}>
-                        {/* Izquierda: info */}
                         <div className={styles.productInfo}>
                           <div className={styles.itemComponent}>
-                            {/* Nombre */}
                             <a
                               role="button"
                               onClick={() =>
@@ -570,9 +544,7 @@ const SearchCategoryContent = () => {
                               {item.name}
                             </a>
 
-                            {/* SKU + Rating */}
                             <div className={styles.skuRatingGrid}>
-                              {/* SKU / UPC */}
                               <div>
                                 {item?.upc && (
                                   <div
@@ -600,7 +572,6 @@ const SearchCategoryContent = () => {
                                 )}
                               </div>
 
-                              {/* Rating */}
                               {(() => {
                                 const promedioRating =
                                   item.reviews.length > 0
@@ -644,7 +615,7 @@ const SearchCategoryContent = () => {
                                                 }}
                                               >
                                                 <Rating
-                                                  value={item.rating}
+                                                  value={promedioRating} // Usar promedioRating calculado
                                                   readOnly
                                                   size="medium"
                                                   precision={0.5}
@@ -669,7 +640,8 @@ const SearchCategoryContent = () => {
                                                     fontSize: 16,
                                                   }}
                                                 >
-                                                  {item.rating} estrellas
+                                                  {promedioRating.toFixed(1)}{" "}
+                                                  estrellas
                                                 </span>
                                               </div>
                                               <div style={{ marginTop: 12 }}>
@@ -695,7 +667,7 @@ const SearchCategoryContent = () => {
                                                       >
                                                         <div
                                                           style={{
-                                                            width: `${calcPorcentaje(item, dataProducts, progressRating).percentage}%`,
+                                                            width: `${calcPorcentaje(item, data, progressRating).percentage}%`,
                                                             height: 15,
                                                             background:
                                                               "#BB3D4B",
@@ -714,7 +686,7 @@ const SearchCategoryContent = () => {
                                                         {
                                                           calcPorcentaje(
                                                             item,
-                                                            dataProducts,
+                                                            data,
                                                             progressRating,
                                                           ).rating
                                                         }
@@ -802,12 +774,7 @@ const SearchCategoryContent = () => {
                                           whiteSpace: "nowrap",
                                         }}
                                       >
-                                        {item.reviews
-                                          .filter(
-                                            (itemF: any) =>
-                                              itemF.productId == item.idProduct,
-                                          )
-                                          .length.toLocaleString()}{" "}
+                                        {item.reviews.length.toLocaleString()}{" "}
                                         opiniones
                                       </a>
                                     </div>
@@ -816,9 +783,7 @@ const SearchCategoryContent = () => {
                               })()}
                             </div>
 
-                            {/* Características / Precio / Botón */}
                             <div className={styles.detailGrid}>
-                              {/* Características */}
                               <div>
                                 {item?.caracteristicas &&
                                 (typeof item?.caracteristicas === "object" ||
@@ -895,7 +860,6 @@ const SearchCategoryContent = () => {
                                 )}
                               </div>
 
-                              {/* Precio y stock */}
                               <div style={{ padding: "0 12px" }}>
                                 <span
                                   style={{ fontSize: 20, fontWeight: "bold" }}
@@ -906,29 +870,25 @@ const SearchCategoryContent = () => {
                                 <span>Disponibles: {item.stock} piezas</span>
                               </div>
 
-                              {/* Botón */}
                               <div className={styles.addToCartWrapper}>
+                                {/* === BOTÓN CORREGIDO === */}
                                 <button
                                   disabled={
                                     loadingAddProductCar[item.idProduct] ||
                                     item.stock == 0 ||
                                     item.stock == "0"
                                   }
-                                  className={styles.addToCartBtn}
+                                  className={`${styles.addToCartBtn} bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2`}
                                   onClick={() => {
                                     if (
                                       (item?.isPC == 0 || item?.isPc == 0) &&
                                       item?.product_stock.length > 0 &&
-                                      Number(item?.providerId) === 3
+                                      Number(item?.providerId) != 1
                                     ) {
                                       setDataModal({
                                         isOpen: true,
                                         message: (
-                                          <div
-                                            className={
-                                              styles.branchSelectorWrapper
-                                            }
-                                          >
+                                          <div className="w-[800px] border">
                                             <BranchSelector
                                               productSelected={item}
                                             />
@@ -951,67 +911,30 @@ const SearchCategoryContent = () => {
                                     } else {
                                       handleAddProductCart(item);
                                     }
-                                    className="bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2"
-                                    onClick={() => {
-                                      if (
-                                        (item?.isPC == 0 || item?.isPc == 0) &&
-                                        item?.product_stock.length > 0 &&
-                                        Number(item?.providerId) != 1
-                                      ) {
-                                        setDataModal({
-                                          isOpen: true,
-                                          message: (
-                                            <div className="w-[800px] border">
-                                              <BranchSelector
-                                                productSelected={item}
-                                              />
-                                            </div>
-                                          ),
-                                          title: "",
-                                          type: "success",
-                                          showActions: false,
-                                          onClose: () =>
-                                            setDataModal((prev) => ({
-                                              ...prev,
-                                              isOpen: false,
-                                            })),
-                                          onConfirm: () =>
-                                            setDataModal((prev) => ({
-                                              ...prev,
-                                              isOpen: false,
-                                            })),
-                                        });
-                                      } else {
-                                        handleAddProductCart(item);
-                                      }
-                                    }}
-                                  >
-                                    {item?.isPC == 0 &&
-                                    loadingAddProductCar[item.idProduct] &&
-                                    Number(item?.providerId) != 1 ? (
-                                      <MdAutorenew
-                                        size={20}
-                                        className="m-auto the-spinner"
-                                      />
-                                    ) : item.stock == "0" || item.stock == 0 ? (
-                                      "No disponible"
-                                    ) : (
-                                      <>
-                                        Agregar al carrito
-                                        <MdShoppingCart
-                                          size={20}
-                                          color="white"
-                                        />
-                                      </>
-                                    )}
-                                  </button>
-                                </div>
+                                  }}
+                                >
+                                  {item?.isPC == 0 &&
+                                  loadingAddProductCar[item.idProduct] &&
+                                  Number(item?.providerId) != 1 ? (
+                                    <MdAutorenew
+                                      size={20}
+                                      className="m-auto the-spinner"
+                                    />
+                                  ) : item.stock == "0" || item.stock == 0 ? (
+                                    "No disponible"
+                                  ) : (
+                                    <>
+                                      Agregar al carrito
+                                      <MdShoppingCart size={20} color="white" />
+                                    </>
+                                  )}
+                                </button>
+                                {/* === FIN DEL BOTÓN CORREGIDO === */}
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        {/* Derecha: Carousel — SIEMPRE visible en todos los breakpoints */}
                         <div className={styles.carouselWrapper}>
                           <Carousel
                             showIndicators={true}
@@ -1050,7 +973,7 @@ const SearchCategoryContent = () => {
           </div>
         </div>
       ) : (
-        <Alert severity="info">Sin contenido disponible</Alert>
+        <Alert severity="info">Cargando...</Alert> // Mensaje más claro mientras carga
       )}
 
       {data && data?.length > 0 && (
