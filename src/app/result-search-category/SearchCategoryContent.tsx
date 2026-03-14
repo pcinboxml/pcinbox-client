@@ -469,7 +469,7 @@ const SearchCategoryContent = () => {
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
             </h3>
 
-            {data && data?.length > 0 && (
+            {dataCopy && dataCopy.length > 0 && (
               <>
                 <div
                   className={`${styles.searchBar}`}
