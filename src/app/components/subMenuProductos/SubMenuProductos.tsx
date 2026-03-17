@@ -44,13 +44,21 @@ const SubMenuProductos = ({
         >
           <ul>
             {dataCategories && dataCategories.length > 0
-              ? dataCategories.map((categoria) => {
-                  if (
-                    categoria.name != "" &&
-                    categoria.name != null &&
-                    categoria.name != "MOTHERBOARDS" &&
-                    categoria.name != "MINI PCS Y PORTATILES"
-                  ) {
+              ? dataCategories
+                  .filter(
+                    (categoriaFilter) =>
+                      categoriaFilter.name != "" &&
+                      categoriaFilter.name != null &&
+                      categoriaFilter.name != "MOTHERBOARDS" &&
+                      categoriaFilter.name != "MINI PCS Y PORTATILES",
+                  )
+                  .map((categoria) => {
+                    // if (
+                    //   categoria.name != "" &&
+                    //   categoria.name != null &&
+                    //   categoria.name != "MOTHERBOARDS" &&
+                    //   categoria.name != "MINI PCS Y PORTATILES"
+                    // ) {
                     return (
                       <li key={categoria.idCategorie}>
                         <a
@@ -100,8 +108,8 @@ const SubMenuProductos = ({
                         </a>
                       </li>
                     );
-                  }
-                })
+                    //   }
+                  })
               : null}
           </ul>
         </div>
