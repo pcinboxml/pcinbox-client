@@ -50,15 +50,14 @@ const SubMenuProductos = ({
                       categoriaFilter.name != "" &&
                       categoriaFilter.name != null &&
                       categoriaFilter.name != "MOTHERBOARDS" &&
-                      categoriaFilter.name != "MINI PCS Y PORTATILES",
+                      categoriaFilter.name != "MINI PCS Y PORTATILES" &&
+                      categoriaFilter.name != "REFACCIONES" &&
+                      categoriaFilter?.name != "MONITORES",
+                  )
+                  .sort((a, b) =>
+                    a.name.localeCompare(b.name, "es", { sensitivity: "base" }),
                   )
                   .map((categoria) => {
-                    // if (
-                    //   categoria.name != "" &&
-                    //   categoria.name != null &&
-                    //   categoria.name != "MOTHERBOARDS" &&
-                    //   categoria.name != "MINI PCS Y PORTATILES"
-                    // ) {
                     return (
                       <li key={categoria.idCategorie}>
                         <a
