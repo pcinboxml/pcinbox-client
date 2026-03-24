@@ -129,7 +129,7 @@ const useService = () => {
   const onRouterLink = (route: string): void => {
     try {
       router.prefetch(route);
-      router.push(route);
+      router.push(route, { scroll: true });
     } catch (error) {
       setDataModal({
         isOpen: true,

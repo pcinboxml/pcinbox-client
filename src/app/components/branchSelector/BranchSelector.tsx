@@ -8,7 +8,13 @@ import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
 
-const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
+const BranchSelector = ({
+  productSelected,
+  //comprarAhora,
+}: {
+  productSelected: ProductI;
+  //comprarAhora?: boolean;
+}) => {
   const { handleWriteStorageProgressPay } = useStorage();
   const {
     handleAddProductCart,
@@ -17,7 +23,7 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
     quantities,
     branchesDico,
   } = GridBranchSelector();
-  const { formatCurrency } = useService();
+  const { formatCurrency, onRouterLink } = useService();
 
   const branches = useMemo(() => {
     return productSelected.product_stock
@@ -93,6 +99,10 @@ const BranchSelector = ({ productSelected }: { productSelected: ProductI }) => {
             : 0,
       },
     });
+
+    // if (comprarAhora && comprarAhora === true) {
+    //   onRouterLink("/confirma-productos");
+    // }
   };
 
   return (
