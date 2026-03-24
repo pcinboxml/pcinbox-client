@@ -4,8 +4,12 @@ import { LoginI } from "@/app/interfaces/login.interface";
 import { useState } from "react";
 import useService from "@/app/services/useService";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 const useLogin = () => {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/principal";
+
   const [formData, setFormData] = useState<LoginI>({
     email: "",
     password: "",
@@ -33,7 +37,7 @@ const useLogin = () => {
 
     if (!emailRegex.test(formData.email)) {
       setMessageError(
-        `El correo ${formData.email} no tiene el formato correcto`
+        `El correo ${formData.email} no tiene el formato correcto`,
       );
 
       return;
@@ -64,7 +68,7 @@ const useLogin = () => {
       setMessageError(
         error?.response?.data?.message ||
           error?.message ||
-          "Error interno del servidor"
+          "Error interno del servidor",
       );
     }
   };
@@ -72,8 +76,12 @@ const useLogin = () => {
   const onLoginGoogle = async () => {
     setLoadingLogingGoogle(true);
     document.cookie = "mode=login; path=/";
+    console.log(callbackUrl);
 
-    await signIn("google");
+    await signIn("google", {
+      redirect: true,
+      // callbackUrl: (callbackUrl as string) || "/principal",
+    });
     setLoadingLogingGoogle(false);
     localStorage.setItem("authGoogle", "true");
   };

@@ -1,13 +1,23 @@
 "use client";
 import "./detailsProduct.css";
 import useDetailsProduct from "./useDetailsProducts";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useService from "../../services/useService";
-import { MdAutorenew, MdCheck, MdClose, MdFavorite } from "react-icons/md";
+
+import {
+  MdAutorenew,
+  MdFavorite,
+  MdShoppingCart,
+  MdClose,
+  MdLocalShipping,
+  MdVerified,
+  MdStar,
+  MdChevronLeft,
+  MdChevronRight,
+} from "react-icons/md";
 import useFavorites from "../../services/useFavorites";
 import { Alert, Box, Modal } from "@mui/material";
 import { useParams } from "next/navigation";
-import { Carousel } from "react-responsive-carousel";
 import ReactPlayer from "react-player";
 import { useTheContext } from "@/app/services/globalContext";
 import BranchSelector from "@/app/components/branchSelector/BranchSelector";
@@ -16,13 +26,21 @@ import ProductI from "@/app/interfaces/products/product.interface";
 
 const DetailsProduct = () => {
   const [dataProduct, setDataProduct] = useState<ProductI | null>();
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [addedAnimation, setAddedAnimation] = useState(false);
+
+  // ── Magnifier lens ──
+  const [lensVisible, setLensVisible] = useState(false);
+  const [lensPos, setLensPos] = useState({ x: 0, y: 0 }); // porcentaje 0-100
+  const imgStageRef = useRef<HTMLDivElement>(null);
+  const ZOOM_FACTOR = 2.5;
+  const ZOOM_PANEL_SIZE = 380; // px del panel de zoom flotante
 
   const {
     quantity,
     loadingAddProduct,
     openModal,
     changeImg,
-    // dataProduct,
     setChangeImg,
     setOpenModal,
     handleAdd,
@@ -30,7 +48,7 @@ const DetailsProduct = () => {
     handleAddProductCart,
     handleOnChange,
     handleKeyBoard,
-    // handleGetDataProduct,
+    // fnGetServerSession,
   } = useDetailsProduct();
 
   const { formatCurrency } = useService();
@@ -38,31 +56,13 @@ const DetailsProduct = () => {
   const { setDataModal } = useTheContext();
   const router = useParams();
   const { idProduct } = router;
-
   const { handleAddFavorites, loadingFavorite } = useFavorites();
 
   const dateCurrent = new Date();
-
-  // Crear nueva fecha sumando 8 días
   const dateSend = new Date(dateCurrent);
   dateSend.setDate(dateCurrent.getDate() + 8);
-
-  // Formatear ambas fechas a formato local (ej: dd/mm/yyyy o mm/dd/yyyy según región)
   const fechaActualFormateada = dateCurrent.toLocaleDateString();
   const fechaFuturaFormateada = dateSend.toLocaleDateString();
-
-  // const dataProduct = useMemo(() => {
-  //   return dataProducts.find(
-  //     (pro) => Number(pro.idProduct) == Number(idProduct),
-  //   );
-  // }, [idProduct, dataProducts]);
-
-  // useEffect(() => {
-  //   if (idProduct) {
-  //     handleGetDataProduct(idProduct);
-  //     //setProduct(null);
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (idProduct) {
@@ -76,7 +76,6 @@ const DetailsProduct = () => {
           setDataProduct(null);
         }
       };
-
       fnGetDataProduct();
     }
   }, [idProduct]);
@@ -84,333 +83,446 @@ const DetailsProduct = () => {
   useEffect(() => {
     if (dataProduct?.imageUrl) {
       setChangeImg(dataProduct.imageUrl[0]);
+      setActiveImgIndex(0);
     }
   }, [dataProduct?.imageUrl]);
 
+  const handlePrevImg = () => {
+    if (!dataProduct?.imageUrl) return;
+    const newIdx =
+      activeImgIndex === 0
+        ? dataProduct.imageUrl.length - 1
+        : activeImgIndex - 1;
+    setActiveImgIndex(newIdx);
+    setChangeImg(dataProduct.imageUrl[newIdx]);
+  };
+
+  const handleNextImg = () => {
+    if (!dataProduct?.imageUrl) return;
+    const newIdx =
+      activeImgIndex === dataProduct.imageUrl.length - 1
+        ? 0
+        : activeImgIndex + 1;
+    setActiveImgIndex(newIdx);
+    setChangeImg(dataProduct.imageUrl[newIdx]);
+  };
+
+  const handleAddToCartWithAnimation = () => {
+    setAddedAnimation(true);
+    setTimeout(() => setAddedAnimation(false), 1200);
+
+    if (
+      (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+      dataProduct?.product_stock!.length > 0 &&
+      Number(dataProduct?.providerId) !== 1
+    ) {
+      setDataModal({
+        isOpen: true,
+        message: (
+          <div className="w-[800px] border">
+            <BranchSelector productSelected={dataProduct} />
+          </div>
+        ),
+        title: "",
+        type: "success",
+        showActions: false,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+    } else {
+      handleAddProductCart(dataProduct!, Number(quantity));
+    }
+  };
+
+  // const handleComprarAhora = () => {
+  //   if (
+  //     (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+  //     dataProduct?.product_stock!.length > 0 &&
+  //     Number(dataProduct?.providerId) !== 1
+  //   ) {
+  //     setDataModal({
+  //       isOpen: true,
+  //       message: (
+  //         <div className="w-[800px] border">
+  //           <BranchSelector productSelected={dataProduct} comprarAhora={true} />
+  //         </div>
+  //       ),
+  //       title: "",
+  //       type: "success",
+  //       showActions: false,
+  //       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+  //       onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+  //     });
+  //   } else {
+  //     handleAddProductCart(dataProduct!, Number(quantity), true);
+  //   }
+  // };
+
+  // ── Magnifier mouse handler ──
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = imgStageRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setLensPos({
+      x: Math.min(100, Math.max(0, x)),
+      y: Math.min(100, Math.max(0, y)),
+    });
+  };
+
+  const stockStatus =
+    dataProduct?.stock === undefined
+      ? null
+      : dataProduct.stock > 10
+        ? "high"
+        : dataProduct.stock > 0
+          ? "low"
+          : "out";
+
+  // useEffect(() => {
+  //   fnGetServerSession(idProduct);
+  // }, [idProduct]);
+
   return (
-    <div className="container-all white p-4">
+    <div className="dp-root">
       {dataProduct === null ? (
-        <Alert severity="info">Sin contenido disponible</Alert>
+        <div className="dp-empty">
+          <Alert severity="info">Sin contenido disponible</Alert>
+        </div>
       ) : (
-        <>
-          <div className="flex justify-center gap-2 mt-4 container-detail1">
-            <div className="container-detail border p-3">
-              <h3 className="title-product">{dataProduct?.name}</h3>
-              {dataProduct?.description &&
-              dataProduct?.description.length > 100 ? (
-                <span
-                  title={dataProduct.description}
-                  className="text-[#808080] text-[16px] mt-2"
+        <div className="dp-wrapper">
+          {/* ── BREADCRUMB / TITLE BAND ── */}
+          <div className="dp-top-band">
+            <span className="dp-category-badge">
+              <MdVerified size={13} /> Producto Verificado
+            </span>
+            <h1 className="dp-title">{dataProduct?.name}</h1>
+            {/* <div className="dp-meta-row">
+              <span className="dp-sku">{dataProduct?.sku}</span>
+              <div className="dp-stars">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <MdStar
+                    key={s}
+                    size={14}
+                    color={s <= 4 ? "#f5a623" : "#ccc"}
+                  />
+                ))}
+                <span className="dp-rating-count">(4.0)</span>
+              </div>
+            </div> */}
+          </div>
+
+          {/* ── MAIN GRID ── */}
+          <div className="dp-main-grid">
+            {/* LEFT: IMAGE GALLERY */}
+            <div className="dp-gallery">
+              {/* Stage con lupa */}
+              <div className="dp-img-wrapper">
+                <div
+                  ref={imgStageRef}
+                  className="dp-img-stage"
+                  onMouseMove={handleMouseMove}
+                  onMouseEnter={() => setLensVisible(true)}
+                  onMouseLeave={() => setLensVisible(false)}
+                  onClick={() => setOpenModal(true)}
                 >
-                  Descripción: {`${dataProduct.description.slice(0, 100)}...`}
-                </span>
-              ) : dataProduct?.description &&
-                dataProduct.description.length < 100 ? (
-                <span className="text-[#808080] text-[16px]">
-                  Descripción: {dataProduct.description}
-                </span>
-              ) : null}
+                  <img
+                    src={dataProduct?.imageUrl?.[activeImgIndex] ?? null}
+                    alt={dataProduct?.name}
+                    className="dp-main-img"
+                  />
 
-              <span className="code-product mt-2 block">
-                {dataProduct?.sku}
-              </span>
+                  {/* Lente cuadrada que sigue el cursor */}
+                  {lensVisible && (
+                    <div
+                      className="dp-lens"
+                      style={{
+                        left: `calc(${lensPos.x}% - 50px)`,
+                        top: `calc(${lensPos.y}% - 50px)`,
+                      }}
+                    />
+                  )}
 
-              <span className="price-product mt-2">
-                {formatCurrency(Number(dataProduct?.price))}
-              </span>
-              {/* <span className="plazos-product">Hasta 18 pagos en $125.00</span>
-          <br /> */}
+                  <button
+                    className="dp-nav-btn dp-nav-prev"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevImg();
+                    }}
+                  >
+                    <MdChevronLeft size={22} />
+                  </button>
+                  <button
+                    className="dp-nav-btn dp-nav-next"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextImg();
+                    }}
+                  >
+                    <MdChevronRight size={22} />
+                  </button>
 
-              {/* <span className="costo-envio-product">Costo de envío: $155.00</span> */}
-              <span className="fecha-entrega-product mt-2">
-                Fecha de entrega tentativa:{" "}
-                <span>
-                  del {fechaActualFormateada} al {fechaFuturaFormateada}
-                </span>
-              </span>
-              <span className="stock-product mt-2">
-                En stock: {dataProduct?.stock} pzas.
-              </span>
+                  {!lensVisible && (
+                    <span className="dp-zoom-hint">
+                      🔍 Pasa el cursor para ampliar
+                    </span>
+                  )}
+                </div>
 
-              <div className="textfield flex mt-1">
-                <button
-                  className="border"
-                  onClick={() => handleAdd(dataProduct!.stock)}
-                >
-                  +
-                </button>
-                <input
-                  type="number"
-                  className="border text-center"
-                  value={quantity}
-                  onChange={handleOnChange}
-                  onKeyUp={(event) => handleKeyBoard(event, dataProduct!)}
-                />
-                <button className="border" onClick={handleSubstract}>
-                  -
-                </button>
+                {/* Panel de zoom flotante a la derecha */}
+                {lensVisible && (
+                  <div
+                    className="dp-zoom-panel"
+                    style={{
+                      width: `${ZOOM_PANEL_SIZE}px`,
+                      height: `${ZOOM_PANEL_SIZE}px`,
+                      backgroundImage: `url(${dataProduct?.imageUrl?.[activeImgIndex] ?? ""})`,
+                      backgroundSize: `${ZOOM_FACTOR * 100}%`,
+                      backgroundPosition: `${lensPos.x}% ${lensPos.y}%`,
+                    }}
+                  />
+                )}
               </div>
 
-              <button
-                className="btnAgregar"
-                disabled={loadingAddProduct || dataProduct?.stock! <= 0}
-                // onClick={() => handleAddProductCart(dataProduct!, Number(quantity))}
-                onClick={() => {
-                  if (
-                    (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
-                    dataProduct?.product_stock!.length > 0 &&
-                    Number(dataProduct?.providerId) !== 1
-                  ) {
-                    setDataModal({
-                      isOpen: true,
-                      message: (
-                        <div className="w-[800px] border">
-                          <BranchSelector productSelected={dataProduct} />
-                        </div>
-                      ),
-                      title: "",
-                      type: "success",
-                      showActions: false,
-                      onClose: () => {
-                        setDataModal((prev) => ({
-                          ...prev,
-                          isOpen: false,
-                        }));
-                      },
-                      onConfirm: () => {
-                        setDataModal((prev) => ({
-                          ...prev,
-                          isOpen: false,
-                        }));
-                      },
-                    });
-                  } else {
-                    handleAddProductCart(dataProduct!, Number(quantity));
-                  }
-                }}
-              >
-                {loadingAddProduct ? (
-                  <MdAutorenew size={20} className="m-auto the-spinner" />
-                ) : dataProduct?.stock! > 0 ? (
-                  "Agregar"
-                ) : (
-                  "No disponible"
-                )}
-              </button>
-              <br />
+              {/* Thumbnails */}
+              {dataProduct?.imageUrl && dataProduct.imageUrl.length > 1 && (
+                <div className="dp-thumbs">
+                  {dataProduct.imageUrl.map((img: string, i: number) => (
+                    <div
+                      key={i}
+                      className={`dp-thumb ${i === activeImgIndex ? "dp-thumb--active" : ""}`}
+                      onClick={() => {
+                        setActiveImgIndex(i);
+                        setChangeImg(img);
+                      }}
+                    >
+                      <img src={img} alt={`Vista ${i + 1}`} loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+              )}
 
-              <button
-                className="btnAgregarFavoritos"
-                disabled={loadingFavorite}
-                onClick={() => handleAddFavorites(dataProduct!)}
-              >
-                {loadingFavorite ? (
-                  <MdAutorenew size={20} className="m-auto the-spinner" />
-                ) : (
-                  <div className="flex gap-2">
-                    Agregar a favoritos
-                    <MdFavorite size={20} />
-                  </div>
-                )}
-              </button>
+              <p className="dp-img-disclaimer">
+                * Las imágenes son ilustrativas y pueden variar según
+                inventario.
+              </p>
             </div>
-            <div
-              className="container-img border"
-              // onClick={() => {
-              //   setOpenModal(true);
-              // }}
-            >
-              <Carousel
-                showIndicators={true}
-                showThumbs={false}
-                showStatus={false}
-                showArrows={true}
-                onClickItem={() => {
-                  //onRouterLink(`/detailsProduct/${dataProduct.idProduct}`);
-                  setOpenModal(true);
-                }}
-              >
-                {dataProduct?.imageUrl && dataProduct.imageUrl.length > 0
-                  ? dataProduct.imageUrl.map((img: string, i: number) => (
-                      <div
-                        key={i}
-                        className="flex justify-center items-center"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      >
-                        <img
-                          src={img}
-                          style={{ objectFit: "contain", cursor: "pointer" }}
-                          loading="lazy"
-                        />
-                      </div>
-                    ))
-                  : [<div key="no-img">Sin imágenes</div>]}
-              </Carousel>
-              {/* {dataProduct.imageUrl && (
-            <img
-              src={dataProduct.imageUrl[0]}
-              alt="Imagen"
-              style={{ cursor: "pointer" }}
-            />
-          )} */}
+
+            {/* RIGHT: PRODUCT INFO */}
+            <div className="dp-info-panel">
+              {/* Price block */}
+              <div className="dp-price-block">
+                <span className="dp-price">
+                  {formatCurrency(Number(dataProduct?.price))}
+                </span>
+              </div>
+
+              {/* Description */}
+              {dataProduct?.description && (
+                <p className="dp-description">
+                  {dataProduct.description.length > 160
+                    ? `${dataProduct.description.slice(0, 160)}…`
+                    : dataProduct.description}
+                </p>
+              )}
+
+              {/* Trust chips */}
+              <div className="dp-trust-row">
+                <span className="dp-chip">
+                  <MdLocalShipping size={14} /> Envío rápido
+                </span>
+                <span className="dp-chip">
+                  <MdVerified size={14} /> Producto original
+                </span>
+              </div>
+
+              {/* Delivery */}
+              <div className="dp-delivery-card">
+                <MdLocalShipping size={18} className="dp-delivery-icon" />
+                <div>
+                  <span className="dp-delivery-label">Entrega estimada</span>
+                  <span className="dp-delivery-range">
+                    {fechaActualFormateada} — {fechaFuturaFormateada}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stock indicator */}
+              <div className="dp-stock-row">
+                <span className={`dp-stock-dot dp-stock-dot--${stockStatus}`} />
+                <span className="dp-stock-text">
+                  {stockStatus === "out"
+                    ? "Sin stock"
+                    : stockStatus === "low"
+                      ? `¡Solo quedan ${dataProduct?.stock} pzas!`
+                      : `En stock: ${dataProduct?.stock} pzas.`}
+                </span>
+              </div>
+
+              {/* Quantity selector */}
+              <div className="dp-qty-section">
+                <label className="dp-qty-label">Cantidad</label>
+                <div className="dp-qty-control">
+                  <button className="dp-qty-btn" onClick={handleSubstract}>
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    className="dp-qty-input"
+                    value={quantity}
+                    onChange={handleOnChange}
+                    onKeyUp={(event) => handleKeyBoard(event, dataProduct!)}
+                  />
+                  <button
+                    className="dp-qty-btn"
+                    onClick={() => handleAdd(dataProduct!.stock)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="dp-cta-group">
+                <button
+                  className={`dp-btn-cart`}
+                  disabled={loadingAddProduct || (dataProduct?.stock ?? 0) <= 0}
+                  onClick={handleAddToCartWithAnimation}
+                >
+                  {loadingAddProduct ? (
+                    <MdAutorenew size={20} className="dp-spinner" />
+                  ) : (dataProduct?.stock ?? 0) > 0 ? (
+                    <span className="dp-btn-inner">
+                      <MdShoppingCart size={18} /> Añadir al carrito
+                    </span>
+                  ) : (
+                    "No disponible"
+                  )}
+                </button>
+
+                {/* <button
+                  className="dp-btn-cart"
+                  disabled={dataProduct?.stock === 0}
+                  onClick={handleComprarAhora}
+                >
+                  {dataProduct?.stock !== 0 ? (
+                    <span className="dp-btn-inner">¡Comprar Ahora!</span>
+                  ) : (
+                    "No disponible"
+                  )}
+                </button> */}
+
+                <button
+                  className="dp-btn-fav"
+                  disabled={loadingFavorite}
+                  onClick={() => handleAddFavorites(dataProduct!)}
+                >
+                  {loadingFavorite ? (
+                    <MdAutorenew size={18} className="dp-spinner" />
+                  ) : (
+                    <span className="dp-btn-inner">
+                      <MdFavorite size={18} /> Guardar en favoritos
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="w-full flex container-detail2">
-            <div className="container-description w-[70%] border mt-2 flex justify-center flex-wrap p-2">
-              <h4>Descripción</h4>
-              <br />
-              <br />
-
+          {/* ── SPECS + VIDEO ROW ── */}
+          <div className="dp-bottom-row">
+            <div className="dp-specs-card">
+              <h4 className="dp-specs-title">Especificaciones técnicas</h4>
               {(() => {
                 try {
-                  // 1️⃣ Verificamos que exista
-                  if (!dataProduct?.caracteristicas) return null;
-
-                  // 2️⃣ Si es string, intentamos parsear
+                  if (!dataProduct?.caracteristicas)
+                    return (
+                      <p className="dp-specs-empty">
+                        Sin especificaciones disponibles.
+                      </p>
+                    );
                   const caracteristicas =
                     typeof dataProduct.caracteristicas === "string"
                       ? JSON.parse(dataProduct.caracteristicas)
                       : dataProduct.caracteristicas;
-
-                  // 3️⃣ Si no es array o está vacío, no renderizamos nada
                   if (
                     !Array.isArray(caracteristicas) ||
                     caracteristicas.length === 0
                   )
-                    return null;
+                    return (
+                      <p className="dp-specs-empty">
+                        Sin especificaciones disponibles.
+                      </p>
+                    );
 
-                  // 4️⃣ Renderizamos el array
-                  return caracteristicas.map((item: any, indexCa: number) => (
-                    <div
-                      key={indexCa}
-                      className="w-full flex justify-center items-center flex-col mb-3"
-                    >
-                      <label htmlFor="">{item.prop}</label>
-                      <div className="content-description flex flex-col items-center justify-start">
-                        {item.value}
-                      </div>
+                  return (
+                    <div className="dp-specs-table">
+                      {caracteristicas.map((item: any, i: number) => (
+                        <div
+                          key={i}
+                          className={`dp-spec-row ${i % 2 === 0 ? "dp-spec-row--even" : ""}`}
+                        >
+                          <span className="dp-spec-key">{item.prop}</span>
+                          <span className="dp-spec-val">{item.value}</span>
+                        </div>
+                      ))}
                     </div>
-                  ));
-                } catch (error) {
-                  console.error(
-                    "❌ Error al parsear dataProduct.caracteristicas:",
-                    error,
                   );
-                  return null; // evita que React crashee
+                } catch {
+                  return null;
                 }
               })()}
             </div>
-            {idProduct?.toString() == "14" ? (
-              <div className="w-[30%] border mt-2 flex justify-center p-2 containerTikTok">
-                <ReactPlayer
-                  autoPlay={true}
-                  src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"
-                  width={"100%"}
-                  controls
-                  height={"100%"}
-                />
-              </div>
-            ) : null}
-          </div>
 
-          <div className="w-[70%] mt-2">
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: "bold",
-                fontStyle: "italic",
-              }}
-            >
-              Las imágenes publicadas son meramente ilustrativas y puede variar
-              el modelo de acuerdo a nuestro inventario al dia.
-            </span>
-          </div>
-
-          <Modal
-            open={openModal}
-            onClose={() => setOpenModal(false)}
-            sx={{
-              zIndex: "9999",
-              overflow: "visible !important",
-              "& .MuiBackdrop-root": {
-                overflow: "visible !important",
-              },
-            }}
-            children={
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: "90%",
-
-                  bgcolor: "white",
-                  boxShadow: 24,
-                  p: 4,
-                  borderRadius: "8px",
-                }}
-              >
-                <button
-                  onClick={() => setOpenModal(false)}
-                  style={{
-                    position: "absolute",
-                    top: "10px",
-                    right: "10px",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                  aria-label="Cerrar modal"
-                >
-                  <MdClose size={24} color="#333" />
-                </button>
-                <div className="w-full border grid grid-cols-[1fr_1fr] h-[400px] relative">
-                  <div className="flex justify-center items-center">
-                    <img
-                      src={changeImg}
-                      alt="Image"
-                      style={{
-                        width: "100%",
-                        height: "400px",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-wrap justify-start items-start p-2 gap-2">
-                    {dataProduct?.imageUrl.length > 0
-                      ? dataProduct?.imageUrl.map(
-                          (img: string, index: number) => {
-                            return (
-                              <div
-                                className="p-3 rounded hover:shadow-2xl hover:rounded"
-                                key={index}
-                              >
-                                <img
-                                  src={img}
-                                  key={index}
-                                  style={{ cursor: "pointer", height: "150px" }}
-                                  onClick={() => setChangeImg(img)}
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          },
-                        )
-                      : null}
-                  </div>
+            {idProduct?.toString() === "14" && (
+              <div className="dp-video-card">
+                <h4 className="dp-specs-title">Video del producto</h4>
+                <div className="dp-video-wrapper">
+                  <ReactPlayer
+                    src="https://www.tiktok.com/@edson.hdez0/video/7567524415173381396"
+                    width="100%"
+                    height="100%"
+                    controls
+                    autoPlay
+                  />
                 </div>
-              </Box>
-            }
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          ></Modal>
-        </>
+              </div>
+            )}
+          </div>
+        </div>
       )}
+
+      {/* ── LIGHTBOX MODAL ── */}
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        sx={{ zIndex: 9999 }}
+      >
+        <Box className="dp-modal-box">
+          <button
+            className="dp-modal-close"
+            onClick={() => setOpenModal(false)}
+          >
+            <MdClose size={22} />
+          </button>
+          <div className="dp-modal-grid">
+            <div className="dp-modal-main-img">
+              <img src={changeImg} alt="Ampliada" />
+            </div>
+            <div className="dp-modal-thumbs">
+              {dataProduct?.imageUrl?.map((img: string, i: number) => (
+                <div
+                  key={i}
+                  className={`dp-modal-thumb ${img === changeImg ? "dp-modal-thumb--active" : ""}`}
+                  onClick={() => setChangeImg(img)}
+                >
+                  <img src={img} loading="lazy" alt={`Imagen ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };

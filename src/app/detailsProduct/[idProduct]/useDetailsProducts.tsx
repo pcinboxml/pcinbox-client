@@ -14,6 +14,7 @@ const useDetailsProduct = () => {
   const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [changeImg, setChangeImg] = useState<string>("");
+  const { onRouterLink } = useService();
 
   // const [dataProduct, setProduct] = useState<ProductI>({
   //   categoryId: "",
@@ -60,6 +61,7 @@ const useDetailsProduct = () => {
   const handleAddProductCart = async (
     dataProduct: ProductI,
     quantityProp: number,
+    // comprarAhora?: boolean,
   ) => {
     try {
       const stored = localStorage.getItem("dataCartStorage");
@@ -108,16 +110,16 @@ const useDetailsProduct = () => {
       setLoadingAddProduct(false);
 
       if (resp && resp.status == 200) {
-        setDataNotification({
-          open: true,
-          handleClose: () =>
-            setDataNotification((prevNoti) => ({
-              ...prevNoti,
-              open: false,
-            })),
-          message: "Producto agregado al carrito correctamente",
-          type: "success",
-        });
+        // setDataNotification({
+        //   open: true,
+        //   handleClose: () =>
+        //     setDataNotification((prevNoti) => ({
+        //       ...prevNoti,
+        //       open: false,
+        //     })),
+        //   message: "Producto agregado al carrito correctamente",
+        //   type: "success",
+        // });
 
         setDataCart((prev) => {
           const existingProduct = prev.find(
@@ -165,6 +167,9 @@ const useDetailsProduct = () => {
             ];
           }
         });
+        // if (comprarAhora && comprarAhora === true) {
+        //   onRouterLink("/confirma-productos");
+        // }
       }
     } catch (error: any) {
       setLoadingAddProduct(false);
