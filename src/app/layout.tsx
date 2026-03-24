@@ -3,6 +3,7 @@ import { GlobalProvider } from "./services/globalContext";
 import ClientLayout from "./clientLayout";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -14,7 +15,9 @@ export default function RootLayout({
       <body>
         <ReactQueryProvider>
           <GlobalProvider>
-            <ClientLayout>{children}</ClientLayout>
+            <Suspense>
+              <ClientLayout>{children}</ClientLayout>
+            </Suspense>
           </GlobalProvider>
         </ReactQueryProvider>
       </body>
