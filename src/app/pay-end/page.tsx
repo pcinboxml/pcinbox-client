@@ -2,7 +2,7 @@
 
 import { Alert } from "@mui/material";
 import { Download } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // <-- CAMBIO 1: Añade useRef a la importación
 import Barcode from "react-barcode";
 import usePayEnd from "./usePayEnd";
 import { MdAutorenew, MdCopyAll } from "react-icons/md";
@@ -39,13 +39,17 @@ const PayEnd = () => {
   const [idOrder, setIdOrder] = useState("");
   const [methodPay, setMethodPay] = useState("");
   const [expired, setExpired] = useState("");
+
+  // <-- CAMBIO 2: Crea la referencia al enlace de descarga
+  const downloadLinkRef = useRef<HTMLAnchorElement | null>(null);
+
   const {
     dataOrderCash,
     loadingDownloadBar,
     handleGetOrderCash,
     formatDate,
     handleDownloadBar,
-    initDownloadBar,
+    // initDownloadBar, <-- CAMBIO 3: Ya no necesitas esta función aquí
     handleCopy,
   } = usePayEnd();
 
@@ -72,13 +76,18 @@ const PayEnd = () => {
     if (expiredParam) {
       setExpired(expiredParam);
     }
-  }, [idOrder, methodPay, expired]);
+  }, []); // Este efecto solo se ejecuta una vez para leer los parámetros de la URL
 
+  // <-- CAMBIO 4: Actualiza el useEffect para la descarga automática
   useEffect(() => {
+    // Solo intenta descargar si los datos ya han llegado
     if (dataOrderCash?.payment_method?.reference) {
-      initDownloadBar(dataOrderCash?.payment_method?.reference);
+      handleDownloadBar(
+        dataOrderCash.payment_method.reference,
+        downloadLinkRef,
+      );
     }
-  }, []);
+  }, [dataOrderCash]); // Se ejecuta cada vez que dataOrderCash se carga
 
   return (
     <section className={styles.section}>
@@ -144,11 +153,13 @@ const PayEnd = () => {
                     </div>
 
                     <div className="text-center">
+                      {/* <-- El onClick ya estaba correcto en tu código, ahora funcionará porque downloadLinkRef existe */}
                       <button
                         disabled={loadingDownloadBar}
                         onClick={() =>
                           handleDownloadBar(
                             dataOrderCash?.payment_method.reference,
+                            downloadLinkRef,
                           )
                         }
                         className="flex items-center justify-center mx-auto my-2 px-3 py-1 bg-[#606060] text-white text-xs rounded"
@@ -169,7 +180,6 @@ const PayEnd = () => {
                   </div>
                 </div>
 
-                {/* {progressPay?.optionSend?.name ? ( */}
                 <div className="w-full my-3">
                   <span className="text-[20px] text-[#606060] font-bold block text-center">
                     Guarda el siguiente número de pedido de la sucursal PCINBOX
@@ -180,30 +190,6 @@ const PayEnd = () => {
                     # {dataOrderCash?.order_id}
                   </span>
                 </div>
-                {/* ) : null} */}
-
-                {/* Información de expiración */}
-                {/* <div className="p-4 border-b border-gray-200 bg-red-50">
-                  <div className="flex items-center justify-center mb-2">
-                    <Clock className="w-5 h-5 text-red-600 mr-2" />
-                    <span className="font-bold text-red-700 mx-2">
-                      ¡IMPORTANTE!
-                    </span>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-sm text-red-700 mb-1 flex justify-center items-end">
-                      <span className="text-[18px]">Fecha límite de pago:</span>
-                      <span className="text-[18px] mx-2 font-bold text-red-800">
-                        {formatDate(Number(expired))}
-                      </span>
-                    </div>
-
-                    <div className="text-xs text-red-600 mt-1">
-                      Después de esta fecha el código expirará
-                    </div>
-                  </div>
-                </div> */}
               </div>
             ) : (
               <div className="w-full mt-2 mb-5">
@@ -371,6 +357,9 @@ const PayEnd = () => {
           </div>
         </div>
       )}
+
+      {/* <-- CAMBIO 5: Añade el enlace oculto al final del componente, justo antes de cerrar la etiqueta <section> */}
+      <a ref={downloadLinkRef} style={{ display: "none" }} />
     </section>
   );
 };

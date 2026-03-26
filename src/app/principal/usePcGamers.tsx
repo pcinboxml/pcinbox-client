@@ -23,7 +23,7 @@ const usePcGamers = ({ tipo, itemsPerPage = 8 }: UseProductsParams) => {
 
         const data = await res.json();
 
-        setProducts(data?.data ?? []); // 👈 nunca undefined
+        setProducts(data?.data ?? []);
         setTotalPages(data?.totalPages ?? 0);
       } catch (error: any) {
         if (error.name !== "AbortError") {
