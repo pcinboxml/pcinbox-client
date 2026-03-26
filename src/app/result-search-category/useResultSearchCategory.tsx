@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -15,12 +16,25 @@ const useResultSearchCategory = () => {
   const { setDataCart, dataCart } = useTheContext();
 
   const [page, setPage] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathName = usePathname();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    console.log(page);
+    console.log(window);
+  }, [page]);
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number,
   ) => {
     setPage(value);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", value.toString());
+
+    //router.push(`${pathName}${params.toString()}`, { scroll: false });
   };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;

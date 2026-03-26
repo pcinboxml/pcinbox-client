@@ -16,7 +16,7 @@ const usePayEnd = () => {
           idOrder,
           idUser: localStorage.getItem("idUser"),
         },
-        "/openpay/getDataOrderOpenPay"
+        "/openpay/getDataOrderOpenPay",
       );
 
       if (resp.status == 200) {
@@ -40,55 +40,134 @@ const usePayEnd = () => {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
-  const handleDownloadBar = async (valueBar: any) => {
+  // No necesitas crear el 'a' aquí, solo la lógica de descarga
+  const handleDownloadBar = async (
+    valueBar: any,
+    linkRef: React.RefObject<HTMLAnchorElement>,
+  ) => {
+    if (!linkRef.current) return; // Salir si la referencia no está lista
+
     try {
       setLoadingDownloadBar(true);
       const resp = await requestGetPagos(
         `/codeOxxo/downloadCodeBar/${valueBar}`,
-        true
+        true,
       );
 
       const url = window.URL.createObjectURL(new Blob([resp.data]));
 
-      // Crear <a> y simular click
-      const link = document.createElement("a");
+      // Usamos la referencia al elemento 'a' que está en el componente
+      const link = linkRef.current;
       link.href = url;
       link.setAttribute("download", `barcode-${valueBar}.png`);
-      document.body.appendChild(link);
+
+      // Simulamos el click
       link.click();
-      if (link.parentNode) {
-        link.parentNode.removeChild(link);
-      }
 
-      // Limpiar URL temporal
-      window.URL.revokeObjectURL(url);
-
-      setLoadingDownloadBar(false);
+      // Limpiamos la URL temporal después de un pequeño retraso
+      // para asegurar que la descarga haya comenzado.
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100); // 100ms es generalmente suficiente
     } catch (error) {
+      console.error("Error al descargar el código de barras:", error);
+    } finally {
       setLoadingDownloadBar(false);
     }
   };
 
+  // const handleDownloadBar = async (valueBar: any) => {
+  //   try {
+  //     setLoadingDownloadBar(true);
+  //     const resp = await requestGetPagos(
+  //       `/codeOxxo/downloadCodeBar/${valueBar}`,
+  //       true
+  //     );
+
+  //     const url = window.URL.createObjectURL(new Blob([resp.data]));
+
+  //     // Crear <a> y simular click
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.setAttribute("download", `barcode-${valueBar}.png`);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     if (link.parentNode) {
+  //       link.parentNode.removeChild(link);
+  //     }
+
+  //     // Limpiar URL temporal
+  //     window.URL.revokeObjectURL(url);
+
+  //     setLoadingDownloadBar(false);
+  //   } catch (error) {
+  //     setLoadingDownloadBar(false);
+  //   }
+  // };
+
+  // const initDownloadBar = async (valueBar: any) => {
+  //   const resp = await requestGetPagos(
+  //     `/codeOxxo/downloadCodeBar/${valueBar}`,
+  //     true,
+  //   );
+
+  //   const url = window.URL.createObjectURL(new Blob([resp.data]));
+
+  //   // Crear <a> y simular click
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.setAttribute("download", `barcode-${valueBar}.png`);
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   if (link.parentNode) {
+  //     link.parentNode.removeChild(link);
+  //   }
+
+  //   // Limpiar URL temporal
+  //   window.URL.revokeObjectURL(url);
+  // };
+
   const initDownloadBar = async (valueBar: any) => {
-    const resp = await requestGetPagos(
-      `/codeOxxo/downloadCodeBar/${valueBar}`,
-      true
-    );
+    let link: HTMLAnchorElement | null = null;
+    let url: string | null = null;
 
-    const url = window.URL.createObjectURL(new Blob([resp.data]));
+    try {
+      const resp = await requestGetPagos(
+        `/codeOxxo/downloadCodeBar/${valueBar}`,
+        true,
+      );
 
-    // Crear <a> y simular click
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `barcode-${valueBar}.png`);
-    document.body.appendChild(link);
-    link.click();
-    if (link.parentNode) {
-      link.parentNode.removeChild(link);
+      url = window.URL.createObjectURL(new Blob([resp.data]));
+
+      // Crear <a> y simular click
+      link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `barcode-${valueBar}.png`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error en la inicialización de la descarga:", error);
+      // Manejar el error si es necesario
+    } finally {
+      // Limpieza segura
+      if (link) {
+        try {
+          // Elimina el nodo del body directamente.
+          document.body.removeChild(link);
+        } catch (e) {
+          // Si falla, no es crítico, el navegador probablemente ya lo limpió.
+          console.warn(
+            "No se pudo remover el enlace del DOM en initDownloadBar.",
+            e,
+          );
+        }
+      }
+
+      if (url) {
+        // Limpia la URL temporal para liberar memoria.
+        window.URL.revokeObjectURL(url);
+      }
     }
-
-    // Limpiar URL temporal
-    window.URL.revokeObjectURL(url);
   };
 
   const handleCopy = (idOrder: string) => {
