@@ -43,7 +43,7 @@ const usePayEnd = () => {
   // No necesitas crear el 'a' aquí, solo la lógica de descarga
   const handleDownloadBar = async (
     valueBar: any,
-    linkRef: React.RefObject<HTMLAnchorElement>,
+    linkRef: React.RefObject<HTMLAnchorElement | null>,
   ) => {
     if (!linkRef.current) return; // Salir si la referencia no está lista
 
