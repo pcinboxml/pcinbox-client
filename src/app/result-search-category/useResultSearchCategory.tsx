@@ -20,18 +20,23 @@ const useResultSearchCategory = () => {
   const router = useRouter();
   const pathName = usePathname();
   const categoryId = searchParams.get("categoryId");
+  const idProduct = searchParams.get("idProduct");
+  const name = searchParams.get("name");
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number,
   ) => {
     setPage(value);
-    if (categoryId) {
-      const newQuery = `?categoryId=${categoryId}`;
+
+    if (categoryId || (idProduct && name)) {
+      const newQuery = categoryId
+        ? `?categoryId=${categoryId}`
+        : `?idProduct=${idProduct}&name=${name}`;
       router.replace(newQuery);
-      window?.scrollTo({ top: 0, behavior: "smooth" });
+
+      //window?.scrollTo({ top: 0, behavior: "smooth" });
     }
-    //router.push(`${pathName}${params.toString()}`, { scroll: false });
   };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
