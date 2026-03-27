@@ -24,7 +24,7 @@ const PrincipalComponent = () => {
       }));
     };
   const tipos = [
-    { tipo: "Oficina y Gaming", label: "Laptops, Escritorios y sillas Gamer" },
+    // { tipo: "Oficina y Gaming", label: "Laptops, Escritorios y sillas Gamer" },
     { tipo: "workStation", label: "PC Estación de trabajo" },
     // { tipo: "", label: "" },
     { tipo: "pro", label: "Pc Gamer Pro" },

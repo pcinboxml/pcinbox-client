@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
