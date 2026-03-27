@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
@@ -19,22 +19,24 @@ const useResultSearchCategory = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    console.log(page);
-    console.log(window);
-  }, [page]);
+  const categoryId = searchParams.get("categoryId");
+  const idProduct = searchParams.get("idProduct");
+  const name = searchParams.get("name");
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number,
   ) => {
     setPage(value);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", value.toString());
 
-    //router.push(`${pathName}${params.toString()}`, { scroll: false });
+    if (categoryId || (idProduct && name)) {
+      const newQuery = categoryId
+        ? `?categoryId=${categoryId}`
+        : `?idProduct=${idProduct}&name=${name}`;
+      router.replace(newQuery);
+
+      //window?.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;

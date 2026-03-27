@@ -14,12 +14,16 @@ import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
+import { useScrollRestoration } from "./services/useScrollRestauration";
 
 export default function AppWrapper({
   children,
+  ...props
 }: {
   children: React.ReactNode;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const pathName = usePathname();
 
   const {
@@ -496,15 +500,54 @@ export default function AppWrapper({
   // }, [socketCron?.current]);
 
   // Llama al hook aquí. Se ejecutará cada vez que la ruta cambie.
+
+  // useEffect(() => {
+  //   const pos = sessionStorage.getItem("scrollPosition");
+  //   if (pos) {
+  //     // Espera un frame para que el DOM termine de renderizar
+  //     requestAnimationFrame(() => {
+  //       window.scrollTo({ top: parseInt(pos), behavior: "instant" });
+  //       //window.scrollBy({ top: parseInt(pos), behavior: "smooth" });
+  //       sessionStorage.removeItem("scrollPosition");
+  //     });
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   const container = scrollRef.current;
+  //   if (!container) return;
+
+  //   const handleScroll = (event: Event) => {
+  //     console.log(
+  //       "scroll del contenedor:",
+  //       (event.target as HTMLElement).scrollTop,
+  //     );
+  //     sessionStorage.setItem(
+  //       "scrollPosition",
+  //       (event.target as HTMLElement).scrollTop.toString(),
+  //     );
+  //   };
+
+  //   container.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     container.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [scrollRef]);
   useProtectedRoute();
+  useScrollRestoration(scrollRef);
 
   return (
     <SessionProvider>
       <div
+        {...props}
+        ref={scrollRef}
+        id="scroll-container"
         style={{
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh",
+          height: "100vh",
+          overflowY: "auto",
         }}
       >
         {pathName != "/estatusMP" &&

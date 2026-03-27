@@ -34,7 +34,6 @@ body {
 }
 
 section {
-  margin-top: 30px;
   margin-bottom: 60px;
 }
 
@@ -214,7 +213,7 @@ section {
   --sidebar-ring: oklch(0.556 0 0);
 }
 .main-content {
-  margin-top: 180px !important;
+  margin-top: 50px !important;
 }
 
 @layer base {

@@ -9,6 +9,7 @@ import {
   Avatar,
   Chip,
   InputAdornment,
+  Paper,
 } from "@mui/material";
 import { SyntheticEvent, useEffect, useState } from "react";
 import useEnterpriseSearch from "@/app/hooks/useEnterpriseSearch";
@@ -24,11 +25,9 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
   const { onRouterLink } = useService();
   const [inputValue, setInputValue] = useState<string>("");
 
-  // Hook para buscar productos con debounce
   const { data: searchResults = [], isLoading } =
     useEnterpriseSearch(inputValue);
 
-  // Filtro personalizado (para que Autocomplete busque en nombre + descripción)
   const filterOptions = createFilterOptions({
     stringify: (option: ProductI) =>
       `${option.name ?? ""} ${option.description ?? ""} ${option.sku ?? ""} ${option.upc ?? ""}`,
@@ -81,24 +80,65 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
         loading={isLoading}
         noOptionsText="Sin resultados disponibles"
         sx={{ width: "100%" }}
+        PaperComponent={(props) => (
+          <Paper
+            {...props}
+            sx={{
+              maxHeight: { xs: 300, sm: 400 }, // altura máxima scrollable
+              overflowY: "auto",
+            }}
+          />
+        )}
         renderOption={(props, option: any) => (
           <Box
-            component="li" // 🔹 indica que Box será un <li>
+            component="li"
             {...props}
             key={option.idProduct}
-            sx={{ display: "flex", alignItems: "center", gap: 1, py: 1 }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              py: { xs: 2, sm: 1 },
+              px: { xs: 2, sm: 1 },
+              minWidth: 0, // 🔹 permite truncar texto
+            }}
           >
             <Avatar
               src={option.image_url?.[0]}
               alt={option.name}
               variant="rounded"
-              sx={{ width: 50, height: 50 }}
+              sx={{ width: { xs: 40, sm: 50 }, height: { xs: 40, sm: 50 } }}
             />
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="body1" fontWeight={500}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                minWidth: 0,
+                overflow: "hidden",
+              }}
+            >
+              <Typography
+                variant="body1"
+                fontWeight={500}
+                sx={{
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {option.name}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {option.description}
               </Typography>
             </Box>
@@ -106,7 +146,11 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
               label={option.stock > 0 ? `Stock: ${option.stock}` : "Agotado"}
               color={option.stock > 0 ? "success" : "error"}
               size="small"
-              sx={{ ml: "auto" }}
+              sx={{
+                ml: "auto",
+                fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                flexShrink: 0,
+              }}
             />
           </Box>
         )}
@@ -151,7 +195,7 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
         style={{
           marginLeft: "2px",
         }}
-        className="ml-2 px-4 py-1 bg-[#BB3D4B] text-white rounded transition-colors"
+        className="ml-1 px-2 py-1 bg-[#BB3D4B] text-white rounded transition-colors"
       >
         Buscar
       </button>
