@@ -128,8 +128,13 @@ const useService = () => {
 
   const onRouterLink = (route: string): void => {
     try {
+      // const isDetails = route.startsWith("/detailsProduct/");
+
       router.prefetch(route);
-      router.push(route, { scroll: true });
+      router.push(
+        route,
+        { scroll: false }, // true -> scroll top, false -> mantener
+      );
     } catch (error) {
       setDataModal({
         isOpen: true,

@@ -378,6 +378,7 @@ const SearchCategoryContent = () => {
                     }
                     setMarca(null);
                     setOrderBy("");
+                    setFilterValue("");
                   }}
                 >
                   Resetear Filtro
@@ -506,7 +507,7 @@ const SearchCategoryContent = () => {
                         });
                       }}
                     >
-                      <option value="" disabled>
+                      <option value={""} disabled>
                         Selecciona una opción
                       </option>
                       <option value={"1"}>Mayor precio</option>
@@ -514,9 +515,25 @@ const SearchCategoryContent = () => {
                     </select>
                   </div>
                 </div>
-                <hr />
               </>
             )}
+
+            {/* <div
+              className="w-full mt-2 flex justify-end"
+              style={{ padding: "2px" }}
+            >
+              {data && data?.length > 0 && (
+                <div className={styles.paginationWrapper}>
+                  <PaginationComponent
+                    onChange={handleChangePage}
+                    page={page}
+                    count={Math.ceil(data.length / itemsPerPage)}
+                  />
+                </div>
+              )}
+            </div> */}
+
+            <hr />
 
             <div>
               {data && data.length > 0 ? (

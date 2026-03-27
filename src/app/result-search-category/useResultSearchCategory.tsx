@@ -19,21 +19,18 @@ const useResultSearchCategory = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    console.log(page);
-    console.log(window);
-  }, [page]);
+  const categoryId = searchParams.get("categoryId");
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number,
   ) => {
     setPage(value);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", value.toString());
-
+    if (categoryId) {
+      const newQuery = `?categoryId=${categoryId}`;
+      router.replace(newQuery);
+      window?.scrollTo({ top: 0, behavior: "smooth" });
+    }
     //router.push(`${pathName}${params.toString()}`, { scroll: false });
   };
 

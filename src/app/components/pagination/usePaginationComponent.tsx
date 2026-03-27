@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ITEMS_PER_PAGE = 4;
 
 const usePaginationComponent = () => {
   const [page, setPage] = useState<number>(1);
 
+  // useEffect(() => {
+  //   const scrollContainer = document.getElementById("scroll-container");
+  //   console.log(scrollContainer);
+  //   if (scrollContainer) {
+  //     scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+  //   } else {
+  //     window?.scrollTo({ top: 0, behavior: "smooth" });
+  //   }
+  // }, [page]);
+
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
-    value: number
+    value: number,
   ) => {
     setPage(value);
   };
