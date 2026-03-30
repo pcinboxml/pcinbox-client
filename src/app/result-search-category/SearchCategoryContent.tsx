@@ -35,6 +35,14 @@ const SearchCategoryContent = () => {
   const [processorBrand, setProcessorBrand] = useState<"INTEL" | "AMD" | null>(
     null,
   );
+  const [processorTipoMemoria, setProcessorTipoMemoria] = useState<
+    "DDR4" | "DDR5" | null
+  >(null);
+
+  const [processorSocketProcesador, setProcessorSocketProcesador] = useState<
+    "AM4" | "AM5" | null
+  >(null);
+
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<any>("");
@@ -96,29 +104,70 @@ const SearchCategoryContent = () => {
     setProcessorBrand(type);
   };
 
+  const handleOnSelectTipoMemoria = (event: ChangeEvent<HTMLInputElement>) => {
+    const type = event?.target?.value === "1" ? "DDR4" : "DDR5";
+    setProcessorTipoMemoria(type);
+  };
+
+  const handleOnSelectSocketProcesador = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const type = event?.target?.value === "1" ? "AM4" : "AM5";
+    setProcessorSocketProcesador(type);
+  };
+
   useEffect(() => {
     let filtered = [...dataCopy];
     if (marca) {
       filtered = filtered.filter((item: any) => item.marcaId == marca);
     }
-    if (processorBrand) {
+    if (processorBrand || processorTipoMemoria) {
       filtered = filtered.filter((item: any) => {
         const caract =
           typeof item.caracteristicas === "string"
             ? JSON.parse(item.caracteristicas)
             : item.caracteristicas;
-        return (
-          Array.isArray(caract) &&
-          caract.some(
-            (c: any) =>
-              c.prop === "Fabricante de procesador" &&
-              c.value?.toLowerCase() === processorBrand?.toLowerCase(),
-          )
-        );
+
+        if (!Array.isArray(caract)) return false;
+
+        const matchBrand = processorBrand
+          ? caract.some(
+              (c) =>
+                c.prop === "Fabricante de procesador" &&
+                c.value?.toLowerCase() === processorBrand.toLowerCase(),
+            )
+          : true;
+
+        const matchMemory = processorTipoMemoria
+          ? caract.some(
+              (c) =>
+                c.prop === "Tipo de memoria interna" &&
+                c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
+            )
+          : true;
+
+        const matchSocket = processorSocketProcesador
+          ? caract.some(
+              (c) =>
+                c.prop === "Socket de procesador" &&
+                c.value
+                  ?.toLowerCase()
+                  .includes(processorSocketProcesador.toLowerCase()),
+            )
+          : true;
+
+        return matchBrand && matchMemory && matchSocket;
       });
     }
+
     setData(filtered);
-  }, [marca, processorBrand, dataCopy]);
+  }, [
+    marca,
+    processorBrand,
+    dataCopy,
+    processorTipoMemoria,
+    processorSocketProcesador,
+  ]);
 
   useEffect(() => {
     if (searchText.trim().length < 3) {
@@ -375,6 +424,13 @@ const SearchCategoryContent = () => {
                       ) {
                         setProcessorBrand(null);
                       }
+
+                      if (
+                        findCategory &&
+                        findCategory?.name === "MEMORIAS RAM Y FLASH"
+                      ) {
+                        setProcessorTipoMemoria(null);
+                      }
                     }
                     setMarca(null);
                     setOrderBy("");
@@ -414,8 +470,63 @@ const SearchCategoryContent = () => {
                       </li>
                     ))}
                 </ul>
+                {dataCategories.find(
+                  (categorie) =>
+                    Number(categorie?.idCategorie) === Number(categoryId),
+                )?.name === "MEMORIAS RAM Y FLASH" && (
+                  <div style={{ marginTop: 12 }}>
+                    <span className={styles?.sidebarTitle}>
+                      {"Tipo de memoria interna".toUpperCase()}
+                    </span>
+                    <ul className={styles.marcaList}>
+                      {(["DDR4", "DDR5"] as const).map((tipoMemoria) => {
+                        const lengthBrand = dataCopy.filter((item) => {
+                          const caract =
+                            typeof item?.caracteristicas === "string"
+                              ? JSON.parse(item.caracteristicas)
+                              : item.caracteristicas;
+                          if (!Array.isArray(caract)) return false;
+                          return caract.some(
+                            (c) =>
+                              c.prop === "Tipo de memoria interna" &&
+                              c.value?.toLowerCase() ===
+                                tipoMemoria.toLowerCase(),
+                          );
+                        }).length;
 
-                {categoryId == "10" && (
+                        return (
+                          <li key={tipoMemoria}>
+                            <label
+                              htmlFor={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
+                              className={styles.marcaLabel}
+                            >
+                              <input
+                                type="radio"
+                                id={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
+                                name="tipo-memoria"
+                                checked={processorTipoMemoria === tipoMemoria}
+                                disabled={lengthBrand === 0}
+                                value={tipoMemoria === "DDR4" ? 1 : 2}
+                                onChange={handleOnSelectTipoMemoria}
+                              />
+                              <span style={{ margin: "0 4px" }}>
+                                {tipoMemoria}
+                              </span>
+                              <span style={{ margin: "0 4px" }}>
+                                {`(${Number(lengthBrand).toLocaleString()})`}
+                              </span>
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
+                {dataCategories.find(
+                  (categorie) =>
+                    Number(categorie?.idCategorie) === Number(categoryId),
+                )?.name === "TARJETAS MADRE" && (
                   <div style={{ marginTop: 12 }}>
                     <span className={styles.sidebarTitle}>
                       Marca del procesador
@@ -453,6 +564,64 @@ const SearchCategoryContent = () => {
                               <span style={{ margin: "0 4px" }}>{brand}</span>
                               <span style={{ margin: "0 4px" }}>
                                 {`(${Number(lengthBrand).toLocaleString()})`}
+                              </span>
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
+                {dataCategories.find(
+                  (categorie) =>
+                    Number(categorie?.idCategorie) === Number(categoryId),
+                )?.name === "TARJETAS MADRE" && (
+                  <div style={{ marginTop: 12 }}>
+                    <span className={styles.sidebarTitle}>
+                      Marca del procesador
+                    </span>
+                    <ul className={styles.marcaList}>
+                      {(["AM4", "AM5"] as const).map((socketProcesador) => {
+                        const lengthSocketProcesador = dataCopy.filter(
+                          (item) => {
+                            const caract =
+                              typeof item?.caracteristicas === "string"
+                                ? JSON.parse(item.caracteristicas)
+                                : item.caracteristicas;
+                            if (!Array.isArray(caract)) return false;
+                            return caract.some(
+                              (c: any) =>
+                                c.prop === "Socket de procesador" &&
+                                c.value
+                                  ?.toLowerCase()
+                                  .includes(socketProcesador.toLowerCase()),
+                            );
+                          },
+                        ).length;
+
+                        return (
+                          <li key={socketProcesador}>
+                            <label
+                              htmlFor={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
+                              className={styles.marcaLabel}
+                            >
+                              <input
+                                type="radio"
+                                id={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
+                                name="socket-procesador"
+                                checked={
+                                  processorSocketProcesador === socketProcesador
+                                }
+                                disabled={lengthSocketProcesador === 0}
+                                value={socketProcesador === "AM4" ? 1 : 2}
+                                onChange={handleOnSelectSocketProcesador}
+                              />
+                              <span style={{ margin: "0 4px" }}>
+                                {socketProcesador}
+                              </span>
+                              <span style={{ margin: "0 4px" }}>
+                                {`(${Number(lengthSocketProcesador).toLocaleString()})`}
                               </span>
                             </label>
                           </li>

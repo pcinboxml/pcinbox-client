@@ -464,8 +464,8 @@
   padding: 16px 24px;
   border-radius: var(--dp-radius-md);
   border: none;
-  background: #111111;
-  color: var(--dp-yellow);
+  background: var(--dp-red);
+  color: white;
   font-family: var(--dp-font-body);
   font-size: 15px;
   font-weight: 700;
@@ -493,8 +493,8 @@
 }
 
 .dp-btn-cart:hover:not(:disabled) {
-  background: var(--dp-yellow);
-  color: #111111;
+  background: var(--dp-red);
+  color: white;
   transform: translateY(-1px);
   box-shadow: 0 8px 24px rgba(244, 249, 0, 0.3);
 }
