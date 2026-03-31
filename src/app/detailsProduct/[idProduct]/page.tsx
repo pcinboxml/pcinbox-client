@@ -193,9 +193,9 @@ const DetailsProduct = () => {
         <div className="dp-wrapper">
           {/* ── BREADCRUMB / TITLE BAND ── */}
           <div className="dp-top-band">
-            <span className="dp-category-badge">
+            {/* <span className="dp-category-badge">
               <MdVerified size={13} /> Producto Verificado
-            </span>
+            </span> */}
             <h1 className="dp-title">{dataProduct?.name}</h1>
             {/* <div className="dp-meta-row">
               <span className="dp-sku">{dataProduct?.sku}</span>
