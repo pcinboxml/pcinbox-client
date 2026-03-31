@@ -118,11 +118,81 @@ const SearchCategoryContent = () => {
     setProcessorSocketProcesador(type);
   };
 
+  // useEffect(() => {
+  //   let filtered = [...dataCopy];
+  //   if (marca) {
+  //     filtered = filtered.filter((item: any) => item.marcaId == marca);
+  //   }
+  //   if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
+  //     filtered = filtered.filter((item: any) => {
+  //       const caract =
+  //         typeof item.caracteristicas === "string"
+  //           ? JSON.parse(item.caracteristicas)
+  //           : item.caracteristicas;
+
+  //       if (!Array.isArray(caract)) return false;
+
+  //       const matchBrand = processorBrand
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Fabricante de procesador" &&
+  //               c.value?.toLowerCase() === processorBrand.toLowerCase(),
+  //           )
+  //         : true;
+
+  //       const matchMemory = processorTipoMemoria
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Tipo de memoria interna" &&
+  //               c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
+  //           )
+  //         : true;
+
+  //       const matchSocket = processorSocketProcesador
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Socket de procesador" &&
+  //               c.value
+  //                 ?.toLowerCase()
+  //                 .includes(processorSocketProcesador.toLowerCase()),
+  //           )
+  //         : true;
+
+  //       return matchBrand && matchMemory && matchSocket;
+  //     });
+  //   }
+
+  //   setData(filtered);
+  // }, [
+  //   marca,
+  //   processorBrand,
+  //   dataCopy,
+  //   processorTipoMemoria,
+  //   processorSocketProcesador,
+  // ]);
+
+  // useEffect(() => {
+  //   if (searchText.trim().length < 3) {
+  //     setData(dataCopy);
+  //     return;
+  //   }
+  //   const term = searchText.toLowerCase().trim();
+  //   const filtered = dataCopy.filter(
+  //     (item: any) =>
+  //       item.name.toLowerCase().includes(term) ||
+  //       item.sku.toLowerCase().includes(term),
+  //   );
+  //   setData(filtered);
+  // }, [searchText, dataCopy]);
+
   useEffect(() => {
     let filtered = [...dataCopy];
+
+    // ===== FILTROS =====
     if (marca) {
       filtered = filtered.filter((item: any) => item.marcaId == marca);
     }
+
     if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
       filtered = filtered.filter((item: any) => {
         const caract =
@@ -162,28 +232,29 @@ const SearchCategoryContent = () => {
       });
     }
 
+    // ===== BUSCADOR =====
+    const term = searchText.toLowerCase().trim();
+
+    if (term.length >= 3) {
+      filtered = filtered.filter((item: any) => {
+        return (
+          item.name?.toLowerCase().includes(term.trim()) ||
+          item.description?.toLowerCase().includes(term.trim()) ||
+          item.sku?.toLowerCase().includes(term.trim()) ||
+          item.upc?.toLowerCase().includes(term.trim())
+        );
+      });
+    }
+
     setData(filtered);
   }, [
+    dataCopy,
     marca,
     processorBrand,
-    dataCopy,
     processorTipoMemoria,
     processorSocketProcesador,
+    searchText,
   ]);
-
-  useEffect(() => {
-    if (searchText.trim().length < 3) {
-      setData(dataCopy);
-      return;
-    }
-    const term = searchText.toLowerCase().trim();
-    const filtered = dataCopy.filter(
-      (item: any) =>
-        item.name.toLowerCase().includes(term) ||
-        item.sku.toLowerCase().includes(term),
-    );
-    setData(filtered);
-  }, [searchText, dataCopy]);
 
   useEffect(() => {
     if (!socketCron?.current) return;
