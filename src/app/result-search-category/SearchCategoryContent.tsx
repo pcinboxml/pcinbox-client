@@ -123,7 +123,7 @@ const SearchCategoryContent = () => {
     if (marca) {
       filtered = filtered.filter((item: any) => item.marcaId == marca);
     }
-    if (processorBrand || processorTipoMemoria) {
+    if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
       filtered = filtered.filter((item: any) => {
         const caract =
           typeof item.caracteristicas === "string"
