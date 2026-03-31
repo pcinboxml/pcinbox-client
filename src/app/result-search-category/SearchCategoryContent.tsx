@@ -84,8 +84,10 @@ const SearchCategoryContent = () => {
       setLoadingData(false);
       if (resp.status == 200) {
         const data = resp.data;
-        setData(data.data.data);
-        setDataCopy(data.data.data);
+        setData(data.data.data.filter((product: any) => product?.stock !== 0));
+        setDataCopy(
+          data.data.data.filter((product: any) => product?.stock !== 0),
+        );
         setMarcas(data.data.marcas);
       }
     } catch (error) {
