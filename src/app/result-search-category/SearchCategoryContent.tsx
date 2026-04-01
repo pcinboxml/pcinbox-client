@@ -22,8 +22,14 @@ import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const SearchCategoryContent = () => {
-  const { setDataModal, socketPagos, socketServer, setDataFavorites } =
-    useTheContext();
+  const {
+    setDataModal,
+    socketPagos,
+    socketServer,
+    setDataFavorites,
+    dataCategories,
+    socketCron,
+  } = useTheContext();
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [filterValue, setFilterValue] = useState<any>("");
@@ -46,8 +52,7 @@ const SearchCategoryContent = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<any>("");
-  const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketCron, dataCategories } = useTheContext();
+  const { formatCurrency, onRouterLink, updateURL } = useService();
 
   const {
     startIndex,
@@ -66,13 +71,27 @@ const SearchCategoryContent = () => {
   const categoryId = searchParams.get("categoryId");
 
   useEffect(() => {
-    const allowedParams = ["idProduct", "name", "categoryId"];
-    const invalidParams = Array.from(searchParams.keys()).filter(
-      (key) => !allowedParams.includes(key),
-    );
-    if (invalidParams.length > 0) return;
-    handleGetData();
+    if (idProduct || name || categoryId) {
+      handleGetData();
+    }
   }, [searchParams]);
+
+  // useEffect(() => {
+  //   const allowedParams = [
+  //     "idProduct",
+  //     "name",
+  //     "categoryId",
+  //     // "page",
+  //     // "marca",
+  //     // "search",
+  //     // "order",
+  //   ];
+  //   const invalidParams = Array.from(searchParams.keys()).filter(
+  //     (key) => !allowedParams.includes(key),
+  //   );
+  //   if (invalidParams.length > 0) return;
+  //   handleGetData();
+  // }, [searchParams]);
 
   const handleGetData = async () => {
     try {
@@ -84,8 +103,10 @@ const SearchCategoryContent = () => {
       setLoadingData(false);
       if (resp.status == 200) {
         const data = resp.data;
-        setData(data.data.data);
-        setDataCopy(data.data.data);
+        setData(data.data.data.filter((product: any) => product?.stock !== 0));
+        setDataCopy(
+          data.data.data.filter((product: any) => product?.stock !== 0),
+        );
         setMarcas(data.data.marcas);
       }
     } catch (error) {
@@ -116,12 +137,82 @@ const SearchCategoryContent = () => {
     setProcessorSocketProcesador(type);
   };
 
+  // useEffect(() => {
+  //   let filtered = [...dataCopy];
+  //   if (marca) {
+  //     filtered = filtered.filter((item: any) => item.marcaId == marca);
+  //   }
+  //   if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
+  //     filtered = filtered.filter((item: any) => {
+  //       const caract =
+  //         typeof item.caracteristicas === "string"
+  //           ? JSON.parse(item.caracteristicas)
+  //           : item.caracteristicas;
+
+  //       if (!Array.isArray(caract)) return false;
+
+  //       const matchBrand = processorBrand
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Fabricante de procesador" &&
+  //               c.value?.toLowerCase() === processorBrand.toLowerCase(),
+  //           )
+  //         : true;
+
+  //       const matchMemory = processorTipoMemoria
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Tipo de memoria interna" &&
+  //               c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
+  //           )
+  //         : true;
+
+  //       const matchSocket = processorSocketProcesador
+  //         ? caract.some(
+  //             (c) =>
+  //               c.prop === "Socket de procesador" &&
+  //               c.value
+  //                 ?.toLowerCase()
+  //                 .includes(processorSocketProcesador.toLowerCase()),
+  //           )
+  //         : true;
+
+  //       return matchBrand && matchMemory && matchSocket;
+  //     });
+  //   }
+
+  //   setData(filtered);
+  // }, [
+  //   marca,
+  //   processorBrand,
+  //   dataCopy,
+  //   processorTipoMemoria,
+  //   processorSocketProcesador,
+  // ]);
+
+  // useEffect(() => {
+  //   if (searchText.trim().length < 3) {
+  //     setData(dataCopy);
+  //     return;
+  //   }
+  //   const term = searchText.toLowerCase().trim();
+  //   const filtered = dataCopy.filter(
+  //     (item: any) =>
+  //       item.name.toLowerCase().includes(term) ||
+  //       item.sku.toLowerCase().includes(term),
+  //   );
+  //   setData(filtered);
+  // }, [searchText, dataCopy]);
+
   useEffect(() => {
     let filtered = [...dataCopy];
+
+    // ===== FILTROS =====
     if (marca) {
       filtered = filtered.filter((item: any) => item.marcaId == marca);
     }
-    if (processorBrand || processorTipoMemoria) {
+
+    if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
       filtered = filtered.filter((item: any) => {
         const caract =
           typeof item.caracteristicas === "string"
@@ -160,28 +251,29 @@ const SearchCategoryContent = () => {
       });
     }
 
+    // ===== BUSCADOR =====
+    const term = searchText.toLowerCase().trim();
+
+    if (term.length >= 3) {
+      filtered = filtered.filter((item: any) => {
+        return (
+          item.name?.toLowerCase().includes(term.trim()) ||
+          item.description?.toLowerCase().includes(term.trim()) ||
+          item.sku?.toLowerCase().includes(term.trim()) ||
+          item.upc?.toLowerCase().includes(term.trim())
+        );
+      });
+    }
+
     setData(filtered);
   }, [
+    dataCopy,
     marca,
     processorBrand,
-    dataCopy,
     processorTipoMemoria,
     processorSocketProcesador,
+    searchText,
   ]);
-
-  useEffect(() => {
-    if (searchText.trim().length < 3) {
-      setData(dataCopy);
-      return;
-    }
-    const term = searchText.toLowerCase().trim();
-    const filtered = dataCopy.filter(
-      (item: any) =>
-        item.name.toLowerCase().includes(term) ||
-        item.sku.toLowerCase().includes(term),
-    );
-    setData(filtered);
-  }, [searchText, dataCopy]);
 
   useEffect(() => {
     if (!socketCron?.current) return;
@@ -338,6 +430,29 @@ const SearchCategoryContent = () => {
       });
     }
   }, [orderBy]);
+
+  useEffect(() => {
+    updateURL("/result-search-category", {
+      page,
+      marca,
+      search: searchText,
+      order: filterValue,
+      idProduct,
+      name,
+      categoryId,
+    });
+  }, [page, marca, searchText, filterValue, idProduct, name, categoryId]);
+
+  useEffect(() => {
+    const pageParam = Number(searchParams.get("page")) || 1;
+    const marcaParam = searchParams.get("marca");
+    const searchParam = searchParams.get("search") || "";
+    const orderParam = searchParams.get("order") || "";
+    setPage(pageParam);
+    setMarca(marcaParam ? Number(marcaParam) : "");
+    setSearchText(searchParam);
+    setFilterValue(orderParam);
+  }, []);
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
@@ -705,6 +820,7 @@ const SearchCategoryContent = () => {
             <hr />
 
             <div>
+              {console.log(data)}
               {data && data.length > 0 ? (
                 data
                   .slice(startIndex, endIndex)
