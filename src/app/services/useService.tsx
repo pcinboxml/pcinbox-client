@@ -371,6 +371,22 @@ const useService = () => {
     return Math.round((total + Number.EPSILON) * 100) / 100;
   }, [dataCart, dataCartStorege]);
 
+  const updateURL = (routeProp: string, params: any) => {
+    const query = new URLSearchParams({
+      page: params.page?.toString() || "1",
+      marca: params.marca || "",
+      search: params.search || "",
+      order: params.order || "",
+      idProduct: params?.idProduct || "",
+      name: params?.name || "",
+      categoryId: params?.categoryId || "",
+    });
+
+    if (routeProp.startsWith("/result-search-category")) {
+      router.push(`?${query.toString()}`, { scroll: false });
+    }
+  };
+
   return {
     groupById,
     requestGet,
@@ -386,6 +402,7 @@ const useService = () => {
     totalPrice,
     calcPesoPaquete,
     calcularPrecioPorVolumen,
+    updateURL,
   };
 };
 

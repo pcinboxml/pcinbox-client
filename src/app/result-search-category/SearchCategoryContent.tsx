@@ -22,8 +22,14 @@ import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const SearchCategoryContent = () => {
-  const { setDataModal, socketPagos, socketServer, setDataFavorites } =
-    useTheContext();
+  const {
+    setDataModal,
+    socketPagos,
+    socketServer,
+    setDataFavorites,
+    dataCategories,
+    socketCron,
+  } = useTheContext();
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [filterValue, setFilterValue] = useState<any>("");
@@ -46,8 +52,7 @@ const SearchCategoryContent = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<any>("");
-  const { formatCurrency, onRouterLink } = useService();
-  const { dataProducts, socketCron, dataCategories } = useTheContext();
+  const { formatCurrency, onRouterLink, updateURL } = useService();
 
   const {
     startIndex,
@@ -66,13 +71,27 @@ const SearchCategoryContent = () => {
   const categoryId = searchParams.get("categoryId");
 
   useEffect(() => {
-    const allowedParams = ["idProduct", "name", "categoryId"];
-    const invalidParams = Array.from(searchParams.keys()).filter(
-      (key) => !allowedParams.includes(key),
-    );
-    if (invalidParams.length > 0) return;
-    handleGetData();
+    if (idProduct || name || categoryId) {
+      handleGetData();
+    }
   }, [searchParams]);
+
+  // useEffect(() => {
+  //   const allowedParams = [
+  //     "idProduct",
+  //     "name",
+  //     "categoryId",
+  //     // "page",
+  //     // "marca",
+  //     // "search",
+  //     // "order",
+  //   ];
+  //   const invalidParams = Array.from(searchParams.keys()).filter(
+  //     (key) => !allowedParams.includes(key),
+  //   );
+  //   if (invalidParams.length > 0) return;
+  //   handleGetData();
+  // }, [searchParams]);
 
   const handleGetData = async () => {
     try {
@@ -411,6 +430,29 @@ const SearchCategoryContent = () => {
       });
     }
   }, [orderBy]);
+
+  useEffect(() => {
+    updateURL("/result-search-category", {
+      page,
+      marca,
+      search: searchText,
+      order: filterValue,
+      idProduct,
+      name,
+      categoryId,
+    });
+  }, [page, marca, searchText, filterValue, idProduct, name, categoryId]);
+
+  useEffect(() => {
+    const pageParam = Number(searchParams.get("page")) || 1;
+    const marcaParam = searchParams.get("marca");
+    const searchParam = searchParams.get("search") || "";
+    const orderParam = searchParams.get("order") || "";
+    setPage(pageParam);
+    setMarca(marcaParam ? Number(marcaParam) : "");
+    setSearchText(searchParam);
+    setFilterValue(orderParam);
+  }, []);
 
   const StyledTooltip = styled(({ className, ...props }: any) => (
     <Tooltip
@@ -778,6 +820,7 @@ const SearchCategoryContent = () => {
             <hr />
 
             <div>
+              {console.log(data)}
               {data && data.length > 0 ? (
                 data
                   .slice(startIndex, endIndex)
