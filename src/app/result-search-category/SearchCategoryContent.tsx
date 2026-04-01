@@ -652,7 +652,7 @@ const SearchCategoryContent = () => {
                 )?.name === "TARJETAS MADRE" && (
                   <div style={{ marginTop: 12 }}>
                     <span className={styles.sidebarTitle}>
-                      Marca del procesador
+                      Socket del procesador
                     </span>
                     <ul className={styles.marcaList}>
                       {(["AM4", "AM5"] as const).map((socketProcesador) => {
