@@ -67,9 +67,9 @@ interface ContextProps {
   setDataCard: Dispatch<SetStateAction<CardI[]>>;
   dataProducts: ProductI[];
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
-  socketPagos: RefObject<typeof Socket | null>;
-  socketCron: RefObject<typeof Socket | null>;
-  socketServer: RefObject<typeof Socket | null>;
+ socketPagos: RefObject<Socket | null>;
+  socketCron: RefObject<Socket | null>;
+  socketServer: RefObject<Socket | null>;
   showProductsMenu: boolean;
   setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
   dataUserAddress: AddressI[];
@@ -216,9 +216,9 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     setSelectedCard(event.target.value);
   };
 
-  const socketServer = useRef<typeof Socket | null>(null);
-  const socketPagos = useRef<typeof Socket | null>(null);
-  const socketCron = useRef<typeof Socket | null>(null);
+  const socketServer = useRef<Socket | null>(null);
+  const socketPagos = useRef<Socket | null>(null);
+  const socketCron = useRef<Socket | null>(null);
 
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);

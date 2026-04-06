@@ -63,6 +63,7 @@ export default function AppWrapper({
     if (token) {
       const payload: any = jwtDecode(token);
 
+
       if (payload && payload?.idUser) {
         socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
       }

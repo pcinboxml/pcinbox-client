@@ -20,8 +20,6 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
-import { useScrollPosition } from "../hooks/useScrollPosition";
-
 const SearchCategoryContent = () => {
   // Al principio del componente
 //useScrollPosition("scroll-/result-search-category");
