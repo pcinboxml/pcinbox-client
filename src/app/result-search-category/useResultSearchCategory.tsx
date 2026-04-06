@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
@@ -9,6 +9,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 const ITEMS_PER_PAGE = 20;
 
 const useResultSearchCategory = () => {
+  
   const [loadingAddProductCar, setLoadingAddProductCar] = useState<
     Record<any, boolean>
   >({});
@@ -16,28 +17,26 @@ const useResultSearchCategory = () => {
   const { setDataCart, dataCart } = useTheContext();
 
   const [page, setPage] = useState<number>(1);
+  const prevPageRef = useRef(page);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
-  const categoryId = searchParams.get("categoryId");
-  const idProduct = searchParams.get("idProduct");
-  const name = searchParams.get("name");
 
-  const handleChangePage = (
-    event: React.ChangeEvent<unknown>,
-    value: number,
-  ) => {
-    setPage(value);
 
-    if (categoryId || (idProduct && name)) {
-      const newQuery = categoryId
-        ? `?categoryId=${categoryId}`
-        : `?idProduct=${idProduct}&name=${name}`;
-      router.replace(newQuery);
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+  // Actualizar el estado de la página para que el componente se re-renderice
+  setPage(value);
 
-      //window?.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  // Mantener todos los parámetros existentes y solo actualizar la página
+  const params = new URLSearchParams(searchParams.toString());
+  params.set('page', value.toString());
+  
+  router.replace(`${pathName}?${params.toString()}`);
+  
+  // La llamada manual a window.scrollTo ya no es necesaria.
+};
+
+
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -144,7 +143,11 @@ const useResultSearchCategory = () => {
     endIndex,
     handleChangePage,
     itemsPerPage: ITEMS_PER_PAGE,
+    prevPageRef
   };
 };
 
 export default useResultSearchCategory;
+
+
+

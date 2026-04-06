@@ -383,7 +383,7 @@ const useService = () => {
     });
 
     if (routeProp.startsWith("/result-search-category")) {
-      router.push(`?${query.toString()}`, { scroll: false });
+      router.push(`?${query.toString()}`);
     }
   };
 

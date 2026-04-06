@@ -534,8 +534,63 @@ export default function AppWrapper({
   //     container.removeEventListener("scroll", handleScroll);
   //   };
   // }, [scrollRef]);
+ 
+
+  // Recupera la posición guardada del localStorage (o de un state global)
+
+const pathname = usePathname();
+const storageKey = "scroll-/result-search-category";
+
+// Guardar scroll solo si estamos en la ruta
+useEffect(() => {
+  if (!pathname.startsWith("/result-search-category")) return;
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      sessionStorage.setItem(
+        storageKey,
+        scrollRef.current.scrollTop.toString()
+      );
+    }
+  };
+
+  const currentDiv = scrollRef.current;
+  currentDiv?.addEventListener("scroll", handleScroll);
+
+  return () => {
+    currentDiv?.removeEventListener("scroll", handleScroll);
+  };
+}, [pathname, storageKey]);
+
+// Restaurar scroll solo si estamos en la ruta
+// Restaurar scroll solo si estamos en la ruta
+useEffect(() => {
+  if (!pathname.startsWith("/result-search-category")) return;
+  if (!scrollRef.current) return;
+
+  const savedScroll = Number(sessionStorage.getItem(storageKey)) || 0;
+
+  const restoreScroll = () => {
+    if (!scrollRef.current) return;
+
+    const container = scrollRef.current;
+
+    // Si el contenido tiene suficiente altura
+    if (container.scrollHeight >= savedScroll) {
+      container.scrollTo({ top: savedScroll, behavior: "auto" });
+    } else {
+      // Espera al siguiente frame y reintenta
+      requestAnimationFrame(restoreScroll);
+    }
+  };
+
+  restoreScroll();
+}, [pathname, storageKey]);
   useProtectedRoute();
+ 
   useScrollRestoration(scrollRef);
+
+   
 
   return (
     <SessionProvider>

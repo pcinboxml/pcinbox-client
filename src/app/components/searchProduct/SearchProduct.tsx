@@ -24,6 +24,7 @@ interface SearchProductProps {
 const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
   const { onRouterLink } = useService();
   const [inputValue, setInputValue] = useState<string>("");
+  const [selectedValue, setSelectedValue] = useState<ProductI | null>(null);
 
   const { data: searchResults = [], isLoading } =
     useEnterpriseSearch(inputValue);
@@ -33,35 +34,53 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
       `${option.name ?? ""} ${option.description ?? ""} ${option.sku ?? ""} ${option.upc ?? ""}`,
   });
 
-  const handleSelect = (
-    event: SyntheticEvent<Element, Event>,
-    value: ProductI | null,
-  ) => {
-    if (!value) return;
-    setInputValue("");
-    setIsFocusedSearch(false);
-    onRouterLink(
-      `/result-search-category?idProduct=${value.idProduct}&name=${value.name}`,
-    );
-  };
+    const handleSelect = (
+      event: SyntheticEvent<Element, Event>,
+      value: ProductI | null,
+    ) => {
+      if (!value) return;
+
+      setSelectedValue(null); // 🔥 esto es clave
+      setInputValue("");
+      setIsFocusedSearch(false);
+
+      onRouterLink(
+        `/result-search-category?idProduct=${value.idProduct}&name=${value.name}`,
+      );
+    };
 
   useEffect(() => {
-    setIsFocusedSearch(inputValue.length >= 3);
-  }, [inputValue]);
+  if (inputValue.length >= 3) {
+    setIsFocusedSearch(true);
+  }
+}, [inputValue]);
 
   return (
     <form
       style={{ zIndex: "21" }}
       className="flex w-full relative"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (inputValue) {
-          setIsFocusedSearch(false);
-          onRouterLink(
-            `/result-search-category?idProduct=${null}&name=${inputValue}`,
+      onSubmit={async (event) => {
+          event.preventDefault();
+
+          if (!inputValue) return;
+
+          // 🔥 buscar en resultados actuales
+          const found = searchResults.find(
+            (item: any) => (item.upc === inputValue || item?.sku === inputValue)
           );
-        }
-      }}
+
+          if (found) {
+            onRouterLink(
+              `/result-search-category?idProduct=${found.idProduct}&name=${found.name}&categoryId=${found.categoryId}`
+            );
+          } else {
+            onRouterLink(
+              `/result-search-category?idProduct=&name=${inputValue}&categoryId=${found.categoryId}`
+            );
+          }
+
+          setIsFocusedSearch(false);
+    }}
     >
       <Autocomplete
         disablePortal
@@ -70,9 +89,18 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
           option.idProduct === value.idProduct
         }
         options={inputValue.length >= 3 ? searchResults : []}
-        getOptionLabel={(option: ProductI) => option.name ?? option.upc ?? ""}
+       getOptionLabel={(option: ProductI) => {
+          if (option.name) return option.name;
+          if (option.upc) return option.upc;
+          if (option.sku) return option.sku;
+          return "";
+      }}
         filterOptions={filterOptions}
-        onChange={(_, value) => handleSelect(_, value)}
+       value={selectedValue}
+      onChange={(_, value) => {
+        setSelectedValue(value);
+        handleSelect(_, value);
+      }}
         inputValue={inputValue}
         onInputChange={(_, value, reason) => {
           if (reason === "input") setInputValue(value);
