@@ -7,7 +7,7 @@
     "tunel": "next dev -H 0.0.0.0",
     "build:dev": "next build",
     "start:qa": "npx dotenv -e .env.production -- next dev",
-    "build": "npx dotenv -e .env.production -- next build",
+    "build": "npx dotenv -e .env.production -- next build", 
     "start": "next start",
     "lint": "next lint",
     "export": "next export"
