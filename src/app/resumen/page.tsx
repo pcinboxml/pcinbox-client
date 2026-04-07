@@ -121,7 +121,7 @@ const Resumen = () => {
 
   return (
     <section>
-      {productsToShow ? ( //Antes dataCart
+      {productsToShow && productsToShow.length > 0 ? ( //Antes dataCart
         <>
           <TimelineComponent activeStep={3} />
           <div className="container-tabla  w-[90%] mx-auto my-3">
@@ -197,37 +197,38 @@ const Resumen = () => {
               </div>
             </div>
 
-            {productsToShow && ( //Antes dataCart
-              <div
-                className={`w-full flex justify-end items-center gap-5 mt-4 ${style.rowButtonsActions}`}
-              >
-                <FormControlLabel
-                  disabled={loadingCreateOrder}
-                  control={<Checkbox checked={selectedFactura} />}
-                  label="Generar Factura"
-                  onChange={handleSelectedFactura}
-                />
+            {productsToShow &&
+              productsToShow?.length > 0 && ( //Antes dataCart
+                <div
+                  className={`w-full flex justify-end items-center gap-5 mt-4 ${style.rowButtonsActions}`}
+                >
+                  <FormControlLabel
+                    disabled={loadingCreateOrder}
+                    control={<Checkbox checked={selectedFactura} />}
+                    label="Generar Factura"
+                    onChange={handleSelectedFactura}
+                  />
 
-                <button
-                  disabled={loadingCreateOrder}
-                  onClick={() => onRouterLink("/forma-de-pago")}
-                  className="border py-2 px-5 text-black rounded"
-                >
-                  Atrás
-                </button>
-                <button
-                  disabled={loadingCreateOrder}
-                  className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  onClick={() => handleCreateOrder(costoTotalEnvio)}
-                >
-                  {loadingCreateOrder ? (
-                    <MdAutorenew size={20} className="m-auto the-spinner" />
-                  ) : (
-                    <>Confirmar compra</>
-                  )}
-                </button>
-              </div>
-            )}
+                  <button
+                    disabled={loadingCreateOrder}
+                    onClick={() => onRouterLink("/forma-de-pago")}
+                    className="border py-2 px-5 text-black rounded"
+                  >
+                    Atrás
+                  </button>
+                  <button
+                    disabled={loadingCreateOrder}
+                    className="bg-[#B92B3D] py-2 px-5 text-white rounded"
+                    onClick={() => handleCreateOrder(costoTotalEnvio)}
+                  >
+                    {loadingCreateOrder ? (
+                      <MdAutorenew size={20} className="m-auto the-spinner" />
+                    ) : (
+                      <>Confirmar compra</>
+                    )}
+                  </button>
+                </div>
+              )}
           </div>
         </>
       ) : (

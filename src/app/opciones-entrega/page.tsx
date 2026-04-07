@@ -139,7 +139,7 @@ const OpcionesEntrega = () => {
 
   // Agrupar productos por storeId y providerId
   const groupedProducts: any = useMemo(() => {
-    if (!productsToShow) return [];
+    if (!productsToShow || productsToShow?.length == 0) return [];
     // if (!dataCart || dataCart.length === 0) return [];
 
     const groups: any = {};
@@ -212,10 +212,10 @@ const OpcionesEntrega = () => {
   return (
     <section>
       {/* {dataCart && dataCart?.length > 0 ? <ShippingNotice /> : ""} */}
-      {productsToShow ? ( //antes dataCart
+      {productsToShow && productsToShow?.length > 0 ? ( //antes dataCart
         <TimelineComponent activeStep={1} />
       ) : null}
-      {productsToShow ? ( //antes dataCart
+      {productsToShow && productsToShow?.length > 0 ? ( //antes dataCart
         groupedProducts.map((group: any) => {
           // Crear una clave única para el grupo
           const groupKey = `${group.storeId || "null"}-${group.providerId}`;
@@ -961,7 +961,7 @@ const OpcionesEntrega = () => {
       ) : (
         <Alert severity="info">No hay datos para mostrar</Alert>
       )}
-      {productsToShow ? ( //Antes dataCart
+      {productsToShow && productsToShow?.length > 0 ? ( //Antes dataCart
         <div className="w-full flex justify-end items-center  gap-5 mt-4">
           <button
             onClick={() => onRouterLink("/confirma-productos")}

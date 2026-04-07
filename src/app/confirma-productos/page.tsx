@@ -38,12 +38,13 @@ const ConfirmaProducts = () => {
   const subTotal = useMemo(() => {
     if (productsToShow) {
       console.log(productsToShow);
-      const total = productsToShow
-        ? productsToShow
-            .filter((itemF) => itemF!.stock != 0)
-            .map((item) => Number(item!.price) * item!.quantity)
-            .reduce((sum, current) => sum + current, 0)
-        : 0;
+      const total =
+        productsToShow && productsToShow?.length > 0
+          ? productsToShow
+              .filter((itemF) => itemF!.stock != 0)
+              .map((item) => Number(item!.price) * item!.quantity)
+              .reduce((sum, current) => sum + current, 0)
+          : 0;
 
       return Math.round((total + Number.EPSILON) * 100) / 100;
     }
@@ -53,7 +54,7 @@ const ConfirmaProducts = () => {
 
   return (
     <section>
-      {productsToShow ? (
+      {productsToShow && productsToShow.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
 

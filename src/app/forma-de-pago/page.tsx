@@ -46,7 +46,7 @@ const FormaDePago = () => {
 
   return (
     <section>
-      {productsToShow ? ( //Antes dataCart
+      {productsToShow && productsToShow?.length > 0 ? ( //Antes dataCart
         <>
           <TimelineComponent activeStep={2} />
           <div className="container-tabla  w-[90%] mx-auto mt-2">

@@ -24,11 +24,12 @@ const useConfirmaProductos = () => {
 
   // ---------- Manejo automático de productos a mostrar ----------
   useEffect(() => {
-    const sourceProducts = buyNowProduct
-      ? [buyNowProduct]
-      : dataCart && dataCart.length > 0
-        ? dataCart
-        : [];
+    const sourceProducts =
+      buyNowProduct && buyNowProduct != null
+        ? [buyNowProduct]
+        : dataCart && dataCart.length > 0
+          ? dataCart
+          : [];
 
     setRowsConfirmProducts(
       sourceProducts.map((itemCart) => ({
@@ -48,7 +49,7 @@ const useConfirmaProductos = () => {
   const handleRemoveProduct = async (idProduct: string) => {
     setLoadingRemoveProduct(true);
 
-    if (!buyNowProduct) {
+    if (buyNowProduct == null) {
       try {
         const resp = await requestPost({ idProduct }, "/cart/removeProduct");
 
