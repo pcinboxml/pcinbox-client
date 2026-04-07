@@ -5,19 +5,16 @@ import Table from "../components/table/Table";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import useConfirmaProductos from "./useConfirmaProductos";
 import useService from "../services/useService";
-import { useTheContext } from "../services/globalContext";
 import { Alert } from "@mui/material";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 import style from "./confirma-productos.module.css";
-import { useMemo } from "react";
-import useStorage from "../services/useStorage";
+import { useEffect, useMemo } from "react";
 
 const ConfirmaProducts = () => {
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
 
   const { formatCurrency, onRouterLink, productsToShow } = useService();
-  const { dataCartStorege } = useStorage();
   const {
     columns,
     rowsConfirmProducts,
@@ -26,18 +23,9 @@ const ConfirmaProducts = () => {
     handleGenerateCotizacion,
     handleShowModalVaciarCarrito,
   } = useConfirmaProductos();
-  const { dataCart, buyNowProduct } = useTheContext();
-
-  // const cartItems = buyNowProduct == null ? dataCart : [buyNowProduct];
-
-  // const cartItems =
-  //   checkoutMode === "buy_now" && buyNowProduct != null
-  //     ? [buyNowProduct]
-  //     : dataCart;
 
   const subTotal = useMemo(() => {
     if (productsToShow) {
-      console.log(productsToShow);
       const total =
         productsToShow && productsToShow?.length > 0
           ? productsToShow
@@ -50,6 +38,22 @@ const ConfirmaProducts = () => {
     }
 
     return 0;
+  }, [productsToShow]);
+
+  useEffect(() => {
+    if (window != undefined) {
+      if (productsToShow && productsToShow.length > 0) {
+        localStorage.setItem(
+          "checkout_products_snapshot",
+          JSON.stringify(
+            productsToShow.map((p) => ({
+              id: p.idProduct,
+              quantity: p.quantity,
+            })),
+          ),
+        );
+      }
+    }
   }, [productsToShow]);
 
   return (

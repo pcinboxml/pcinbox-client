@@ -9,8 +9,13 @@ import axios from "axios";
 import useStorage from "../services/useStorage";
 
 const useConfirmaProductos = () => {
-  const { dataCart, setDataCart, setDataModal, buyNowProduct } =
-    useTheContext();
+  const {
+    dataCart,
+    setDataCart,
+    setDataModal,
+    buyNowProduct,
+    setBuyNowProduct,
+  } = useTheContext();
   const { requestPost, formatCurrency } = useService();
   const { handleRemoveStorageDataCart } = useStorage();
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", { noSsr: true });
@@ -48,6 +53,7 @@ const useConfirmaProductos = () => {
   // ---------- Eliminar producto ----------
   const handleRemoveProduct = async (idProduct: string) => {
     setLoadingRemoveProduct(true);
+    console.log(buyNowProduct);
 
     if (buyNowProduct == null) {
       try {
@@ -83,6 +89,7 @@ const useConfirmaProductos = () => {
             }))
           : [],
       );
+      setBuyNowProduct(null);
 
       setLoadingRemoveProduct(false);
       // El useEffect se encargará de actualizar rowsConfirmProducts automáticamente
