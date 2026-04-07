@@ -27,6 +27,8 @@ type ModalType = "success" | "error" | "warning" | "info";
 
 type NotificationType = "success" | "error" | "warning" | "info";
 
+type SocketType = ReturnType<typeof io>;
+
 interface ModalData {
   isOpen: boolean;
   onClose: () => void;
@@ -67,9 +69,9 @@ interface ContextProps {
   setDataCard: Dispatch<SetStateAction<CardI[]>>;
   dataProducts: ProductI[];
   setDataProducts: Dispatch<SetStateAction<ProductI[]>>;
- socketPagos: RefObject<Socket | null>;
-  socketCron: RefObject<Socket | null>;
-  socketServer: RefObject<Socket | null>;
+  socketPagos: RefObject<SocketType | null>;
+  socketCron: RefObject<SocketType | null>;
+  socketServer: RefObject<SocketType | null>;
   showProductsMenu: boolean;
   setShowProductsMenu: Dispatch<SetStateAction<boolean>>;
   dataUserAddress: AddressI[];
@@ -216,9 +218,9 @@ export const GlobalProvider = ({ children }: { children: any }) => {
     setSelectedCard(event.target.value);
   };
 
-  const socketServer = useRef<Socket | null>(null);
-  const socketPagos = useRef<Socket | null>(null);
-  const socketCron = useRef<Socket | null>(null);
+  const socketServer = useRef<SocketType | null>(null);
+  const socketPagos = useRef<SocketType | null>(null);
+  const socketCron = useRef<SocketType | null>(null);
 
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [dataUserAddress, setDataUserAddress] = useState<AddressI[]>([]);
