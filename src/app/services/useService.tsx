@@ -6,14 +6,15 @@ import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import ProductI from "../interfaces/products/product.interface";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useStorage from "./useStorage";
 
 const useService = () => {
   const pathName = usePathname();
 
-  const { setDataModal, dataCart } = useTheContext();
-  const { dataCartStorege } = useStorage();
+  const { setDataModal, dataCart, buyNowProduct } = useTheContext();
+  const { dataCartStorege, checkoutMode, setCheckoutMode } = useStorage();
+  const [productsToShow, setProductsToShow] = useState<ProductI[] | null>(null);
 
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -358,7 +359,12 @@ const useService = () => {
   }
 
   // const cartItems = dataCartStorege?.length > 0 ? dataCartStorege : dataCart;
-  const cartItems = dataCart;
+  // const cartItems = dataCart;
+
+  const cartItems =
+    checkoutMode === "buy_now" && buyNowProduct != null
+      ? [buyNowProduct]
+      : dataCart;
 
   const totalPrice = useMemo(() => {
     const total = cartItems
@@ -387,6 +393,37 @@ const useService = () => {
     }
   };
 
+  useEffect(() => {
+    const hasBuyNow = buyNowProduct != null;
+    const hasCart = dataCart && dataCart.length > 0;
+
+    if (hasBuyNow) {
+      setProductsToShow([buyNowProduct]);
+      // Si estamos en buy_now pero buyNowProduct existe, todo bien
+      if (checkoutMode !== "buy_now") {
+        setCheckoutMode("buy_now");
+        localStorage.setItem("checkout_mode", "buy_now");
+      }
+      return;
+    }
+
+    // Si no hay buyNowProduct, fallback a carrito
+    if (hasCart) {
+      setProductsToShow(dataCart);
+      if (checkoutMode !== "cart") {
+        setCheckoutMode("cart");
+        localStorage.setItem("checkout_mode", "cart");
+      }
+      return;
+    }
+
+    // Si no hay nada
+    setProductsToShow([]);
+    if (checkoutMode !== "cart") {
+      setCheckoutMode("cart");
+      localStorage.setItem("checkout_mode", "cart");
+    }
+  }, [buyNowProduct, dataCart]);
   return {
     groupById,
     requestGet,
@@ -403,6 +440,7 @@ const useService = () => {
     calcPesoPaquete,
     calcularPrecioPorVolumen,
     updateURL,
+    productsToShow,
   };
 };
 

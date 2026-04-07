@@ -77,6 +77,7 @@ export const ModalCart = ({
                 handleRemoveStorageDataCart();
                 localStorage.removeItem("progressPay2");
                 handleRemoveAllCart(dataCart, onMouseLeaveCart);
+                localStorage.removeItem("checkout_step");
               }}
             >
               {loadingRmAllCart ? (
@@ -370,6 +371,8 @@ export const ModalCart = ({
                     "checkout_step",
                     String(CheckoutStep.CONFIRMAR_PRODUCTOS),
                   );
+
+                  localStorage.setItem("checkout_mode", "cart");
 
                   onRouterLink("/confirma-productos");
                   onMouseLeaveCart();

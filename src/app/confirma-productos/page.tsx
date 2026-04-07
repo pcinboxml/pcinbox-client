@@ -10,11 +10,14 @@ import { Alert } from "@mui/material";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 import style from "./confirma-productos.module.css";
+import { useMemo } from "react";
+import useStorage from "../services/useStorage";
 
 const ConfirmaProducts = () => {
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
 
-  const { formatCurrency, onRouterLink, totalPrice } = useService();
+  const { formatCurrency, onRouterLink, productsToShow } = useService();
+  const { dataCartStorege } = useStorage();
   const {
     columns,
     rowsConfirmProducts,
@@ -23,11 +26,34 @@ const ConfirmaProducts = () => {
     handleGenerateCotizacion,
     handleShowModalVaciarCarrito,
   } = useConfirmaProductos();
-  const { dataCart } = useTheContext();
+  const { dataCart, buyNowProduct } = useTheContext();
+
+  // const cartItems = buyNowProduct == null ? dataCart : [buyNowProduct];
+
+  // const cartItems =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
+
+  const subTotal = useMemo(() => {
+    if (productsToShow) {
+      console.log(productsToShow);
+      const total = productsToShow
+        ? productsToShow
+            .filter((itemF) => itemF!.stock != 0)
+            .map((item) => Number(item!.price) * item!.quantity)
+            .reduce((sum, current) => sum + current, 0)
+        : 0;
+
+      return Math.round((total + Number.EPSILON) * 100) / 100;
+    }
+
+    return 0;
+  }, [productsToShow]);
 
   return (
     <section>
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow ? (
         <>
           <TimelineComponent activeStep={0} />
 
@@ -47,7 +73,7 @@ const ConfirmaProducts = () => {
                 loading="lazy"
               />
             </div>
-            {dataCart && dataCart.length > 0 ? (
+            {productsToShow ? (
               <div className="content-tabla-confirma-productos">
                 <Table
                   rowsDataGrid={rowsConfirmProducts}
@@ -58,7 +84,7 @@ const ConfirmaProducts = () => {
               <Alert severity="info">No hay datos para mostrar</Alert>
             )}
 
-            {dataCart && dataCart.length > 0 ? (
+            {productsToShow ? (
               <div className="w-full flex justify-end items-center gap-3 py-2">
                 <div className="grid grid-cols-[1fr_2fr_1fr]">
                   <img
@@ -77,7 +103,7 @@ const ConfirmaProducts = () => {
                     Sub total:{" "}
                   </span>
                   <span className="text[#808080] block mx-1">
-                    {formatCurrency(totalPrice)}
+                    {formatCurrency(subTotal)}
                   </span>
                 </div>
               </div>
@@ -102,7 +128,7 @@ const ConfirmaProducts = () => {
               </div>
             ) : null} */}
 
-            {dataCart && dataCart.length > 0 && (
+            {productsToShow && (
               <div
                 className={`w-full flex justify-end items-center  gap-5 mt-4 ${style.containerButtonsActions}`}
               >

@@ -61,7 +61,6 @@ const useDetailsProduct = () => {
   const handleAddProductCart = async (
     dataProduct: ProductI,
     quantityProp: number,
-    // comprarAhora?: boolean,
   ) => {
     try {
       const stored = localStorage.getItem("dataCartStorage");
@@ -167,9 +166,6 @@ const useDetailsProduct = () => {
             ];
           }
         });
-        // if (comprarAhora && comprarAhora === true) {
-        //   onRouterLink("/confirma-productos");
-        // }
       }
     } catch (error: any) {
       setLoadingAddProduct(false);

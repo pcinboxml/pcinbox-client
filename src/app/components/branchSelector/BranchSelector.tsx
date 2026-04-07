@@ -7,13 +7,14 @@ import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
+import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({
   productSelected,
-  //comprarAhora,
+  comprarAhora,
 }: {
   productSelected: ProductI;
-  //comprarAhora?: boolean;
+  comprarAhora?: boolean;
 }) => {
   const { handleWriteStorageProgressPay } = useStorage();
   const {
@@ -24,6 +25,7 @@ const BranchSelector = ({
     branchesDico,
   } = GridBranchSelector();
   const { formatCurrency, onRouterLink } = useService();
+  const { setBuyNowProduct } = useTheContext();
 
   const branches = useMemo(() => {
     return productSelected.product_stock
@@ -80,6 +82,67 @@ const BranchSelector = ({
   }, [branches, productSelected]);
 
   const handleAddToCart = (sucursal: any) => {
+    if (comprarAhora && comprarAhora === true) {
+      localStorage.setItem("checkout_mode", "buy_now");
+
+      setBuyNowProduct({
+        ...productSelected,
+        categoryId: productSelected!.categoryId,
+        createdAt: productSelected!.createdAt,
+        description: productSelected!.description,
+        idProduct: productSelected!.idProduct,
+        imageUrl: productSelected!.imageUrl,
+        name: productSelected!.name,
+        price: productSelected!.price,
+        providerId: productSelected!.providerId,
+        stock: productSelected!.stock,
+        rating: productSelected!.rating,
+        reviews: productSelected!.reviews,
+        quantity: productSelected?.quantity!,
+        sku: productSelected!.sku,
+        isPC: productSelected?.isPC,
+        isPc: productSelected?.isPc,
+        caracteristicas: productSelected?.caracteristicas,
+        height: productSelected?.height,
+        idProductExt: productSelected?.idProductExt,
+        largo: productSelected?.largo,
+        storeId: productSelected?.storeId,
+        upc: productSelected?.upc,
+        width: productSelected?.width,
+        product_stock: productSelected?.product_stock,
+      });
+      localStorage.setItem(
+        "buyNowProduct",
+        JSON.stringify({
+          ...productSelected,
+          categoryId: productSelected!.categoryId,
+          createdAt: productSelected!.createdAt,
+          description: productSelected!.description,
+          idProduct: productSelected!.idProduct,
+          imageUrl: productSelected!.imageUrl,
+          name: productSelected!.name,
+          price: productSelected!.price,
+          providerId: productSelected!.providerId,
+          stock: productSelected!.stock,
+          rating: productSelected!.rating,
+          reviews: productSelected!.reviews,
+          quantity: productSelected?.quantity!,
+          sku: productSelected!.sku,
+          isPC: productSelected?.isPC,
+          isPc: productSelected?.isPc,
+          caracteristicas: productSelected?.caracteristicas,
+          height: productSelected?.height,
+          idProductExt: productSelected?.idProductExt,
+          largo: productSelected?.largo,
+          storeId: productSelected?.storeId,
+          upc: productSelected?.upc,
+          width: productSelected?.width,
+          product_stock: productSelected?.product_stock,
+        }),
+      );
+      onRouterLink("/confirma-productos");
+      return;
+    }
     const quantity = Number(quantities[sucursal.id] ?? 1);
     const stock = Number(sucursal?.stock ?? 0);
     if (quantity <= 0 || stock <= 0 || quantity > stock) return;
@@ -99,10 +162,6 @@ const BranchSelector = ({
             : 0,
       },
     });
-
-    // if (comprarAhora && comprarAhora === true) {
-    //   onRouterLink("/confirma-productos");
-    // }
   };
 
   return (

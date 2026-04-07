@@ -52,6 +52,8 @@ interface ContextProps {
   setDataModal: Dispatch<SetStateAction<ModalData>>;
   dataCart: ProductI[];
   setDataCart: Dispatch<SetStateAction<ProductI[]>>;
+  buyNowProduct: ProductI | null;
+  setBuyNowProduct: Dispatch<SetStateAction<ProductI | null>>;
   priceCart: number;
   setPriceCart: Dispatch<SetStateAction<number>>;
   hasToken: boolean | null;
@@ -122,6 +124,8 @@ const CreateContext = createContext<ContextProps>({
   setDataModal: () => {},
   dataCart: [],
   setDataCart: () => {},
+  buyNowProduct: null,
+  setBuyNowProduct: () => {},
   priceCart: 0,
   setPriceCart: () => {},
   hasToken: null,
@@ -200,6 +204,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
 
   const [hasToken, setHasToken] = useState<boolean | null>(null);
   const [dataCart, setDataCart] = useState<ProductI[]>([]);
+  const [buyNowProduct, setBuyNowProduct] = useState<ProductI | null>(null);
   const [dataFavorites, setDataFavorites] = useState<FavoritesI[]>([]);
   const [priceCart, setPriceCart] = useState<number>(0);
   const [dataNotification, setDataNotification] = useState<NotificationData>({
@@ -368,6 +373,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         handleSelectedCard,
         dataCard,
         setDataCard,
+        buyNowProduct,
+        setBuyNowProduct,
         dataProducts,
         setDataProducts,
         socketPagos,

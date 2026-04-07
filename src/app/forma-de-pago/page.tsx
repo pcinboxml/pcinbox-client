@@ -22,10 +22,17 @@ const FormaDePago = () => {
     getValuesStorage2,
   } = useFormaDePago();
 
-  const { selectedCard, dataCart, setDataModal, dataCard } = useTheContext();
-  const { onRouterLink } = useService();
+  const { selectedCard, dataCart, setDataModal, dataCard, buyNowProduct } =
+    useTheContext();
+  const { onRouterLink, productsToShow } = useService();
+  const { checkoutMode } = useStorage();
 
   // const { requestPostPagos } = usePasarelaDePagos();
+
+  // const productsToShow =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
 
   const {
     progressPay,
@@ -39,7 +46,7 @@ const FormaDePago = () => {
 
   return (
     <section>
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow ? ( //Antes dataCart
         <>
           <TimelineComponent activeStep={2} />
           <div className="container-tabla  w-[90%] mx-auto mt-2">
@@ -219,7 +226,7 @@ const FormaDePago = () => {
               )} */}
             </div>
 
-            {dataCart && dataCart.length > 0 && (
+            {productsToShow && ( //Antes de dataCart
               <div className="w-full flex justify-end items-center gap-5">
                 <button
                   onClick={() => onRouterLink("/opciones-entrega")}

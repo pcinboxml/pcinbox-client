@@ -30,6 +30,7 @@ const OpcionesEntrega = () => {
     totalPrice,
     calcPesoPaquete,
     calcularPrecioPorVolumen,
+    productsToShow,
   } = useService();
   const {
     handleOnChangeOptionEnvio,
@@ -54,14 +55,25 @@ const OpcionesEntrega = () => {
     calcPriceEnvio,
   } = useOpcionesEntrega();
 
-  const { handleWriteStorageProgressPay2 } = useStorage();
+  const { handleWriteStorageProgressPay2, checkoutMode } = useStorage();
 
-  const { dataCart, dataUserAddress, setDataModal, setDataAddress } =
-    useTheContext();
+  const {
+    dataCart,
+    dataUserAddress,
+    setDataModal,
+    setDataAddress,
+    buyNowProduct,
+  } = useTheContext();
+
+  // const productsToShow =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
 
   useEffect(() => {
-    if (!dataCart || dataCart.length === 0 || !addressByStore || !optionEnvio)
-      return;
+    if (!productsToShow || !addressByStore || !optionEnvio) return;
+    // if (!dataCart || dataCart.length === 0 || !addressByStore || !optionEnvio)
+    //   return;
 
     const fetchCostos = async () => {
       const nuevosCostos: Record<string, number> = {};
@@ -123,15 +135,16 @@ const OpcionesEntrega = () => {
     };
 
     fetchCostos();
-  }, [dataCart, addressByStore, optionEnvio]);
+  }, [dataCart, addressByStore, optionEnvio, buyNowProduct]);
 
   // Agrupar productos por storeId y providerId
   const groupedProducts: any = useMemo(() => {
-    if (!dataCart || dataCart.length === 0) return [];
+    if (!productsToShow) return [];
+    // if (!dataCart || dataCart.length === 0) return [];
 
     const groups: any = {};
 
-    dataCart.forEach((product) => {
+    productsToShow.forEach((product) => {
       // Crear una clave única basada en storeId y providerId
       const groupKey = `${product.storeId || "null"}-${product.providerId}`;
 
@@ -149,7 +162,26 @@ const OpcionesEntrega = () => {
     });
 
     return Object.values(groups);
-  }, [dataCart]);
+
+    // dataCart.forEach((product) => {
+    //   // Crear una clave única basada en storeId y providerId
+    //   const groupKey = `${product.storeId || "null"}-${product.providerId}`;
+
+    //   if (!groups[groupKey]) {
+    //     groups[groupKey] = {
+    //       storeId: product.storeId,
+    //       providerId: product.providerId,
+    //       products: [],
+    //       total: 0,
+    //     };
+    //   }
+
+    //   groups[groupKey].products.push(product);
+    //   groups[groupKey].total += Number(product.price) * product.quantity;
+    // });
+
+    // return Object.values(groups);
+  }, [dataCart, buyNowProduct]);
 
   useEffect(() => {
     loadingAddressUser();
@@ -180,10 +212,10 @@ const OpcionesEntrega = () => {
   return (
     <section>
       {/* {dataCart && dataCart?.length > 0 ? <ShippingNotice /> : ""} */}
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow ? ( //antes dataCart
         <TimelineComponent activeStep={1} />
       ) : null}
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow ? ( //antes dataCart
         groupedProducts.map((group: any) => {
           // Crear una clave única para el grupo
           const groupKey = `${group.storeId || "null"}-${group.providerId}`;
@@ -929,7 +961,7 @@ const OpcionesEntrega = () => {
       ) : (
         <Alert severity="info">No hay datos para mostrar</Alert>
       )}
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow ? ( //Antes dataCart
         <div className="w-full flex justify-end items-center  gap-5 mt-4">
           <button
             onClick={() => onRouterLink("/confirma-productos")}

@@ -35,9 +35,12 @@ interface progressPayI2 {
   // };
 }
 
+type CheckoutMode = "cart" | "buy_now";
+
 const useStorage = () => {
-  const { setDataCart } = useTheContext();
+  const { setDataCart, setBuyNowProduct } = useTheContext();
   const [dataCartStorege, setDataCartStorege] = useState<ProductI[]>([]);
+  const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>("cart");
 
   const [progressPay, setProgressPay] = useState<progressPayI>({
     optionSend: {
@@ -114,6 +117,20 @@ const useStorage = () => {
     } catch (error) {
       console.error("Error parsing dataCartStorage from localStorage:", error);
     }
+
+    try {
+      const storageBuyNowProduct = localStorage.getItem("buyNowProduct");
+      const mode = localStorage.getItem("checkout_mode") as "cart" | "buy_now";
+
+      setCheckoutMode(mode || "cart");
+
+      if (storageBuyNowProduct) {
+        const parsed4 = JSON.parse(storageBuyNowProduct);
+        setBuyNowProduct(parsed4);
+      }
+    } catch (error) {
+      console.log("Error parsing buyNow", error);
+    }
   }, []);
 
   const handleWriteStorageProgressPay = (obj: Partial<progressPayI>) => {
@@ -179,6 +196,8 @@ const useStorage = () => {
     handleWriteStorageDataCart,
     // syncStorageWithGlobalCart,
     handleRemoveStorageDataCart,
+    checkoutMode,
+    setCheckoutMode,
   };
 };
 

@@ -325,6 +325,8 @@ const Ordenes = () => {
                     String(CheckoutStep.CONFIRMAR_PRODUCTOS),
                   );
 
+                  localStorage.setItem("checkout_mode", "cart");
+
                   onRouterLink("/confirma-productos");
                 }}
                 className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"
