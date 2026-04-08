@@ -4,7 +4,6 @@ import { GridColDef } from "@mui/x-data-grid";
 import { Dispatch, SetStateAction, useState } from "react";
 import { MdAutorenew, MdDelete } from "react-icons/md";
 import useService from "../services/useService";
-import { useTheContext } from "../services/globalContext";
 
 const GridConfirmaProductos = ({
   isSmallScreen,
@@ -22,7 +21,6 @@ const GridConfirmaProductos = ({
   setRowsConfirmProducts: Dispatch<SetStateAction<any[]>>;
 }) => {
   const { requestPost } = useService();
-  const { buyNowProduct } = useTheContext();
   const columns: GridColDef[] = [
     {
       field: "products",
@@ -105,9 +103,15 @@ const GridConfirmaProductos = ({
                 if (Array.isArray(params.value)) {
                   sucursalesValidas = params.value.filter((branch: any) => {
                     if (branch?.branches?.providerId === 3) {
-                      return ["leon2", "santafe"].includes(
-                        branch?.branches?.name,
-                      );
+                      if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+                        return ["Arboledas", "dicoags2", "gdl"].includes(
+                          branch?.branches?.name,
+                        );
+                      } else {
+                        return ["leon2", "santafe"].includes(
+                          branch?.branches?.name,
+                        );
+                      }
                     } else if (branch?.branches?.providerId === 2) {
                       return branch;
                     } else {
@@ -154,21 +158,40 @@ const GridConfirmaProductos = ({
                         disabled={sucursal.stock === 0}
                       >
                         {(() => {
-                          switch (sucursal.branches.name) {
-                            case "santafe":
-                              return "PCinBOX-SFD";
-                            case "leon2":
-                              return "PCinBOX-León";
-                            case "dicoags2":
-                              return "PCinBOX-AG2D";
-                            case "Arboledas":
-                              return "PCinBOX-AGD";
-                            case "CDMX":
-                              return "PCinBOX-CDMX";
-                            case "GDL":
-                              return "PCinBOX-GDL";
-                            default:
-                              return sucursal.branches.name;
+                          if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+                            switch (sucursal.branches.name) {
+                              case "gdl":
+                                return "PCinBOX-GDL";
+                              case "leon2":
+                                return "PCinBOX-León";
+                              case "dicoags2":
+                                return "PCinBOX-AG2D";
+                              case "Arboledas":
+                                return "PCinBOX-AGD";
+                              case "CDMX":
+                                return "PCinBOX-CDMX";
+                              case "GDL":
+                                return "PCinBOX-GDL";
+                              default:
+                                return sucursal.branches.name;
+                            }
+                          } else {
+                            switch (sucursal.branches.name) {
+                              case "santafe":
+                                return "PCinBOX-SFD";
+                              case "leon2":
+                                return "PCinBOX-León";
+                              case "dicoags2":
+                                return "PCinBOX-AG2D";
+                              case "Arboledas":
+                                return "PCinBOX-AGD";
+                              case "CDMX":
+                                return "PCinBOX-CDMX";
+                              case "GDL":
+                                return "PCinBOX-GDL";
+                              default:
+                                return sucursal.branches.name;
+                            }
                           }
                         })()}
                       </option>
@@ -224,21 +247,28 @@ const GridConfirmaProductos = ({
       flex: 0.3,
       minWidth: 50,
       renderCell: (params: any) => (
-        <button
-          disabled={loadingRemoveProduct}
-          onClick={() => {
-            //  if (buyNowProduct == null) {
-            handleRemoveProduct(params.row?.id);
-            //}
+        <div
+          className="flex justify-center items-center"
+          style={{
+            height: "100%",
           }}
-          className="p-1 flex justify-center items-center"
         >
-          {loadingRemoveProduct ? (
-            <MdAutorenew size={20} className="the-spinner" />
-          ) : (
-            <MdDelete size={25} color="red" />
-          )}
-        </button>
+          <button
+            disabled={loadingRemoveProduct}
+            onClick={() => {
+              //  if (buyNowProduct == null) {
+              handleRemoveProduct(params.row?.id);
+              //}
+            }}
+            className="p-1 flex justify-center items-center"
+          >
+            {loadingRemoveProduct ? (
+              <MdAutorenew size={20} className="the-spinner" />
+            ) : (
+              <MdDelete size={25} color="red" />
+            )}
+          </button>
+        </div>
       ),
     },
   ];

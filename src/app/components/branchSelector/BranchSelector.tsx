@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import useService from "@/app/services/useService";
 import { MdAutorenew, MdShoppingCart } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
-import { useTheContext } from "@/app/services/globalContext";
 
 const BranchSelector = ({
   productSelected,
@@ -23,9 +22,9 @@ const BranchSelector = ({
     handleChangeQuantity,
     quantities,
     branchesDico,
+    handleBuyNowProduct,
   } = GridBranchSelector();
-  const { formatCurrency, onRouterLink } = useService();
-  const { setBuyNowProduct } = useTheContext();
+  const { formatCurrency } = useService();
 
   const branches = useMemo(() => {
     return productSelected.product_stock
@@ -72,10 +71,17 @@ const BranchSelector = ({
     return (branches ?? []).filter((branch) => {
       if (Number(productSelected?.providerId) == 3) {
         const name = branch?.branches?.name;
-        return (
-          branch?.branches?.providerId === 3 &&
-          ["leon2", "santafe"].includes(name!)
-        );
+        if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+          return (
+            branch?.branches?.providerId === 3 &&
+            ["Arboledas", "dicoags2", "gdl"].includes(name!)
+          );
+        } else {
+          return (
+            branch?.branches?.providerId === 3 &&
+            ["santafe", "leon2"]?.includes(name!)
+          );
+        }
       }
       return true;
     });
@@ -83,64 +89,11 @@ const BranchSelector = ({
 
   const handleAddToCart = (sucursal: any) => {
     if (comprarAhora && comprarAhora === true) {
-      localStorage.setItem("checkout_mode", "buy_now");
-
-      setBuyNowProduct({
-        ...productSelected,
-        categoryId: productSelected!.categoryId,
-        createdAt: productSelected!.createdAt,
-        description: productSelected!.description,
-        idProduct: productSelected!.idProduct,
-        imageUrl: productSelected!.imageUrl,
-        name: productSelected!.name,
-        price: productSelected!.price,
-        providerId: productSelected!.providerId,
-        stock: productSelected!.stock,
-        rating: productSelected!.rating,
-        reviews: productSelected!.reviews,
-        quantity: productSelected?.quantity!,
-        sku: productSelected!.sku,
-        isPC: productSelected?.isPC,
-        isPc: productSelected?.isPc,
-        caracteristicas: productSelected?.caracteristicas,
-        height: productSelected?.height,
-        idProductExt: productSelected?.idProductExt,
-        largo: productSelected?.largo,
-        storeId: productSelected?.storeId,
-        upc: productSelected?.upc,
-        width: productSelected?.width,
-        product_stock: productSelected?.product_stock,
-      });
-      localStorage.setItem(
-        "buyNowProduct",
-        JSON.stringify({
-          ...productSelected,
-          categoryId: productSelected!.categoryId,
-          createdAt: productSelected!.createdAt,
-          description: productSelected!.description,
-          idProduct: productSelected!.idProduct,
-          imageUrl: productSelected!.imageUrl,
-          name: productSelected!.name,
-          price: productSelected!.price,
-          providerId: productSelected!.providerId,
-          stock: productSelected!.stock,
-          rating: productSelected!.rating,
-          reviews: productSelected!.reviews,
-          quantity: productSelected?.quantity!,
-          sku: productSelected!.sku,
-          isPC: productSelected?.isPC,
-          isPc: productSelected?.isPc,
-          caracteristicas: productSelected?.caracteristicas,
-          height: productSelected?.height,
-          idProductExt: productSelected?.idProductExt,
-          largo: productSelected?.largo,
-          storeId: productSelected?.storeId,
-          upc: productSelected?.upc,
-          width: productSelected?.width,
-          product_stock: productSelected?.product_stock,
-        }),
+      handleBuyNowProduct(
+        productSelected,
+        Number(quantities[sucursal.id] ?? 1),
+        null,
       );
-      onRouterLink("/confirma-productos");
       return;
     }
     const quantity = Number(quantities[sucursal.id] ?? 1);

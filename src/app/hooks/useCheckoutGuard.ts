@@ -6,13 +6,13 @@ import {
   CheckoutStep,
   checkoutRoutes,
 } from "./../components/timeline/checkoutSteps";
-import useService from "./../services/useService"; // Para acceder a productsToShow
+import useService from "./../services/useService";
 import { useTheContext } from "../services/globalContext";
 
 export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { productsToShow } = useService();
+  const { productsToShow, onRouterLink } = useService();
   const { setDataModal } = useTheContext();
 
   useEffect(() => {
@@ -31,55 +31,63 @@ export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
     }
 
     // 🚨 Detectar cambios en productos después de configurar la entrega
-    if (step > CheckoutStep.OPCIONES_ENTREGA) {
-      const snapshot = localStorage.getItem("checkout_products_snapshot");
-      if (snapshot && productsToShow) {
-        const snapshotProducts = JSON.parse(snapshot) as {
-          id: number;
-          quantity: number;
-          storeId: any;
-        }[];
-        const currentProducts = productsToShow.map((p) => ({
-          id: p.idProduct,
-          quantity: p.quantity,
-          storeId: p.storeId,
-        }));
+    if (step > CheckoutStep.OPCIONES_ENTREGA && productsToShow?.length) {
+      const snapshotStr = localStorage.getItem("checkout_products_snapshot");
+      if (snapshotStr) {
+        try {
+          const snapshotProducts = JSON.parse(snapshotStr) as {
+            id: number;
+            quantity: number;
+          }[];
 
-        const addedOrChanged = currentProducts.some((cp) => {
-          const snap = snapshotProducts.find(
-            (sp) => Number(sp.id) === Number(cp.id) && sp.storeId == cp.storeId,
-          );
-          // Si no existe en el snapshot o la cantidad cambió, es considerado agregado o cambiado
-          return !snap || snap.quantity !== cp.quantity;
-        });
-        if (addedOrChanged) {
-          // ⚠️ Se agregaron productos, volver a OPCIONES_ENTREGA
-          localStorage.setItem(
-            "checkout_step",
-            String(CheckoutStep.OPCIONES_ENTREGA),
-          );
+          const currentProducts = productsToShow.map((p) => ({
+            id: Number(p.idProduct),
+            quantity: Number(p.quantity),
+          }));
 
-          setDataModal({
-            isOpen: true,
-            type: "info",
-            message:
-              "Se detectaron nuevos productos, debes configurar nuevamente la opción de entrega.",
-            title: "Información",
-            showActions: true,
-            onConfirm: () => {
-              router.replace(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-            },
-            onClose: () => {
-              router.replace(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-            },
+          const addedOrChanged = currentProducts.some((cp) => {
+            const snap = snapshotProducts.find((sp) => sp.id === cp.id);
+            return !snap || snap.quantity !== cp.quantity;
           });
-          // router.replace(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
 
-          // alert(
-          //   "Se detectaron nuevos productos, debes configurar nuevamente la opción de entrega.",
-          // );
+          if (addedOrChanged) {
+            console.log("Productos agregados o modificados detectados.");
+
+            localStorage.setItem(
+              "checkout_step",
+              String(CheckoutStep.OPCIONES_ENTREGA),
+            );
+
+            alert(
+              "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
+            );
+
+            // setDataModal({
+            //   isOpen: true,
+            //   type: "info",
+            //   message:
+            //     "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
+            //   title: "Información",
+            //   showActions: true,
+            //   onConfirm: () => {
+            //     onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
+            //   },
+            //   onClose: () => {
+            //     onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
+            //   },
+            // });
+          }
+        } catch (err) {
+          console.error("Error al parsear el snapshot de productos:", err);
         }
       }
     }
-  }, [requiredStep, pathname, router, productsToShow]);
+  }, [
+    requiredStep,
+    pathname,
+    router,
+    productsToShow,
+    onRouterLink,
+    setDataModal,
+  ]);
 };

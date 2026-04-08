@@ -12,18 +12,53 @@ const getBranchDisplayName = (branch: any) => {
   const { name, providerId } = branch.branches;
 
   if (providerId === 3) {
-    switch (name) {
-      case "santafe":
-        return "PCinBOX-SFD";
-      case "leon2":
-        return "PCinBOX-León";
-      case "dicoags2":
-        return "PCinBOX-AG2D";
-      case "Arboledas":
-        return "PCinBOX-AGD";
-      default:
-        return name;
+    if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+      switch (name) {
+        case "gdl":
+          return "PCinBOX-GDL";
+        case "leon2":
+          return "PCinBOX-León";
+        case "dicoags2":
+          return "PCinBOX-AG2D";
+        case "Arboledas":
+          return "PCinBOX-AGD";
+        case "CDMX":
+          return "PCinBOX-CDMX";
+        case "GDL":
+          return "PCinBOX-GDL";
+        default:
+          return name;
+      }
+    } else {
+      switch (name) {
+        case "santafe":
+          return "PCinBOX-SFD";
+        case "leon2":
+          return "PCinBOX-León";
+        case "dicoags2":
+          return "PCinBOX-AG2D";
+        case "Arboledas":
+          return "PCinBOX-AGD";
+        case "CDMX":
+          return "PCinBOX-CDMX";
+        case "GDL":
+          return "PCinBOX-GDL";
+        default:
+          return name;
+      }
     }
+    // switch (name) {
+    //   case "santafe":
+    //     return "PCinBOX-SFD";
+    //   case "leon2":
+    //     return "PCinBOX-León";
+    //   case "dicoags2":
+    //     return "PCinBOX-AG2D";
+    //   case "Arboledas":
+    //     return "PCinBOX-AGD";
+    //   default:
+    //     return name;
+    // }
   }
 
   if (providerId === 2) {
