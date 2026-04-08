@@ -646,20 +646,27 @@ export default function AppWrapper({
             )}
         </main>
 
-        <a
+        {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
           target="_blank"
           rel="noopener noreferrer"
           className="fab-whatsapp"
         >
-          {/* Ondas */}
+          
           <span className="wave"></span>
           <span className="wave"></span>
           <span className="wave"></span>
           <span className="wave"></span>
-          {/* Icono arriba */}
+         
           <FaWhatsapp className="fab-icon" />
-        </a>
+        </a> */}
+
+        <button className="fab">
+          <span className="wave"></span>
+          <span className="wave"></span>
+          <span className="wave"></span>
+          <span className="wave"></span>+
+        </button>
       </div>
     </SessionProvider>
   );
