@@ -58,24 +58,15 @@ export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
               String(CheckoutStep.OPCIONES_ENTREGA),
             );
 
+            // Actualizar el snapshot con los productos actuales
+            localStorage.setItem(
+              "checkout_products_snapshot",
+              JSON.stringify(currentProducts),
+            );
+
             alert(
               "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
             );
-
-            // setDataModal({
-            //   isOpen: true,
-            //   type: "info",
-            //   message:
-            //     "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
-            //   title: "Información",
-            //   showActions: true,
-            //   onConfirm: () => {
-            //     onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-            //   },
-            //   onClose: () => {
-            //     onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-            //   },
-            // });
           }
         } catch (err) {
           console.error("Error al parsear el snapshot de productos:", err);

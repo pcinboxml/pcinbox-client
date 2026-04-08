@@ -36,6 +36,12 @@ const useConfirmaProductos = () => {
           ? dataCart
           : [];
 
+    if (sourceProducts?.length === 0) {
+      localStorage.removeItem("checkout_step");
+      localStorage.removeItem("checkout_mode");
+      localStorage.removeItem("checkout_products_snapshot");
+    }
+
     setRowsConfirmProducts(
       sourceProducts.map((itemCart) => ({
         id: itemCart.idProduct,
@@ -63,14 +69,22 @@ const useConfirmaProductos = () => {
             (item) => item.idProduct !== idProduct,
           );
 
-          if (dataCart?.length === 0) {
-            localStorage.removeItem("checkout_step");
-            localStorage.removeItem("checkout_mode");
-            localStorage.removeItem("checkout_products_snapshot");
-          }
           setDataCart(updatedCart);
         }
       } catch (error) {
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "Error al eliminar el producto",
+          showActions: true,
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
       } finally {
         setLoadingRemoveProduct(false);
       }
