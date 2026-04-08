@@ -12,9 +12,20 @@ import style from "./confirma-productos.module.css";
 import { useEffect, useMemo } from "react";
 
 const ConfirmaProducts = () => {
+  const { formatCurrency, onRouterLink, productsToShow } = useService();
+
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
 
-  const { formatCurrency, onRouterLink, productsToShow } = useService();
+  useEffect(() => {
+    if (window != undefined) {
+      if (!localStorage.getItem("checkout_mode")) {
+        if (productsToShow && productsToShow?.length > 0) {
+          localStorage.setItem("checkout_mode", "cart");
+        }
+      }
+    }
+  }, [productsToShow]);
+
   const {
     columns,
     rowsConfirmProducts,

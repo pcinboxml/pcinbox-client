@@ -38,35 +38,54 @@ export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
           const snapshotProducts = JSON.parse(snapshotStr) as {
             id: number;
             quantity: number;
+            storeId: number;
           }[];
 
           const currentProducts = productsToShow.map((p) => ({
             id: Number(p.idProduct),
             quantity: Number(p.quantity),
+            storeId: Number(p.storeId),
           }));
 
           const addedOrChanged = currentProducts.some((cp) => {
-            const snap = snapshotProducts.find((sp) => sp.id === cp.id);
+            const snap = snapshotProducts.find(
+              (sp) => sp.id === cp.id && sp.storeId === cp.storeId,
+            );
             return !snap || snap.quantity !== cp.quantity;
           });
 
           if (addedOrChanged) {
             console.log("Productos agregados o modificados detectados.");
 
+            // Resetear el paso de checkout
             localStorage.setItem(
               "checkout_step",
               String(CheckoutStep.OPCIONES_ENTREGA),
             );
 
-            // Actualizar el snapshot con los productos actuales
+            // Actualizar snapshot
             localStorage.setItem(
               "checkout_products_snapshot",
               JSON.stringify(currentProducts),
             );
 
-            alert(
-              "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
-            );
+            // Mostrar modal primero, redirigir solo cuando se cierre o confirme
+            setDataModal({
+              isOpen: true,
+              type: "info",
+              title: "Información",
+              message:
+                "Se detectaron nuevos productos o cambios, debes configurar nuevamente la opción de entrega.",
+              showActions: true,
+              onConfirm: () => {
+                setDataModal((prev) => ({ ...prev, isOpen: false })); // cerrar modal
+                onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]); // luego redirigir
+              },
+              onClose: () => {
+                setDataModal((prev) => ({ ...prev, isOpen: false })); // cerrar modal
+                onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
+              },
+            });
           }
         } catch (err) {
           console.error("Error al parsear el snapshot de productos:", err);
