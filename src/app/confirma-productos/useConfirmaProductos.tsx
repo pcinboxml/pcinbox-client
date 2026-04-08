@@ -52,21 +52,25 @@ const useConfirmaProductos = () => {
 
   // ---------- Eliminar producto ----------
   const handleRemoveProduct = async (idProduct: string) => {
-    setLoadingRemoveProduct(true);
-    console.log(buyNowProduct);
-
     if (buyNowProduct == null) {
       try {
+        setLoadingRemoveProduct(true);
+
         const resp = await requestPost({ idProduct }, "/cart/removeProduct");
 
         if (resp?.status === 200) {
           const updatedCart = dataCart.filter(
             (item) => item.idProduct !== idProduct,
           );
+
+          if (dataCart?.length === 0) {
+            localStorage.removeItem("checkout_step");
+            localStorage.removeItem("checkout_mode");
+            localStorage.removeItem("checkout_products_snapshot");
+          }
           setDataCart(updatedCart);
         }
       } catch (error) {
-        console.error(error);
       } finally {
         setLoadingRemoveProduct(false);
       }
@@ -75,6 +79,7 @@ const useConfirmaProductos = () => {
       localStorage.removeItem("buyNowProduct");
       localStorage.removeItem("checkout_step");
       localStorage.setItem("checkout_mode", "cart");
+      localStorage.removeItem("checkout_products_snapshot");
       setRowsConfirmProducts(
         dataCart && dataCart.length > 0
           ? dataCart.map((itemCart) => ({
