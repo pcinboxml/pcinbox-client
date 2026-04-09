@@ -15,6 +15,7 @@ import useStorage from "./services/useStorage";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
+import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
 
 export default function AppWrapper({
   children,
@@ -62,7 +63,6 @@ export default function AppWrapper({
 
     if (token) {
       const payload: any = jwtDecode(token);
-
 
       if (payload && payload?.idUser) {
         socketPagos?.current?.emit("idUser", `user-${payload?.idUser}`);
@@ -535,63 +535,60 @@ export default function AppWrapper({
   //     container.removeEventListener("scroll", handleScroll);
   //   };
   // }, [scrollRef]);
- 
 
   // Recupera la posición guardada del localStorage (o de un state global)
 
-const pathname = usePathname();
-const storageKey = "scroll-/result-search-category";
+  const pathname = usePathname();
+  const storageKey = "scroll-/result-search-category";
 
-// Guardar scroll solo si estamos en la ruta
-useEffect(() => {
-  if (!pathname.startsWith("/result-search-category")) return;
+  // Guardar scroll solo si estamos en la ruta
+  useEffect(() => {
+    if (!pathname.startsWith("/result-search-category")) return;
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      sessionStorage.setItem(
-        storageKey,
-        scrollRef.current.scrollTop.toString()
-      );
-    }
-  };
+    const handleScroll = () => {
+      if (scrollRef.current) {
+        sessionStorage.setItem(
+          storageKey,
+          scrollRef.current.scrollTop.toString(),
+        );
+      }
+    };
 
-  const currentDiv = scrollRef.current;
-  currentDiv?.addEventListener("scroll", handleScroll);
+    const currentDiv = scrollRef.current;
+    currentDiv?.addEventListener("scroll", handleScroll);
 
-  return () => {
-    currentDiv?.removeEventListener("scroll", handleScroll);
-  };
-}, [pathname, storageKey]);
+    return () => {
+      currentDiv?.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname, storageKey]);
 
-// Restaurar scroll solo si estamos en la ruta
-// Restaurar scroll solo si estamos en la ruta
-useEffect(() => {
-  if (!pathname.startsWith("/result-search-category")) return;
-  if (!scrollRef.current) return;
-
-  const savedScroll = Number(sessionStorage.getItem(storageKey)) || 0;
-
-  const restoreScroll = () => {
+  // Restaurar scroll solo si estamos en la ruta
+  // Restaurar scroll solo si estamos en la ruta
+  useEffect(() => {
+    if (!pathname.startsWith("/result-search-category")) return;
     if (!scrollRef.current) return;
 
-    const container = scrollRef.current;
+    const savedScroll = Number(sessionStorage.getItem(storageKey)) || 0;
 
-    // Si el contenido tiene suficiente altura
-    if (container.scrollHeight >= savedScroll) {
-      container.scrollTo({ top: savedScroll, behavior: "auto" });
-    } else {
-      // Espera al siguiente frame y reintenta
-      requestAnimationFrame(restoreScroll);
-    }
-  };
+    const restoreScroll = () => {
+      if (!scrollRef.current) return;
 
-  restoreScroll();
-}, [pathname, storageKey]);
+      const container = scrollRef.current;
+
+      // Si el contenido tiene suficiente altura
+      if (container.scrollHeight >= savedScroll) {
+        container.scrollTo({ top: savedScroll, behavior: "auto" });
+      } else {
+        // Espera al siguiente frame y reintenta
+        requestAnimationFrame(restoreScroll);
+      }
+    };
+
+    restoreScroll();
+  }, [pathname, storageKey]);
   useProtectedRoute();
- 
-  useScrollRestoration(scrollRef);
 
-   
+  useScrollRestoration(scrollRef);
 
   return (
     <SessionProvider>
@@ -650,23 +647,20 @@ useEffect(() => {
             )}
         </main>
 
-        <a
-          style={{
-            position: "fixed",
-            bottom: "10px",
-            right: "10px",
-            textDecoration: "none",
-            background: "white",
-            borderRadius: "5px",
-          }}
-          target="_blank"
+        <BtnFloat />
+        {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fab-whatsapp"
         >
-          <FaWhatsapp
-            size={45}
-            style={{ color: "#25D366", fontSize: "2rem" }}
-          />
-        </a>
+          <span className="wave"></span>
+          <span className="wave"></span>
+          <span className="wave"></span>
+          <span className="wave"></span>
+
+          <FaWhatsapp className="fab-icon" />
+        </a> */}
       </div>
     </SessionProvider>
   );

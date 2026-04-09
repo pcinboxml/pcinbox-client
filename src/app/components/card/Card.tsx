@@ -6,8 +6,8 @@ import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import useCard from "./useCard";
 import { Carousel } from "react-responsive-carousel";
-import { Box, Tooltip, styled } from "@mui/material";
-import { useMemo } from "react";
+import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
+import { useMemo, useState } from "react";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -27,6 +27,8 @@ const StyledTooltip = styled(({ className, ...props }: any) => (
 }));
 
 const Card = ({ product }: { product: ProductI }) => {
+  const isMobile = useMediaQuery("(max-width:768px)");
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const { onRouterLink, formatCurrency } = useService();
   const {
     handleAddProductCart,
@@ -49,14 +51,6 @@ const Card = ({ product }: { product: ProductI }) => {
   return (
     <div className="mi-card border">
       <div className="container-img">
-        {/* <div
-          className="relative w-full overflow-hidden"
-          style={{
-            maxWidth: "100%",
-            maxHeight: "150px",
-            position: "relative",
-          }}
-        > */}
         <Carousel
           showIndicators={true}
           showThumbs={false}
@@ -100,6 +94,11 @@ const Card = ({ product }: { product: ProductI }) => {
         {/* {product.reviews && product.reviews.length > 0 && ( */}
         <div className="comments flex">
           <StyledTooltip
+            open={isMobile ? openTooltip : undefined}
+            onClose={() => setOpenTooltip(false)}
+            disableHoverListener={isMobile}
+            disableFocusListener={isMobile}
+            disableTouchListener={isMobile}
             title={
               <div className="w-full  flex justify-center">
                 <Box>
@@ -210,6 +209,11 @@ const Card = ({ product }: { product: ProductI }) => {
           >
             <div className="flex">
               <button
+                onClick={() => {
+                  if (isMobile) {
+                    setOpenTooltip((prev) => !prev);
+                  }
+                }}
                 className="flex justify-center items-center border"
                 style={{ marginLeft: "5px", borderRadius: "2px" }}
               >
