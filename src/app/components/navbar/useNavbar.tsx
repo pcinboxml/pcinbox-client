@@ -11,20 +11,14 @@ const useNavbar = () => {
   const { hasToken, showProductsMenu, setShowProductsMenu, setDataCart } =
     useTheContext();
 
-  const onMouseEnterSubmenu = (idSubmenu: string) => {
-    const idSub = document.getElementById(idSubmenu);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-    if (idSub) {
-      idSub.style.display = "block";
-    }
+  const onMouseEnterSubmenu = (idSubmenu: string) => {
+    setOpenSubmenu(idSubmenu);
   };
 
   const onMouseLeaveSubMenu = (idSubmenu: string) => {
-    const idSub = document.getElementById(idSubmenu);
-
-    if (idSub) {
-      idSub.style.display = "none";
-    }
+    if (openSubmenu === idSubmenu) setOpenSubmenu(null);
   };
 
   const onMouseEnterProducts = () => {
@@ -83,6 +77,7 @@ const useNavbar = () => {
     onMouseEnterSubmenu,
     onMouseLeaveSubMenu,
     hasToken,
+    openSubmenu,
     handleToggleNav,
     handleDOM,
     navRefResponsive,
