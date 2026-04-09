@@ -15,6 +15,7 @@ import useStorage from "./services/useStorage";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
+import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
 
 export default function AppWrapper({
   children,
@@ -646,27 +647,20 @@ export default function AppWrapper({
             )}
         </main>
 
+        <BtnFloat />
         {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
           target="_blank"
           rel="noopener noreferrer"
           className="fab-whatsapp"
         >
-          
           <span className="wave"></span>
           <span className="wave"></span>
           <span className="wave"></span>
           <span className="wave"></span>
-         
+
           <FaWhatsapp className="fab-icon" />
         </a> */}
-
-        <button className="fab">
-          <span className="wave"></span>
-          <span className="wave"></span>
-          <span className="wave"></span>
-          <span className="wave"></span>+
-        </button>
       </div>
     </SessionProvider>
   );
