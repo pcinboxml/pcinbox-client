@@ -33,6 +33,7 @@ import { useSession } from "next-auth/react";
 
 const NavbarResponsive = () => {
   const {
+    openSubmenu,
     navRef,
     showProductsMenu,
     onMouseEnterSubmenu,
@@ -226,7 +227,10 @@ const NavbarResponsive = () => {
                   </a>
                   <div
                     id="1"
-                    style={{ display: "none", left: "-50px" }}
+                    style={{
+                      display: openSubmenu === "1" ? "block" : "none",
+                      left: "-50px",
+                    }}
                     className="absolute bg-white container-sub-menu shadow"
                   >
                     <ul className="list-options-cuenta cursor-default">
@@ -427,7 +431,12 @@ const NavbarResponsive = () => {
                   <div
                     id="2"
                     className="absolute w-auto bg-white p-1 cursor-default shadow-2xl rounded"
-                    style={{ top: "100%", zIndex: "60", display: "none" }}
+                    // style={{ top: "100%", zIndex: "60", display: "none" }}
+                    style={{
+                      display: openSubmenu === "2" ? "block" : "none",
+                      zIndex: "60",
+                      top: "100%",
+                    }}
                   >
                     {dataFavorites && dataFavorites.length > 0 ? (
                       <div className="grid grid-cols-[1fr_1fr] w-[450px] border">
