@@ -24,7 +24,7 @@ const useResumen = () => {
   const { progressPay2 } = useStorage();
   const { requestPostPagos } = usePasarelaDePagos();
 
-  const { columns, rows, totalIVA, totalPagar } = GridResumen({
+  const { columns, rows, totalPagar } = GridResumen({
     dataCart,
     isSmallScreen,
   });
@@ -171,7 +171,7 @@ const useResumen = () => {
     columns,
     rows,
     totalPrice,
-    totalIVA,
+    // totalIVA,
     totalPagar,
     selectedFactura,
     handleCreateOrder,

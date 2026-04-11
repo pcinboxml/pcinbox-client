@@ -141,16 +141,17 @@ const GridResumen = ({
   const subtotal = rows.reduce((sum, row) => sum + row.price, 0);
 
   // 2. IVA total (16% del subtotal)
-  const totalIVA = subtotal * 0.16;
+  // const totalIVA = subtotal * 0.16;
 
   // 3. Total a pagar (subtotal + IVA)
-  const totalPagar = subtotal + totalIVA;
+  // const totalPagar = subtotal + totalIVA;
+  const totalPagar = subtotal;
 
   return {
     rows,
     columns,
     subtotal, // Se devuelve el subtotal corregido
-    totalIVA,
+    // totalIVA,
     totalPagar, // Se devuelve el total corregido
   };
 };
