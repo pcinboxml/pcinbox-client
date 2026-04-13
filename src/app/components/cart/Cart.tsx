@@ -3,7 +3,7 @@
 import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
@@ -23,6 +23,7 @@ export const ModalCart = ({
   onMouseLeaveCart: any;
   showDivCart: boolean;
 }) => {
+  const [runCheckoutSync, setRunCheckoutSync] = useState<boolean>(false);
   const { dataCart, setDataCart, buyNowProduct } = useTheContext();
   const {
     dataCartStorege,
@@ -35,7 +36,9 @@ export const ModalCart = ({
     useCart();
 
   useEffect(() => {
-    if (buyNowProduct != null) {
+    if (!runCheckoutSync) return;
+
+    if (buyNowProduct != null && dataCart?.length === 0) {
       localStorage.setItem("checkout_mode", "buy_now");
       localStorage.setItem(
         "checkout_products_snapshot",
@@ -47,7 +50,7 @@ export const ModalCart = ({
           })),
         ),
       );
-    } else if (dataCart?.length === 0) {
+    } else if (dataCart?.length > 0 && buyNowProduct === null) {
       localStorage.setItem("checkout_mode", "cart");
       localStorage.setItem(
         "checkout_products_snapshot",
@@ -59,11 +62,14 @@ export const ModalCart = ({
           })),
         ),
       );
-    } else if (productsToShow == null) {
+    } else if (buyNowProduct === null && dataCart.length === 0) {
       localStorage.removeItem("checkout_mode");
       localStorage.removeItem("checkout_products_snapshot");
     }
-  }, [productsToShow]);
+
+    // reset del trigger
+    setRunCheckoutSync(false);
+  }, [runCheckoutSync, buyNowProduct, dataCart, productsToShow]);
 
   return (
     <div
@@ -110,6 +116,7 @@ export const ModalCart = ({
                 localStorage.removeItem("progressPay2");
                 handleRemoveAllCart(dataCart, onMouseLeaveCart);
                 localStorage.removeItem("checkout_step");
+                setRunCheckoutSync(true);
               }}
             >
               {loadingRmAllCart ? (
