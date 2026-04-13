@@ -51,9 +51,9 @@ const DetailsProduct = () => {
     // fnGetServerSession,
   } = useDetailsProduct();
 
-  const { formatCurrency } = useService();
+  const { formatCurrency, onRouterLink } = useService();
   const { requestGetProveedor } = useProveedores();
-  const { setDataModal } = useTheContext();
+  const { setDataModal, hasToken, setBuyNowProduct } = useTheContext();
   const router = useParams();
   const { idProduct } = router;
   const { handleAddFavorites, loadingFavorite } = useFavorites();
@@ -134,29 +134,112 @@ const DetailsProduct = () => {
     }
   };
 
-  // const handleComprarAhora = () => {
-  //   if (
-  //     (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
-  //     dataProduct?.product_stock!.length > 0 &&
-  //     Number(dataProduct?.providerId) !== 1
-  //   ) {
-  //     setDataModal({
-  //       isOpen: true,
-  //       message: (
-  //         <div className="w-[800px] border">
-  //           <BranchSelector productSelected={dataProduct} comprarAhora={true} />
-  //         </div>
-  //       ),
-  //       title: "",
-  //       type: "success",
-  //       showActions: false,
-  //       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-  //       onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-  //     });
-  //   } else {
-  //     handleAddProductCart(dataProduct!, Number(quantity), true);
-  //   }
-  // };
+  const handleComprarAhora = () => {
+    if (!hasToken) {
+      setDataModal({
+        title: "Información",
+        isOpen: true,
+        message: "Necesitas iniciar sesión",
+        type: "info",
+        showActions: true,
+        onClose: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+      });
+      return;
+    }
+    if (
+      (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+      dataProduct?.product_stock!.length > 0 &&
+      Number(dataProduct?.providerId) !== 1
+    ) {
+      setDataModal({
+        isOpen: true,
+        message: (
+          <div className="w-[800px] border">
+            <BranchSelector productSelected={dataProduct} comprarAhora={true} />
+          </div>
+        ),
+        title: "",
+        type: "success",
+        showActions: false,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+    } else {
+      localStorage.setItem("checkout_mode", "buy_now");
+
+      setBuyNowProduct({
+        ...dataProduct,
+        categoryId: dataProduct!.categoryId,
+        createdAt: dataProduct!.createdAt,
+        description: dataProduct!.description,
+        idProduct: dataProduct!.idProduct,
+        imageUrl: dataProduct!.imageUrl,
+        name: dataProduct!.name,
+        price: dataProduct!.price,
+        providerId: dataProduct!.providerId,
+        stock: dataProduct!.stock,
+        rating: dataProduct!.rating,
+        reviews: dataProduct!.reviews,
+        quantity: Number(quantity),
+        sku: dataProduct!.sku,
+        isPC: dataProduct?.isPC,
+        isPc: dataProduct?.isPc,
+        caracteristicas: dataProduct?.caracteristicas,
+        height: dataProduct?.height,
+        idProductExt: dataProduct?.idProductExt,
+        largo: dataProduct?.largo,
+        storeId: dataProduct?.storeId,
+        upc: dataProduct?.upc,
+        width: dataProduct?.width,
+        product_stock: dataProduct?.product_stock,
+      });
+      localStorage.setItem(
+        "buyNowProduct",
+        JSON.stringify({
+          ...dataProduct,
+          categoryId: dataProduct!.categoryId,
+          createdAt: dataProduct!.createdAt,
+          description: dataProduct!.description,
+          idProduct: dataProduct!.idProduct,
+          imageUrl: dataProduct!.imageUrl,
+          name: dataProduct!.name,
+          price: dataProduct!.price,
+          providerId: dataProduct!.providerId,
+          stock: dataProduct!.stock,
+          rating: dataProduct!.rating,
+          reviews: dataProduct!.reviews,
+          quantity: Number(quantity),
+          sku: dataProduct!.sku,
+          isPC: dataProduct?.isPC,
+          isPc: dataProduct?.isPc,
+          caracteristicas: dataProduct?.caracteristicas,
+          height: dataProduct?.height,
+          idProductExt: dataProduct?.idProductExt,
+          largo: dataProduct?.largo,
+          storeId: dataProduct?.storeId,
+          upc: dataProduct?.upc,
+          width: dataProduct?.width,
+          product_stock: dataProduct?.product_stock,
+        }),
+      );
+      onRouterLink("/confirma-productos");
+
+      return;
+
+      // handleAddProductCart(dataProduct!, Number(quantity));
+    }
+  };
 
   // ── Magnifier mouse handler ──
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -400,7 +483,7 @@ const DetailsProduct = () => {
                   )}
                 </button>
 
-                {/* <button
+                <button
                   className="dp-btn-cart"
                   disabled={dataProduct?.stock === 0}
                   onClick={handleComprarAhora}
@@ -410,7 +493,7 @@ const DetailsProduct = () => {
                   ) : (
                     "No disponible"
                   )}
-                </button> */}
+                </button>
 
                 <button
                   className="dp-btn-fav"

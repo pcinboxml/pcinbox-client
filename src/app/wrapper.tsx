@@ -290,9 +290,12 @@ export default function AppWrapper({
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
     socketPagos?.current?.on("removeStorageProgressPay2", () => {
-      console.log();
       localStorage.removeItem("progressPay2");
       localStorage.setItem("dataCartStorage", JSON.stringify([]));
+      localStorage.removeItem("buyNowProduct");
+      localStorage.removeItem("checkout_mode");
+      localStorage.removeItem("checkout_products_snapshot");
+      localStorage.removeItem("checkout_step");
     });
 
     return () => {
@@ -304,6 +307,10 @@ export default function AppWrapper({
       socketPagos?.current?.off("removeStorageProgressPay2", () => {
         localStorage.removeItem("progressPay2");
         localStorage.setItem("dataCartStorage", JSON.stringify([]));
+        localStorage.removeItem("buyNowProduct");
+        localStorage.removeItem("checkout_mode");
+        localStorage.removeItem("checkout_products_snapshot");
+        localStorage.removeItem("checkout_step");
       });
     };
   }, [socketServer.current, socketPagos?.current]);

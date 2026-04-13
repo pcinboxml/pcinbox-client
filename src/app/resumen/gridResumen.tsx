@@ -1,6 +1,7 @@
 "use client";
 
 import ProductI from "../interfaces/products/product.interface";
+import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import useStorage from "../services/useStorage";
 
@@ -11,18 +12,53 @@ const getBranchDisplayName = (branch: any) => {
   const { name, providerId } = branch.branches;
 
   if (providerId === 3) {
-    switch (name) {
-      case "santafe":
-        return "PCinBOX-SFD";
-      case "leon2":
-        return "PCinBOX-León";
-      case "dicoags2":
-        return "PCinBOX-AG2D";
-      case "Arboledas":
-        return "PCinBOX-AGD";
-      default:
-        return name;
+    if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+      switch (name) {
+        case "gdl":
+          return "PCinBOX-GDL";
+        case "leon2":
+          return "PCinBOX-León";
+        case "dicoags2":
+          return "PCinBOX-AG2D";
+        case "Arboledas":
+          return "PCinBOX-AGD";
+        case "CDMX":
+          return "PCinBOX-CDMX";
+        case "GDL":
+          return "PCinBOX-GDL";
+        default:
+          return name;
+      }
+    } else {
+      switch (name) {
+        case "santafe":
+          return "PCinBOX-SFD";
+        case "leon2":
+          return "PCinBOX-León";
+        case "dicoags2":
+          return "PCinBOX-AG2D";
+        case "Arboledas":
+          return "PCinBOX-AGD";
+        case "CDMX":
+          return "PCinBOX-CDMX";
+        case "GDL":
+          return "PCinBOX-GDL";
+        default:
+          return name;
+      }
     }
+    // switch (name) {
+    //   case "santafe":
+    //     return "PCinBOX-SFD";
+    //   case "leon2":
+    //     return "PCinBOX-León";
+    //   case "dicoags2":
+    //     return "PCinBOX-AG2D";
+    //   case "Arboledas":
+    //     return "PCinBOX-AGD";
+    //   default:
+    //     return name;
+    // }
   }
 
   if (providerId === 2) {
@@ -39,26 +75,29 @@ const getBranchDisplayName = (branch: any) => {
   return name; // Valor por defecto final
 };
 
-const GridResumen = ({
-  dataCart,
-  isSmallScreen,
-}: {
-  dataCart: ProductI[];
-  isSmallScreen: boolean;
-}) => {
+const GridResumen = ({ isSmallScreen }: { isSmallScreen: boolean }) => {
   const { formatCurrency } = useService();
   // El hook useStorage no se usaba en la lógica final, se puede omitir si no es necesario.
-  // const { dataCartStorege } = useStorage();
+  // const { checkoutMode } = useStorage();
+  // const { buyNowProduct, dataCart } = useTheContext();
+  const { productsToShow } = useService();
 
-  const rows = dataCart.map((itemCart) => ({
-    id: itemCart.idProduct,
-    products: `${itemCart.name} ${itemCart.description}`,
-    quantity: Number(itemCart.quantity),
-    sucursal: itemCart.product_stock,
-    storeId: Number(itemCart?.storeId),
-    // 'price' ahora es el precio total por línea de producto (precio unitario * cantidad)
-    price: Number(itemCart.price) * Number(itemCart.quantity),
-  }));
+  // const productsToShow =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
+
+  const rows = productsToShow
+    ? productsToShow.map((itemCart) => ({
+        id: itemCart.idProduct,
+        products: `${itemCart.name} ${itemCart.description}`,
+        quantity: Number(itemCart.quantity),
+        sucursal: itemCart.product_stock,
+        storeId: Number(itemCart?.storeId),
+        // 'price' ahora es el precio total por línea de producto (precio unitario * cantidad)
+        price: Number(itemCart.price) * Number(itemCart.quantity),
+      }))
+    : [];
 
   const columns = [
     {
@@ -141,17 +180,17 @@ const GridResumen = ({
   const subtotal = rows.reduce((sum, row) => sum + row.price, 0);
 
   // 2. IVA total (16% del subtotal)
-  // const totalIVA = subtotal * 0.16;
+  //const totalIVA = subtotal * 0.16;
 
   // 3. Total a pagar (subtotal + IVA)
-  // const totalPagar = subtotal + totalIVA;
+  //const totalPagar = subtotal + totalIVA;
   const totalPagar = subtotal;
 
   return {
     rows,
     columns,
     subtotal, // Se devuelve el subtotal corregido
-    // totalIVA,
+    //totalIVA,
     totalPagar, // Se devuelve el total corregido
   };
 };

@@ -18,7 +18,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./../navbar/useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
 import { FcGoogle } from "react-icons/fc";
@@ -71,7 +71,7 @@ const NavbarResponsive = () => {
 
   const [totalItems, setTotalItems] = useState<number>(0);
   const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
-  const { totalPrice } = useService();
+  // const { totalPrice } = useService();
   const { data: session, status } = useSession();
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
@@ -134,6 +134,17 @@ const NavbarResponsive = () => {
     setMobileMenuOpen(false);
     setMobileView("main");
   };
+
+  const totalPrice = useMemo(() => {
+    const total = dataCart
+      ? dataCart
+          .filter((itemF) => itemF.stock != 0)
+          .map((item) => Number(item.price) * item.quantity)
+          .reduce((sum, current) => sum + current, 0)
+      : 0;
+
+    return Math.round((total + Number.EPSILON) * 100) / 100;
+  }, [dataCart, dataCartStorege]);
 
   return (
     <>

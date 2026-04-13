@@ -136,16 +136,16 @@ const useCard = () => {
       setLoadingAgregar(false);
 
       if (resp && resp.status == 200) {
-        setDataNotification({
-          open: true,
-          handleClose: () =>
-            setDataNotification((prevNoti) => ({
-              ...prevNoti,
-              open: false,
-            })),
-          message: "Producto agregado al carrito correctamente",
-          type: "success",
-        });
+        // setDataNotification({
+        //   open: true,
+        //   handleClose: () =>
+        //     setDataNotification((prevNoti) => ({
+        //       ...prevNoti,
+        //       open: false,
+        //     })),
+        //   message: "Producto agregado al carrito correctamente",
+        //   type: "success",
+        // });
 
         setDataCart((prev) => {
           const existingProduct = prev.find(

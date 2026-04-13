@@ -19,13 +19,18 @@ const useResumen = () => {
     noSsr: true,
   });
 
-  const { requestGet, totalPrice } = useService();
+  const { requestGet, totalPrice, productsToShow } = useService();
 
   const { progressPay2 } = useStorage();
   const { requestPostPagos } = usePasarelaDePagos();
 
+  //  const productsToShow =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
+
   const { columns, rows, totalPagar } = GridResumen({
-    dataCart,
+    //Se quito el totalIVA
     isSmallScreen,
   });
 
@@ -57,7 +62,7 @@ const useResumen = () => {
           {
             userId: Number(localStorage.getItem("idUser")),
             amount:
-              dataCart && dataCart.length > 0
+              productsToShow && productsToShow.length > 0
                 ? totalPagar + costoTotalEnvio!
                 : null,
             dataPurchase: progressPay2?.dataPurchase,
@@ -73,7 +78,7 @@ const useResumen = () => {
             //       ? 0
             //       : progressPay.optionSend.address
             //     : null,
-            dataProduct: dataCart,
+            dataProduct: productsToShow,
             requiredFactura: selectedFactura,
             // storeId: progressPay?.optionSend?.storeIdDico,
           },
@@ -94,7 +99,7 @@ const useResumen = () => {
           {
             userId: Number(localStorage.getItem("idUser")),
             amount:
-              dataCart && dataCart.length > 0
+              productsToShow && productsToShow.length > 0
                 ? totalPagar + costoTotalEnvio!
                 : null,
             dataPurchase: progressPay2?.dataPurchase,
@@ -110,7 +115,7 @@ const useResumen = () => {
             //       ? 0
             //       : progressPay.optionSend.address
             //     : null,
-            dataProduct: dataCart,
+            dataProduct: productsToShow,
             requiredFactura: selectedFactura,
             // storeId: progressPay?.optionSend?.storeIdDico,
           },
@@ -171,7 +176,7 @@ const useResumen = () => {
     columns,
     rows,
     totalPrice,
-    // totalIVA,
+    //totalIVA,
     totalPagar,
     selectedFactura,
     handleCreateOrder,

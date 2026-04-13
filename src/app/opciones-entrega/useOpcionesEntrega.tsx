@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import useService from "../services/useService";
 import { AddressI } from "../interfaces/address/address.interface";
 import { useTheContext } from "../services/globalContext";
@@ -37,8 +37,6 @@ const useOpcionesEntrega = () => {
     "Abasolo",
   ];
 
-  const { dataCart } = useTheContext();
-
   // --- ESTADOS CORREGIDOS ---
   // Se inicializan con una función que lee desde localStorage.
   // Esto garantiza que el estado tenga el valor correcto en el primer render.
@@ -63,7 +61,6 @@ const useOpcionesEntrega = () => {
     }
     return {};
   });
-
   const [addressByStore, setAddressByStore] = useState<Record<string, number>>(
     () => {
       if (typeof window !== "undefined") {
@@ -91,7 +88,7 @@ const useOpcionesEntrega = () => {
   });
   // --- FIN DE ESTADOS CORREGIDOS ---
 
-  const { requestGet, requestPost } = useService();
+  const { requestGet, requestPost, productsToShow } = useService();
   const { setDataModal } = useTheContext();
 
   const handleOnChangeSeguroEnvio = (
@@ -100,20 +97,20 @@ const useOpcionesEntrega = () => {
   ) => {
     const { value } = event.target;
 
-    if (dataCart && dataCart?.length > 0) {
-      let [storeId, providerId] = envioKey.split("-");
+    let newEnvioKey = envioKey?.split("-")[0];
 
-      let findDataProductsStoreId = dataCart?.filter(
-        (d) => d.storeId === Number(storeId),
+    if (productsToShow && productsToShow.length > 0) {
+      let findDataProductsStoreId = productsToShow.filter(
+        (d) => Number(d.storeId) === Number(newEnvioKey),
       );
 
-      if (findDataProductsStoreId && findDataProductsStoreId.length > 0) {
+      if (findDataProductsStoreId.length > 0) {
         const totalPriceStoreProvider3 = Math.round(
           findDataProductsStoreId
-            ?.filter(
-              (itemF) => itemF.stock != 0 && Number(itemF?.providerId) === 3,
+            .filter(
+              (itemF) => itemF.stock !== 0 && Number(itemF.providerId) === 3,
             )
-            .map((item) => Number(item.price) * item.quantity)
+            .map((item) => Number(item.price) * Number(item.quantity))
             .reduce((sum, current) => sum + current, 0) +
             Number.EPSILON * 100,
         );

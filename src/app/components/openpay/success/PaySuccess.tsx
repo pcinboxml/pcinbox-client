@@ -15,29 +15,22 @@ const PaySuccess = ({
   const [loadingRoute, setLoadingRoute] = useState<boolean>(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCheckmarkComplete(true);
-    }, 400);
-
-    const confettiTimer = setTimeout(() => {
-      setShowConfetti(false);
-    }, 3000);
-
+    const timer = setTimeout(() => setCheckmarkComplete(true), 400);
+    const confettiTimer = setTimeout(() => setShowConfetti(false), 3000);
     return () => {
       clearTimeout(timer);
       clearTimeout(confettiTimer);
     };
   }, []);
 
-  const formatAmount = (value: number) => {
-    return new Intl.NumberFormat("es-MX", {
+  const formatAmount = (value: number) =>
+    new Intl.NumberFormat("es-MX", {
       style: "currency",
       currency: "mxn",
     }).format(value);
-  };
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 min-h-screen flex items-center justify-center p-3 sm:p-5 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center p-3 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 overflow-hidden">
       {/* Confetti */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -69,22 +62,15 @@ const PaySuccess = ({
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl" />
       </div>
 
-      {/* Card principal — ocupa todo en móvil, max-lg en desktop */}
+      {/* Card principal */}
       <div className="w-full max-w-lg relative z-10">
-        <div
-          className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl animate-[slideUp_0.5s_ease]"
-          style={{
-            padding: "12px",
-            // maxHeight: "95vh",
-            height: "auto",
-          }}
-        >
+        <div className="bg-white rounded-2xl shadow-2xl animate-[slideUp_0.5s_ease] p-4 sm:p-6">
           {/* Icono de éxito */}
-          <div className="flex justify-center mb-5 sm:mb-8">
-            <div className="relative w-20 h-20 sm:w-28 sm:h-28">
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <div className="relative w-14 h-14 sm:w-20 sm:h-20">
               <div className="absolute inset-0 bg-emerald-500 rounded-full opacity-20 animate-[pulse_2s_ease_infinite]" />
               <div className="absolute inset-0 bg-emerald-500 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 sm:w-14 sm:h-14" viewBox="0 0 52 52">
+                <svg className="w-8 h-8 sm:w-11 sm:h-11" viewBox="0 0 52 52">
                   <circle
                     className="stroke-white fill-none"
                     cx="26"
@@ -93,9 +79,7 @@ const PaySuccess = ({
                     strokeWidth="4"
                   />
                   <path
-                    className={`fill-none stroke-white transition-all duration-500 ${
-                      checkmarkComplete ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`fill-none stroke-white transition-all duration-500 ${checkmarkComplete ? "opacity-100" : "opacity-0"}`}
                     strokeWidth="4"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -111,70 +95,66 @@ const PaySuccess = ({
           </div>
 
           {/* Título */}
-          <div className="text-center mb-5 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-3">
+          <div className="text-center mb-3 sm:mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-emerald-600">
               ¡Pago Exitoso!
             </h1>
           </div>
 
           {/* Monto destacado */}
-          <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 text-center border-2 border-emerald-100">
-            <p className="text-sm text-gray-600 font-medium mb-2">
+          <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 text-center border-2 border-emerald-100">
+            <p className="text-xs text-gray-500 font-medium mb-1">
               Monto pagado
             </p>
-            <p className="text-3xl sm:text-4xl font-bold text-emerald-600 break-all">
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-600 break-all">
               {formatAmount(Number(dataPayOpenPay?.amount))}
             </p>
           </div>
 
           {/* Detalles de la transacción */}
-          <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-4 sm:mb-6">
-            <div className="space-y-3">
+          <div className="bg-gray-50 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4">
+            <div className="divide-y divide-gray-200">
               {dataPayOpenPay?.order_id && (
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 gap-2">
-                  <span className="text-sm text-gray-600 shrink-0">
+                <div className="flex justify-between items-center py-2.5 gap-3">
+                  <span className="text-sm text-gray-500 shrink-0">
                     Número de orden
                   </span>
-                  <span className="text-sm font-semibold text-gray-900 text-right break-all">
+                  <span className="text-sm font-semibold text-gray-800 text-right break-all">
                     #{dataPayOpenPay.order_id}
                   </span>
                 </div>
               )}
-
-              <div className="flex justify-between items-center py-2 border-b border-gray-200 gap-2">
-                <span className="text-sm text-gray-600 shrink-0">
+              <div className="flex justify-between items-center py-2.5 gap-3">
+                <span className="text-sm text-gray-500 shrink-0">
                   ID de transacción
                 </span>
-                <span className="text-sm font-semibold text-gray-900 font-mono text-right break-all">
+                <span className="text-sm font-semibold text-gray-800 font-mono text-right break-all">
                   {dataPayOpenPay?.id}
                 </span>
               </div>
-
-              <div className="flex justify-between items-center py-2 border-b border-gray-200 gap-2">
-                <span className="text-sm text-gray-600 shrink-0">
+              <div className="flex justify-between items-center py-2.5 gap-3">
+                <span className="text-sm text-gray-500 shrink-0">
                   Fecha y hora
                 </span>
-                <span className="text-sm font-semibold text-gray-900 text-right">
+                <span className="text-sm font-semibold text-gray-800 text-right">
                   {new Date(dataPayOpenPay?.creation_date!).toLocaleString()}
                 </span>
               </div>
-
-              <div className="flex justify-between items-center py-2 border-b border-gray-200 gap-2">
-                <span className="text-sm text-gray-600 shrink-0">
+              <div className="flex justify-between items-center py-2.5 gap-3">
+                <span className="text-sm text-gray-500 shrink-0">
                   Método de pago
                 </span>
-                <span className="text-sm font-semibold text-gray-900 text-right">
+                <span className="text-sm font-semibold text-gray-800 text-right">
                   {dataPayOpenPay?.card?.card_number}
                 </span>
               </div>
-
               {dataPayOpenPay?.payment_plan && (
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 gap-2">
-                  <span className="text-sm text-gray-600 shrink-0">
+                <div className="flex justify-between items-center py-2.5 gap-3">
+                  <span className="text-sm text-gray-500 shrink-0">
                     Meses sin intereses
                   </span>
-                  <span className="text-sm font-semibold text-gray-900 text-right">
-                    {dataPayOpenPay?.payment_plan?.payments.toString()}
+                  <span className="text-sm font-semibold text-gray-800 text-right">
+                    {dataPayOpenPay.payment_plan.payments.toString()}
                   </span>
                 </div>
               )}
@@ -182,9 +162,9 @@ const PaySuccess = ({
           </div>
 
           {/* Badge de seguridad */}
-          <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+          <div className="flex items-center justify-center gap-2 mb-4 p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
             <svg
-              className="w-5 h-5 text-emerald-600 shrink-0"
+              className="w-4 h-4 text-emerald-600 shrink-0"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -194,39 +174,41 @@ const PaySuccess = ({
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-sm font-semibold text-emerald-700 text-center">
+            <span
+              className="text-sm font-semibold text-emerald-700"
+              style={{
+                padding: "5px",
+              }}
+            >
               Transacción segura y verificada
             </span>
           </div>
 
           {/* Botón continuar */}
-          <div className="space-y-3 my-2">
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                disabled={loadingRoute}
-                onClick={() => {
-                  setLoadingRoute(true);
-                  onRouterLink(
-                    `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${
-                      dataPayOpenPay?.order_id
-                    }&method_pay=${
-                      dataPayOpenPay?.method == "card"
-                        ? dataPayOpenPay?.card?.type == "credit"
-                          ? "tarjeta_de_credito"
-                          : "tarjeta_de_debito"
-                        : dataPayOpenPay?.method == "store"
-                          ? "oxxo"
-                          : "transferencia"
-                    }`,
-                  );
-                  setLoadingRoute(false);
-                }}
-                className="w-full px-4 py-3 bg-emerald-500 text-white font-semibold rounded hover:bg-emerald-600 transition-all text-sm"
-              >
-                Continuar
-              </button>
-            </div>
-          </div>
+          <button
+            disabled={loadingRoute}
+            onClick={() => {
+              setLoadingRoute(true);
+              onRouterLink(
+                `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${dataPayOpenPay?.order_id}&method_pay=${
+                  dataPayOpenPay?.method === "card"
+                    ? dataPayOpenPay?.card?.type === "credit"
+                      ? "tarjeta_de_credito"
+                      : "tarjeta_de_debito"
+                    : dataPayOpenPay?.method === "store"
+                      ? "oxxo"
+                      : "transferencia"
+                }`,
+              );
+              setLoadingRoute(false);
+            }}
+            style={{
+              borderRadius: "5px",
+            }}
+            className="w-full py-3 px-4 bg-emerald-500 text-white text-base font-semibold rounded-xl hover:bg-emerald-600 active:scale-[0.98] transition-all disabled:opacity-60"
+          >
+            Continuar
+          </button>
         </div>
       </div>
 

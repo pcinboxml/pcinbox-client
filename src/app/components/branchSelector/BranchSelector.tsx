@@ -10,10 +10,10 @@ import useStorage from "@/app/services/useStorage";
 
 const BranchSelector = ({
   productSelected,
-  //comprarAhora,
+  comprarAhora,
 }: {
   productSelected: ProductI;
-  //comprarAhora?: boolean;
+  comprarAhora?: boolean;
 }) => {
   const { handleWriteStorageProgressPay } = useStorage();
   const {
@@ -22,8 +22,9 @@ const BranchSelector = ({
     handleChangeQuantity,
     quantities,
     branchesDico,
+    handleBuyNowProduct,
   } = GridBranchSelector();
-  const { formatCurrency, onRouterLink } = useService();
+  const { formatCurrency } = useService();
 
   const branches = useMemo(() => {
     return productSelected.product_stock
@@ -70,16 +71,31 @@ const BranchSelector = ({
     return (branches ?? []).filter((branch) => {
       if (Number(productSelected?.providerId) == 3) {
         const name = branch?.branches?.name;
-        return (
-          branch?.branches?.providerId === 3 &&
-          ["leon2", "santafe"].includes(name!)
-        );
+        if (process.env.NEXT_PUBLIC_NODE_ENV === "local") {
+          return (
+            branch?.branches?.providerId === 3 &&
+            ["Arboledas", "dicoags2", "gdl"].includes(name!)
+          );
+        } else {
+          return (
+            branch?.branches?.providerId === 3 &&
+            ["santafe", "leon2"]?.includes(name!)
+          );
+        }
       }
       return true;
     });
   }, [branches, productSelected]);
 
   const handleAddToCart = (sucursal: any) => {
+    if (comprarAhora && comprarAhora === true) {
+      handleBuyNowProduct(
+        productSelected,
+        Number(quantities[sucursal.id] ?? 1),
+        null,
+      );
+      return;
+    }
     const quantity = Number(quantities[sucursal.id] ?? 1);
     const stock = Number(sucursal?.stock ?? 0);
     if (quantity <= 0 || stock <= 0 || quantity > stock) return;
@@ -99,10 +115,6 @@ const BranchSelector = ({
             : 0,
       },
     });
-
-    // if (comprarAhora && comprarAhora === true) {
-    //   onRouterLink("/confirma-productos");
-    // }
   };
 
   return (

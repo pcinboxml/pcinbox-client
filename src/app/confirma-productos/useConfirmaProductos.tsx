@@ -9,12 +9,16 @@ import axios from "axios";
 import useStorage from "../services/useStorage";
 
 const useConfirmaProductos = () => {
-  const { dataCart, setDataCart, setDataModal } = useTheContext();
+  const {
+    dataCart,
+    setDataCart,
+    setDataModal,
+    buyNowProduct,
+    setBuyNowProduct,
+  } = useTheContext();
   const { requestPost, formatCurrency } = useService();
   const { handleRemoveStorageDataCart } = useStorage();
-  const isSmallScreen = useMediaQuery("(max-width: 1250px)", {
-    noSsr: true,
-  });
+  const isSmallScreen = useMediaQuery("(max-width: 1250px)", { noSsr: true });
 
   const [loadingClearCar, setLoadingClearCar] = useState<boolean>(false);
   const [loadingRemoveProduct, setLoadingRemoveProduct] =
@@ -23,89 +27,127 @@ const useConfirmaProductos = () => {
 
   const [rowsConfirmProducts, setRowsConfirmProducts] = useState<any[]>([]);
 
+  // ---------- Manejo automático de productos a mostrar ----------
+  useEffect(() => {
+    const sourceProducts =
+      buyNowProduct && buyNowProduct != null
+        ? [buyNowProduct]
+        : dataCart && dataCart.length > 0
+          ? dataCart
+          : [];
+
+    if (sourceProducts?.length === 0) {
+      localStorage.removeItem("checkout_step");
+      localStorage.removeItem("checkout_mode");
+      localStorage.removeItem("checkout_products_snapshot");
+    }
+
+    setRowsConfirmProducts(
+      sourceProducts.map((itemCart) => ({
+        id: itemCart.idProduct,
+        products: `${itemCart.name} ${itemCart.description}`,
+        quantity: Number(itemCart.quantity),
+        sucursal: itemCart.product_stock,
+        storeId: itemCart?.storeId,
+        totalConIva: Number(itemCart.price),
+        total: Number(itemCart.price) * Number(itemCart.quantity),
+        action: 1,
+      })),
+    );
+  }, [buyNowProduct, dataCart]);
+
+  // ---------- Eliminar producto ----------
   const handleRemoveProduct = async (idProduct: string) => {
-    try {
-      setLoadingRemoveProduct(true);
+    if (buyNowProduct == null) {
+      try {
+        setLoadingRemoveProduct(true);
 
-      const resp = await requestPost(
-        {
-          idProduct: idProduct,
-        },
-        "/cart/removeProduct",
-      );
-      setLoadingRemoveProduct(false);
+        const resp = await requestPost({ idProduct }, "/cart/removeProduct");
 
-      if (resp && resp.status == 200) {
-        const removeProduct = dataCart.filter(
-          (item) => item.idProduct != idProduct,
-        );
-        setDataCart(removeProduct);
+        if (resp?.status === 200) {
+          const updatedCart = dataCart.filter(
+            (item) => item.idProduct !== idProduct,
+          );
+
+          setDataCart(updatedCart);
+        }
+      } catch (error) {
+        setDataModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "Error al eliminar el producto",
+          showActions: true,
+          onClose: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+          onConfirm: () => {
+            setDataModal((prev) => ({ ...prev, isOpen: false }));
+          },
+        });
+      } finally {
+        setLoadingRemoveProduct(false);
       }
-    } catch (error) {
+    } else {
+      // Si es buyNowProduct, solo limpiar
+      localStorage.removeItem("buyNowProduct");
+      localStorage.removeItem("checkout_step");
+      localStorage.setItem("checkout_mode", "cart");
+      localStorage.removeItem("checkout_products_snapshot");
+      setRowsConfirmProducts(
+        dataCart && dataCart.length > 0
+          ? dataCart.map((itemCart) => ({
+              id: itemCart.idProduct,
+              products: `${itemCart.name} ${itemCart.description}`,
+              quantity: Number(itemCart.quantity),
+              sucursal: itemCart.product_stock,
+              storeId: itemCart?.storeId,
+              totalConIva: Number(itemCart.price),
+              total: Number(itemCart.price) * Number(itemCart.quantity),
+              action: 1,
+            }))
+          : [],
+      );
+      setBuyNowProduct(null);
+
       setLoadingRemoveProduct(false);
+      // El useEffect se encargará de actualizar rowsConfirmProducts automáticamente
     }
   };
 
-  useEffect(() => {
-    if (dataCart && dataCart.length > 0) {
-      setRowsConfirmProducts(
-        dataCart.map((itemCart) => ({
-          id: itemCart.idProduct,
-          products: `${itemCart.name} ${itemCart.description}`,
-          quantity: Number(itemCart.quantity),
-          sucursal: itemCart.product_stock,
-          storeId: itemCart?.storeId,
-          totalConIva: Number(itemCart.price),
-          total: Number(itemCart.price) * Number(itemCart.quantity),
-          action: 1,
-        })),
-      );
-    }
-  }, [dataCart]);
-
-  const { columns } = GridConfirmaProductos({
-    isSmallScreen,
-    formatCurrency,
-    loadingRemoveProduct,
-    handleRemoveProduct,
-    rowsConfirmProducts,
-    setRowsConfirmProducts,
-  });
-
+  // ---------- Vaciar carrito ----------
   const handleShowModalVaciarCarrito = () => {
     setDataModal({
       isOpen: true,
       message: "¿Seguro que deseas vaciar el carrito de compras?",
       title: "Vaciar carrito",
       type: "info",
-      onClose: () => {
-        setDataModal((prev) => ({ ...prev, isOpen: false }));
-      },
+      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
         try {
           setLoadingClearCar(true);
-
           const resp = await requestPost({ dataCart }, "/cart/removeAllCart");
-          setLoadingClearCar(false);
 
-          if (resp.status == 200) {
-            //  setDataCart([]);
+          if (resp?.status === 200) {
             handleRemoveStorageDataCart();
             localStorage.removeItem("progressPay2");
-
+            localStorage.removeItem("checkout_step");
+            setDataCart([]);
             setDataModal((prev) => ({ ...prev, isOpen: false }));
           }
         } catch (error) {
+          console.error(error);
+        } finally {
           setLoadingClearCar(false);
         }
       },
     });
   };
 
+  // ---------- Generar cotización ----------
   const handleGenerateCotizacion = async () => {
     try {
       setLoadingCotizacion(true);
-
       const resp = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/cart/generateCotizacion`,
         {
@@ -116,53 +158,52 @@ const useConfirmaProductos = () => {
         },
         {
           responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         },
       );
 
-      if (resp.status == 200) {
+      if (resp.status === 200) {
         const blob = new Blob([resp.data], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
-
         const link = document.createElement("a");
         link.href = url;
         link.download = "cotizacion.pdf";
         document.body.appendChild(link);
         link.click();
         link.remove();
-        setLoadingCotizacion(false);
+
         setDataModal({
           isOpen: true,
           type: "success",
           message: "Descarga completada",
           title: "Cotización",
-          onConfirm: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onClose: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
         });
       }
-    } catch (error: any) {
-      setLoadingCotizacion(false);
+    } catch (error) {
       setDataModal({
         isOpen: true,
         type: "error",
         message:
-          "Ocurrió un error al intentar descargar el archivo, itentalo de nuevo",
+          "Ocurrió un error al intentar descargar el archivo, intenta de nuevo",
         title: "Error",
-        onConfirm: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
-        onClose: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-        },
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       });
+    } finally {
+      setLoadingCotizacion(false);
     }
   };
+
+  const { columns } = GridConfirmaProductos({
+    isSmallScreen,
+    formatCurrency,
+    loadingRemoveProduct,
+    handleRemoveProduct,
+    rowsConfirmProducts,
+    setRowsConfirmProducts,
+  });
 
   return {
     rowsConfirmProducts,

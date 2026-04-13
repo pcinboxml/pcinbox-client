@@ -15,12 +15,14 @@ import style from "./resumen.module.css";
 
 const Resumen = () => {
   useCheckoutGuard(CheckoutStep.RESUMEN);
-  const { dataCart } = useTheContext();
+  const { dataCart, buyNowProduct } = useTheContext();
+  const { checkoutMode } = useStorage();
   const {
     onRouterLink,
     formatCurrency,
     tarifasPaqueteExpress,
     // calcPesoPaquetExpress,
+    productsToShow,
   } = useService();
   const {
     rows,
@@ -35,6 +37,10 @@ const Resumen = () => {
   const { progressPay2 } = useStorage();
 
   const [costoTotalEnvio, setCostoTotalEnvio] = useState<number>(0);
+  // const productsToShow =
+  //   checkoutMode === "buy_now" && buyNowProduct != null
+  //     ? [buyNowProduct]
+  //     : dataCart;
 
   // useEffect(() => {
   //   if (!dataCart?.length) {
@@ -90,7 +96,8 @@ const Resumen = () => {
   // }, [dataCart]);
 
   useEffect(() => {
-    if (dataCart && dataCart.length > 0) {
+    if (productsToShow) {
+      //antes dataCart
       let costoEnvioPurchase = Object.entries(progressPay2?.dataPurchase!)
         .map((d: any) => {
           let key = d[0].toString().split("-");
@@ -110,11 +117,11 @@ const Resumen = () => {
 
       setCostoTotalEnvio(Number(costoEnvioPurchase));
     }
-  }, [progressPay2, dataCart]);
+  }, [progressPay2, dataCart, buyNowProduct]);
 
   return (
     <section>
-      {dataCart && dataCart.length > 0 ? (
+      {productsToShow && productsToShow.length > 0 ? ( //Antes dataCart
         <>
           <TimelineComponent activeStep={3} />
           <div className="container-tabla  w-[90%] mx-auto my-3">
@@ -150,7 +157,7 @@ const Resumen = () => {
               <div className="flex flex-col justify-end items-center gap-2">
                 <span className="text-[#808080] text-sm">
                   {/* {formatCurrency(envio)} */}
-                  {dataCart && dataCart?.length > 0
+                  {productsToShow //Antes dataCart
                     ? formatCurrency(Number(costoTotalEnvio))
                     : null}
                 </span>
@@ -183,44 +190,45 @@ const Resumen = () => {
 
               <div className="flex flex-col justify-center items-center pr-2 gap-2">
                 <span className="text-[#666666]" style={{ fontWeight: "bold" }}>
-                  {dataCart && dataCart.length > 0
+                  {productsToShow //antes dataCart
                     ? formatCurrency(totalPagar + costoTotalEnvio)
                     : null}
                 </span>
               </div>
             </div>
 
-            {dataCart && dataCart.length > 0 && (
-              <div
-                className={`w-full flex justify-end items-center gap-5 mt-4 ${style.rowButtonsActions}`}
-              >
-                <FormControlLabel
-                  disabled={loadingCreateOrder}
-                  control={<Checkbox checked={selectedFactura} />}
-                  label="Generar Factura"
-                  onChange={handleSelectedFactura}
-                />
+            {productsToShow &&
+              productsToShow?.length > 0 && ( //Antes dataCart
+                <div
+                  className={`w-full flex justify-end items-center gap-5 mt-4 ${style.rowButtonsActions}`}
+                >
+                  <FormControlLabel
+                    disabled={loadingCreateOrder}
+                    control={<Checkbox checked={selectedFactura} />}
+                    label="Generar Factura"
+                    onChange={handleSelectedFactura}
+                  />
 
-                <button
-                  disabled={loadingCreateOrder}
-                  onClick={() => onRouterLink("/forma-de-pago")}
-                  className="border py-2 px-5 text-black rounded"
-                >
-                  Atrás
-                </button>
-                <button
-                  disabled={loadingCreateOrder}
-                  className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  onClick={() => handleCreateOrder(costoTotalEnvio)}
-                >
-                  {loadingCreateOrder ? (
-                    <MdAutorenew size={20} className="m-auto the-spinner" />
-                  ) : (
-                    <>Confirmar compra</>
-                  )}
-                </button>
-              </div>
-            )}
+                  <button
+                    disabled={loadingCreateOrder}
+                    onClick={() => onRouterLink("/forma-de-pago")}
+                    className="border py-2 px-5 text-black rounded"
+                  >
+                    Atrás
+                  </button>
+                  <button
+                    disabled={loadingCreateOrder}
+                    className="bg-[#B92B3D] py-2 px-5 text-white rounded"
+                    onClick={() => handleCreateOrder(costoTotalEnvio)}
+                  >
+                    {loadingCreateOrder ? (
+                      <MdAutorenew size={20} className="m-auto the-spinner" />
+                    ) : (
+                      <>Confirmar compra</>
+                    )}
+                  </button>
+                </div>
+              )}
           </div>
         </>
       ) : (

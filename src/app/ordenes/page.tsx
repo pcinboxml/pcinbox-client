@@ -13,18 +13,58 @@ import useStorage from "../services/useStorage";
 import useCart from "../components/cart/useCart";
 import ProductI from "../interfaces/products/product.interface";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
+import { useEffect, useState } from "react";
 
 const Ordenes = () => {
   // const { rows, columns, subTotal } = useOrdenes();
-  const { dataCart, setDataCart } = useTheContext();
+  const [runCheckoutSync, setRunCheckoutSync] = useState<boolean>(false);
+
+  const { dataCart, setDataCart, buyNowProduct } = useTheContext();
   const {
     dataCartStorege,
     handleRemoveStorageDataCart,
     handleWriteStorageDataCart,
   } = useStorage();
-  const { formatCurrency, onRouterLink, totalPrice } = useService();
+  const { formatCurrency, onRouterLink, totalPrice, productsToShow } =
+    useService();
   const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
     useCart();
+
+  useEffect(() => {
+    if (!runCheckoutSync) return;
+
+    if (buyNowProduct != null && dataCart?.length === 0) {
+      localStorage.setItem("checkout_mode", "buy_now");
+      localStorage.setItem(
+        "checkout_products_snapshot",
+        JSON.stringify(
+          productsToShow!.map((p) => ({
+            id: p.idProduct,
+            quantity: p.quantity,
+            storeId: p.storeId,
+          })),
+        ),
+      );
+    } else if (dataCart?.length > 0 && buyNowProduct === null) {
+      localStorage.setItem("checkout_mode", "cart");
+      localStorage.setItem(
+        "checkout_products_snapshot",
+        JSON.stringify(
+          productsToShow!.map((p) => ({
+            id: p.idProduct,
+            quantity: p.quantity,
+            storeId: p.storeId,
+          })),
+        ),
+      );
+    } else if (buyNowProduct === null && dataCart.length === 0) {
+      localStorage.removeItem("checkout_mode");
+      localStorage.removeItem("checkout_products_snapshot");
+    }
+
+    // reset del trigger
+    setRunCheckoutSync(false);
+  }, [runCheckoutSync, buyNowProduct, dataCart, productsToShow]);
 
   return (
     <section className={styles.section}>
@@ -46,6 +86,7 @@ const Ordenes = () => {
                 handleRemoveStorageDataCart();
                 localStorage.removeItem("progressPay2");
                 handleRemoveAllCart(dataCart, () => {});
+                setRunCheckoutSync(false);
               }}
             >
               {loadingRmAllCart ? (
@@ -324,6 +365,8 @@ const Ordenes = () => {
                     "checkout_step",
                     String(CheckoutStep.CONFIRMAR_PRODUCTOS),
                   );
+
+                  localStorage.setItem("checkout_mode", "cart");
 
                   onRouterLink("/confirma-productos");
                 }}
