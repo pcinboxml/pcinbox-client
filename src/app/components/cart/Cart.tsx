@@ -3,7 +3,7 @@
 import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
@@ -23,15 +23,47 @@ export const ModalCart = ({
   onMouseLeaveCart: any;
   showDivCart: boolean;
 }) => {
-  const { dataCart, setDataCart } = useTheContext();
+  const { dataCart, setDataCart, buyNowProduct } = useTheContext();
   const {
     dataCartStorege,
     handleRemoveStorageDataCart,
     handleWriteStorageDataCart,
   } = useStorage();
-  const { formatCurrency, onRouterLink, totalPrice } = useService();
+  const { formatCurrency, onRouterLink, totalPrice, productsToShow } =
+    useService();
   const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
     useCart();
+
+  useEffect(() => {
+    if (buyNowProduct != null) {
+      localStorage.setItem("checkout_mode", "buy_now");
+      localStorage.setItem(
+        "checkout_products_snapshot",
+        JSON.stringify(
+          productsToShow!.map((p) => ({
+            id: p.idProduct,
+            quantity: p.quantity,
+            storeId: p.storeId,
+          })),
+        ),
+      );
+    } else if (dataCart?.length === 0) {
+      localStorage.setItem("checkout_mode", "cart");
+      localStorage.setItem(
+        "checkout_products_snapshot",
+        JSON.stringify(
+          productsToShow!.map((p) => ({
+            id: p.idProduct,
+            quantity: p.quantity,
+            storeId: p.storeId,
+          })),
+        ),
+      );
+    } else if (productsToShow == null) {
+      localStorage.removeItem("checkout_mode");
+      localStorage.removeItem("checkout_products_snapshot");
+    }
+  }, [productsToShow]);
 
   return (
     <div
