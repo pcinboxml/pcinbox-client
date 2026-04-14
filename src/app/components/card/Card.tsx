@@ -109,7 +109,8 @@ const Card = ({ product }: { product: ProductI }) => {
         {/* {product.reviews && product.reviews.length > 0 && ( */}
         <div className="comments flex">
           <StyledTooltip
-            open={isMobile ? openTooltip : undefined}
+            interactive
+            open={openTooltip}
             onClose={() => setOpenTooltip(false)}
             disableHoverListener={isMobile}
             disableFocusListener={isMobile}
@@ -225,9 +226,9 @@ const Card = ({ product }: { product: ProductI }) => {
             <div className="flex">
               <button
                 onClick={() => {
-                  if (isMobile) {
-                    setOpenTooltip((prev) => !prev);
-                  }
+                  //if (isMobile) {
+                  setOpenTooltip((prev) => !prev);
+                  //}
                 }}
                 className="flex justify-center items-center border"
                 style={{ marginLeft: "5px", borderRadius: "2px" }}
