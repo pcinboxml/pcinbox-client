@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./result-search-category.module.css";
+import Image from "next/image";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import useProveedores from "../services/proveedores/useProveedores";
@@ -1320,10 +1321,23 @@ const SearchCategoryContent = () => {
                             {item.image_url && item.image_url.length > 0
                               ? item.image_url.map((img: string, i: number) => (
                                   <div key={i} className={styles.carouselSlide}>
-                                    <img
-                                      src={img}
-                                      className={styles.productImg}
-                                      loading="lazy"
+                                    <Image
+                                      src={`${img}?tr=w-600,q-70,f-auto`}
+                                      alt="producto"
+                                      width={150}
+                                      height={150}
+                                      style={{
+                                        objectFit: "contain",
+                                        height: "150px",
+                                        width: "150px",
+                                        marginTop: "12px",
+                                      }}
+                                      sizes="(max-width: 768px) 100vw, 50vw"
+                                      priority={i === 0}
+
+                                      // className={styles.productImg}
+                                      // sizes="(max-width: 768px) 100vw, 50vw"
+                                      // priority={i === 0}
                                     />
                                   </div>
                                 ))

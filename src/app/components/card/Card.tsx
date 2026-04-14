@@ -8,6 +8,7 @@ import useCard from "./useCard";
 import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
 import { useMemo, useState } from "react";
+import Image from "next/image";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -63,7 +64,21 @@ const Card = ({ product }: { product: ProductI }) => {
           {product.imageUrl && product.imageUrl.length > 0
             ? product.imageUrl.map((img: string, i: number) => (
                 <div key={i}>
-                  <img
+                  <Image
+                    src={`${img}?tr=w-600,q-70,f-auto`}
+                    alt="producto"
+                    width={150}
+                    height={150}
+                    style={{
+                      objectFit: "contain",
+                      height: "150px",
+                      width: "150px",
+                      marginTop: "12px",
+                    }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={i === 0}
+                  />
+                  {/* <img
                     src={img}
                     loading="lazy"
                     style={{
@@ -71,7 +86,7 @@ const Card = ({ product }: { product: ProductI }) => {
                       height: "150px",
                       marginTop: "12px",
                     }}
-                  />
+                  /> */}
                 </div>
               ))
             : [<div key="no-img">Sin imágenes</div>]}

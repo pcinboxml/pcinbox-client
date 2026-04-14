@@ -15,6 +15,7 @@ import style from "./resumen.module.css";
 
 const Resumen = () => {
   useCheckoutGuard(CheckoutStep.RESUMEN);
+
   const { dataCart, buyNowProduct } = useTheContext();
   const { checkoutMode } = useStorage();
   const {

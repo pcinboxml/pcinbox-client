@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    domains: ["authjs.dev"],
+    domains: ["authjs.dev", "ik.imagekit.io"],
   },
 
   env: {
