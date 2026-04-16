@@ -489,7 +489,7 @@ const DetailsProduct = () => {
                   onClick={handleComprarAhora}
                 >
                   {dataProduct?.stock !== 0 ? (
-                    <span className="dp-btn-inner">¡Comprar Ahora!</span>
+                    <span className="dp-btn-inner">Comprar Ahora</span>
                   ) : (
                     "No disponible"
                   )}
