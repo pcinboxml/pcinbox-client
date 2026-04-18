@@ -45,7 +45,8 @@ const NavbarResponsive = () => {
     onMouseLeaveProducts,
   } = useNavbar();
 
-  const { onRouterLink, formatCurrency, Logout, isTokenExpired } = useService();
+  const { onRouterLink, formatCurrency, Logout, isTokenExpired, returnUrl } =
+    useService();
   const { dataCartStorege } = useStorage();
   const {
     messageError,
@@ -349,7 +350,10 @@ const NavbarResponsive = () => {
                             <button
                               type="button"
                               className="border w-full flex justify-center gap-2 items-center p-2"
-                              onClick={onLoginGoogle}
+                              onClick={() => {
+                                onLoginGoogle(returnUrl);
+                                console.log(returnUrl);
+                              }}
                             >
                               {loadingLoginGoogle ? (
                                 <MdAutorenew
@@ -879,7 +883,9 @@ const NavbarResponsive = () => {
                   <button
                     type="button"
                     className="drawer-google-btn"
-                    onClick={onLoginGoogle}
+                    onClick={() => {
+                      onLoginGoogle(returnUrl);
+                    }}
                   >
                     {loadingLoginGoogle ? (
                       <MdAutorenew size={20} className="the-spinner" />

@@ -167,7 +167,10 @@ const useRegister = () => {
     setLoadingRegisterGoogle(true);
     document.cookie = "mode=login; path=/";
 
-    await signIn("google");
+    await signIn("google", {
+      redirect: true,
+      callbackUrl: "/principal",
+    });
     setLoadingRegisterGoogle(true);
 
     localStorage.setItem("authGoogle", "true");

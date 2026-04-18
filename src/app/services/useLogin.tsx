@@ -4,12 +4,8 @@ import { LoginI } from "@/app/interfaces/login.interface";
 import { useState } from "react";
 import useService from "@/app/services/useService";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 
 const useLogin = () => {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/principal";
-
   const [formData, setFormData] = useState<LoginI>({
     email: "",
     password: "",
@@ -17,7 +13,7 @@ const useLogin = () => {
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
   const [loadingLoginGoogle, setLoadingLogingGoogle] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { requestPost } = useService();
+  const { requestPost, returnUrl } = useService();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
 
@@ -58,7 +54,7 @@ const useLogin = () => {
         localStorage.setItem("name", data?.data?.name || "");
         localStorage.setItem("lastname", data?.data?.lastname || "");
         localStorage.setItem("idUser", data?.data?.idUser || data?.idUser);
-        window.location.href = "/principal";
+        window.location.href = returnUrl;
       }
     } catch (error: any) {
       console.log(error);
@@ -73,13 +69,13 @@ const useLogin = () => {
     }
   };
 
-  const onLoginGoogle = async () => {
+  const onLoginGoogle = async (callbackUrl?: string) => {
     setLoadingLogingGoogle(true);
     document.cookie = "mode=login; path=/";
-    console.log(callbackUrl);
 
     await signIn("google", {
       redirect: true,
+      callbackUrl: callbackUrl != null ? callbackUrl : undefined,
       // callbackUrl: (callbackUrl as string) || "/principal",
     });
     setLoadingLogingGoogle(false);

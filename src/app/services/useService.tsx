@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import useStorage from "./useStorage";
 
 const useService = () => {
+  const searchParams = useSearchParams();
   const pathName = usePathname();
 
   const { setDataModal, dataCart, buyNowProduct } = useTheContext();
@@ -424,7 +425,14 @@ const useService = () => {
       localStorage.setItem("checkout_mode", "cart");
     }
   }, [buyNowProduct, dataCart]);
+
+  const returnUrl = useMemo((): string => {
+    const queryString = searchParams.toString();
+    return queryString ? `${pathName}?${queryString}` : pathName;
+  }, [pathName, searchParams]);
+
   return {
+    returnUrl,
     groupById,
     requestGet,
     requestPost,
