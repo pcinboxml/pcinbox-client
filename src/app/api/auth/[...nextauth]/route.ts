@@ -102,9 +102,9 @@ const handler = NextAuth({
       return session;
     },
 
-    redirect({ baseUrl, url }) {
-      return `${baseUrl}/principal`;
-    },
+    // redirect({ baseUrl, url }) {
+    //   return `${baseUrl}/principal`;
+    // },
   },
 
   pages: {
