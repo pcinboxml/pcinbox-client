@@ -14,13 +14,14 @@ import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
 import SuccessMP from "../components/mercadopago/success/SuccessMP";
 import FailedMP from "../components/mercadopago/failed/FailedMP";
 import PendingMP from "../components/mercadopago/pending/PendingMP";
+import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 
 // Creamos el componente que maneja la lógica de OpenPay
 const EstatusMPContent = () => {
-  const searchParams = useSearchParams();
-  const paymentId = searchParams.get("payment_id");
-  const preferenceId = searchParams.get("preference_id");
-  const merchantOrderId = searchParams.get("merchant_order_id");
+  const { get } = useSafeSearchParams();
+  const paymentId = get("payment_id");
+  const preferenceId = get("preference_id");
+  const merchantOrderId = get("merchant_order_id");
 
   const { requestPostPagos } = usePasarelaDePagos();
 
