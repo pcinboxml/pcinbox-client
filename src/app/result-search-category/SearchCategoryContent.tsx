@@ -21,6 +21,7 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
+import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 const SearchCategoryContent = () => {
   // Al principio del componente
   //useScrollPosition("scroll-/result-search-category");
@@ -68,11 +69,11 @@ const SearchCategoryContent = () => {
     handleAddProductCart,
     prevPageRef,
   } = useResultSearchCategory();
-  const searchParams = useSearchParams();
+  const { get } = useSafeSearchParams();
 
-  const idProduct = searchParams.get("idProduct");
-  const name = searchParams.get("name");
-  const categoryId = searchParams.get("categoryId");
+  const idProduct = get("idProduct");
+  const name = get("name");
+  const categoryId = get("categoryId");
 
   const prevFiltersRef = useRef({
     marca,
@@ -149,73 +150,6 @@ const SearchCategoryContent = () => {
     const type = event?.target?.value === "1" ? "AM4" : "AM5";
     setProcessorSocketProcesador(type);
   };
-
-  // useEffect(() => {
-  //   let filtered = [...dataCopy];
-  //   if (marca) {
-  //     filtered = filtered.filter((item: any) => item.marcaId == marca);
-  //   }
-  //   if (processorBrand || processorTipoMemoria || processorSocketProcesador) {
-  //     filtered = filtered.filter((item: any) => {
-  //       const caract =
-  //         typeof item.caracteristicas === "string"
-  //           ? JSON.parse(item.caracteristicas)
-  //           : item.caracteristicas;
-
-  //       if (!Array.isArray(caract)) return false;
-
-  //       const matchBrand = processorBrand
-  //         ? caract.some(
-  //             (c) =>
-  //               c.prop === "Fabricante de procesador" &&
-  //               c.value?.toLowerCase() === processorBrand.toLowerCase(),
-  //           )
-  //         : true;
-
-  //       const matchMemory = processorTipoMemoria
-  //         ? caract.some(
-  //             (c) =>
-  //               c.prop === "Tipo de memoria interna" &&
-  //               c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
-  //           )
-  //         : true;
-
-  //       const matchSocket = processorSocketProcesador
-  //         ? caract.some(
-  //             (c) =>
-  //               c.prop === "Socket de procesador" &&
-  //               c.value
-  //                 ?.toLowerCase()
-  //                 .includes(processorSocketProcesador.toLowerCase()),
-  //           )
-  //         : true;
-
-  //       return matchBrand && matchMemory && matchSocket;
-  //     });
-  //   }
-
-  //   setData(filtered);
-  // }, [
-  //   marca,
-  //   processorBrand,
-  //   dataCopy,
-  //   processorTipoMemoria,
-  //   processorSocketProcesador,
-  // ]);
-
-  // useEffect(() => {
-  //   if (searchText.trim().length < 3) {
-  //     setData(dataCopy);
-  //     return;
-  //   }
-  //   const term = searchText.toLowerCase().trim();
-  //   const filtered = dataCopy.filter(
-  //     (item: any) =>
-  //       item.name.toLowerCase().includes(term) ||
-  //       item.sku.toLowerCase().includes(term),
-  //   );
-  //   setData(filtered);
-  // }, [searchText, dataCopy]);
 
   useEffect(() => {
     let filtered = [...dataCopy];
@@ -482,10 +416,10 @@ const SearchCategoryContent = () => {
   }, [page, marca, searchText, filterValue, idProduct, name, categoryId]);
 
   useEffect(() => {
-    const pageParam = Number(searchParams.get("page")) || 1;
-    const marcaParam = searchParams.get("marca");
-    const searchParam = searchParams.get("search") || "";
-    const orderParam = searchParams.get("order") || "";
+    const pageParam = Number(get("page")) || 1;
+    const marcaParam = get("marca");
+    const searchParam = get("search") || "";
+    const orderParam = get("order") || "";
     setPage(pageParam);
     setMarca(marcaParam ? Number(marcaParam) : "");
     setSearchText(searchParam);

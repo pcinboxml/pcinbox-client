@@ -11,11 +11,12 @@ import PayPending from "../components/openpay/pending/PayPending";
 import Failed from "../components/openpay/failed/Failed";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
+import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 
 // Creamos el componente que maneja la lógica de OpenPay
 const EstatusPayContent = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const { get } = useSafeSearchParams();
+  const id = get("id");
 
   const { requestPostPagos } = usePasarelaDePagos();
 

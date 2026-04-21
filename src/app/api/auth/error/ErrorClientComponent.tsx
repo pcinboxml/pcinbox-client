@@ -1,10 +1,11 @@
 "use client";
 
+import { useSafeSearchParams } from "@/app/hooks/useSafeSearchParams";
 import { useSearchParams } from "next/navigation";
 
 export default function ErrorClientComponent() {
-  const searchParams = useSearchParams();
-  const rawError = searchParams.get("error");
+  const { get } = useSafeSearchParams();
+  const rawError = get("error");
   let errorMessage = "Ha ocurrido un error inesperado.";
   try {
     const parsed = JSON.parse(rawError || "");
