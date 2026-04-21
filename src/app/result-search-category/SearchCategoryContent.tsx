@@ -89,7 +89,6 @@ const SearchCategoryContent = () => {
       handleGetData();
     }
   }, [idProduct, name, categoryId]);
-
   // useEffect(() => {
   //   const allowedParams = [
   //     "idProduct",
