@@ -87,7 +87,7 @@ const SearchCategoryContent = () => {
     if (idProduct || name || categoryId) {
       handleGetData();
     }
-  }, []);
+  }, [idProduct, name, categoryId]);
 
   // useEffect(() => {
   //   const allowedParams = [
