@@ -1,16 +1,14 @@
 "use client";
 
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
 import ProductI from "../interfaces/products/product.interface";
 import { useEffect, useMemo, useState } from "react";
 import useStorage from "./useStorage";
 
 const useService = () => {
-  const searchParams = useSearchParams();
   const pathName = usePathname();
 
   const { setDataModal, dataCart, buyNowProduct } = useTheContext();
@@ -426,13 +424,13 @@ const useService = () => {
     }
   }, [buyNowProduct, dataCart]);
 
-  const returnUrl = useMemo((): string => {
-    const queryString = searchParams.toString();
-    return queryString ? `${pathName}?${queryString}` : pathName;
-  }, [pathName, searchParams]);
+  // const returnUrl = useMemo((): string => {
+  //   const queryString = searchParams.toString();
+  //   return queryString ? `${pathName}?${queryString}` : pathName;
+  // }, [pathName, searchParams]);
 
   return {
-    returnUrl,
+    //returnUrl,
     groupById,
     requestGet,
     requestPost,
