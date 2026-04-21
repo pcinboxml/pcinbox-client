@@ -41,8 +41,7 @@ const Navbar = () => {
     setNavRefResponsive,
   } = useNavbar();
 
-  const { onRouterLink, formatCurrency, Logout, isTokenExpired, returnUrl } =
-    useService();
+  const { onRouterLink, formatCurrency, Logout, isTokenExpired } = useService();
   const { dataCartStorege } = useStorage();
   const {
     messageError,
@@ -431,7 +430,7 @@ const Navbar = () => {
                               type="button"
                               className="border w-full flex justify-center gap-2 items-center p-2"
                               onClick={() => {
-                                onLoginGoogle(returnUrl);
+                                onLoginGoogle();
                               }}
                             >
                               {loadingLoginGoogle ? (

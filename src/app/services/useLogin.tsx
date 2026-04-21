@@ -13,7 +13,7 @@ const useLogin = () => {
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
   const [loadingLoginGoogle, setLoadingLogingGoogle] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { requestPost, returnUrl } = useService();
+  const { requestPost } = useService();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
 
@@ -54,7 +54,7 @@ const useLogin = () => {
         localStorage.setItem("name", data?.data?.name || "");
         localStorage.setItem("lastname", data?.data?.lastname || "");
         localStorage.setItem("idUser", data?.data?.idUser || data?.idUser);
-        window.location.href = returnUrl;
+        window.location.href = "/principal";
       }
     } catch (error: any) {
       console.log(error);
