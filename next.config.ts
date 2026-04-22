@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    domains: ["authjs.dev", "ik.imagekit.io"],
+    domains: ["authjs.dev", "ik.imagekit.io", "lh3.googleusercontent.com"],
   },
 
   env: {
@@ -44,6 +44,10 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_SOCKET_PAGOS: process.env.NEXT_PUBLIC_SOCKET_PAGOS,
     NEXT_PUBLIC_STRIPE_PUBLIC_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY,
     NEXT_PUBLIC_SOCKET_CRON: process.env.NEXT_PUBLIC_SOCKET_CRON,
+    NEXT_PUBLIC_API_KEY_GOOGLE_REVIEWS:
+      process.env.NEXT_PUBLIC_API_KEY_GOOGLE_REVIEWS,
+    NEXT_PUBLIC_PLACE_ID_GOOGLE_REVIEWS:
+      process.env.NEXT_PUBLIC_PLACE_ID_GOOGLE_REVIEWS,
   },
 
   // async headers() {
