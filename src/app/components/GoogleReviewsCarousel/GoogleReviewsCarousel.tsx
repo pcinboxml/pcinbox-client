@@ -135,7 +135,7 @@ function avatarColor(name: string): string {
 
 export default function GoogleReviewsCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const animFrameRef = useRef<number | null>(null);
   const posRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
