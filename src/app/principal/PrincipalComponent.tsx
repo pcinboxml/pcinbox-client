@@ -122,14 +122,8 @@ const PrincipalComponent = () => {
           )}
         </div>
       </div>
-      <div
-        className="border w-full"
-        style={{
-          marginTop: "120px",
-        }}
-      >
-        <GoogleReviewsCarousel />
-      </div>
+
+      <GoogleReviewsCarousel />
     </section>
   );
 };
