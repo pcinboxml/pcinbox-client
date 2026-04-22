@@ -8,6 +8,7 @@ import { useTheContext } from "../services/globalContext";
 import usePcGamers from "./usePcGamers";
 import useProducts from "../hooks/products";
 import { useState } from "react";
+import GoogleReviewsCarousel from "../components/GoogleReviewsCarousel/GoogleReviewsCarousel";
 
 const PrincipalComponent = () => {
   const { dataProducts } = useTheContext();
@@ -120,6 +121,14 @@ const PrincipalComponent = () => {
               ),
           )}
         </div>
+      </div>
+      <div
+        className="border w-full"
+        style={{
+          marginTop: "120px",
+        }}
+      >
+        <GoogleReviewsCarousel />
       </div>
     </section>
   );
