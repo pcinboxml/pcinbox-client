@@ -13,9 +13,8 @@ const useResultSearchCategory = () => {
   const [loadingAddProductCar, setLoadingAddProductCar] = useState<
     Record<any, boolean>
   >({});
-  const { requestPost, onRouterLink } = useService();
-  const { setDataCart, dataCart, hasToken, setDataModal, setBuyNowProduct } =
-    useTheContext();
+  const { requestPost } = useService();
+  const { setDataCart, dataCart, hasToken, setDataModal } = useTheContext();
 
   const [page, setPage] = useState<number>(1);
   const prevPageRef = useRef(page);
@@ -158,88 +157,20 @@ const useResultSearchCategory = () => {
       });
       return;
     }
-    if (
-      (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
-      dataProduct?.product_stock!.length > 0 &&
-      Number(dataProduct?.providerId) !== 1
-    ) {
-      setDataModal({
-        isOpen: true,
-        message: (
-          <div className="w-[800px] border">
-            <BranchSelector productSelected={dataProduct} comprarAhora={true} />
-          </div>
-        ),
-        title: "",
-        type: "success",
-        showActions: false,
-        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      });
-    } else {
-      localStorage.setItem("checkout_mode", "buy_now");
 
-      setBuyNowProduct({
-        ...dataProduct,
-        categoryId: dataProduct!.categoryId,
-        createdAt: dataProduct!.createdAt,
-        description: dataProduct!.description,
-        idProduct: dataProduct!.idProduct,
-        imageUrl: dataProduct!.imageUrl,
-        name: dataProduct!.name,
-        price: dataProduct!.price,
-        providerId: dataProduct!.providerId,
-        stock: dataProduct!.stock,
-        rating: dataProduct!.rating,
-        reviews: dataProduct!.reviews,
-        quantity: Number(1),
-        sku: dataProduct!.sku,
-        isPC: dataProduct?.isPC,
-        isPc: dataProduct?.isPc,
-        caracteristicas: dataProduct?.caracteristicas,
-        height: dataProduct?.height,
-        idProductExt: dataProduct?.idProductExt,
-        largo: dataProduct?.largo,
-        storeId: dataProduct?.storeId,
-        upc: dataProduct?.upc,
-        width: dataProduct?.width,
-        product_stock: dataProduct?.product_stock,
-      });
-      localStorage.setItem(
-        "buyNowProduct",
-        JSON.stringify({
-          ...dataProduct,
-          categoryId: dataProduct!.categoryId,
-          createdAt: dataProduct!.createdAt,
-          description: dataProduct!.description,
-          idProduct: dataProduct!.idProduct,
-          imageUrl: dataProduct!.imageUrl,
-          name: dataProduct!.name,
-          price: dataProduct!.price,
-          providerId: dataProduct!.providerId,
-          stock: dataProduct!.stock,
-          rating: dataProduct!.rating,
-          reviews: dataProduct!.reviews,
-          quantity: Number(1),
-          sku: dataProduct!.sku,
-          isPC: dataProduct?.isPC,
-          isPc: dataProduct?.isPc,
-          caracteristicas: dataProduct?.caracteristicas,
-          height: dataProduct?.height,
-          idProductExt: dataProduct?.idProductExt,
-          largo: dataProduct?.largo,
-          storeId: dataProduct?.storeId,
-          upc: dataProduct?.upc,
-          width: dataProduct?.width,
-          product_stock: dataProduct?.product_stock,
-        }),
-      );
-      onRouterLink("/confirma-productos");
-
-      return;
-
-      // handleAddProductCart(dataProduct!, Number(quantity));
-    }
+    setDataModal({
+      isOpen: true,
+      message: (
+        <div className="w-[800px] border">
+          <BranchSelector productSelected={dataProduct} comprarAhora={true} />
+        </div>
+      ),
+      title: "",
+      type: "success",
+      showActions: false,
+      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+    });
   };
 
   return {

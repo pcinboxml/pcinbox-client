@@ -879,7 +879,7 @@ const SearchCategoryContent = () => {
                     if (a.stock === 0 && b.stock > 0) return 1;
                     return 0;
                   })
-                  .map((item: any, index: number) => (
+                  .map((item, index: number) => (
                     <div key={index}>
                       <div className={styles.productRow}>
                         <div className={styles.productInfo}>
@@ -1248,14 +1248,13 @@ const SearchCategoryContent = () => {
                                 <button
                                   disabled={
                                     loadingAddProductCar[item.idProduct] ||
-                                    item.stock == 0 ||
-                                    item.stock == "0"
+                                    item.stock == 0
                                   }
                                   className={`${styles.addToCartBtn} bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2`}
                                   onClick={() => {
                                     if (
                                       (item?.isPC == 0 || item?.isPc == 0) &&
-                                      item?.product_stock.length > 0 &&
+                                      item?.product_stock!.length > 0 &&
                                       Number(item?.providerId) != 1
                                     ) {
                                       setDataModal({
@@ -1293,7 +1292,7 @@ const SearchCategoryContent = () => {
                                       size={20}
                                       className="m-auto the-spinner"
                                     />
-                                  ) : item.stock == "0" || item.stock == 0 ? (
+                                  ) : item.stock == 0 ? (
                                     "No disponible"
                                   ) : (
                                     <>
@@ -1305,7 +1304,7 @@ const SearchCategoryContent = () => {
                                 {/* === FIN DEL BOTÓN CORREGIDO === */}
 
                                 <button
-                                  className={`w-full  bg-[#BB3D4B] text-white px-4 py-1 rounded flex items-center justify-center mt-2`}
+                                  className={`w-full bg-[#BB3D4B] text-white px-4 py-1 rounded flex items-center justify-center mt-2`}
                                   disabled={item?.stock === 0}
                                   onClick={() => handleComprarAhora(item)}
                                 >
@@ -1328,8 +1327,8 @@ const SearchCategoryContent = () => {
                               onRouterLink(`/detailsProduct/${item.idProduct}`)
                             }
                           >
-                            {item.image_url && item.image_url.length > 0
-                              ? item.image_url.map((img: string, i: number) => (
+                            {item.imageUrl && item.imageUrl.length > 0
+                              ? item.imageUrl.map((img: string, i: number) => (
                                   <div key={i} className={styles.carouselSlide}>
                                     <img
                                       src={img}

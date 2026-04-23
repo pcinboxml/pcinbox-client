@@ -315,11 +315,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
       }
     };
 
-    // Solo hacemos fetch si no hay categorías guardadas
-    if (!dataCategories || dataCategories.length === 0) {
-      getDataCategories();
-    }
-  }, [dataCategories]);
+    getDataCategories();
+  }, []);
 
   useEffect(() => {
     socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "", {
