@@ -33,7 +33,6 @@ const SearchCategoryContent = () => {
     socketCron,
   } = useTheContext();
 
-  const sectionRef = useRef<HTMLDivElement>(null);
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [filterValue, setFilterValue] = useState<any>("");
   const { requestPostProveedor } = useProveedores();
@@ -1220,7 +1219,28 @@ const SearchCategoryContent = () => {
                                   {formatCurrency(Number(item.price))}
                                 </span>
                                 <br />
-                                <span>Disponibles: {item.stock} piezas</span>
+                                <div className="dp-stock-row">
+                                  <span
+                                    className={`dp-stock-dot dp-stock-dot--${() => {
+                                      return item?.stock === undefined
+                                        ? null
+                                        : item.stock > 10
+                                          ? "high"
+                                          : item.stock > 0
+                                            ? "low"
+                                            : "out";
+                                    }}`}
+                                  />
+
+                                  <span className="dp-stock-text">
+                                    {item.stock === 0
+                                      ? "Sin stock"
+                                      : item.stock < 10
+                                        ? `¡Solo quedan ${item?.stock} pzas!`
+                                        : `Disponibles: ${item?.stock} pzas.`}
+                                  </span>
+                                </div>
+                                {/* <span>Disponibles: {item.stock} piezas</span> */}
                               </div>
 
                               <div className={styles.addToCartWrapper}>
