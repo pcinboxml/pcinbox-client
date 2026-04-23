@@ -5,16 +5,16 @@ import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const ITEMS_PER_PAGE = 20;
 
 const useResultSearchCategory = () => {
-  
   const [loadingAddProductCar, setLoadingAddProductCar] = useState<
     Record<any, boolean>
   >({});
   const { requestPost } = useService();
-  const { setDataCart, dataCart } = useTheContext();
+  const { setDataCart, dataCart, hasToken, setDataModal } = useTheContext();
 
   const [page, setPage] = useState<number>(1);
   const prevPageRef = useRef(page);
@@ -22,21 +22,21 @@ const useResultSearchCategory = () => {
   const router = useRouter();
   const pathName = usePathname();
 
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
+    // Actualizar el estado de la página para que el componente se re-renderice
+    setPage(value);
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
-  // Actualizar el estado de la página para que el componente se re-renderice
-  setPage(value);
+    // Mantener todos los parámetros existentes y solo actualizar la página
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", value.toString());
 
-  // Mantener todos los parámetros existentes y solo actualizar la página
-  const params = new URLSearchParams(searchParams.toString());
-  params.set('page', value.toString());
-  
-  router.replace(`${pathName}?${params.toString()}`);
-  
-  // La llamada manual a window.scrollTo ya no es necesaria.
-};
+    router.replace(`${pathName}?${params.toString()}`);
 
-
+    // La llamada manual a window.scrollTo ya no es necesaria.
+  };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -134,6 +134,45 @@ const useResultSearchCategory = () => {
     }
   };
 
+  const handleComprarAhora = (dataProduct: ProductI) => {
+    if (!hasToken) {
+      setDataModal({
+        title: "Información",
+        isOpen: true,
+        message: "Necesitas iniciar sesión",
+        type: "info",
+        showActions: true,
+        onClose: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+      });
+      return;
+    }
+
+    setDataModal({
+      isOpen: true,
+      message: (
+        <div className="w-[800px] border">
+          <BranchSelector productSelected={dataProduct} comprarAhora={true} />
+        </div>
+      ),
+      title: "",
+      type: "success",
+      showActions: false,
+      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+    });
+  };
+
   return {
     handleAddProductCart,
     loadingAddProductCar,
@@ -143,11 +182,9 @@ const useResultSearchCategory = () => {
     endIndex,
     handleChangePage,
     itemsPerPage: ITEMS_PER_PAGE,
-    prevPageRef
+    prevPageRef,
+    handleComprarAhora,
   };
 };
 
 export default useResultSearchCategory;
-
-
-
