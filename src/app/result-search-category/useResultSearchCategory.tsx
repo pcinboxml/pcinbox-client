@@ -5,16 +5,17 @@ import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import BranchSelector from "../components/branchSelector/BranchSelector";
 
 const ITEMS_PER_PAGE = 20;
 
 const useResultSearchCategory = () => {
-  
   const [loadingAddProductCar, setLoadingAddProductCar] = useState<
     Record<any, boolean>
   >({});
-  const { requestPost } = useService();
-  const { setDataCart, dataCart } = useTheContext();
+  const { requestPost, onRouterLink } = useService();
+  const { setDataCart, dataCart, hasToken, setDataModal, setBuyNowProduct } =
+    useTheContext();
 
   const [page, setPage] = useState<number>(1);
   const prevPageRef = useRef(page);
@@ -22,21 +23,21 @@ const useResultSearchCategory = () => {
   const router = useRouter();
   const pathName = usePathname();
 
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
+    // Actualizar el estado de la página para que el componente se re-renderice
+    setPage(value);
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
-  // Actualizar el estado de la página para que el componente se re-renderice
-  setPage(value);
+    // Mantener todos los parámetros existentes y solo actualizar la página
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", value.toString());
 
-  // Mantener todos los parámetros existentes y solo actualizar la página
-  const params = new URLSearchParams(searchParams.toString());
-  params.set('page', value.toString());
-  
-  router.replace(`${pathName}?${params.toString()}`);
-  
-  // La llamada manual a window.scrollTo ya no es necesaria.
-};
+    router.replace(`${pathName}?${params.toString()}`);
 
-
+    // La llamada manual a window.scrollTo ya no es necesaria.
+  };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -134,6 +135,113 @@ const useResultSearchCategory = () => {
     }
   };
 
+  const handleComprarAhora = (dataProduct: ProductI) => {
+    if (!hasToken) {
+      setDataModal({
+        title: "Información",
+        isOpen: true,
+        message: "Necesitas iniciar sesión",
+        type: "info",
+        showActions: true,
+        onClose: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+        onConfirm: () => {
+          setDataModal((prev) => ({
+            ...prev,
+            isOpen: false,
+          }));
+        },
+      });
+      return;
+    }
+    if (
+      (dataProduct?.isPC == 0 || dataProduct?.isPc == 0) &&
+      dataProduct?.product_stock!.length > 0 &&
+      Number(dataProduct?.providerId) !== 1
+    ) {
+      setDataModal({
+        isOpen: true,
+        message: (
+          <div className="w-[800px] border">
+            <BranchSelector productSelected={dataProduct} comprarAhora={true} />
+          </div>
+        ),
+        title: "",
+        type: "success",
+        showActions: false,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+    } else {
+      localStorage.setItem("checkout_mode", "buy_now");
+
+      setBuyNowProduct({
+        ...dataProduct,
+        categoryId: dataProduct!.categoryId,
+        createdAt: dataProduct!.createdAt,
+        description: dataProduct!.description,
+        idProduct: dataProduct!.idProduct,
+        imageUrl: dataProduct!.imageUrl,
+        name: dataProduct!.name,
+        price: dataProduct!.price,
+        providerId: dataProduct!.providerId,
+        stock: dataProduct!.stock,
+        rating: dataProduct!.rating,
+        reviews: dataProduct!.reviews,
+        quantity: Number(1),
+        sku: dataProduct!.sku,
+        isPC: dataProduct?.isPC,
+        isPc: dataProduct?.isPc,
+        caracteristicas: dataProduct?.caracteristicas,
+        height: dataProduct?.height,
+        idProductExt: dataProduct?.idProductExt,
+        largo: dataProduct?.largo,
+        storeId: dataProduct?.storeId,
+        upc: dataProduct?.upc,
+        width: dataProduct?.width,
+        product_stock: dataProduct?.product_stock,
+      });
+      localStorage.setItem(
+        "buyNowProduct",
+        JSON.stringify({
+          ...dataProduct,
+          categoryId: dataProduct!.categoryId,
+          createdAt: dataProduct!.createdAt,
+          description: dataProduct!.description,
+          idProduct: dataProduct!.idProduct,
+          imageUrl: dataProduct!.imageUrl,
+          name: dataProduct!.name,
+          price: dataProduct!.price,
+          providerId: dataProduct!.providerId,
+          stock: dataProduct!.stock,
+          rating: dataProduct!.rating,
+          reviews: dataProduct!.reviews,
+          quantity: Number(1),
+          sku: dataProduct!.sku,
+          isPC: dataProduct?.isPC,
+          isPc: dataProduct?.isPc,
+          caracteristicas: dataProduct?.caracteristicas,
+          height: dataProduct?.height,
+          idProductExt: dataProduct?.idProductExt,
+          largo: dataProduct?.largo,
+          storeId: dataProduct?.storeId,
+          upc: dataProduct?.upc,
+          width: dataProduct?.width,
+          product_stock: dataProduct?.product_stock,
+        }),
+      );
+      onRouterLink("/confirma-productos");
+
+      return;
+
+      // handleAddProductCart(dataProduct!, Number(quantity));
+    }
+  };
+
   return {
     handleAddProductCart,
     loadingAddProductCar,
@@ -143,11 +251,9 @@ const useResultSearchCategory = () => {
     endIndex,
     handleChangePage,
     itemsPerPage: ITEMS_PER_PAGE,
-    prevPageRef
+    prevPageRef,
+    handleComprarAhora,
   };
 };
 
 export default useResultSearchCategory;
-
-
-

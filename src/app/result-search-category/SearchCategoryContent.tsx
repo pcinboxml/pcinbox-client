@@ -67,6 +67,7 @@ const SearchCategoryContent = () => {
     loadingAddProductCar,
     handleAddProductCart,
     prevPageRef,
+    handleComprarAhora,
   } = useResultSearchCategory();
   const searchParams = useSearchParams();
 
@@ -1282,6 +1283,16 @@ const SearchCategoryContent = () => {
                                   )}
                                 </button>
                                 {/* === FIN DEL BOTÓN CORREGIDO === */}
+
+                                <button
+                                  className={`w-full  bg-[#BB3D4B] text-white px-4 py-1 rounded flex items-center justify-center mt-2`}
+                                  disabled={item?.stock === 0}
+                                  onClick={() => handleComprarAhora(item)}
+                                >
+                                  {item?.stock !== 0
+                                    ? "Comprar Ahora"
+                                    : "No disponible"}
+                                </button>
                               </div>
                             </div>
                           </div>
