@@ -1261,29 +1261,35 @@ const SearchCategoryContent = () => {
                               onRouterLink(`/detailsProduct/${item.idProduct}`)
                             }
                           >
-                            {item.imageUrl && item.imageUrl.length > 0
-                              ? item.imageUrl.map((img: string, i: number) => (
-                                  <div key={i} className={styles.carouselSlide}>
-                                    <Image
-                                      src={`${img}?tr=w-600,q-70,f-auto`}
-                                      alt="producto"
-                                      width={150}
-                                      height={150}
-                                      style={{
-                                        objectFit: "contain",
-                                        height: "150px",
-                                        width: "150px",
-                                        marginTop: "12px",
-                                      }}
-                                      sizes="(max-width: 768px) 100vw, 50vw"
-                                      priority={i === 0}
+                            {(item as any).image_url &&
+                            (item as any).image_url.length > 0
+                              ? (item as any).image_url.map(
+                                  (img: string, i: number) => (
+                                    <div
+                                      key={i}
+                                      className={styles.carouselSlide}
+                                    >
+                                      <Image
+                                        src={`${img}?tr=w-600,q-70,f-auto`}
+                                        alt="producto"
+                                        width={150}
+                                        height={150}
+                                        style={{
+                                          objectFit: "contain",
+                                          height: "150px",
+                                          width: "150px",
+                                          marginTop: "12px",
+                                        }}
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        priority={i === 0}
 
-                                      // className={styles.productImg}
-                                      // sizes="(max-width: 768px) 100vw, 50vw"
-                                      // priority={i === 0}
-                                    />
-                                  </div>
-                                ))
+                                        // className={styles.productImg}
+                                        // sizes="(max-width: 768px) 100vw, 50vw"
+                                        // priority={i === 0}
+                                      />
+                                    </div>
+                                  ),
+                                )
                               : [
                                   <div key="no-img" style={{ padding: 8 }}>
                                     Sin imágenes
