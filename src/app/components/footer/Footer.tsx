@@ -5,178 +5,173 @@ import "./footer.css";
 
 const Footer = () => {
   return (
-    <section className="relative">
-      <div className="fondo-rojo w-[102%] absolute bottom-0 left-[-10px] right-[-5px] h-[180px] bg-[#BA2B3D]"></div>
-      <footer className="border">
-        <div className="container-footer">
-          <span>Horarios de atención</span>
-          <p>Lunes a Viernes | 10am a 6pm</p>
-          <p>Sábado | 10am a 2pm</p>
-          <p>Domingo cerrado</p>
-          <br />
-          <br />
+    <section className="footer-section">
+      <div className="footer-wrapper">
+        {/* Fila superior: Horarios/Contacto + Mapa */}
+        <div className="footer-top-row">
+          <div className="footer-card">
+            <span className="footer-card-title">Horarios de atención</span>
+            <p>Lunes a Viernes | 10am – 7pm</p>
+            <p>Sábado | 10am – 3pm</p>
+            <p>Domingo | Cerrado</p>
 
-          <span>Correo Electrónico</span>
-          <p>contacto@pcinbox.com.mx</p>
+            <div className="footer-divider" />
+
+            <span className="footer-card-title">Contacto</span>
+            <p>Tel: +52 (477) 330 04 37</p>
+            <p>WhatsApp: +52 (477) 533 41 27</p>
+            <a href="#">contacto@pcinbox.com.mx</a>
+          </div>
+
+          <div className="footer-card">
+            <span className="footer-card-title">Ubicación</span>
+            <a
+              href="https://maps.app.goo.gl/4egcn2hWZf4Whkyu9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-address"
+            >
+              Blvd. Juan Alonso de Torres Pte. 1917 Local 1,
+              <br />
+              Col. Unión Comunitaria, C.P. 37239
+              <br />
+              León, Guanajuato, México
+            </a>
+            <iframe
+              src="https://www.google.com/maps?q=Blvd.+Juan+Alonso+de+Torres+Pte.+1917,+Le%C3%B3n,+Guanajuato,+M%C3%A9xico&output=embed"
+              className="footer-map"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación PcInbox León, Guanajuato"
+            />
+          </div>
         </div>
 
-        <div className="container-footer">
-          <span
-            className="text-center block"
-            style={{
-              color: "#646464",
-              fontSize: "15px",
-              fontWeight: "600",
-            }}
-          >
-            Formas de pago
-          </span>
-          <div className="iconos-formas-de-pago">
-            <div>
-              <img src="/spei.png" loading="lazy" />
-              <img src="/bbva.png" loading="lazy" />
-            </div>
-            <div>
-              <img src="/mastercard.png" loading="lazy" />
-              <img src="/visa.png" loading="lazy" />
-            </div>
-            <div className="flex">
+        {/* Fila inferior: Pagos/Envíos | Reseñas | Redes */}
+        <div className="footer-bottom-row">
+          <div className="footer-card">
+            <span className="footer-card-title">Formas de pago</span>
+            <div className="footer-pay-grid">
+              <img src="/spei.png" alt="SPEI" title="SPEI" loading="lazy" />
+              <img src="/bbva.png" alt="BBVA" title="BBVA" loading="lazy" />
+              <img
+                src="/mastercard.png"
+                alt="Mastercard"
+                title="Mastercard"
+                loading="lazy"
+              />
+              <img src="/visa.png" alt="Visa" title="Visa" loading="lazy" />
               <img
                 src="/mercadopago.jpg"
-                alt=""
-                width="250"
-                height="250"
+                alt="MercadoPago"
+                title="MercadoPago"
+                loading="lazy"
+                className="span2"
+              />
+              <img
+                src="/openpay.png"
+                alt="OpenPay"
+                title="OpenPay"
+                loading="lazy"
+              />
+              <img
+                src="/compra_segura_blanco.jpg"
+                alt="Compra Segura"
+                title="Compra Segura"
                 loading="lazy"
               />
             </div>
-            <div className="flex">
-              <img src="/openpay.png" />
+
+            <div className="footer-divider" />
+
+            <span className="footer-card-title">Envíos</span>
+            <div className="footer-ship-row">
+              <img src="/estafeta.png" alt="Estafeta" loading="lazy" />
               <img
-                width="250"
-                height="250"
-                src="/compra_segura_blanco.jpg"
-                style={{
-                  filter: "grayscale(0%)",
-                }}
+                src="/paqueteexpress.png"
+                alt="Paquete Express"
+                loading="lazy"
               />
             </div>
           </div>
 
-          <br />
-          <span
-            className="text-center block"
-            style={{
-              color: "#646464",
-              fontSize: "15px",
-              fontWeight: "600",
-            }}
-          >
-            Envíos
-          </span>
-          <div className="iconos-envios">
-            <img src="/estafeta.png" />
-            <img src="/paqueteexpress.png" />
-            {/* <img src="/dhl.png" /> */}
-          </div>
-        </div>
-
-        <div className="container-footer">
-          <span className="block text-center">Siguenos</span>
-
-          <div className="iconos-redes">
-            <img src="/google.jpg" alt="" loading="lazy" />
-            <span
-              style={{
-                color: "#646464",
-                fontSize: "15px",
-                fontWeight: "600",
-              }}
-            >
-              Verified Reviews
-            </span>
-          </div>
-
-          <div className="flex justify-center mt-2">
+          <div className="footer-card">
+            <span className="footer-card-title">Reseñas</span>
+            <div className="footer-reviews-wrap">
+              <img src="/google.jpg" alt="Google Reviews" loading="lazy" />
+              <span className="footer-reviews-label">Verified Reviews</span>
+            </div>
             <a
+              href="https://www.google.com/search?q=pcinbox"
               target="_blank"
-              href="https://www.google.com/search?q=pcinbox&sca_esv=83beed824cc47635&sxsrf=AE3TifNBEGA5x-KLCGqqedPiofDMOAzh1A%3A1760143660225&source=hp&ei=LKnpaMv2C-DJkPIPuYnZ4AU&iflsig=AOw8s4IAAAAAaOm3PMc656-GPbHeSuNUNLvnLxneKhFP&gs_ssp=eJzj4tVP1zc0zC3LzcowM00zYLRSNaiwMDFKSkozMUlOTkm2MElOsTKoMLZINDQ1TQMKGJlYGBsae7EXJGfmJeVXAABJnxKs&oq=pcin&gs_lp=Egdnd3Mtd2l6IgRwY2luKgIIADITEC4YgAQYxwEYJxiKBRiOBRivATIKECMYgAQYJxiKBTIEECMYJzINEC4YgAQY0QMYxwEYCjINEAAYgAQYsQMYgwEYCjINEC4YgAQY0QMYxwEYCjIHEAAYgAQYCjINEC4YgAQY0QMYxwEYCjIHEAAYgAQYCjIFEAAYgARI8g1QAFitCHAAeACQAQCYAWygAZgDqgEDMi4yuAEDyAEA-AEBmAIEoAKoA8ICEBAuGIAEGLEDGEMYgwEYigXCAgoQABiABBhDGIoFwgIKEC4YgAQYQxiKBcICCxAAGIAEGLEDGIMBwgINEAAYgAQYsQMYQxiKBcICCBAAGIAEGLEDmAMAkgcDMC40oAfeObIHAzAuNLgHqAPCBwUwLjMuMcgHDA&sclient=gws-wiz"
+              rel="noopener noreferrer"
+              className="footer-rating-link"
             >
               <Rating
-                name="simple-controlled"
+                name="google-rating"
                 defaultValue={5}
                 max={5}
                 readOnly
                 size="medium"
-                sx={{
-                  "& .MuiRating-iconFilled": {
-                    color: "#EDEC3B",
-                  },
-                }}
+                sx={{ "& .MuiRating-iconFilled": { color: "#EDEC3B" } }}
               />
             </a>
           </div>
-          <div className="redes">
-            <a
-              target="_blank"
-              className="cursor-pointer"
-              href="https://www.facebook.com/pcinboxbajio?locale=es_LA"
-            >
-              <img src="/facebook.png" loading="lazy" />
-            </a>
-            <a href="https://www.youtube.com/@pcinboxmx" target="_blank">
-              <img src="/youtube.png" loading="lazy" />
-            </a>
-            <a href="https://www.instagram.com/pcinbox_bajio/" target="_blank">
-              <img src="/instagram.png" loading="lazy" />
-            </a>
-            <a href="https://www.tiktok.com/@pcinbox" target="_blank">
-              <img src="/tiktok.png" loading="lazy" />
-            </a>
+
+          <div className="footer-card">
+            <span className="footer-card-title">Síguenos</span>
+            <div className="footer-social-row">
+              <a
+                href="https://www.facebook.com/pcinboxbajio?locale=es_LA"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+              >
+                <img src="/facebook.png" alt="Facebook" loading="lazy" />
+              </a>
+              <a
+                href="https://www.youtube.com/@pcinboxmx"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+              >
+                <img src="/youtube.png" alt="YouTube" loading="lazy" />
+              </a>
+              <a
+                href="https://www.instagram.com/pcinbox_bajio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
+                <img src="/instagram.png" alt="Instagram" loading="lazy" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@pcinbox"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+              >
+                <img src="/tiktok.png" alt="TikTok" loading="lazy" />
+              </a>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="container-footer">
-          <span className="block text-center">Ubicación</span>
-
-          <a
-            id="address"
-            href="https://maps.app.goo.gl/4egcn2hWZf4Whkyu9"
-            target="_blank"
-            style={{
-              lineHeight: "15px",
-              color: "#808080",
-            }}
-          >
-            Blvd. Juan Alonso de Torres Pte. No. 1917 Local 1 Colonia Unión
-            Comunitaria de León C.P 37239 Ciudad de León, Guanajuato, México
-          </a>
-          <br />
-          <span className="text-center block">Contacto</span>
-
-          <p>Teléfono oficina: +52 (477) 330 04 37</p>
-          <p>Atención Vía Whatsapp: +52 (477) 533 41 27</p>
-        </div>
-      </footer>
-      <div className="bg-[#BA2B3D] w-full px-1 py-1 flex justify-start absolute bottom-0">
-        <div>
-          <a
-            href="/terminos_y_condiciones"
-            target="_blank"
-            className="text-[13px] text-white cursor-pointer hover:underline"
-            style={{ textDecoration: "none" }}
-          >
-            Términos y condiciones de uso
-          </a>
-          <span className="text-white text-[13px] mx-1">|</span>
-          <a
-            href="/aviso_privacidad"
-            target="_blank"
-            className="text-[13px] text-white cursor-pointer hover:underline"
-            style={{ textDecoration: "none" }}
-          >
-            Aviso de privacidad
-          </a>
-        </div>
+      {/* Barra inferior */}
+      <div className="footer-bar">
+        <a
+          href="/terminos_y_condiciones"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Términos y condiciones de uso
+        </a>
+        <span className="footer-bar-divider">|</span>
+        <a href="/aviso_privacidad" target="_blank" rel="noopener noreferrer">
+          Aviso de privacidad
+        </a>
       </div>
     </section>
   );
