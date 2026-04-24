@@ -7,7 +7,6 @@ const Footer = () => {
   return (
     <section className="footer-section">
       <div className="footer-wrapper">
-        {/* Fila superior: Horarios/Contacto + Mapa */}
         <div className="footer-top-row">
           <div className="footer-card">
             <span className="footer-card-title">Horarios de atención</span>
@@ -159,7 +158,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Barra inferior */}
       <div className="footer-bar">
         <a
           href="/terminos_y_condiciones"
