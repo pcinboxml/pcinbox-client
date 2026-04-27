@@ -124,6 +124,16 @@ const PrincipalComponent = () => {
       </div>
 
       <GoogleReviewsCarousel />
+      <div className="mt-2">
+        <iframe
+          src="https://www.google.com/maps?q=pcinbox+León+Guanajuato&output=embed"
+          className="footer-map w-full h-[400px]"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Ubicación PcInbox"
+        />
+      </div>
     </section>
   );
 };
