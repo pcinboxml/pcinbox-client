@@ -23,6 +23,7 @@ import { useTheContext } from "@/app/services/globalContext";
 import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 import useProveedores from "@/app/services/proveedores/useProveedores";
 import ProductI from "@/app/interfaces/products/product.interface";
+import { Share2 } from "lucide-react";
 
 const DetailsProduct = () => {
   const [dataProduct, setDataProduct] = useState<ProductI | null>();
@@ -51,7 +52,7 @@ const DetailsProduct = () => {
     // fnGetServerSession,
   } = useDetailsProduct();
 
-  const { formatCurrency, onRouterLink } = useService();
+  const { formatCurrency, onRouterLink, handleShare } = useService();
   const { requestGetProveedor } = useProveedores();
   const { setDataModal, hasToken, setBuyNowProduct } = useTheContext();
   const router = useParams();
@@ -296,10 +297,11 @@ const DetailsProduct = () => {
           </div>
 
           {/* ── MAIN GRID ── */}
-          <div className="dp-main-grid">
+          <div className="dp-main-grid relative">
             {/* LEFT: IMAGE GALLERY */}
             <div className="dp-gallery">
               {/* Stage con lupa */}
+
               <div className="dp-img-wrapper">
                 <div
                   ref={imgStageRef}
@@ -394,6 +396,32 @@ const DetailsProduct = () => {
             {/* RIGHT: PRODUCT INFO */}
             <div className="dp-info-panel">
               {/* Price block */}
+              <div className="flex justify-end items-center">
+                <button
+                  title="Compartir"
+                  onClick={async () => {
+                    await handleShare(
+                      "Producto",
+                      dataProduct?.name! || dataProduct?.description!,
+                      `${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? `http://localhost:3000/detailsProduct/${dataProduct?.idProduct}` : `https://www.pcinbox.com.mx/detailsProduct/${dataProduct?.idProduct}`}`,
+                    );
+                  }}
+                  aria-label="Compartir"
+                  className="
+          group relative flex h-10 w-10 items-center justify-center
+          rounded-lg border border-neutral-200 bg-transparent text-neutral-400
+          transition-all duration-150
+          hover:border-blue-200 hover:bg-blue-50 hover:text-blue-500
+          active:scale-95
+        "
+                >
+                  <Share2
+                    size={18}
+                    className="transition-transform duration-150 group-active:scale-90"
+                    strokeWidth={1.75}
+                  />
+                </button>
+              </div>
               <div className="dp-price-block">
                 <span className="dp-price">
                   {formatCurrency(Number(dataProduct?.price))}

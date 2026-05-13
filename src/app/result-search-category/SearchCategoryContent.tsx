@@ -881,6 +881,7 @@ const SearchCategoryContent = () => {
 
                         {/* Compartir */}
                         <button
+                          title="Compartir"
                           onClick={async () => {
                             await handleShare(
                               "Producto",
