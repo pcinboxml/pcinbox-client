@@ -64,6 +64,8 @@ interface ContextProps {
   setRutaImgPerfil: Dispatch<SetStateAction<string>>;
   dataFavorites: FavoritesI[];
   setDataFavorites: Dispatch<SetStateAction<FavoritesI[]>>;
+  totalFavorites: number;
+  setTotalFavorites: Dispatch<SetStateAction<number>>;
   selectedCard: string;
   setSelectedCard: Dispatch<SetStateAction<string>>;
   handleSelectedCard: any;
@@ -179,6 +181,8 @@ const CreateContext = createContext<ContextProps>({
   setDataCategories: () => {},
   addressByStore: 0,
   setAddressByStore: () => {},
+  totalFavorites: 0,
+  setTotalFavorites: () => {},
 
   // idAddressEnvio: 0,
   // setIdAddressEnvio: () => {},
@@ -257,6 +261,7 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   >([]);
 
   const [postalCodes, setPostalCodes] = useState<PostalCodeLookupI[]>([]);
+  const [totalFavorites, setTotalFavorites] = useState<number>(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -391,6 +396,8 @@ export const GlobalProvider = ({ children }: { children: any }) => {
         setDataCategories,
         addressByStore,
         setAddressByStore,
+        totalFavorites,
+        setTotalFavorites,
       }}
     >
       {children}

@@ -5,13 +5,19 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import ProductI from "../interfaces/products/product.interface";
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import useStorage from "./useStorage";
 
 const useService = () => {
   const pathName = usePathname();
 
-  const { setDataModal, dataCart, buyNowProduct } = useTheContext();
+  const {
+    setDataModal,
+    dataCart,
+    buyNowProduct,
+    setDataFavorites,
+    setTotalFavorites,
+  } = useTheContext();
   const { dataCartStorege, checkoutMode, setCheckoutMode } = useStorage();
   const [productsToShow, setProductsToShow] = useState<ProductI[] | null>(null);
 
@@ -429,8 +435,151 @@ const useService = () => {
   //   return queryString ? `${pathName}?${queryString}` : pathName;
   // }, [pathName, searchParams]);
 
+  const handleToggleFavorites = async (
+    isFavorite: boolean,
+    idProduct: number,
+    setData: Dispatch<SetStateAction<ProductI[]>>,
+    setDataCopy: Dispatch<SetStateAction<ProductI[]>>,
+  ) => {
+    if (!isFavorite) {
+      // AGREGAR A FAVORITOS
+      try {
+        const resp = await requestPost(
+          { idProduct: Number(idProduct) },
+          "/favorites/addFavorites",
+        );
+
+        if (resp.status == 200) {
+          const data = await resp.data;
+          setDataFavorites(data.data.data);
+          setTotalFavorites((prev) => prev + 1);
+
+          // Actualizar con el idFavorite real del servidor
+          const newFavorite = data.data.data?.find(
+            (fav: any) => Number(fav.productId) === Number(idProduct),
+          );
+
+          const updateWithRealId = (prev: ProductI[]) =>
+            prev.map((item: any) => {
+              if (Number(item.idProduct) === Number(idProduct)) {
+                return {
+                  ...item,
+                  isFavorite: true,
+                  favorites: newFavorite
+                    ? [{ idFavorite: newFavorite.idFavorite }]
+                    : item.favorites,
+                };
+              }
+              return item;
+            });
+
+          setData(updateWithRealId);
+          setDataCopy(updateWithRealId);
+        } else {
+          // REVERTIR si falla
+          const revertUpdate = (prev: ProductI[]) =>
+            prev.map((item: any) => {
+              if (Number(item.idProduct) === Number(idProduct)) {
+                return { ...item, isFavorite: false, favorites: [] };
+              }
+              return item;
+            });
+          setData(revertUpdate);
+          setDataCopy(revertUpdate);
+        }
+      } catch (error) {
+        // REVERTIR si hay error
+        const revertUpdate = (prev: ProductI[]) =>
+          prev.map((item: any) => {
+            if (Number(item.idProduct) === Number(idProduct)) {
+              return { ...item, isFavorite: false, favorites: [] };
+            }
+            return item;
+          });
+        setData(revertUpdate);
+        setDataCopy(revertUpdate);
+        setDataFavorites([]);
+      }
+    } else {
+      // ELIMINAR DE FAVORITOS
+      try {
+        const resp = await requestPost(
+          { idProduct: Number(idProduct) },
+          "/favorites/removeFavorites",
+        );
+
+        if (resp.status == 200) {
+          const data = await resp.data;
+          setDataFavorites(data.data.data);
+          setTotalFavorites((prev) => prev - 1);
+
+          // Ya se actualizó con optimistic update, aquí confirmamos
+          // (no necesita hacer nada extra porque el optimistic ya puso isFavorite: false)
+
+          const updateWithRealId = (prev: ProductI[]) =>
+            prev.map((item: any) => {
+              if (Number(item.idProduct) === Number(idProduct)) {
+                return {
+                  ...item,
+                  isFavorite: false,
+                };
+              }
+              return item;
+            });
+
+          setData(updateWithRealId);
+          setDataCopy(updateWithRealId);
+        } else {
+          // REVERTIR si falla
+          // const revertUpdate = (prev: ProductI[]) =>
+          //   prev.map((item: any) => {
+          //     if (Number(item.idProduct) === Number(idProduct)) {
+          //       return {
+          //         ...item,
+          //         isFavorite: true,
+          //         favorites: [{ idFavorite }],
+          //       };
+          //     }
+          //     return item;
+          //   });
+          // setData(revertUpdate);
+          // setDataCopy(revertUpdate);
+        }
+      } catch (error) {
+        // REVERTIR si hay error
+        // const revertUpdate = (prev: ProductI[]) =>
+        //   prev.map((item: any) => {
+        //     if (Number(item.idProduct) === Number(idProduct)) {
+        //       return {
+        //         ...item,
+        //         isFavorite: true,
+        //         favorites: [{ idFavorite }],
+        //       };
+        //     }
+        //     return item;
+        //   });
+        // setData(revertUpdate);
+        // setDataCopy(revertUpdate);
+      }
+    }
+  };
+
+  const handleShare = async (title: string, text: string, url: string) => {
+    try {
+      await navigator.share({
+        title: title,
+        text: text,
+        url: url,
+      });
+
+      console.log("Compartido");
+    } catch (error) {
+      console.error("Error al compartir:", error);
+    }
+  };
   return {
     //returnUrl,
+    handleToggleFavorites,
     groupById,
     requestGet,
     requestPost,
@@ -447,6 +596,7 @@ const useService = () => {
     calcularPrecioPorVolumen,
     updateURL,
     productsToShow,
+    handleShare,
   };
 };
 

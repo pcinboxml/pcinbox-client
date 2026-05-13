@@ -22,6 +22,7 @@ import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
+import { Heart, Share2 } from "lucide-react";
 const SearchCategoryContent = () => {
   // Al principio del componente
   //useScrollPosition("scroll-/result-search-category");
@@ -36,6 +37,9 @@ const SearchCategoryContent = () => {
   } = useTheContext();
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [loadingToogleFavorite, setLoadingToogleFavorite] = useState<
+    Record<number, boolean>
+  >({});
   const [filterValue, setFilterValue] = useState<any>("");
   const { requestPostProveedor } = useProveedores();
   const [data, setData] = useState<ProductI[]>([]);
@@ -56,7 +60,13 @@ const SearchCategoryContent = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<any>("");
-  const { formatCurrency, onRouterLink, updateURL } = useService();
+  const {
+    formatCurrency,
+    onRouterLink,
+    updateURL,
+    handleToggleFavorites,
+    handleShare,
+  } = useService();
 
   const {
     startIndex,
@@ -815,6 +825,86 @@ const SearchCategoryContent = () => {
                   })
                   .map((item, index: number) => (
                     <div key={index}>
+                      <div
+                        className="flex justify-end"
+                        style={{
+                          marginLeft: "auto",
+                        }}
+                      >
+                        <button
+                          disabled={
+                            loadingToogleFavorite[Number(item?.idProduct)]
+                          }
+                          onClick={async () => {
+                            let isFavorite = (item as any)?.isFavorite;
+                            setLoadingToogleFavorite((prev) => ({
+                              ...prev,
+                              [item?.idProduct]: true,
+                            }));
+                            await handleToggleFavorites(
+                              isFavorite,
+                              Number(item?.idProduct),
+                              setData,
+                              setDataCopy,
+                            );
+                            setLoadingToogleFavorite((prev) => ({
+                              ...prev,
+                              [item?.idProduct]: false,
+                            }));
+                          }}
+                          aria-label={
+                            (item as any)?.isFavorite
+                              ? "Quitar de favoritos"
+                              : "Agregar a favoritos"
+                          }
+                          className={`
+          group relative flex h-10 w-10 items-center justify-center
+          rounded-lg border transition-all duration-150 active:scale-95
+          ${
+            (item as any)?.isFavorite
+              ? "border-red-200 bg-red-50 text-red-500 hover:bg-red-100"
+              : "border-neutral-200 bg-transparent text-neutral-400 hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-600"
+          }
+        `}
+                        >
+                          <Heart
+                            size={18}
+                            className="transition-transform duration-150 group-active:scale-90"
+                            fill={
+                              (item as any)?.isFavorite
+                                ? "currentColor"
+                                : "none"
+                            }
+                            strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
+                          />
+                        </button>
+
+                        {/* Compartir */}
+                        <button
+                          onClick={async () => {
+                            await handleShare(
+                              "Producto",
+                              item?.name || item?.description,
+                              `${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? `http://localhost:3000/detailsProduct/${item?.idProduct}` : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`}`,
+                            );
+                          }}
+                          aria-label="Compartir"
+                          className="
+          group relative flex h-10 w-10 items-center justify-center
+          rounded-lg border border-neutral-200 bg-transparent text-neutral-400
+          transition-all duration-150
+          hover:border-blue-200 hover:bg-blue-50 hover:text-blue-500
+          active:scale-95
+        "
+                        >
+                          <Share2
+                            size={18}
+                            className="transition-transform duration-150 group-active:scale-90"
+                            strokeWidth={1.75}
+                          />
+                        </button>
+                      </div>
+
                       <div className={styles.productRow}>
                         <div className={styles.productInfo}>
                           <div className={styles.itemComponent}>

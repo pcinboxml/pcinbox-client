@@ -59,6 +59,7 @@ const handler = NextAuth({
           (user as any).rol = "customer";
           (user as any).idValidToken = isValidToken;
           (user as any).active = data.data.active;
+          (user as any).totalFavorites = data.data.totalFavorites;
           return true;
         } else {
           throw new Error(
@@ -84,6 +85,7 @@ const handler = NextAuth({
         token.token = (user as any).token;
         token.isValidToken = (user as any).idValidToken;
         token.active = (user as any).active;
+        token.totalFavorites = (user as any).totalFavorites;
       }
       return token;
     },
@@ -98,6 +100,7 @@ const handler = NextAuth({
         (session as any).token = token.token;
         (session as any).isValidToken = token.isValidToken;
         (session as any).active = token.active;
+        (session as any).totalFavorites = token.totalFavorites;
       }
       return session;
     },

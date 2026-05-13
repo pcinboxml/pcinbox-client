@@ -6,7 +6,7 @@ import Navbar from "./components/navbar/navbar";
 import Notification from "./components/notification/Notification";
 import { useTheContext } from "./services/globalContext";
 import { SessionProvider } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
@@ -16,6 +16,7 @@ import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
 import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
+import useService from "./services/useService";
 
 export default function AppWrapper({
   children,
@@ -26,8 +27,11 @@ export default function AppWrapper({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
+  const { requestGet } = useService();
 
   const {
+    totalFavorites,
+    setTotalFavorites,
     dataModal,
     dataNotification,
     hasToken,
@@ -337,6 +341,19 @@ export default function AppWrapper({
 
     restoreScroll();
   }, [pathname, storageKey]);
+  useEffect(() => {
+    const getTotalFavorites = async () => {
+      try {
+        const resp = await requestGet("/favorites/getTotalFavorites");
+
+        if (resp.status === 200) {
+          setTotalFavorites(resp.data.data.totalFavorites);
+        }
+      } catch (error) {}
+    };
+
+    getTotalFavorites();
+  }, [totalFavorites]);
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
