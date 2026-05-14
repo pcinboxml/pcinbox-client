@@ -428,6 +428,10 @@ const DetailsProduct = () => {
                 </span>
               </div>
 
+              <div className="dp-trust-row">
+                <p>UPC: {dataProduct?.upc}</p>
+              </div>
+
               {/* Description */}
               {dataProduct?.description && (
                 <p className="dp-description">
