@@ -7,8 +7,13 @@ import useService from "./useService";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 
 const useFavorites = () => {
-  const { dataFavorites, setDataFavorites, setDataNotification, setDataCart } =
-    useTheContext();
+  const {
+    dataFavorites,
+    setDataFavorites,
+    setDataNotification,
+    setDataCart,
+    setTotalFavorites,
+  } = useTheContext();
   const { requestPost, requestGet } = useService();
 
   const [loadingFavorite, setLoadingFavorite] = useState<boolean>(false);
@@ -249,7 +254,7 @@ const useFavorites = () => {
 
       const resp = await requestPost(
         {
-          idFavorite: favorite.idFavorite,
+          idProduct: Number(favorite?.productId),
         },
         "/favorites/removeFavorites",
       );
@@ -258,6 +263,7 @@ const useFavorites = () => {
         const data = await resp.data;
         setDataFavorites(data.data.data);
         setLoadingRemoveFavorite(false);
+        setTotalFavorites((prev) => prev - 1);
         setDataNotification({
           open: true,
           handleClose: () =>
