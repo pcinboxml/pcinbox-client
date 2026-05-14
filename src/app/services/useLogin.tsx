@@ -4,6 +4,7 @@ import { LoginI } from "@/app/interfaces/login.interface";
 import { useState } from "react";
 import useService from "@/app/services/useService";
 import { signIn } from "next-auth/react";
+import { useTheContext } from "./globalContext";
 
 const useLogin = () => {
   const [formData, setFormData] = useState<LoginI>({
@@ -16,6 +17,7 @@ const useLogin = () => {
   const { requestPost } = useService();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
+  const { setTotalFavorites } = useTheContext();
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -54,6 +56,7 @@ const useLogin = () => {
         localStorage.setItem("name", data?.data?.name || "");
         localStorage.setItem("lastname", data?.data?.lastname || "");
         localStorage.setItem("idUser", data?.data?.idUser || data?.idUser);
+        setTotalFavorites(data?.data?.totalFavorites);
         window.location.href = "/principal";
       }
     } catch (error: any) {

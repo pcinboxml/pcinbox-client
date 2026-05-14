@@ -67,6 +67,7 @@ const NavbarResponsive = () => {
     rutaImgPerfil,
     dataFavorites,
     dataCategories,
+    totalFavorites,
   } = useTheContext();
 
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -98,6 +99,9 @@ const NavbarResponsive = () => {
       const token = (session as any)?.token;
       const idUser = (session as any)?.idUser;
       const isValidToken = (session as any)?.isValidToken;
+      const totalFavoritesSession = (session as any)?.totalFavorites;
+      console.log(totalFavoritesSession);
+
       if (token && token !== "undefined" && token !== "null" && token != null) {
         localStorage.setItem("token", token);
         localStorage.setItem("email", session.user?.email!);
@@ -438,7 +442,7 @@ const NavbarResponsive = () => {
                   onMouseLeave={() => onMouseLeaveSubMenu("2")}
                 >
                   <a href="#">
-                    Favoritos ({dataFavorites.length.toLocaleString()})
+                    Favoritos ({totalFavorites.toLocaleString()})
                     <MdArrowDropDown size={22} color="gray" />
                   </a>
                   <div
@@ -451,7 +455,7 @@ const NavbarResponsive = () => {
                       top: "100%",
                     }}
                   >
-                    {dataFavorites && dataFavorites.length > 0 ? (
+                    {totalFavorites > 0 ? (
                       <div className="grid grid-cols-[1fr_1fr] w-[450px] border">
                         <div className="p-3 flex flex-col">
                           <span
@@ -467,8 +471,7 @@ const NavbarResponsive = () => {
                               borderBottom: "3px solid #a67845",
                             }}
                           >
-                            {dataFavorites.length.toLocaleString()} Articulos
-                            (predeterminada)
+                            {totalFavorites} Articulos (predeterminada)
                           </a>
                         </div>
                         <div
@@ -478,7 +481,7 @@ const NavbarResponsive = () => {
                               "inset 10px 0px 20px -10px rgba(0,0,0,0.3)",
                           }}
                         >
-                          <div className="w-full flex justify-center flex-wrap mb-3 mt-3">
+                          {/* <div className="w-full flex justify-center flex-wrap mb-3 mt-3">
                             {dataFavorites.slice(0, 3).map((item, index) => (
                               <img
                                 key={index}
@@ -489,7 +492,7 @@ const NavbarResponsive = () => {
                                 loading="lazy"
                               />
                             ))}
-                          </div>
+                          </div> */}
                           <div className="w-full flex justify-center mb-2">
                             <button
                               className="border px-4 py-1 bg-white"
