@@ -797,7 +797,8 @@ const SearchCategoryContent = () => {
               </>
             )}
 
-            {/* <div
+            {/* 
+            <div
               className="w-full mt-2 flex justify-end"
               style={{ padding: "2px" }}
             >
@@ -810,7 +811,8 @@ const SearchCategoryContent = () => {
                   />
                 </div>
               )}
-            </div> */}
+            </div>
+             */}
 
             <hr />
 
