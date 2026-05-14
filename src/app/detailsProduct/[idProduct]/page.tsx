@@ -429,7 +429,9 @@ const DetailsProduct = () => {
               </div>
 
               <div className="dp-trust-row">
-                <p>UPC: {dataProduct?.upc}</p>
+                <p>
+                  <b>UPC</b>: {dataProduct?.upc}
+                </p>
               </div>
 
               {/* Description */}
