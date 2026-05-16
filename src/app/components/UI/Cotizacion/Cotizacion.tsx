@@ -452,7 +452,6 @@ const CotizacionPDF = ({
         {productsArr.map(renderRow)}
 
         {/* ── FOOTER ─────────────────────────────────────────────────── */}
-        {/* ── FOOTER FIJO ABAJO ───────────────────────────── */}
         <View style={styles.bottomFooter} fixed>
           {/* TOTALS */}
           <View style={styles.totalsSection}>
