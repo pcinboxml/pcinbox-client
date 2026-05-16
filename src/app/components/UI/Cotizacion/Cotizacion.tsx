@@ -1,5 +1,6 @@
 "use client";
 
+import ProductI from "@/app/interfaces/products/product.interface";
 import {
   Document,
   Page,
@@ -9,279 +10,517 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
-// Estilos convertidos de CSS a React-PDF (escalados de px a pt para que quepan en la hoja)
+// ─── PALETA & TOKENS ────────────────────────────────────────────────────────
+const C = {
+  black: "#0d0d0d",
+  gray900: "#1a1a1a",
+  gray700: "#444444",
+  gray500: "#777777",
+  gray200: "#e4e4e4",
+  gray100: "#f4f4f4",
+  accent: "#0047cc",
+  danger: "#c0392b",
+  white: "#ffffff",
+};
+
+// ─── ESTILOS ─────────────────────────────────────────────────────────────────
+// REGLAS para react-pdf:
+// • No usar position:absolute para layout estructural — usar Flexbox puro
+// • Porcentajes de ancho sólo dentro de un flex container con flexDirection:"row"
+// • borderBottomWidth/borderTopWidth son seguros; evitar borders shorthand
+// • No hay gap — usar marginBottom en los hijos
 const styles = StyleSheet.create({
+  // PAGE
   page: {
-    width: "100%",
-    minHeight: "100%",
-    padding: "40 55",
-    boxSizing: "border-box",
     fontFamily: "Helvetica",
     fontSize: 10,
-    color: "#000",
-    position: "relative",
+    color: C.gray900,
+    paddingTop: 36,
+    paddingBottom: 48,
+    paddingHorizontal: 48,
+    backgroundColor: C.white,
   },
 
-  // HEADER
+  // ── HEADER ──────────────────────────────────────────────────────────────
   header: {
-    textAlign: "center",
-    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: C.gray200,
+    marginBottom: 24,
+  },
+  logoWrap: {
+    width: 120,
   },
   logo: {
-    width: 165, // Equivalente visual a 220px
+    width: 120,
     objectFit: "contain",
-    marginBottom: 10,
   },
-  title: {
-    fontSize: 24, // Equivalente visual a 48px
-    fontWeight: 400,
-    margin: 0,
+  headerRight: {
+    alignItems: "flex-end",
   },
-  date: {
-    fontSize: 12, // Equivalente visual a 24px
-    marginTop: 5,
+  titleLabel: {
+    fontSize: 20,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+    letterSpacing: 2,
+    textTransform: "uppercase",
   },
-
-  // CLIENT
-  clientSection: {
-    marginTop: 30, // Equivalente visual a 55px
-  },
-  clientTitle: {
-    fontSize: 17, // Equivalente visual a 34px
-    marginBottom: 5,
-  },
-  client: {
-    fontSize: 10, // Equivalente visual a 20px
+  headerDate: {
+    fontSize: 9,
+    color: C.gray500,
+    marginTop: 4,
   },
 
-  // CONTENT
-  content: {
-    marginTop: 25,
-    position: "relative",
+  // ── META ROW ────────────────────────────────────────────────────────────
+  metaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
-  leftSide: {
-    width: "85%", // Dejamos espacio a la derecha para la línea divisora absoluta
-    paddingRight: 20,
+  metaBlock: {
+    flexDirection: "column",
   },
+  metaLabel: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  metaValue: {
+    fontSize: 10,
+    color: C.gray900,
+    fontFamily: "Helvetica-Bold",
+  },
+  metaValueNormal: {
+    fontSize: 10,
+    color: C.gray700,
+  },
+
+  // ── DIVIDER ─────────────────────────────────────────────────────────────
   divider: {
-    position: "absolute",
-    top: 0,
-    right: 45, // Equivalente visual a 60px desde el borde de la página
-    width: 1.5,
-    height: 580, // Equivalente visual a 760px, ajustado para no salir de la hoja
-    backgroundColor: "#444",
+    borderBottomWidth: 1,
+    borderBottomColor: C.gray200,
+    marginBottom: 16,
   },
-  quoteInfo: {
+
+  // ── TABLE HEADER ────────────────────────────────────────────────────────
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: C.gray100,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderRadius: 3,
+    marginBottom: 2,
+  },
+  thQty: {
+    width: "8%",
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
+  },
+  thDesc: {
+    width: "56%",
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
+  },
+  thUnit: {
+    width: "18%",
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
     textAlign: "right",
-    marginBottom: 25,
-    fontSize: 9, // Equivalente visual a 18px
   },
-  items: {
-    textAlign: "center",
+  thTotal: {
+    width: "18%",
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
+    textAlign: "right",
   },
-  item: {
-    marginBottom: 15, // Equivalente visual a 38px
+
+  // ── TABLE ROW ───────────────────────────────────────────────────────────
+  tableRow: {
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: C.gray100,
   },
-  itemText: {
-    margin: 0,
-    fontSize: 9, // Equivalente visual a 18px
-    lineHeight: 1.35,
+  tdQty: { width: "8%", fontSize: 10, color: C.gray700 },
+  tdDesc: { width: "56%", paddingRight: 10 },
+  tdUnit: { width: "18%", fontSize: 10, color: C.gray700, textAlign: "right" },
+  tdTotal: {
+    width: "18%",
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+    textAlign: "right",
+  },
+  productName: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+    marginBottom: 2,
+  },
+  productDesc: {
+    fontSize: 8,
+    color: C.gray500,
+    lineHeight: 1.5,
+    marginBottom: 2,
+  },
+  productProp: {
+    fontSize: 8,
+    color: C.gray500,
+  },
+  productPropBold: {
+    fontFamily: "Helvetica-Bold",
+    color: C.gray700,
+  },
+
+  // ── TOTALS ──────────────────────────────────────────────────────────────
+  totalsSection: {
+    marginTop: 8,
+    alignItems: "flex-end",
   },
   totalRow: {
-    marginTop: 15,
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    fontSize: 12, // Equivalente visual a 24px
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1.5,
+    borderTopColor: C.black,
   },
-  totalSpacer: {
-    width: 35, // Equivalente al gap: 45px
+  totalLabel: {
+    fontSize: 11,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+    marginRight: 20,
   },
   totalValue: {
-    fontSize: 14, // Equivalente visual a 28px
-    fontWeight: "bold",
+    fontSize: 16,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+  },
+  ivaNote: {
+    fontSize: 8,
+    color: C.gray500,
+    marginTop: 4,
   },
 
-  // RECOMMENDATION
-  recommendation: {
-    marginTop: 55, // Equivalente visual a 110px
-    width: "92%",
+  // ── CALLOUT BOXES ───────────────────────────────────────────────────────
+  noteBox: {
+    marginTop: 20,
+    flexDirection: "row",
+    backgroundColor: "#eef3ff",
+    borderLeftWidth: 3,
+    borderLeftColor: C.accent,
+    padding: 10,
+    borderRadius: 2,
   },
-  recommendationText: {
-    fontSize: 8, // Equivalente visual a 16px
-    fontWeight: "bold",
+  noteText: {
+    fontSize: 8,
+    color: C.gray700,
+    lineHeight: 1.6,
+    flex: 1,
+  },
+  validityBox: {
+    marginTop: 10,
+    flexDirection: "row",
+    backgroundColor: "#fff5f5",
+    borderLeftWidth: 3,
+    borderLeftColor: C.danger,
+    padding: 10,
+    borderRadius: 2,
+  },
+  validityText: {
+    fontSize: 8,
+    color: C.danger,
+    fontFamily: "Helvetica-Bold",
+    lineHeight: 1.6,
+    flex: 1,
+  },
+
+  // ── FOOTER ──────────────────────────────────────────────────────────────
+  footer: {
+    marginTop: 28,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: C.gray200,
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  footerCol: {
+    flexDirection: "column",
+    flex: 1,
+    paddingRight: 16,
+  },
+  footerColLast: {
+    flexDirection: "column",
+    flex: 1,
+    alignItems: "flex-end",
+  },
+  footerLabel: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: C.gray500,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  footerValue: {
+    fontSize: 9,
+    color: C.gray700,
     lineHeight: 1.5,
   },
-
-  // FOOTER
-  footer: {
-    marginTop: 70, // Equivalente visual a 140px
-  },
-  footerText: {
-    margin: 0,
-    fontSize: 9, // Equivalente visual a 18px
-    lineHeight: 1.4,
-  },
-  red: {
-    color: "#d50000",
-    fontWeight: "bold",
-  },
-  bold: {
-    fontWeight: "bold",
-  },
-  company: {
-    marginTop: 20,
-    textAlign: "center",
+  footerEmail: {
+    fontSize: 9,
+    color: C.accent,
+    textDecoration: "underline",
   },
   companyName: {
-    fontSize: 11, // Equivalente visual a 22px
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 13,
+    fontFamily: "Helvetica-Bold",
+    color: C.black,
+    marginBottom: 4,
   },
-  email: {
-    color: "#0047cc",
-    textDecoration: "underline",
+  paymentNote: {
+    marginTop: 6,
+    fontSize: 8,
+    color: C.gray700,
+    lineHeight: 1.5,
+  },
+  bottomFooter: {
+    position: "absolute",
+    bottom: 48,
+    left: 48,
+    right: 48,
+
+    backgroundColor: C.white,
   },
 });
 
-const CotizacionPDF = () => {
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(
+    value,
+  );
+
+const MONTHS = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
+
+const formatDate = (date: Date) => {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = MONTHS[date.getMonth()];
+  const y = date.getFullYear();
+  return `${d} de ${m} del ${y}`;
+};
+
+// ─── COMPONENT ───────────────────────────────────────────────────────────────
+const CotizacionPDF = ({
+  noCotizacion,
+  products,
+}: {
+  noCotizacion: string | number;
+  products: ProductI[] | ProductI | null;
+}) => {
+  const now = new Date();
+  const expiry = new Date(now);
+  expiry.setHours(expiry.getHours() + 24);
+
+  // Normalizar a array
+  const productsArr: ProductI[] = products
+    ? Array.isArray(products)
+      ? products
+      : [products]
+    : [];
+
+  // Total
+  const total = productsArr.reduce((acc, p) => {
+    const price = Number(p?.price ?? 0);
+    const qty = Number(p?.quantity ?? 0);
+    return isNaN(price) || isNaN(qty) ? acc : acc + price * qty;
+  }, 0);
+
+  // Renderizar una fila de producto
+  const renderRow = (product: ProductI) => {
+    let caracteristicas: { prop: string; value: string }[] = [];
+    try {
+      caracteristicas = JSON.parse(product.caracteristicas || "[]");
+    } catch {
+      /* noop */
+    }
+
+    const qty = Number(product.quantity ?? 1);
+    const price = Number(product.price ?? 0);
+    const subtotal = qty * price;
+
+    return (
+      <View key={product.idProduct} style={styles.tableRow} wrap={false}>
+        {/* Cantidad */}
+        <Text style={styles.tdQty}>{qty}</Text>
+
+        {/* Descripción */}
+        <View style={styles.tdDesc}>
+          <Text style={styles.productName}>{product.name}</Text>
+          {product.description ? (
+            <Text style={styles.productDesc}>{product.description}</Text>
+          ) : null}
+          {caracteristicas.slice(0, 3).map((car, i) => (
+            <Text key={i} style={styles.productProp}>
+              <Text style={styles.productPropBold}>{car.prop}: </Text>
+              {car.value}
+            </Text>
+          ))}
+        </View>
+
+        {/* Precio unitario */}
+        <Text style={styles.tdUnit}>{formatCurrency(price)}</Text>
+
+        {/* Subtotal */}
+        <Text style={styles.tdTotal}>{formatCurrency(subtotal)}</Text>
+      </View>
+    );
+  };
+
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
-        {/* HEADER */}
-        <View style={styles.header}>
-          <Image src="/logo-pcinbox.png" style={styles.logo} />
-          <Text style={styles.title}>Cotización</Text>
-          <Text style={styles.date}>Fecha: 28/Abril/2026</Text>
+        {/* ── HEADER ─────────────────────────────────────────────────── */}
+        <View style={styles.header} fixed>
+          <View style={styles.logoWrap}>
+            <Image src="/logo.png" style={styles.logo} />
+          </View>
+          <View style={styles.headerRight}>
+            <Text style={styles.titleLabel}>Cotización</Text>
+            <Text style={styles.headerDate}>Fecha: {formatDate(now)}</Text>
+          </View>
         </View>
 
-        {/* CLIENT */}
-        <View style={styles.clientSection}>
-          <Text style={styles.clientTitle}>PC Workstation</Text>
-          <Text style={styles.client}>
-            <Text style={{ fontWeight: "bold" }}>A quien corresponda:</Text>{" "}
-            Venta público gral.
-          </Text>
+        {/* ── META ROW ───────────────────────────────────────────────── */}
+        <View style={styles.metaRow}>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Cliente</Text>
+            <Text style={styles.metaValueNormal}>Venta público general</Text>
+          </View>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>No. Cotización</Text>
+            <Text style={styles.metaValue}>{noCotizacion}</Text>
+          </View>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Vigencia</Text>
+            <Text style={styles.metaValueNormal}>{formatDate(expiry)}</Text>
+          </View>
         </View>
 
-        {/* CONTENT */}
-        <View style={styles.content}>
-          <View style={styles.leftSide}>
-            <View style={styles.quoteInfo}>
-              <Text>Cotización no. 868</Text>
-              <Text>Descripción:</Text>
-            </View>
+        <View style={styles.divider} />
 
-            <View style={styles.items}>
-              <View style={styles.item}>
-                <Text style={styles.itemText}>TARJETA DE VIDEO</Text>
-                <Text style={styles.itemText}>
-                  NVIDIA RTX A1000ATX,8GB,GDDR6,4*MDP,72TC,2304 CC
-                </Text>
-                <Text style={styles.itemText}>
-                  Ancho de banda de memoria: 192 GB/s
-                </Text>
-              </View>
+        {/* ── TABLE HEADER ───────────────────────────────────────────── */}
+        <View style={styles.tableHeader}>
+          <Text style={styles.thQty}>Cant.</Text>
+          <Text style={styles.thDesc}>Descripción</Text>
+          <Text style={styles.thUnit}>P. Unitario</Text>
+          <Text style={styles.thTotal}>Subtotal</Text>
+        </View>
 
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  PROCESADOR INTEL (BX8071512900K) CORE I9-12900K S-1700
-                </Text>
-                <Text style={styles.itemText}>
-                  16CORES 5.2GHZ 125W GRAFICOS UHD770
-                </Text>
-              </View>
+        {/* ── ROWS ───────────────────────────────────────────────────── */}
+        {productsArr.map(renderRow)}
 
-              <View style={styles.item}>
-                <Text style={styles.itemText}>DISIPADOR DUAL FAN 120 MM</Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  Placa Madre B760 Wifi/Bluetooth
-                </Text>
-                <Text style={styles.itemText}>
-                  SOCKET 1700 13A,4*DDR4,2*HDMI,DP,PCIE-4.0,MATX
-                </Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  ALMACENAMIENTO SSD M.2 1 TB ULTRA RAPIDO
-                </Text>
-                <Text style={styles.itemText}>
-                  Lectura 5000 mbxs x 4500 mbxs Escritura
-                </Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  32 gb ram ddr4 a 3200 MT/S (2pzas x 16 gb)
-                </Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  GABINETE TIPO SERVIDOR WORKSTATION
-                </Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>
-                  FUENTE DE PODER DE 850w 80 PLUS GOLD
-                </Text>
-              </View>
-
-              <View style={styles.item}>
-                <Text style={styles.itemText}>Windows 11 pro</Text>
-              </View>
-            </View>
-
+        {/* ── FOOTER ─────────────────────────────────────────────────── */}
+        {/* ── FOOTER FIJO ABAJO ───────────────────────────── */}
+        <View style={styles.bottomFooter} fixed>
+          {/* TOTALS */}
+          <View style={styles.totalsSection}>
             <View style={styles.totalRow}>
-              <Text>TOTAL</Text>
-              <View style={styles.totalSpacer} />
-              <Text style={styles.totalValue}>$30,403.34</Text>
+              <Text style={styles.totalLabel}>TOTAL</Text>
+
+              <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
             </View>
 
-            <View style={styles.recommendation}>
-              <Text style={styles.recommendationText}>
-                Para el uso correcto y garantía de su equipo se recomienda
-                ampliamente contar con regulador y supresor de picos integrado.
-              </Text>
-            </View>
+            <Text style={styles.ivaNote}>Precios incluyen I.V.A.</Text>
           </View>
 
-          {/* Línea divisora absoluta */}
-          <View style={styles.divider} />
-        </View>
-
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Se requiere el pago anticipado para surtir pedido autorizado.
-          </Text>
-          <Text style={[styles.footerText, styles.red]}>
-            Cotización Vigente hasta el 29 de Abril del 2026 o hasta agotar
-            existencias.
-          </Text>
-          <Text style={styles.footerText}>
-            Todos nuestros equipos cuentan con garantía por defecto de fábrica.
-          </Text>
-          <Text style={[styles.footerText, styles.bold]}>
-            PRECIOS INCLUYEN I.V.A.
-          </Text>
-
-          <View style={styles.company}>
-            <Text style={styles.companyName}>pcinbox</Text>
-            <Text style={styles.footerText}>
-              Blvd. Juan Alonso de Torres Pte. 1917-Local 01, Unión Comunitaria
-              de León, 37239 León, Gto.
+          {/* NOTAS */}
+          <View style={styles.noteBox}>
+            <Text style={styles.noteText}>
+              <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                Recomendación:{" "}
+              </Text>
+              Para el uso correcto y garantía de su equipo se recomienda
+              ampliamente contar con regulador y supresor de picos integrado.
             </Text>
-            <Text style={styles.footerText}>
-              Contacto email:{" "}
-              <Text style={styles.email}>admon@pcinbox.com.mx</Text>, Tel.
-              Oficina 477 330 04 37 - móvil 477 533 41 27
+          </View>
+
+          <View style={styles.validityBox}>
+            <Text style={styles.validityText}>
+              ⚠ Cotización vigente hasta el {formatDate(expiry)} o hasta agotar
+              existencias.
             </Text>
+          </View>
+
+          {/* FOOTER */}
+          <View style={styles.footer}>
+            <View style={styles.footerRow}>
+              {/* Empresa */}
+              <View style={styles.footerCol}>
+                <Text style={styles.companyName}>pcinbox</Text>
+
+                <Text style={styles.footerValue}>
+                  Blvd. Juan Alonso de Torres Pte. 1917-Local 01{"\n"}
+                  Unión Comunitaria de León, 37239 León, Gto.
+                </Text>
+              </View>
+
+              {/* Contacto */}
+              <View style={styles.footerCol}>
+                <Text style={styles.footerLabel}>CONTACTO</Text>
+
+                <Text style={styles.footerEmail}>admon@pcinbox.com.mx</Text>
+
+                <Text style={styles.footerValue}>
+                  Tel. Oficina: 477 330 04 37{"\n"}
+                  Móvil: 477 533 41 27
+                </Text>
+              </View>
+
+              {/* Condiciones */}
+              <View style={styles.footerColLast}>
+                <Text style={styles.footerLabel}>CONDICIONES DE PAGO</Text>
+
+                <Text style={styles.footerValue}>
+                  Pago anticipado requerido
+                </Text>
+
+                <Text style={[styles.footerValue, { marginTop: 4 }]}>
+                  Garantía por defecto de fábrica
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </Page>

@@ -9,6 +9,7 @@ import axios from "axios";
 import useStorage from "../services/useStorage";
 import { pdf } from "@react-pdf/renderer";
 import CotizacionPDF from "../components/UI/Cotizacion/Cotizacion";
+import ProductI from "../interfaces/products/product.interface";
 
 const useConfirmaProductos = () => {
   const {
@@ -147,11 +148,22 @@ const useConfirmaProductos = () => {
   };
 
   // ---------- Generar cotización ----------
-  const handleGenerateCotizacion = async () => {
+  const handleGenerateCotizacion = async (
+    products: ProductI[] | ProductI | null,
+  ) => {
+    if (products === null) {
+      return;
+    }
+
     try {
       setLoadingCotizacion(true);
 
-      const blob = await pdf(<CotizacionPDF />).toBlob();
+      const blob = await pdf(
+        <CotizacionPDF
+          noCotizacion={`#${new Date().getTime()}`}
+          products={products}
+        />,
+      ).toBlob();
 
       // crear url temporal
       const url = URL.createObjectURL(blob);
@@ -159,34 +171,11 @@ const useConfirmaProductos = () => {
       // descargar automáticamente
       const link = document.createElement("a");
       link.href = url;
-      link.download = `orden-pago-${new Date().getTime().toString()}.pdf`;
+      link.download = `cotiación-${new Date().getTime().toString()}.pdf`;
       link.click();
 
       // liberar memoria
       URL.revokeObjectURL(url);
-      // const resp = await axios.post(
-      //   `${process.env.NEXT_PUBLIC_API_URL}/cart/generateCotizacion`,
-      //   {
-      //     dataCart,
-      //     name: localStorage.getItem("name"),
-      //     lastname: localStorage.getItem("lastname"),
-      //     email: localStorage.getItem("email"),
-      //   },
-      //   {
-      //     responseType: "blob",
-      //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      //   },
-      // );
-
-      // if (resp.status === 200) {
-      //   const blob = new Blob([resp.data], { type: "application/pdf" });
-      //   const url = window.URL.createObjectURL(blob);
-      //   const link = document.createElement("a");
-      //   link.href = url;
-      //   link.download = "cotizacion.pdf";
-      //   document.body.appendChild(link);
-      //   link.click();
-      //   link.remove();
 
       setDataModal({
         isOpen: true,
