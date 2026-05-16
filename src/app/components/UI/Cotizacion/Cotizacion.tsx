@@ -1,14 +1,7 @@
 "use client";
 
 import ProductI from "@/app/interfaces/products/product.interface";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 import { styles } from "./styles";
 
