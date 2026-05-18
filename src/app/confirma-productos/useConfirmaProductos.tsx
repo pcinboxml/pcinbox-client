@@ -171,7 +171,7 @@ const useConfirmaProductos = () => {
       // descargar automáticamente
       const link = document.createElement("a");
       link.href = url;
-      link.download = `cotiación-${new Date().getTime().toString()}.pdf`;
+      link.download = `cotización-${new Date().getTime().toString()}.pdf`;
       link.click();
 
       // liberar memoria
