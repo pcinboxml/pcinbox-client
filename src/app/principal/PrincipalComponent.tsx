@@ -3,15 +3,14 @@ import "./principal.css";
 import Carousel from "../components/carousel/Carousel";
 import Card from "../components/card/Card";
 import PaginationComponent from "../components/pagination/PaginationComponent";
-import { Alert } from "@mui/material";
 import { useTheContext } from "../services/globalContext";
-import usePcGamers from "./usePcGamers";
 import useProducts from "../hooks/products";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoogleReviewsCarousel from "../components/GoogleReviewsCarousel/GoogleReviewsCarousel";
 
 const PrincipalComponent = () => {
-  const { dataProducts } = useTheContext();
+  const { socketServer } = useTheContext();
+  const [banners, setBanners] = useState<string[]>([]);
   const [pages, setPages] = useState<Record<string, number>>({});
   const itemsPerPage = 8;
 
@@ -66,6 +65,43 @@ const PrincipalComponent = () => {
       totalPages,
     };
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setBanners([
+        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_01.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_02.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_03.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_04.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_05.png?v=${Date.now()}`,
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!socketServer.current) {
+      return;
+    }
+
+    socketServer.current.on(
+      "updateBanners",
+      (data: { id: string; slot: any; url: string }[]) => {
+        console.log("Data del socket updateBanners");
+        setBanners((prev) => {
+          const updated = [...prev];
+
+          data.forEach(({ slot, url }) => {
+            const index = slot - 1;
+            if (updated[index] !== undefined) {
+              updated[index] = url;
+            }
+          });
+
+          return updated;
+        });
+      },
+    );
+  }, [socketServer.current]);
   return (
     <section className="mb-4">
       <div className="content-main">
@@ -89,7 +125,7 @@ const PrincipalComponent = () => {
           ) : null} */}
           <div className="container-carousel">
             {/* {dataProducts && dataProducts.length > 0 ? ( */}
-            <Carousel />
+            <Carousel banners={banners} />
             {/* ) : (
               <div className="w-full flex justify-end p-2">
                 <Alert severity="info">Sin contenido disponible</Alert>
