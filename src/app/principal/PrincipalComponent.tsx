@@ -69,11 +69,11 @@ const PrincipalComponent = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       setBanners([
-        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_01.png?v=${Date.now()}`,
-        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_02.png?v=${Date.now()}`,
-        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_03.png?v=${Date.now()}`,
-        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_04.png?v=${Date.now()}`,
-        `https://ik.imagekit.io/pcinboxkit/local/carrusel-principal/banner_prin_05.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_01.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_02.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_03.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_04.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_05.png?v=${Date.now()}`,
       ]);
     }
   }, []);
