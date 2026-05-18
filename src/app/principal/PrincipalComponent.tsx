@@ -86,7 +86,6 @@ const PrincipalComponent = () => {
     socketServer.current.on(
       "updateBanners",
       (data: { id: string; slot: any; url: string }[]) => {
-        console.log("Data del socket updateBanners");
         setBanners((prev) => {
           const updated = [...prev];
 
