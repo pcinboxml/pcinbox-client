@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import GridConfirmaProductos from "./gridConfirmaProductos";
 import axios from "axios";
 import useStorage from "../services/useStorage";
+import { pdf } from "@react-pdf/renderer";
+import CotizacionPDF from "../components/UI/Cotizacion/Cotizacion";
+import ProductI from "../interfaces/products/product.interface";
 
 const useConfirmaProductos = () => {
   const {
@@ -145,43 +148,46 @@ const useConfirmaProductos = () => {
   };
 
   // ---------- Generar cotización ----------
-  const handleGenerateCotizacion = async () => {
+  const handleGenerateCotizacion = async (
+    products: ProductI[] | ProductI | null,
+  ) => {
+    if (products === null) {
+      return;
+    }
+
     try {
       setLoadingCotizacion(true);
-      const resp = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/cart/generateCotizacion`,
-        {
-          dataCart,
-          name: localStorage.getItem("name"),
-          lastname: localStorage.getItem("lastname"),
-          email: localStorage.getItem("email"),
-        },
-        {
-          responseType: "blob",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
 
-      if (resp.status === 200) {
-        const blob = new Blob([resp.data], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "cotizacion.pdf";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+      const blob = await pdf(
+        <CotizacionPDF
+          noCotizacion={`#${new Date().getTime()}`}
+          products={products}
+        />,
+      ).toBlob();
 
-        setDataModal({
-          isOpen: true,
-          type: "success",
-          message: "Descarga completada",
-          title: "Cotización",
-          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-        });
-      }
+      // crear url temporal
+      const url = URL.createObjectURL(blob);
+
+      // descargar automáticamente
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `cotización-${new Date().getTime().toString()}.pdf`;
+      link.click();
+
+      // liberar memoria
+      URL.revokeObjectURL(url);
+
+      setDataModal({
+        isOpen: true,
+        type: "success",
+        message: "Descarga completada",
+        title: "Cotización",
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      // }
     } catch (error) {
+      console.log(error);
       setDataModal({
         isOpen: true,
         type: "error",
