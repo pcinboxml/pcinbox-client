@@ -4,6 +4,7 @@ import "./carousel.css";
 import { useEffect, useRef, useState } from "react";
 import useCarousel from "./useCarousel";
 import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
+import Image from "next/image";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
