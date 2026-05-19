@@ -57,7 +57,7 @@ const Carousel = ({ banners }: { banners: string[] }) => {
           key={currentIndex + 1}
           src={
             banners[currentIndex] ||
-            "https://commons.wikimedia.org/wiki/File:Image-not-found.png"
+            "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
           }
           alt={`Banner ${currentIndex + 1}`}
           fill
