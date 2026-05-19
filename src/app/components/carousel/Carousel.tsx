@@ -3,42 +3,40 @@
 import "./carousel.css";
 import { useEffect, useRef, useState } from "react";
 import useCarousel from "./useCarousel";
+import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
 import Image from "next/image";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 🔴 Ir a índice específico
   const goToIndex = (index: number) => {
     setCurrentIndex(index);
     resetAutoplay();
   };
 
-  // 🔴 Siguiente imagen (protegido contra empty array)
   const nextImage = () => {
     if (!banners || banners.length === 0) return;
-
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % banners.length);
+    setCurrentIndex((prev) => (prev + 1) % banners.length);
   };
 
-  // 🔴 Iniciar autoplay
+  const prevImage = () => {
+    if (!banners || banners.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
+  };
+
   const startAutoplay = () => {
     if (!banners || banners.length === 0) return;
-
     intervalRef.current = setInterval(nextImage, AUTO_PLAY_INTERVAL);
   };
 
-  // 🔴 Reset autoplay
   const resetAutoplay = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     startAutoplay();
   };
 
-  // 🔴 Inicialización + cleanup
   useEffect(() => {
     if (!banners || banners.length === 0) return;
 
@@ -51,37 +49,75 @@ const Carousel = ({ banners }: { banners: string[] }) => {
   }, [banners]);
 
   return (
-    <div className="carousel">
-      <div className="imageContainer">
-        <Image
-          key={currentIndex + 1}
-          src={
-            banners[currentIndex] ||
-            "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
-          }
-          alt={`Banner ${currentIndex + 1}`}
-          fill
-          priority
-          className="object-cover image"
-        />
-        {/* <img
-          src={banners[currentIndex]}
-          alt={`Imagen ${currentIndex + 1}`}
-          className="image"
-          loading="lazy"
-        /> */}
-
-        <div className="dotsOverlay">
-          {banners.map((_, index) => (
+    <>
+      <div className="carousel">
+        <div className="imageContainer">
+          {/* Slider track */}
+          <div
+            className="sliderTrack"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {banners.map((src, index) => (
+              <div className="slide" key={index}>
+                <img
+                  src={src}
+                  alt={`Imagen ${index + 1}`}
+                  className="image"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+          {/* Dots + Flechas */}
+          <div className="dotsOverlay">
             <button
-              key={index}
-              onClick={() => goToIndex(index)}
-              className={`dot ${index === currentIndex ? "active" : ""}`}
-            />
-          ))}
+              className="arrowBtn"
+              onClick={() => {
+                prevImage();
+                resetAutoplay();
+              }}
+              aria-label="Imagen anterior"
+            >
+              &#8249;
+            </button>
+
+            <div className="dotsGroup">
+              {banners.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToIndex(index)}
+                  className={`dot ${index === currentIndex ? "active" : ""}`}
+                />
+              ))}
+            </div>
+
+            <button
+              className="arrowBtn"
+              onClick={() => {
+                nextImage();
+                resetAutoplay();
+              }}
+              aria-label="Siguiente imagen"
+            >
+              &#8250;
+            </button>
+          </div>
         </div>
+
+        {/* <div
+          style={{
+            width: "100%",
+            maxWidth: "100%",
+            overflow: "hidden",
+            minWidth: 0,
+            marginTop: "10px",
+            border: "1px solid blue",
+          }}
+        > */}
+        {/* <CarouselMarcas /> */}
+        {/* </div> */}
       </div>
-    </div>
+    </>
   );
 };
 

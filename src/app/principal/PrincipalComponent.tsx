@@ -7,6 +7,7 @@ import { useTheContext } from "../services/globalContext";
 import useProducts from "../hooks/products";
 import { useEffect, useState } from "react";
 import GoogleReviewsCarousel from "../components/GoogleReviewsCarousel/GoogleReviewsCarousel";
+import CarouselMarcas from "../components/carouselMarcas/CarouselMarcas";
 
 const PrincipalComponent = () => {
   const { socketServer } = useTheContext();
@@ -125,6 +126,8 @@ const PrincipalComponent = () => {
           <div className="container-carousel">
             {/* {dataProducts && dataProducts.length > 0 ? ( */}
             <Carousel banners={banners} />
+            <br />
+
             {/* ) : (
               <div className="w-full flex justify-end p-2">
                 <Alert severity="info">Sin contenido disponible</Alert>
