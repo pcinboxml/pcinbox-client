@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       "ik.imagekit.io",
       "lh3.googleusercontent.com",
       "commons.wikimedia.org",
+      "upload.wikimedia.org",
     ],
   },
 
