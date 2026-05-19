@@ -1,7 +1,7 @@
 "use client";
 
 const useCarousel = () => {
-  const AUTO_PLAY_INTERVAL = 3000;
+  const AUTO_PLAY_INTERVAL = 5000;
 
   // Imágenes de ejemplo
   const images = [
