@@ -3,6 +3,7 @@
 import "./carousel.css";
 import { useEffect, useRef, useState } from "react";
 import useCarousel from "./useCarousel";
+import Image from "next/image";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
@@ -52,12 +53,23 @@ const Carousel = ({ banners }: { banners: string[] }) => {
   return (
     <div className="carousel">
       <div className="imageContainer">
-        <img
+        <Image
+          key={currentIndex + 1}
+          src={
+            banners[currentIndex] ||
+            "https://commons.wikimedia.org/wiki/File:Image-not-found.png"
+          }
+          alt={`Banner ${currentIndex + 1}`}
+          fill
+          priority
+          className="object-cover image"
+        />
+        {/* <img
           src={banners[currentIndex]}
           alt={`Imagen ${currentIndex + 1}`}
           className="image"
           loading="lazy"
-        />
+        /> */}
 
         <div className="dotsOverlay">
           {banners.map((_, index) => (

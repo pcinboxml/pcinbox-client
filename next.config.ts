@@ -14,7 +14,12 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    domains: ["authjs.dev", "ik.imagekit.io", "lh3.googleusercontent.com"],
+    domains: [
+      "authjs.dev",
+      "ik.imagekit.io",
+      "lh3.googleusercontent.com",
+      "commons.wikimedia.org",
+    ],
   },
 
   env: {
