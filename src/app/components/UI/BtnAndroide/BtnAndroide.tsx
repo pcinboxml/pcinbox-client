@@ -10,7 +10,7 @@ const BtnAndroide = () => {
     <button
       onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
       className={`
-        fixed bottom-6 left-10
+        fixed bottom-6 left-8
         cursor-pointer
         rounded-full
         p-0 
@@ -29,10 +29,14 @@ const BtnAndroide = () => {
     whitespace-nowrap
     shadow-lg
     pointer-events-none
+    text-center
     z-50
   "
+        style={{
+          padding: "5px",
+        }}
       >
-        ¿Tienes alguna duda?
+        ¿Tienes <br /> alguna duda?
         {/* Flecha apuntando hacia abajo */}
         <span
           className="
