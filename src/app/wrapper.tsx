@@ -17,6 +17,7 @@ import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
 import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
 import useService from "./services/useService";
+import BtnAndroide from "./components/UI/BtnAndroide/BtnAndroide";
 
 export default function AppWrapper({
   children,
@@ -415,6 +416,7 @@ export default function AppWrapper({
             )}
         </main>
 
+        <BtnAndroide />
         <BtnFloat />
         {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
