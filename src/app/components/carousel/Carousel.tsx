@@ -118,7 +118,7 @@ const Carousel = ({ banners }: { banners: string[] }) => {
           }}
         >
           contenido
-          {/* <CarouselMarcas /> */}
+          <CarouselMarcas />
         </div>
       </div>
     </>
