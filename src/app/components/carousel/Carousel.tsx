@@ -4,6 +4,7 @@ import "./carousel.css";
 import { useEffect, useRef, useState } from "react";
 import useCarousel from "./useCarousel";
 import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
+import Image from "next/image";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
@@ -58,11 +59,14 @@ const Carousel = ({ banners }: { banners: string[] }) => {
           >
             {banners.map((src, index) => (
               <div className="slide" key={index}>
-                <img
+                <Image
                   src={src}
+                  width={800}
+                  height={400}
                   alt={`Imagen ${index + 1}`}
                   className="image"
-                  loading="lazy"
+                  style={{ objectFit: "contain" }}
+                  priority={index === 0}
                 />
               </div>
             ))}
