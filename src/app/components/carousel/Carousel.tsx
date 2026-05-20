@@ -59,11 +59,14 @@ const Carousel = ({ banners }: { banners: string[] }) => {
           >
             {banners.map((src, index) => (
               <div className="slide" key={index}>
-                <img
+                <Image
                   src={src}
+                  width={800}
+                  height={400}
                   alt={`Imagen ${index + 1}`}
                   className="image"
-                  loading="lazy"
+                  style={{ objectFit: "contain" }}
+                  priority={index === 0}
                 />
               </div>
             ))}
