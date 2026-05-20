@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "./brnAndroide.module.css";
 import Image from "next/image";
 
 const BtnAndroide = () => {
@@ -8,16 +9,16 @@ const BtnAndroide = () => {
   return (
     <button
       onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
-      className="
+      className={`
         fixed bottom-6 left-10
         cursor-pointer
         rounded-full
-        w-[80px] h-[90px]
         p-0 
         border-0 outline-none
         bg-transparent
         group
-      "
+        ${styles.btnAndroide}
+      `}
     >
       {/* Tooltip - siempre visible, arriba del botón */}
       <span
@@ -67,8 +68,8 @@ const BtnAndroide = () => {
 
       <Image
         src="/androide.gif"
-        width={80}
-        height={90}
+        width={100}
+        height={100}
         alt="Androide"
         className="
           object-fill rounded-full
