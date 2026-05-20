@@ -10,7 +10,7 @@ const BtnAndroide = () => {
     <button
       onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
       className={`
-        fixed bottom-6 left-8
+        fixed bottom-6 left-3
         cursor-pointer
         rounded-full
         p-0 
