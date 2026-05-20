@@ -107,7 +107,7 @@ const Carousel = ({ banners }: { banners: string[] }) => {
           </div>
         </div>
 
-        {/* <div
+        <div
           style={{
             width: "100%",
             maxWidth: "100%",
@@ -116,9 +116,10 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             marginTop: "10px",
             border: "1px solid blue",
           }}
-        > */}
-        {/* <CarouselMarcas /> */}
-        {/* </div> */}
+        >
+          contenido
+          {/* <CarouselMarcas /> */}
+        </div>
       </div>
     </>
   );
