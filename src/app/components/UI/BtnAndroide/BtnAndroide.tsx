@@ -10,7 +10,7 @@ const BtnAndroide = () => {
     <button
       onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
       className={`
-        fixed bottom-6 left-3
+        fixed bottom-6
         cursor-pointer
         rounded-full
         p-0 
@@ -19,6 +19,9 @@ const BtnAndroide = () => {
         group
         ${styles.btnAndroide}
       `}
+      style={{
+        left: "4px",
+      }}
     >
       {/* Tooltip - siempre visible, arriba del botón */}
       <span
