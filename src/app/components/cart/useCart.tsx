@@ -85,7 +85,7 @@ const useCart = () => {
           "/cart/addProductFromStorage",
         );
 
-        if (getStatus.status == 200) {
+        if (getStatus!.status == 200) {
           localStorage.removeItem("dataCart");
         }
       } catch (error: any) {}
@@ -108,7 +108,7 @@ const useCart = () => {
 
         setLoadingRmAllCart(false);
 
-        const status = await resp.status;
+        const status = await resp!.status;
         if (status == 200) {
           // setDataCart([]);
           onMouseLeaveCartProp();

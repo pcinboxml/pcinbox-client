@@ -14,22 +14,6 @@ const useProveedores = () => {
       baseURL: process.env.NEXT_PUBLIC_API_URL_PROVEEDOR,
     });
 
-    // // ✅ AGREGA TOKEN AUTOMATICAMENTE
-    // instance.interceptors.request.use(
-    //   (config) => {
-    //     if (typeof window !== "undefined") {
-    //       const token = localStorage.getItem("token");
-
-    //       if (token) {
-    //         config.headers.Authorization = `Bearer ${token}`;
-    //       }
-    //     }
-
-    //     return config;
-    //   },
-    //   (error) => Promise.reject(error),
-    // );
-
     // ✅ MANEJO DE ERRORES
     instance.interceptors.response.use(
       (response) => response,
@@ -108,7 +92,7 @@ const useProveedores = () => {
 
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -154,7 +138,7 @@ const useProveedores = () => {
         });
       }
 
-      //throw error;
+      throw error;
     }
   };
 
@@ -168,7 +152,7 @@ const useProveedores = () => {
 
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -214,7 +198,7 @@ const useProveedores = () => {
         });
       }
 
-      //throw error;
+      throw error;
     }
   };
 
@@ -227,7 +211,7 @@ const useProveedores = () => {
       });
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -274,7 +258,7 @@ const useProveedores = () => {
       }
 
       //console.log(error);
-      //  throw error;
+      throw error;
     }
   };
 

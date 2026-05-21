@@ -91,8 +91,7 @@ const usePasarelaDePagos = () => {
       });
       return resp;
     } catch (error: any) {
-      //throw error;
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -137,6 +136,7 @@ const usePasarelaDePagos = () => {
           type: "info",
         });
       }
+      throw error;
     }
   };
 
@@ -149,9 +149,7 @@ const usePasarelaDePagos = () => {
       });
       return resp;
     } catch (error: any) {
-      // throw error;
-
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -196,6 +194,7 @@ const usePasarelaDePagos = () => {
           type: "info",
         });
       }
+      throw error;
     }
   };
 

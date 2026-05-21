@@ -122,7 +122,7 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -168,7 +168,7 @@ const useService = () => {
         });
       }
 
-      //throw error;
+      throw error;
     }
   };
 
@@ -185,7 +185,7 @@ const useService = () => {
 
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -230,6 +230,7 @@ const useService = () => {
           type: "info",
         });
       }
+      throw error;
     }
   };
 
@@ -242,7 +243,7 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         setDataModal({
           isOpen: true,
           message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
@@ -287,6 +288,7 @@ const useService = () => {
           type: "info",
         });
       }
+      throw error;
     }
   };
 
