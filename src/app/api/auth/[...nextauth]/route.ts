@@ -47,9 +47,6 @@ const handler = NextAuth({
         const status = await resp.status;
         const data = await resp.json();
 
-        console.log("status", status);
-        console.log("data", data);
-
         if (status == 200) {
           const isValidToken = verify(
             data.data.token,
