@@ -1029,35 +1029,49 @@ const OpcionesEntrega = () => {
                       message:
                         "Tu sesión expiró, debes iniciar sesión nuevamente.",
                       title: "Sesión expirada",
-
                       onClose: () => {
                         setDataModal((prev) => ({
                           ...prev,
                           isOpen: false,
                         }));
                       },
-
                       onConfirm: async () => {
                         setDataModal((prev) => ({
                           ...prev,
                           isOpen: false,
                         }));
                       },
-
                       type: "info",
                     });
                     return;
                   }
 
-                  if (
-                    groupedProducts.length !==
-                    Object.entries(optionEnvio).length
-                  ) {
+                  // ✅ SOLUCIÓN: Verificar que CADA grupo ACTUAL tenga opción seleccionada
+                  // No importa si hay opciones "sobrantes" de grupos eliminados
+                  const missingOptionsGroups: string[] = [];
+
+                  const allOptionsSelected = groupedProducts.every(
+                    (group: any) => {
+                      const groupKey = `${group.storeId || "null"}-${group.providerId}`;
+                      const selectedOption = optionEnvio[groupKey];
+
+                      if (!selectedOption || selectedOption === "") {
+                        // Obtener nombre del primer producto del grupo para el mensaje
+                        const productName =
+                          group.products[0]?.name || "Producto";
+                        missingOptionsGroups.push(productName);
+                        return false;
+                      }
+                      return true;
+                    },
+                  );
+
+                  if (!allOptionsSelected) {
                     setDataModal({
                       isOpen: true,
                       type: "error",
-                      message: "Seleccione los metodos de entrega faltantes",
-                      title: "Error",
+                      message: `Falta seleccionar método de entrega para: ${missingOptionsGroups.join(", ")}`,
+                      title: "Métodos de entrega faltantes",
                       onClose: () => {
                         setDataModal((prev) => ({ ...prev, isOpen: false }));
                       },
@@ -1067,81 +1081,65 @@ const OpcionesEntrega = () => {
                     });
                     return;
                   }
-                  for (const [key, shippingMethod] of Object.entries(
-                    optionEnvio,
-                  )) {
-                    if (shippingMethod === "") {
-                      setDataModal({
-                        isOpen: true,
-                        type: "error",
-                        message: "Seleccione los metodos de entrega faltantes",
-                        title: "Error",
-                        onClose: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
-                        },
-                        onConfirm: () => {
-                          setDataModal((prev) => ({ ...prev, isOpen: false }));
-                        },
-                      });
-                      return;
-                    } else {
-                      if (
-                        shippingMethod === "paqueteexpress" ||
-                        shippingMethod === "estafeta"
-                      ) {
-                        const seguro = seguroEnvio[key];
 
-                        if (!seguro) {
-                          setDataModal({
-                            isOpen: true,
-                            type: "error",
-                            message:
-                              "Seleccione si desea agregar seguro o no a su envío de " +
-                              shippingMethod,
-                            title: "Error",
-                            onClose: () => {
-                              setDataModal((prev) => ({
-                                ...prev,
-                                isOpen: false,
-                              }));
-                            },
-                            onConfirm: () => {
-                              setDataModal((prev) => ({
-                                ...prev,
-                                isOpen: false,
-                              }));
-                            },
-                          });
+                  // ✅ Verificar seguros para paqueteexpress y estafeta
+                  for (const group of groupedProducts) {
+                    const groupKey = `${group.storeId || "null"}-${group.providerId}`;
+                    const shippingMethod = optionEnvio[groupKey];
 
-                          return; // Esto ahora sí detiene la ejecución de la función externa
-                        }
+                    if (
+                      shippingMethod === "paqueteexpress" ||
+                      shippingMethod === "estafeta"
+                    ) {
+                      const seguro = seguroEnvio[groupKey];
+
+                      if (!seguro || !seguro.required) {
+                        const productName =
+                          group.products[0]?.name || "Producto";
+                        setDataModal({
+                          isOpen: true,
+                          type: "error",
+                          message: `Seleccione si desea agregar seguro o no al envío por ${shippingMethod} de: ${productName}`,
+                          title: "Seguro de envío faltante",
+                          onClose: () => {
+                            setDataModal((prev) => ({
+                              ...prev,
+                              isOpen: false,
+                            }));
+                          },
+                          onConfirm: () => {
+                            setDataModal((prev) => ({
+                              ...prev,
+                              isOpen: false,
+                            }));
+                          },
+                        });
+                        return;
                       }
                     }
                   }
 
-                  // Aquí puedes poner código que solo se ejecute si todos los seguros están correctos
-
+                  // ✅ Construir dataPurchase SOLO con los grupos actuales
                   let dataPurchase: any = {};
 
-                  Object.entries(optionEnvio).forEach(
-                    ([key, shippingMethod]) => {
-                      const seguro = seguroEnvio[key];
+                  groupedProducts.forEach((group: any) => {
+                    const groupKey = `${group.storeId || "null"}-${group.providerId}`;
+                    const shippingMethod = optionEnvio[groupKey];
+                    const seguro = seguroEnvio[groupKey];
+                    const theAddressByStore = addressByStore[groupKey];
+                    const theCostoEnvioProductByZone =
+                      costoEnvioProductByZone[groupKey];
 
-                      const theAddressByStore = addressByStore[key];
-                      const theCostoEnvioProductByZone =
-                        costoEnvioProductByZone[key];
-
-                      dataPurchase[key] = {
-                        shipping_method: shippingMethod,
-                        costoSeguroEnvio: seguro ? seguro.costo : null,
-                        idAddress: theAddressByStore || null,
-                        costoEnvioProductByZone:
-                          shippingMethod == "estafeta"
-                            ? 178.0
-                            : theCostoEnvioProductByZone || null,
-                      };
-                    },
-                  );
+                    dataPurchase[groupKey] = {
+                      shipping_method: shippingMethod,
+                      costoSeguroEnvio: seguro ? seguro.costo : null,
+                      idAddress: theAddressByStore || null,
+                      costoEnvioProductByZone:
+                        shippingMethod === "estafeta"
+                          ? 178.0
+                          : theCostoEnvioProductByZone || null,
+                    };
+                  });
 
                   handleWriteStorageProgressPay2({
                     dataPurchase,
@@ -1154,6 +1152,140 @@ const OpcionesEntrega = () => {
 
                   onRouterLink("/forma-de-pago");
                 }}
+                // onClick={() => {
+                //   if (!hasToken) {
+                //     setDataModal({
+                //       isOpen: true,
+                //       message:
+                //         "Tu sesión expiró, debes iniciar sesión nuevamente.",
+                //       title: "Sesión expirada",
+
+                //       onClose: () => {
+                //         setDataModal((prev) => ({
+                //           ...prev,
+                //           isOpen: false,
+                //         }));
+                //       },
+
+                //       onConfirm: async () => {
+                //         setDataModal((prev) => ({
+                //           ...prev,
+                //           isOpen: false,
+                //         }));
+                //       },
+
+                //       type: "info",
+                //     });
+                //     return;
+                //   }
+                //   console.log(groupedProducts);
+                //   console.log(Object.entries(optionEnvio));
+                //   console.log(productsToShow);
+                //   if (
+                //     groupedProducts.length !==
+                //     Object.entries(optionEnvio).length
+                //   ) {
+                //     setDataModal({
+                //       isOpen: true,
+                //       type: "error",
+                //       message: "Seleccione los metodos de entrega faltantes",
+                //       title: "Error",
+                //       onClose: () => {
+                //         setDataModal((prev) => ({ ...prev, isOpen: false }));
+                //       },
+                //       onConfirm: () => {
+                //         setDataModal((prev) => ({ ...prev, isOpen: false }));
+                //       },
+                //     });
+                //     return;
+                //   }
+                //   for (const [key, shippingMethod] of Object.entries(
+                //     optionEnvio,
+                //   )) {
+                //     if (shippingMethod === "") {
+                //       setDataModal({
+                //         isOpen: true,
+                //         type: "error",
+                //         message: "Seleccione los metodos de entrega faltantes",
+                //         title: "Error",
+                //         onClose: () => {
+                //           setDataModal((prev) => ({ ...prev, isOpen: false }));
+                //         },
+                //         onConfirm: () => {
+                //           setDataModal((prev) => ({ ...prev, isOpen: false }));
+                //         },
+                //       });
+                //       return;
+                //     } else {
+                //       if (
+                //         shippingMethod === "paqueteexpress" ||
+                //         shippingMethod === "estafeta"
+                //       ) {
+                //         const seguro = seguroEnvio[key];
+
+                //         if (!seguro) {
+                //           setDataModal({
+                //             isOpen: true,
+                //             type: "error",
+                //             message:
+                //               "Seleccione si desea agregar seguro o no a su envío de " +
+                //               shippingMethod,
+                //             title: "Error",
+                //             onClose: () => {
+                //               setDataModal((prev) => ({
+                //                 ...prev,
+                //                 isOpen: false,
+                //               }));
+                //             },
+                //             onConfirm: () => {
+                //               setDataModal((prev) => ({
+                //                 ...prev,
+                //                 isOpen: false,
+                //               }));
+                //             },
+                //           });
+
+                //           return; // Esto ahora sí detiene la ejecución de la función externa
+                //         }
+                //       }
+                //     }
+                //   }
+
+                //   // Aquí puedes poner código que solo se ejecute si todos los seguros están correctos
+
+                //   let dataPurchase: any = {};
+
+                //   Object.entries(optionEnvio).forEach(
+                //     ([key, shippingMethod]) => {
+                //       const seguro = seguroEnvio[key];
+
+                //       const theAddressByStore = addressByStore[key];
+                //       const theCostoEnvioProductByZone =
+                //         costoEnvioProductByZone[key];
+
+                //       dataPurchase[key] = {
+                //         shipping_method: shippingMethod,
+                //         costoSeguroEnvio: seguro ? seguro.costo : null,
+                //         idAddress: theAddressByStore || null,
+                //         costoEnvioProductByZone:
+                //           shippingMethod == "estafeta"
+                //             ? 178.0
+                //             : theCostoEnvioProductByZone || null,
+                //       };
+                //     },
+                //   );
+
+                //   handleWriteStorageProgressPay2({
+                //     dataPurchase,
+                //   });
+
+                //   localStorage.setItem(
+                //     "checkout_step",
+                //     String(CheckoutStep.FORMA_DE_PAGO),
+                //   );
+
+                //   onRouterLink("/forma-de-pago");
+                // }}
               >
                 Continuar
               </button>
