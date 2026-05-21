@@ -21,71 +21,95 @@ const useService = () => {
   const { dataCartStorege, checkoutMode, setCheckoutMode } = useStorage();
   const [productsToShow, setProductsToShow] = useState<ProductI[] | null>(null);
 
-  const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
+  const api = useMemo(() => {
+    const instance = axios.create({
+      baseURL: process.env.NEXT_PUBLIC_API_URL,
+    });
 
-  api.interceptors.response.use(
-    (response) => response,
-    (er) => {
-      if (
-        pathName != "/" &&
-        pathName != "/principal" &&
-        pathName != "/forgotpassword" &&
-        er.response?.status == 401
-      ) {
-        setDataModal({
-          isOpen: true,
-          message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
-          title: "Sesión expirada",
-          onClose: () => {
-            // location.href = "/principal";
-            localStorage.clear();
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            // location.href = "/principal";
-            localStorage.clear();
+    // // ✅ AGREGA TOKEN AUTOMATICAMENTE
+    // instance.interceptors.request.use(
+    //   (config) => {
+    //     if (typeof window !== "undefined") {
+    //       const token = localStorage.getItem("token");
 
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "info",
-        });
+    //       if (token) {
+    //         config.headers.Authorization = `Bearer ${token}`;
+    //       }
+    //     }
 
-        return;
-      } else if (er.response?.status != 401) {
-        setDataModal({
-          isOpen: true,
-          message: er.response?.data.message || er?.message,
-          title: "Error",
-          onClose: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: async () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          type: "error",
-        });
-      }
+    //     return config;
+    //   },
+    //   (error) => Promise.reject(error),
+    // );
 
-      // else {
+    // ✅ MANEJO DE ERRORES
+    instance.interceptors.response.use(
+      (response) => response,
+      (er) => {
+        // if (
+        //   pathName != "/" &&
+        //   pathName != "/principal" &&
+        //   pathName != "/forgotpassword" &&
+        //   er.response?.status == 401
+        // ) {
+        //   setDataModal({
+        //     isOpen: true,
+        //     message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
+        //     title: "Sesión expirada",
 
-      //   setDataModal({
-      //     isOpen: true,
-      //     message:
-      //       er.response?.data.message || er?.message || "Error interno del servidor",
-      //     title: "Error",
-      //     onClose: () => {
-      //       setDataModal((prev) => ({ ...prev, isOpen: false }));
-      //     },
-      //     onConfirm: async () => {
-      //       setDataModal((prev) => ({ ...prev, isOpen: false }));
-      //     },
-      //     type: "error",
-      //   });
-      // }
-    },
-  );
+        //     onClose: () => {
+        //       setDataModal((prev) => ({
+        //         ...prev,
+        //         isOpen: false,
+        //       }));
+        //     },
+
+        //     onConfirm: async () => {
+        //       setDataModal((prev) => ({
+        //         ...prev,
+        //         isOpen: false,
+        //       }));
+        //     },
+
+        //     type: "info",
+        //   });
+        // } else
+
+        if (er.response?.status != 401) {
+          setDataModal({
+            isOpen: true,
+            message:
+              er.response?.data.message ||
+              er?.message ||
+              "Error interno del servidor",
+
+            title: "Error",
+
+            onClose: () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
+
+            onConfirm: async () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
+
+            type: "error",
+          });
+        }
+
+        // ✅ IMPORTANTE
+        return Promise.reject(er);
+      },
+    );
+
+    return instance;
+  }, [pathName, setDataModal]);
 
   const router = useRouter();
 
@@ -98,7 +122,53 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      throw error;
+      if (error.response.status === 401) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
+          title: "Sesión expirada",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      } else {
+        setDataModal({
+          isOpen: true,
+          message: "Error interno del servidor",
+          title: "Error",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      }
+
+      //throw error;
     }
   };
 
@@ -115,7 +185,51 @@ const useService = () => {
 
       return res;
     } catch (error: any) {
-      throw error;
+      if (error.response.status === 401) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
+          title: "Sesión expirada",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      } else {
+        setDataModal({
+          isOpen: true,
+          message: "Error interno del servidor",
+          title: "Error",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      }
     }
   };
 
@@ -128,7 +242,51 @@ const useService = () => {
       });
       return res;
     } catch (error: any) {
-      throw error;
+      if (error.response.status === 401) {
+        setDataModal({
+          isOpen: true,
+          message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
+          title: "Sesión expirada",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      } else {
+        setDataModal({
+          isOpen: true,
+          message: "Error interno del servidor",
+          title: "Error",
+
+          onClose: () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          onConfirm: async () => {
+            setDataModal((prev) => ({
+              ...prev,
+              isOpen: false,
+            }));
+          },
+
+          type: "info",
+        });
+      }
     }
   };
 
@@ -449,8 +607,8 @@ const useService = () => {
           "/favorites/addFavorites",
         );
 
-        if (resp.status == 200) {
-          const data = await resp.data;
+        if (resp!.status == 200) {
+          const data = await resp!.data;
           setDataFavorites(data.data.data);
           setTotalFavorites((prev) => prev + 1);
 
