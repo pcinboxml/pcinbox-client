@@ -40,7 +40,7 @@ const useCard = () => {
     if (!hasToken) {
       setDataModal({
         isOpen: true,
-        message: "Tu sesión expiro, debes iniciar sesión nuevamente. 1",
+        message: "Tu sesión expiro, debes iniciar sesión nuevamente.",
         title: "Sesión expirada",
         onClose: () => {
           // location.href = "/principal";
