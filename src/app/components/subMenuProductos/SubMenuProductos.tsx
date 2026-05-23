@@ -20,11 +20,12 @@ const SubMenuProductos = ({
 
   return (
     <div
-      className={`container-list-products absolute bg-white shadow ${
+      className={`container-list-products absolute bg-[#808080] shadow ${
         isVisible ? "block" : "hidden"
       }`}
       style={{
-        zIndex: 999, // Asegura visibilidad
+        zIndex: 999,
+        paddingLeft: "0px", // Asegura visibilidad
         ...styles,
       }}
     >
@@ -59,7 +60,10 @@ const SubMenuProductos = ({
                   )
                   .map((categoria) => {
                     return (
-                      <li key={categoria.idCategorie}>
+                      <li
+                        key={categoria.idCategorie}
+                        className="flex justify-items-start"
+                      >
                         <a
                           href={`/result-search-category?categoryId=${categoria.idCategorie}`}
                           style={{
@@ -68,7 +72,9 @@ const SubMenuProductos = ({
                             whiteSpace: "normal", // permite que las frases se rompan en espacios
                             display: "inline-block",
                             maxWidth: "150px",
-                            fontSize: "13px",
+                            textAlign: "start",
+                            color: "white",
+                            fontSize: "12px",
                           }}
                           // onMouseEnter={() => {
                           //   if (categoria) {

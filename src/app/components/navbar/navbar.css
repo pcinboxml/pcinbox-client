@@ -148,10 +148,9 @@
     font-weight 0.3s;
 }
 
-.container-list-products ul li:hover a {
-  color: #bb3d4b;
-  /* font-weight: 600; */
-  border-bottom-color: #a67845;
+.container-list-products ul li:hover {
+  border: 1px solid yellow;
+  background: #00000080;
 }
 
 .container-submenu {
