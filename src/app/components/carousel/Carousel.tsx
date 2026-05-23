@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import useCarousel from "./useCarousel";
 import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
 import Image from "next/image";
+import CarouselPlataforma from "../carouselPlataformas/CarouselPlataformas";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
@@ -51,6 +52,19 @@ const Carousel = ({ banners }: { banners: string[] }) => {
   return (
     <>
       <div className="carousel">
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "100%",
+            overflow: "hidden",
+            minWidth: 0,
+            marginTop: "5px",
+            padding: "10px",
+            // border: "1px solid blue",
+          }}
+        >
+          <CarouselMarcas />
+        </div>
         <div className="imageContainer">
           {/* Slider track */}
           <div
@@ -106,19 +120,18 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             </button>
           </div>
         </div>
-
         <div
           style={{
             width: "100%",
             maxWidth: "100%",
             overflow: "hidden",
             minWidth: 0,
-            marginTop: "10px",
-            border: "1px solid blue",
+            marginTop: "5px",
+            padding: "10px",
+            // border: "1px solid blue",
           }}
         >
-          contenido
-          <CarouselMarcas />
+          <CarouselPlataforma />
         </div>
       </div>
     </>

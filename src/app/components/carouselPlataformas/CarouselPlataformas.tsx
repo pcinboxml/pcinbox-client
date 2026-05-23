@@ -1,31 +1,21 @@
 "use client";
 import Image from "next/image";
-import styles from "./carousel_marca.module.css";
+import styles from "./carousel_plataformas.module.css";
 
 type Props = {
   images: string[];
 };
 
-export default function CarouselMarcas() {
+export default function CarouselPlataforma() {
   const LOOP_IMAGES = [
-    "/marcas/adata.png",
-    "/marcas/amd.png",
-    "/marcas/antec.png",
-    "/marcas/aoc.png",
-    "/marcas/asrock.png",
-    "/marcas/asus.png",
-    "/marcas/biostar.png",
-    "/marcas/cdp.png",
-    "/marcas/coolermaster.png",
-    "/marcas/gigabyte.png",
-    "/marcas/intel.png",
-    "/marcas/kingston.png",
-    "/marcas/msi.png",
-    "/marcas/nvidia.png",
-    "/marcas/radeon.png",
-    "/marcas/seagate.png",
-    "/marcas/seasonic.png",
-    "/marcas/wd.png",
+    "/plataformas/battlenet.png",
+    "/plataformas/epic.png",
+    "/plataformas/gog.png",
+    "/plataformas/origin.png",
+    "/plataformas/riot.png",
+    "/plataformas/rockstar.png",
+    "/plataformas/steam.png",
+    "/plataformas/ubisoft.png",
   ];
 
   const LOOP_IMAGES2 = [...LOOP_IMAGES, ...LOOP_IMAGES];
@@ -38,8 +28,8 @@ export default function CarouselMarcas() {
             <Image
               src={src}
               alt={`img-${i}`}
-              width={100}
-              height={100}
+              width={90}
+              height={90}
               className={styles.image}
               style={{
                 objectFit: "contain",
