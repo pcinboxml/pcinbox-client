@@ -38,7 +38,7 @@ const SubMenuProductos = ({
         }}
       >
         <div
-          className={`${style.menu1} h-[100%] max-h-[550px] ${forceVisible ? "w-full" : "w-[150px]"}  overflow-y-auto overflow-x-hidden`}
+          className={`${style.menu1} h-[100%] max-h-[550px] ${forceVisible ? "w-full" : "w-[180px]"}  overflow-y-auto overflow-x-hidden`}
           style={{
             padding: forceVisible ? "10px" : "2px",
           }}
@@ -75,6 +75,7 @@ const SubMenuProductos = ({
                             textAlign: "start",
                             color: "white",
                             fontSize: "12px",
+                            fontWeight: "500",
                           }}
                           // onMouseEnter={() => {
                           //   if (categoria) {
