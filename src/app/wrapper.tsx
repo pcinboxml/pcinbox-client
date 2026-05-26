@@ -24,6 +24,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [marginTop, setMarginTop] = useState("50px");
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
@@ -354,6 +356,15 @@ export default function AppWrapper({
 
     getTotalFavorites();
   }, [totalFavorites]);
+
+  useEffect(() => {
+    setMarginTop(
+      pathName.startsWith("/result-search-category") ? "10px" : "50px",
+    );
+  }, [pathName]);
+
+  // En el JSX:
+  <main style={{ marginTop }}></main>;
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
@@ -376,6 +387,9 @@ export default function AppWrapper({
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
+          style={{
+            marginTop: marginTop,
+          }}
           className={
             pathName !== "/estatusMP" && pathName !== "/estatusPay"
               ? "container main-content"
@@ -416,19 +430,6 @@ export default function AppWrapper({
         </main>
 
         <BtnFloat />
-        {/* <a
-          href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fab-whatsapp"
-        >
-          <span className="wave"></span>
-          <span className="wave"></span>
-          <span className="wave"></span>
-          <span className="wave"></span>
-
-          <FaWhatsapp className="fab-icon" />
-        </a> */}
       </div>
     </SessionProvider>
   );
