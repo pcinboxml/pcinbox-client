@@ -8,7 +8,7 @@
 .track {
   display: flex;
   width: max-content;
-  gap: 16px; /* Cambiamos margin por gap */
+  gap: 50px; /* Cambiamos margin por gap */
   animation: scroll 18s linear infinite;
 }
 

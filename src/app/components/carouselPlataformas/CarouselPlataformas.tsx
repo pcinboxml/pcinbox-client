@@ -24,13 +24,7 @@ export default function CarouselPlataforma() {
     <div className={styles.wrapper}>
       <div className={styles.track}>
         {LOOP_IMAGES2.map((src, i) => (
-          <div
-            className={styles.slide}
-            key={i}
-            style={{
-              gap: "10px",
-            }}
-          >
+          <div className={styles.slide} key={i}>
             <Image
               src={src}
               alt={`img-${i}`}
