@@ -553,9 +553,9 @@ const SearchCategoryContent = () => {
         );
 
         if (findNameCategory) {
-          let findImg = banners_x_categoria.find(
-            (banner) => banner.category === findNameCategory?.name,
-          );
+          let findImg = banners_x_categoria.find((banner) => {
+            return banner.name === findNameCategory?.name;
+          });
 
           if (findImg) {
             return (
@@ -587,8 +587,8 @@ const SearchCategoryContent = () => {
 
                   <Image
                     src={findImg?.pathImg}
-                    width={800}
-                    height={900}
+                    width={500}
+                    height={500}
                     alt={`Img de categoria ${findNameCategory?.name}`}
                     className="
         rounded-2xl
