@@ -51,6 +51,39 @@
   padding-right: 10px;
 }
 
+.mi-card .feature-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 6px 12px 4px;
+}
+
+.mi-card .feature-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: #f7f7f7;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #666;
+  max-width: 220px;
+  overflow: hidden;
+}
+
+.mi-card .feature-badge i {
+  font-size: 13px;
+  color: #bb3d4b;
+  flex-shrink: 0;
+}
+
+.mi-card .feature-badge span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .container-description .name-product {
   display: block;
   text-align: start;
