@@ -1,50 +1,39 @@
 "use client";
-import Image from "next/image";
+
+import React from "react";
 import styles from "./carousel_marca.module.css";
 
-type Props = {
-  images: string[];
-};
+const brands = [
+  { name: "NVIDIA", letter: "N" },
+  { name: "AMD", letter: "A" },
+  { name: "Intel", letter: "I" },
+  { name: "ASUS ROG", letter: "R" },
+  { name: "MSI", letter: "M" },
+  { name: "Corsair", letter: "C" },
+  { name: "Razer", letter: "Z" },
+  { name: "NZXT", letter: "X" },
+  { name: "Logitech G", letter: "G" },
+  { name: "SteelSeries", letter: "S" },
+  { name: "Cooler Master", letter: "K" },
+  { name: "Gigabyte", letter: "B" },
+  { name: "HyperX", letter: "H" },
+  { name: "Thermaltake", letter: "T" },
+  { name: "Fractal", letter: "F" },
+];
+
+// Duplicate for seamless infinite loop
+const doubled = [...brands, ...brands];
 
 export default function CarouselMarcas() {
-  const LOOP_IMAGES = [
-    "/marcas/adata.png",
-    "/marcas/amd.png",
-    "/marcas/antec.png",
-    "/marcas/aoc.png",
-    "/marcas/asrock.png",
-    "/marcas/asus.png",
-    "/marcas/biostar.png",
-    "/marcas/cdp.png",
-    "/marcas/coolermaster.png",
-    "/marcas/gigabyte.png",
-    "/marcas/intel.png",
-    "/marcas/kingston.png",
-    "/marcas/msi.png",
-    "/marcas/nvidia.png",
-    "/marcas/radeon.png",
-    "/marcas/seagate.png",
-    "/marcas/seasonic.png",
-    "/marcas/wd.png",
-  ];
-
-  const LOOP_IMAGES2 = [...LOOP_IMAGES, ...LOOP_IMAGES];
-
   return (
     <div className={styles.wrapper}>
+      <div className={styles.fade_left} />
+      <div className={styles.fade_right} />
       <div className={styles.track}>
-        {LOOP_IMAGES2.map((src, i) => (
-          <div className={styles.slide} key={i}>
-            <Image
-              src={src}
-              alt={`img-${i}`}
-              width={100}
-              height={100}
-              className={styles.image}
-              style={{
-                objectFit: "contain",
-              }}
-            />
+        {doubled.map((brand, i) => (
+          <div className={styles.item} key={`${brand.name}-${i}`}>
+            <span className={styles.logo}>{brand.letter}</span>
+            <span className={styles.name}>{brand.name}</span>
           </div>
         ))}
       </div>

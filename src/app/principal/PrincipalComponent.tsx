@@ -105,11 +105,11 @@ const PrincipalComponent = () => {
   return (
     <section className="mb-4">
       <div className="content-main">
-        {/* <div className="list-products">
+        <div className="list-products">
           <img src="/banner0.png" className="banner0" />
           <img src="/banner1.png" className="banner1" />
           <img src="/banner2.png" className="banner2" />
-        </div> */}
+        </div>
 
         <div className="content-index relative">
           {/* {pathName == "/principal" || pathName == "/" ? (
