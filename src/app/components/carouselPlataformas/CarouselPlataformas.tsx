@@ -33,6 +33,8 @@ export default function CarouselPlataforma() {
               className={styles.image}
               style={{
                 objectFit: "contain",
+                width: "110px",
+                height: "110px",
               }}
             />
           </div>

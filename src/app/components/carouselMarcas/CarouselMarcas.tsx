@@ -38,11 +38,13 @@ export default function CarouselMarcas() {
             <Image
               src={src}
               alt={`img-${i}`}
-              width={100}
-              height={100}
+              width={50}
+              height={50}
               className={styles.image}
               style={{
                 objectFit: "contain",
+                width: "100px",
+                height: "100px",
               }}
             />
           </div>
