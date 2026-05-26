@@ -21,9 +21,9 @@ const nextConfig: NextConfig = {
       "lh3.googleusercontent.com",
       "commons.wikimedia.org",
       "upload.wikimedia.org",
+      "neliosoftware.com",
     ],
   },
-
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_SOCKET_PROVEEDOR: process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR,
