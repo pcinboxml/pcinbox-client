@@ -368,8 +368,6 @@ export default function AppWrapper({
     );
   }, [pathName]);
 
-  // En el JSX:
-  <main style={{ marginTop }}></main>;
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
@@ -392,6 +390,7 @@ export default function AppWrapper({
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
+          style={{ marginTop }}
           className={
             pathName !== "/estatusMP" && pathName !== "/estatusPay"
               ? "container main-content"
