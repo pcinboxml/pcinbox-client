@@ -250,7 +250,7 @@
 }
 
 .imgPortada {
-  object-fit: contain;
+  object-fit: unset;
 
   width: 100%;
   height: 470px;
@@ -358,6 +358,7 @@
    ============================================================ */
 @media (max-width: 996px) {
   .imgPortada {
+    object-fit: contain !important;
     height: 390px;
   }
 }

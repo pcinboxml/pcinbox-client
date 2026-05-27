@@ -359,7 +359,11 @@ export default function AppWrapper({
 
   useEffect(() => {
     setMarginTop(
-      pathName.startsWith("/result-search-category") ? "10px" : "50px",
+      pathName.startsWith("/result-search-category")
+        ? "10px"
+        : pathName.startsWith("/principal")
+          ? "0px"
+          : "50px",
     );
   }, [pathName]);
 
