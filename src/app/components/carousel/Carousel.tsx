@@ -58,7 +58,7 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             maxWidth: "100%",
             overflow: "hidden",
             minWidth: 0,
-            marginTop: "-8px",
+            marginTop: "2px",
             // border: "1px solid blue",
           }}
         >
@@ -125,7 +125,7 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             maxWidth: "100%",
             overflow: "hidden",
             minWidth: 0,
-            marginTop: "2px",
+            marginTop: "10px",
             // padding: "10px",
             // border: "1px solid blue",
           }}
