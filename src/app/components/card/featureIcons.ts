@@ -1,39 +1,41 @@
 import { IconType } from "react-icons";
 import {
-  HiOutlineCpuChip,
-  HiOutlineCircleStack,
-  HiOutlineServerStack,
-  HiOutlineComputerDesktop,
-  HiOutlineSpeakerWave,
-  HiOutlineWifi,
-  HiOutlineSignal,
-} from "react-icons/hi2";
-import { MdSettingsInputHdmi, MdUsb } from "react-icons/md";
-import { TbCircuitAmmeter } from "react-icons/tb";
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Monitor,
+  Volume2,
+  HdmiPortIcon,
+  Usb,
+  Network,
+  Wifi,
+  CircuitBoard,
+  LucideIcon,
+} from "lucide-react";
 
 interface Feature {
   prop: string;
   value: string;
 }
 export interface MappedFeature {
-  icon: IconType;
+  icon: LucideIcon;
   label: string;
 }
 
 const ICON_MAP = [
   {
     kw: ["chipset", "socket", "procesador", "ryzen", "intel", "core"],
-    icon: HiOutlineCpuChip,
+    icon: Cpu,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["memoria interna", "ddr", "ram", "dimm"],
-    icon: HiOutlineCircleStack,
+    icon: MemoryStick,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["almacenamiento", "disco", "sata", "nvme", "m.2", "ssd"],
-    icon: HiOutlineServerStack,
+    icon: HardDrive,
     label: (f: Feature) => f.value,
   },
   {
@@ -48,45 +50,41 @@ const ICON_MAP = [
       "rtx",
       "gtx",
     ],
-    icon: HiOutlineComputerDesktop,
+    icon: Monitor,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["audio", "sonido", "canal"],
-    icon: HiOutlineSpeakerWave,
+    icon: Volume2,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["hdmi", "displayport", "dvi"],
-    icon: MdSettingsInputHdmi,
+    icon: HdmiPortIcon,
     label: (f: Feature) => `HDMI: ${f.value}`,
   },
   {
     kw: ["usb"],
-    icon: MdUsb,
+    icon: Usb,
     label: (f: Feature) =>
       `${f.prop.replace(/cantidad de puertos /i, "")}: ${f.value}`,
   },
   {
     kw: ["ethernet", "lan", "gigabit"],
-    icon: HiOutlineSignal,
+    icon: Network,
     label: (f: Feature) => (f.value !== "No" ? f.value : null),
   },
   {
     kw: ["wifi", "wireless", "bluetooth"],
-    icon: HiOutlineWifi,
+    icon: Wifi,
     label: (f: Feature) => (f.value !== "No" ? `Wi-Fi: ${f.value}` : null),
   },
   {
     kw: ["factor de forma", "atx"],
-    icon: TbCircuitAmmeter,
+    icon: CircuitBoard,
     label: (f: Feature) => f.value,
   },
-  {
-    kw: ["bios", "uefi"],
-    icon: HiOutlineCpuChip,
-    label: (f: Feature) => f.value,
-  },
+  { kw: ["bios", "uefi"], icon: Cpu, label: (f: Feature) => f.value },
 ];
 
 const PRIORITY = [
@@ -114,7 +112,7 @@ export function getTopFeatures(
     const haystack = `${f.prop} ${f.value}`.toLowerCase();
     for (const rule of ICON_MAP) {
       if (rule.kw.some((k) => haystack.includes(k))) {
-        const key = rule.icon.toString();
+        const key = rule.icon.displayName ?? rule.icon.name;
         if (seen.has(key)) break;
         const label = rule.label(f);
         if (!label) break;
