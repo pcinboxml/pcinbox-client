@@ -25,6 +25,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [marginTop, setMarginTop] = useState("50px");
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
@@ -358,7 +360,18 @@ export default function AppWrapper({
     };
 
     getTotalFavorites();
-  }, [hasToken]);
+  }, [totalFavorites]);
+
+  useEffect(() => {
+    setMarginTop(
+      pathName.startsWith("/result-search-category")
+        ? "10px"
+        : pathName.startsWith("/principal")
+          ? "0px"
+          : "50px",
+    );
+  }, [pathName]);
+
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
@@ -381,6 +394,7 @@ export default function AppWrapper({
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
+          style={{ marginTop }}
           className={
             pathName !== "/estatusMP" && pathName !== "/estatusPay"
               ? "container main-content"

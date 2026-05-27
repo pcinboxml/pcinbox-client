@@ -105,7 +105,7 @@
 }
 
 .container-products .btn-products {
-  width: 150px;
+  width: 180px;
   border-top-left-radius: 10px;
   background: #808080;
   color: white;
@@ -115,7 +115,7 @@
 .container-products .container-list-products {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  width: 150px;
+  width: 180px;
   min-height: 544px;
   top: 100%;
   left: 0px;
@@ -148,10 +148,9 @@
     font-weight 0.3s;
 }
 
-.container-list-products ul li:hover a {
-  color: #bb3d4b;
-  /* font-weight: 600; */
-  border-bottom-color: #a67845;
+.container-list-products ul li:hover {
+  border: 1px solid yellow;
+  background: #00000080;
 }
 
 .container-submenu {
