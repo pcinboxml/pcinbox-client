@@ -25,6 +25,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [marginTop, setMarginTop] = useState("50px");
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
