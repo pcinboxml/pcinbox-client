@@ -559,8 +559,8 @@ const SearchCategoryContent = () => {
 
           if (findImg) {
             return (
-              <div className="w-full flex justify-center items-center">
-                <div
+              <div className="w-full flex justify-center">
+                {/* <div
                   className="
                  relative
                         overflow-hidden
@@ -581,25 +581,25 @@ const SearchCategoryContent = () => {
                       hover:scale-[1.01]
                       hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]
     "
-                >
-                  {/* Glow decorativo */}
-                  <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+                > */}
+                {/* Glow decorativo */}
+                {/* <div className="absolute inset-0 bg-white/5 pointer-events-none" /> */}
 
-                  <Image
-                    src={findImg?.pathImg}
-                    width={800}
-                    height={800}
-                    alt={`Img de categoria ${findNameCategory?.name}`}
-                    className="
-        rounded-2xl
-        object-contain
+                <Image
+                  src={findImg?.pathImg}
+                  width={100}
+                  height={800}
+                  alt={`Img de categoria ${findNameCategory?.name}`}
+                  className={`
+        rounded
         transition-transform
         duration-500
         hover:scale-105
-      "
-                    priority
-                  />
-                </div>
+        ${styles.imgPortada}
+      `}
+                  priority
+                />
+                {/* </div> */}
               </div>
             );
           }

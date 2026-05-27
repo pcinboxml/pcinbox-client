@@ -249,6 +249,12 @@
   padding: 8px;
 }
 
+.imgPortada {
+  object-fit: contain;
+
+  width: 100%;
+  height: 470px;
+}
 /* ============================================================
    BREAKPOINT: 640px — imagen a la derecha, tamaño reducido
    ============================================================ */
@@ -350,6 +356,17 @@
    BREAKPOINT: 900px — zona problemática ~980px
    Refuerzo explícito para que el carousel NO desaparezca
    ============================================================ */
+@media (max-width: 996px) {
+  .imgPortada {
+    height: 390px;
+  }
+}
+
+@media (max-width: 991px) {
+  .imgPortada {
+    height: 275px !important;
+  }
+}
 @media (min-width: 900px) {
   .productRow {
     grid-template-columns: 1fr 160px !important;
