@@ -355,6 +355,19 @@ export default function AppWrapper({
 
     getTotalFavorites();
   }, [totalFavorites]);
+
+  useEffect(() => {
+    setMarginTop(
+      pathName.startsWith("/result-search-category")
+        ? "10px"
+        : pathName.startsWith("/principal")
+          ? "0px"
+          : "50px",
+    );
+  }, [pathName]);
+
+  // En el JSX:
+  <main style={{ marginTop }}></main>;
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
