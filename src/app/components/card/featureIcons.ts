@@ -1,45 +1,43 @@
+import { IconType } from "react-icons";
+import {
+  HiOutlineCpuChip,
+  HiOutlineCircleStack,
+  HiOutlineServerStack,
+  HiOutlineComputerDesktop,
+  HiOutlineSpeakerWave,
+  HiOutlineWifi,
+  HiOutlineSignal,
+} from "react-icons/hi2";
+import { MdSettingsInputHdmi, MdUsb } from "react-icons/md";
+import { TbCircuitAmmeter } from "react-icons/tb";
+
 interface Feature {
   prop: string;
   value: string;
 }
-interface MappedFeature {
-  icon: string;
+export interface MappedFeature {
+  icon: IconType;
   label: string;
 }
 
 const ICON_MAP = [
   {
-    keywords: [
-      "procesador",
-      "cpu",
-      "socket",
-      "ryzen",
-      "intel",
-      "core",
-      "chipset",
-    ],
-    icon: "ti-cpu",
+    kw: ["chipset", "socket", "procesador", "ryzen", "intel", "core"],
+    icon: HiOutlineCpuChip,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: [
-      "memoria",
-      "ram",
-      "ddr",
-      "dimm",
-      "ranura de memoria",
-      "memoria interna",
-    ],
-    icon: "ti-database",
+    kw: ["memoria interna", "ddr", "ram", "dimm"],
+    icon: HiOutlineCircleStack,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: ["almacenamiento", "disco", "sata", "nvme", "m.2", "ssd"],
-    icon: "ti-device-floppy",
+    kw: ["almacenamiento", "disco", "sata", "nvme", "m.2", "ssd"],
+    icon: HiOutlineServerStack,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: [
+    kw: [
       "gráfico",
       "gpu",
       "directx",
@@ -47,54 +45,54 @@ const ICON_MAP = [
       "nvidia",
       "geforce",
       "vega",
+      "rtx",
+      "gtx",
     ],
-    icon: "ti-device-desktop",
+    icon: HiOutlineComputerDesktop,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: ["audio", "sonido", "canal"],
-    icon: "ti-volume",
+    kw: ["audio", "sonido", "canal"],
+    icon: HiOutlineSpeakerWave,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: ["hdmi", "vga", "displayport", "dvi"],
-    icon: "ti-plug-connected",
-    label: (f: Feature) =>
-      `${f.prop.replace("Número de puertos ", "")}: ${f.value}`,
+    kw: ["hdmi", "displayport", "dvi"],
+    icon: MdSettingsInputHdmi,
+    label: (f: Feature) => `HDMI: ${f.value}`,
   },
   {
-    keywords: ["usb"],
-    icon: "ti-usb",
+    kw: ["usb"],
+    icon: MdUsb,
     label: (f: Feature) =>
-      `${f.prop.replace("Cantidad de puertos ", "")}: ${f.value}`,
+      `${f.prop.replace(/cantidad de puertos /i, "")}: ${f.value}`,
   },
   {
-    keywords: ["ethernet", "lan", "rj-45", "gigabit"],
-    icon: "ti-network",
+    kw: ["ethernet", "lan", "gigabit"],
+    icon: HiOutlineSignal,
     label: (f: Feature) => (f.value !== "No" ? f.value : null),
   },
   {
-    keywords: ["wifi", "inalámbrico", "wireless", "bluetooth"],
-    icon: "ti-wifi",
+    kw: ["wifi", "wireless", "bluetooth"],
+    icon: HiOutlineWifi,
     label: (f: Feature) => (f.value !== "No" ? `Wi-Fi: ${f.value}` : null),
   },
   {
-    keywords: ["factor de forma", "atx"],
-    icon: "ti-layout-board",
+    kw: ["factor de forma", "atx"],
+    icon: TbCircuitAmmeter,
     label: (f: Feature) => f.value,
   },
   {
-    keywords: ["bios", "uefi"],
-    icon: "ti-settings",
+    kw: ["bios", "uefi"],
+    icon: HiOutlineCpuChip,
     label: (f: Feature) => f.value,
   },
 ];
 
-// Orden de prioridad — qué características se prefieren mostrar primero
 const PRIORITY = [
-  "procesador",
   "chipset",
   "socket",
+  "procesador",
   "memoria interna",
   "almacenamiento",
   "gráfico",
@@ -115,11 +113,12 @@ export function getTopFeatures(
   for (const f of features) {
     const haystack = `${f.prop} ${f.value}`.toLowerCase();
     for (const rule of ICON_MAP) {
-      if (rule.keywords.some((k) => haystack.includes(k))) {
-        if (seen.has(rule.icon)) break;
+      if (rule.kw.some((k) => haystack.includes(k))) {
+        const key = rule.icon.toString();
+        if (seen.has(key)) break;
         const label = rule.label(f);
         if (!label) break;
-        seen.add(rule.icon);
+        seen.add(key);
         matched.push({ icon: rule.icon, label, prop: f.prop.toLowerCase() });
         break;
       }

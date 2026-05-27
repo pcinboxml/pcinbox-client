@@ -9,6 +9,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { getTopFeatures } from "./featureIcons";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -255,6 +256,28 @@ const Card = ({ product }: { product: ProductI }) => {
         </span>
         <span className="code">{product.sku}</span>
       </div>
+      {product.caracteristicas && (
+        <div className="feat-block">
+          {(() => {
+            try {
+              const parsed = JSON.parse(product.caracteristicas);
+              const features = getTopFeatures(parsed, 3);
+              if (!features.length) return null;
+              return features.map((feat, i) => {
+                const Icon = feat.icon;
+                return (
+                  <div key={i} className="feat-row">
+                    <Icon size={15} color="#BB3D4B" style={{ flexShrink: 0 }} />
+                    <span className="feat-text">{feat.label}</span>
+                  </div>
+                );
+              });
+            } catch {
+              return null;
+            }
+          })()}
+        </div>
+      )}
 
       <div className="actions-product">
         <div className="buttons relative">

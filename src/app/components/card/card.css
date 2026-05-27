@@ -13,12 +13,6 @@
   overflow: hidden;
 }
 
-/* .mi-card .container-img img {
-  width: 100%;
-  height: 150px;
-  object-fit: contain;
-} */
-
 .mi-card .container-rating {
   width: 100%;
   margin-top: 20px;
@@ -51,39 +45,6 @@
   padding-right: 10px;
 }
 
-.mi-card .feature-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 6px 12px 4px;
-}
-
-.mi-card .feature-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  background: #f7f7f7;
-  border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  font-size: 11px;
-  color: #666;
-  max-width: 220px;
-  overflow: hidden;
-}
-
-.mi-card .feature-badge i {
-  font-size: 13px;
-  color: #bb3d4b;
-  flex-shrink: 0;
-}
-
-.mi-card .feature-badge span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .container-description .name-product {
   display: block;
   text-align: start;
@@ -98,6 +59,36 @@
   text-align: start;
   font-size: 10px;
   color: #b2b2b2;
+}
+
+.mi-card .feat-block {
+  padding: 4px 14px 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mi-card .feat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mi-card .feat-row:last-child {
+  border-bottom: none;
+}
+
+.mi-card .feat-row i {
+  font-size: 15px;
+  color: #bb3d4b;
+  flex-shrink: 0;
+}
+
+.mi-card .feat-text {
+  font-size: 11px;
+  color: #666666;
+  line-height: 1.3;
 }
 
 .mi-card .actions-product {
