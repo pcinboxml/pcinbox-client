@@ -10,6 +10,7 @@
   justify-content: flex-start;
   align-items: center;
   overflow: hidden;
+  padding-right: 5px;
 }
 
 .content-main .list-products img {
@@ -67,6 +68,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+@media (max-width: 992px) {
+  .content-main .list-products {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {

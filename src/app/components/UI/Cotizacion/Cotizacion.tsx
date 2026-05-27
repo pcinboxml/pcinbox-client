@@ -5,13 +5,6 @@ import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 import { styles } from "./styles";
 
-// ─── ESTILOS ─────────────────────────────────────────────────────────────────
-// REGLAS para react-pdf:
-// • No usar position:absolute para layout estructural — usar Flexbox puro
-// • Porcentajes de ancho sólo dentro de un flex container con flexDirection:"row"
-// • borderBottomWidth/borderTopWidth son seguros; evitar borders shorthand
-// • No hay gap — usar marginBottom en los hijos
-
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(
@@ -52,22 +45,19 @@ const CotizacionPDF = ({
   const expiry = new Date(now);
   expiry.setHours(expiry.getHours() + 24);
 
-  // Normalizar a array
   const productsArr: ProductI[] = products
     ? Array.isArray(products)
       ? products
       : [products]
     : [];
 
-  // Total
   const total = productsArr.reduce((acc, p) => {
     const price = Number(p?.price ?? 0);
     const qty = Number(p?.quantity ?? 0);
     return isNaN(price) || isNaN(qty) ? acc : acc + price * qty;
   }, 0);
 
-  // Renderizar una fila de producto
-  const renderRow = (product: ProductI) => {
+  const renderRow = (product: ProductI, index: number) => {
     let caracteristicas: { prop: string; value: string }[] = [];
     try {
       caracteristicas = JSON.parse(product.caracteristicas || "[]");
@@ -78,13 +68,18 @@ const CotizacionPDF = ({
     const qty = Number(product.quantity ?? 1);
     const price = Number(product.price ?? 0);
     const subtotal = qty * price;
+    const isLast = index === productsArr.length - 1;
 
     return (
-      <View key={product.idProduct} style={styles.tableRow} wrap={false}>
-        {/* Cantidad */}
+      <View
+        key={product.idProduct}
+        style={styles.tableRow}
+        wrap={false}
+        // wrap={true}
+        // minPresenceAhead={isLast ? 180 : 20}
+      >
         <Text style={styles.tdQty}>{qty}</Text>
 
-        {/* Descripción */}
         <View style={styles.tdDesc}>
           <Text style={styles.productName}>{product.name}</Text>
           {product.description ? (
@@ -98,10 +93,7 @@ const CotizacionPDF = ({
           ))}
         </View>
 
-        {/* Precio unitario */}
         <Text style={styles.tdUnit}>{formatCurrency(price)}</Text>
-
-        {/* Subtotal */}
         <Text style={styles.tdTotal}>{formatCurrency(subtotal)}</Text>
       </View>
     );
@@ -120,6 +112,8 @@ const CotizacionPDF = ({
             <Text style={styles.headerDate}>Fecha: {formatDate(now)}</Text>
           </View>
         </View>
+
+        {/* ✅ AGREGAR ESTE ESPACIADOR para pegar el metaRow al logo */}
 
         {/* ── META ROW ───────────────────────────────────────────────── */}
         <View style={styles.metaRow}>
@@ -140,7 +134,7 @@ const CotizacionPDF = ({
         <View style={styles.divider} />
 
         {/* ── TABLE HEADER ───────────────────────────────────────────── */}
-        <View style={styles.tableHeader}>
+        <View style={styles.tableHeader} fixed>
           <Text style={styles.thQty}>Cant.</Text>
           <Text style={styles.thDesc}>Descripción</Text>
           <Text style={styles.thUnit}>P. Unitario</Text>
@@ -150,70 +144,58 @@ const CotizacionPDF = ({
         {/* ── ROWS ───────────────────────────────────────────────────── */}
         {productsArr.map(renderRow)}
 
-        {/* ── FOOTER ─────────────────────────────────────────────────── */}
+        {/* ── TOTALES Y NOTAS (Fuera del fixed para que salgan solo al final) ── */}
+        <View style={styles.totalsSection}>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>TOTAL</Text>
+            <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
+          </View>
+          <Text style={styles.ivaNote}>Precios incluyen I.V.A.</Text>
+        </View>
+
+        <View style={styles.noteBox}>
+          <Text style={styles.noteText}>
+            <Text style={{ fontFamily: "Helvetica-Bold" }}>
+              Recomendación:{" "}
+            </Text>
+            Para el uso correcto y garantía de su equipo se recomienda
+            ampliamente contar con regulador y supresor de picos integrado.
+          </Text>
+        </View>
+
+        <View style={styles.validityBox}>
+          <Text style={styles.validityText}>
+            ⚠ Cotización vigente hasta el {formatDate(expiry)} o hasta agotar
+            existencias.
+          </Text>
+        </View>
+
+        {/* ── FOOTER (Fijo en todas las hojas) ───────────────────────── */}
         <View style={styles.bottomFooter} fixed>
-          {/* TOTALS */}
-          <View style={styles.totalsSection}>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>TOTAL</Text>
-
-              <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
-            </View>
-
-            <Text style={styles.ivaNote}>Precios incluyen I.V.A.</Text>
-          </View>
-
-          {/* NOTAS */}
-          <View style={styles.noteBox}>
-            <Text style={styles.noteText}>
-              <Text style={{ fontFamily: "Helvetica-Bold" }}>
-                Recomendación:{" "}
-              </Text>
-              Para el uso correcto y garantía de su equipo se recomienda
-              ampliamente contar con regulador y supresor de picos integrado.
-            </Text>
-          </View>
-
-          <View style={styles.validityBox}>
-            <Text style={styles.validityText}>
-              ⚠ Cotización vigente hasta el {formatDate(expiry)} o hasta agotar
-              existencias.
-            </Text>
-          </View>
-
-          {/* FOOTER */}
           <View style={styles.footer}>
             <View style={styles.footerRow}>
-              {/* Empresa */}
               <View style={styles.footerCol}>
                 <Text style={styles.companyName}>pcinbox</Text>
-
                 <Text style={styles.footerValue}>
                   Blvd. Juan Alonso de Torres Pte. 1917-Local 01{"\n"}
                   Unión Comunitaria de León, 37239 León, Gto.
                 </Text>
               </View>
 
-              {/* Contacto */}
               <View style={styles.footerCol}>
                 <Text style={styles.footerLabel}>CONTACTO</Text>
-
                 <Text style={styles.footerEmail}>admon@pcinbox.com.mx</Text>
-
                 <Text style={styles.footerValue}>
                   Tel. Oficina: 477 330 04 37{"\n"}
                   Móvil: 477 533 41 27
                 </Text>
               </View>
 
-              {/* Condiciones */}
               <View style={styles.footerColLast}>
                 <Text style={styles.footerLabel}>CONDICIONES DE PAGO</Text>
-
                 <Text style={styles.footerValue}>
                   Pago anticipado requerido
                 </Text>
-
                 <Text style={[styles.footerValue, { marginTop: 4 }]}>
                   Garantía por defecto de fábrica
                 </Text>

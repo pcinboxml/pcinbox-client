@@ -18,14 +18,18 @@ export const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: 10,
     color: C.gray900,
-    paddingTop: 36,
-    paddingBottom: 48,
+    paddingTop: 110, // ✅ CAMBIO 1: Aumentado para dar espacio al header fijo
+    paddingBottom: 150, // ✅ CAMBIO 2: Aumentado para dar espacio al footer fijo
     paddingHorizontal: 48,
     backgroundColor: C.white,
   },
 
   // ── HEADER ──────────────────────────────────────────────────────────────
   header: {
+    position: "absolute", // ✅ CAMBIO 3: Agregado para que flote y se repita
+    top: 36, // ✅ CAMBIO 3
+    left: 48, // ✅ CAMBIO 3
+    right: 48, // ✅ CAMBIO 3
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -291,7 +295,6 @@ export const styles = StyleSheet.create({
     bottom: 48,
     left: 48,
     right: 48,
-
     backgroundColor: C.white,
   },
 });
