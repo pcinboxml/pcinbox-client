@@ -263,15 +263,18 @@ const Card = ({ product }: { product: ProductI }) => {
               const parsed = JSON.parse(product.caracteristicas);
               const features = getTopFeatures(parsed, 3);
               if (!features.length) return null;
-              return features.map((feat, i) => {
-                const Icon = feat.icon;
-                return (
-                  <div key={i} className="feat-row">
-                    <Icon size={15} color="#BB3D4B" style={{ flexShrink: 0 }} />
-                    <span className="feat-text">{feat.label}</span>
-                  </div>
-                );
-              });
+              return features.map((feat, i) => (
+                <div key={i} className="feat-row">
+                  <Image
+                    src={feat.icon}
+                    alt=""
+                    width={18}
+                    height={18}
+                    style={{ flexShrink: 0 }}
+                  />
+                  <span className="feat-text">{feat.label}</span>
+                </div>
+              ));
             } catch {
               return null;
             }

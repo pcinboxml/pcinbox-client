@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
     domains: [
+      "img.icons8.com",
       "authjs.dev",
       "ik.imagekit.io",
       "lh3.googleusercontent.com",

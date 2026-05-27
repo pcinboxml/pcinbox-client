@@ -1,41 +1,28 @@
-import { IconType } from "react-icons";
-import {
-  Cpu,
-  MemoryStick,
-  HardDrive,
-  Monitor,
-  Volume2,
-  HdmiPortIcon,
-  Usb,
-  Network,
-  Wifi,
-  CircuitBoard,
-  LucideIcon,
-} from "lucide-react";
-
 interface Feature {
   prop: string;
   value: string;
 }
 export interface MappedFeature {
-  icon: LucideIcon;
+  icon: string;
   label: string;
 }
+
+const COLOR = "BB3D4B";
 
 const ICON_MAP = [
   {
     kw: ["chipset", "socket", "procesador", "ryzen", "intel", "core"],
-    icon: Cpu,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/processor.png`,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["memoria interna", "ddr", "ram", "dimm"],
-    icon: MemoryStick,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/memory-slot.png`,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["almacenamiento", "disco", "sata", "nvme", "m.2", "ssd"],
-    icon: HardDrive,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/ssd.png`,
     label: (f: Feature) => f.value,
   },
   {
@@ -50,43 +37,46 @@ const ICON_MAP = [
       "rtx",
       "gtx",
     ],
-    icon: Monitor,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/video-card.png`,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["audio", "sonido", "canal"],
-    icon: Volume2,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/speaker.png`,
     label: (f: Feature) => f.value,
   },
   {
     kw: ["hdmi", "displayport", "dvi"],
-    icon: HdmiPortIcon,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/hdmi-cable.png`,
     label: (f: Feature) => `HDMI: ${f.value}`,
   },
   {
     kw: ["usb"],
-    icon: Usb,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/usb-2.png`,
     label: (f: Feature) =>
       `${f.prop.replace(/cantidad de puertos /i, "")}: ${f.value}`,
   },
   {
     kw: ["ethernet", "lan", "gigabit"],
-    icon: Network,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/network-card.png`,
     label: (f: Feature) => (f.value !== "No" ? f.value : null),
   },
   {
     kw: ["wifi", "wireless", "bluetooth"],
-    icon: Wifi,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/wifi.png`,
     label: (f: Feature) => (f.value !== "No" ? `Wi-Fi: ${f.value}` : null),
   },
   {
     kw: ["factor de forma", "atx"],
-    icon: CircuitBoard,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/motherboard.png`,
     label: (f: Feature) => f.value,
   },
-  { kw: ["bios", "uefi"], icon: Cpu, label: (f: Feature) => f.value },
+  {
+    kw: ["bios", "uefi"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/bios.png`,
+    label: (f: Feature) => f.value,
+  },
 ];
-
 const PRIORITY = [
   "chipset",
   "socket",
@@ -112,11 +102,10 @@ export function getTopFeatures(
     const haystack = `${f.prop} ${f.value}`.toLowerCase();
     for (const rule of ICON_MAP) {
       if (rule.kw.some((k) => haystack.includes(k))) {
-        const key = rule.icon.displayName ?? rule.icon.name;
-        if (seen.has(key)) break;
+        if (seen.has(rule.icon)) break;
         const label = rule.label(f);
         if (!label) break;
-        seen.add(key);
+        seen.add(rule.icon);
         matched.push({ icon: rule.icon, label, prop: f.prop.toLowerCase() });
         break;
       }

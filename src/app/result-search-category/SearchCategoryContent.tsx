@@ -79,6 +79,8 @@ const SearchCategoryContent = () => {
     handleAddProductCart,
     prevPageRef,
     handleComprarAhora,
+    banners_x_categoria,
+    setBannerXCategoria,
   } = useResultSearchCategory();
   const { get } = useSafeSearchParams();
 
@@ -381,13 +383,34 @@ const SearchCategoryContent = () => {
       setData(updateFn);
     };
 
+    const handleUpdateCategoryBanner = async (dataUpdateCategoryBanner: {
+      categoryId: string;
+      url: string;
+    }) => {
+      if (dataUpdateCategoryBanner) {
+        setBannerXCategoria((prev) => {
+          return prev.map((banner) => {
+            if (banner.category === dataUpdateCategoryBanner.categoryId) {
+              return {
+                ...banner,
+                pathImg: dataUpdateCategoryBanner.url,
+              };
+            }
+            return banner;
+          });
+        });
+      }
+    };
+
     socket.on("updateProductComponent", handlerUpdateProductComponent);
     socket.on("updateProduct", handlerUpdateProduct);
+    socket.on("updateCategoryBanner", handleUpdateCategoryBanner);
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
     return () => {
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
+      socket.off("updateCategoryBanner", handleUpdateCategoryBanner);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
     };
   }, [socketServer.current, socketPagos?.current]);
@@ -524,6 +547,64 @@ const SearchCategoryContent = () => {
 
   return (
     <section className={styles.section}>
+      {(() => {
+        let findNameCategory = dataCategories.find(
+          (categorie) => Number(categorie?.idCategorie) === Number(categoryId),
+        );
+
+        if (findNameCategory) {
+          let findImg = banners_x_categoria.find((banner: any) => {
+            return banner.name === findNameCategory?.name;
+          });
+
+          if (findImg) {
+            return (
+              <div className="w-full flex justify-center">
+                {/* <div
+                  className="
+                 relative
+                        overflow-hidden
+                        rounded-3xl
+                        bg-g         
+                        radient-to-br
+                      from-zinc-100
+                      to-zinc-200
+                      dark:from-zinc-900
+                      dark:to-zinc-800
+                        shadow-2xl
+                        border
+                      border-white/20
+                      p-6
+                      backdrop-blur-sm
+                      transition-all
+                      duration-500
+                      hover:scale-[1.01]
+                      hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+    "
+                > */}
+                {/* Glow decorativo */}
+                {/* <div className="absolute inset-0 bg-white/5 pointer-events-none" /> */}
+
+                <Image
+                  src={findImg?.pathImg}
+                  width={100}
+                  height={800}
+                  alt={`Img de categoria ${findNameCategory?.name}`}
+                  className={`
+                   rounded
+                  transition-transform
+                  duration-500
+                  hover:scale-105
+                  ${styles.imgPortada}
+              `}
+                  priority
+                />
+                {/* </div> */}
+              </div>
+            );
+          }
+        }
+      })()}
       {!loadingData ? (
         <div className={`mt-2 w-full ${hasSidebar ? styles.mainGrid : ""}`}>
           {hasSidebar && (
