@@ -66,8 +66,8 @@ const EliminarDomicilio = ({
               );
               setLoadingRemoveAddress(false);
 
-              if (resp.status == 200) {
-                const data = await resp.data;
+              if (resp!.status == 200) {
+                const data = await resp!.data;
                 setDataUserAddress(data.data.data);
                 //   setOptionEnvio(address?.);
                 handleWriteStorageProgressPay({

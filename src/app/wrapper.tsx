@@ -345,14 +345,18 @@ export default function AppWrapper({
     restoreScroll();
   }, [pathname, storageKey]);
   useEffect(() => {
+    if (!hasToken) return;
+
     const getTotalFavorites = async () => {
       try {
         const resp = await requestGet("/favorites/getTotalFavorites");
 
-        if (resp.status === 200) {
+        if (resp?.status === 200) {
           setTotalFavorites(resp.data.data.totalFavorites);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     getTotalFavorites();

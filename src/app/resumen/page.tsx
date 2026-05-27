@@ -16,7 +16,7 @@ import style from "./resumen.module.css";
 const Resumen = () => {
   useCheckoutGuard(CheckoutStep.RESUMEN);
 
-  const { dataCart, buyNowProduct } = useTheContext();
+  const { dataCart, buyNowProduct, hasToken, setDataModal } = useTheContext();
   const { checkoutMode } = useStorage();
   const {
     onRouterLink,
@@ -220,7 +220,34 @@ const Resumen = () => {
                   <button
                     disabled={loadingCreateOrder}
                     className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                    onClick={() => handleCreateOrder(costoTotalEnvio)}
+                    onClick={() => {
+                      if (!hasToken) {
+                        setDataModal({
+                          isOpen: true,
+                          message:
+                            "Tu sesión expiró, debes iniciar sesión nuevamente.",
+                          title: "Sesión expirada",
+
+                          onClose: () => {
+                            setDataModal((prev) => ({
+                              ...prev,
+                              isOpen: false,
+                            }));
+                          },
+
+                          onConfirm: async () => {
+                            setDataModal((prev) => ({
+                              ...prev,
+                              isOpen: false,
+                            }));
+                          },
+
+                          type: "info",
+                        });
+                      } else {
+                        handleCreateOrder(costoTotalEnvio);
+                      }
+                    }}
                   >
                     {loadingCreateOrder ? (
                       <MdAutorenew size={20} className="m-auto the-spinner" />
