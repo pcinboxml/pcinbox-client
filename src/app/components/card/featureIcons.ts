@@ -12,7 +12,7 @@ const COLOR = "BB3D4B";
 const ICON_MAP = [
   {
     kw: ["procesador", "cpu", "chipset", "socket", "ryzen", "intel", "core"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/cpu.png`,
+    icon: `https://img.icons8.com/ios/50/${COLOR}/processor.png`,
     label: (f: Feature) => f.value,
   },
   {
