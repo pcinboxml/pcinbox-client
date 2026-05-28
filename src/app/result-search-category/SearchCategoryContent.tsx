@@ -553,7 +553,7 @@ const SearchCategoryContent = () => {
         );
 
         if (findNameCategory) {
-          let findImg = banners_x_categoria.find((banner) => {
+          let findImg = banners_x_categoria.find((banner: any) => {
             return banner.name === findNameCategory?.name;
           });
 
@@ -591,12 +591,12 @@ const SearchCategoryContent = () => {
                   height={800}
                   alt={`Img de categoria ${findNameCategory?.name}`}
                   className={`
-        rounded
-        transition-transform
-        duration-500
-        hover:scale-105
-        ${styles.imgPortada}
-      `}
+                   rounded
+                  transition-transform
+                  duration-500
+                  hover:scale-105
+                  ${styles.imgPortada}
+              `}
                   priority
                 />
                 {/* </div> */}
