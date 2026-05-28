@@ -266,8 +266,8 @@ const useOpcionesEntrega = () => {
   const loadingAddressUser = async () => {
     try {
       const resp = await requestGet("/address/hasAddressUser");
-      if (resp.status == 200) {
-        const data: AddressI[] = await resp.data.data.data;
+      if (resp!.status == 200) {
+        const data: AddressI[] = await resp!.data.data.data;
 
         setDataUserAddress(data);
       }
@@ -334,8 +334,8 @@ const useOpcionesEntrega = () => {
   const generateCostoByZone = async (destino: any) => {
     try {
       const resp = await requestPost({ destino }, "/geonames/ShippingByZone");
-      if (resp.status === 200) {
-        return resp.data.data?.costo || 0;
+      if (resp!.status === 200) {
+        return resp!.data.data?.costo || 0;
       }
     } catch (error) {}
     return 0;

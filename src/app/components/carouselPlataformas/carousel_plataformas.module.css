@@ -1,15 +1,15 @@
 .wrapper {
   overflow: hidden;
   width: 100%;
-  height: 100px;
   position: relative;
+  height: 120px;
 }
 
 .track {
   display: flex;
   width: max-content;
   gap: 50px; /* Cambiamos margin por gap */
-  animation: scroll 30s linear infinite reverse;
+  animation: scroll 18s linear infinite;
 }
 
 /* Quitamos el margin-right de aquí */
@@ -28,8 +28,8 @@
     transform: translateX(0);
   }
   to {
-    /* Ahora es exactamente -50%, sin sumas o restas raras */
-    transform: translateX(-50%);
+    /* Restamos 8px (la mitad de tu gap de 16px) para saltar el espacio en blanco del medio */
+    transform: translateX(calc(-50% - 8px));
   }
 }
 

@@ -25,6 +25,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [marginTop, setMarginTop] = useState("50px");
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
@@ -343,18 +345,33 @@ export default function AppWrapper({
     restoreScroll();
   }, [pathname, storageKey]);
   useEffect(() => {
+    if (!hasToken) return;
+
     const getTotalFavorites = async () => {
       try {
         const resp = await requestGet("/favorites/getTotalFavorites");
 
-        if (resp.status === 200) {
+        if (resp?.status === 200) {
           setTotalFavorites(resp.data.data.totalFavorites);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     getTotalFavorites();
   }, [totalFavorites]);
+
+  useEffect(() => {
+    setMarginTop(
+      pathName.startsWith("/result-search-category")
+        ? "10px"
+        : pathName.startsWith("/principal")
+          ? "0px"
+          : "50px",
+    );
+  }, [pathName]);
+
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
@@ -377,6 +394,7 @@ export default function AppWrapper({
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
+          style={{ marginTop }}
           className={
             pathName !== "/estatusMP" && pathName !== "/estatusPay"
               ? "container main-content"

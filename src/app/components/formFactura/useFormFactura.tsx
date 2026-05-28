@@ -99,8 +99,8 @@ const useFormFactura = () => {
         const resp = await requestPost(formData, "/user/uploadPhotoUser");
         setShowLoader(false);
         setShowLinearProgress(false);
-        if (resp.status == 200) {
-          setRutaImgPerfil(resp.data.data.rutaImg);
+        if (resp!.status == 200) {
+          setRutaImgPerfil(resp!.data.data.rutaImg);
           setDataModal({
             isOpen: true,
             type: "success",
@@ -134,8 +134,8 @@ const useFormFactura = () => {
   const getPhotoUser = async () => {
     try {
       const resp = await requestGet("/user/getPhotoUser");
-      if (resp.status == 200) {
-        setRutaImgPerfil(resp.data.data.rutaImg);
+      if (resp!.status == 200) {
+        setRutaImgPerfil(resp!.data.data.rutaImg);
       }
     } catch (error: any) {}
   };
@@ -148,11 +148,11 @@ const useFormFactura = () => {
         {
           postalCode: value,
         },
-        "/geonames/getAddressWithPostalCode"
+        "/geonames/getAddressWithPostalCode",
       );
 
-      if (resp.status == 200) {
-        const dataResp = await resp.data.data;
+      if (resp!.status == 200) {
+        const dataResp = await resp!.data.data;
 
         setPostalCodes(dataResp.postalcodes);
       }
@@ -167,7 +167,7 @@ const useFormFactura = () => {
   };
 
   const handleOnChange2 = async (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
 
@@ -176,7 +176,7 @@ const useFormFactura = () => {
         {
           postalCode: value,
         },
-        "/geonames/getAddressWithPostalCode"
+        "/geonames/getAddressWithPostalCode",
       );
 
       if (resp.status == 200) {
@@ -208,7 +208,7 @@ const useFormFactura = () => {
       .filter(
         ([key, value]) =>
           !excludeKeys.includes(key) &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined),
       )
       .map(([key]) => key);
 
@@ -266,7 +266,7 @@ const useFormFactura = () => {
       .filter(
         ([key, value]) =>
           !excludeKeys.includes(key) &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined),
       )
       .map(([key]) => key);
 
@@ -296,7 +296,7 @@ const useFormFactura = () => {
           state: dataFacturacion.state,
           city: dataFacturacion.city,
         },
-        "/billing/createBilling"
+        "/billing/createBilling",
       );
 
       setLoadingDataFacturacion(false);
@@ -337,7 +337,7 @@ const useFormFactura = () => {
   };
 
   const handleOnSelect = async (
-    event: SyntheticEvent<HTMLSelectElement, Event>
+    event: SyntheticEvent<HTMLSelectElement, Event>,
   ) => {
     const { name, value } = event.currentTarget;
 
@@ -350,7 +350,7 @@ const useFormFactura = () => {
   };
 
   const handleOnSelect2 = async (
-    event: SyntheticEvent<HTMLSelectElement, Event>
+    event: SyntheticEvent<HTMLSelectElement, Event>,
   ) => {
     const { name, value } = event.currentTarget;
 
