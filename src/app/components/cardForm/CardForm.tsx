@@ -54,13 +54,13 @@ const CardForm = ({ userId }: { userId: number }) => {
             userId: userId,
             paymentMethodId: paymentMethod.id,
           },
-          "/stripe/saveCard"
+          "/stripe/saveCard",
         );
 
-        if (response.status === 200) {
+        if (response!.status === 200) {
           form.reset(); // ✅ Usar la referencia guardada
 
-          const dataResponse = response.data;
+          const dataResponse = response!.data;
           const tarjetas = dataResponse?.data?.data ?? [];
 
           setDataCard(tarjetas);

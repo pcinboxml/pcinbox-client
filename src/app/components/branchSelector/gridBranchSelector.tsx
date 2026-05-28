@@ -123,7 +123,7 @@ const GridBranchSelector = () => {
         [sucursal?.id]: false,
       }));
 
-      if (resp.status == 200) {
+      if (resp!.status == 200) {
         setDataCart((prev) => {
           const existingProduct = prev.find(
             (item) =>
