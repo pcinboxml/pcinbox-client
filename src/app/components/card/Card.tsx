@@ -281,7 +281,7 @@ const Card = ({ product }: { product: ProductI }) => {
                   padding: "5px",
                 }}
                 onClick={() => {
-                  onRouterLink(`/review?idProduct=${product.idProduct}`);
+                  onRouterLink(`/detailsProduct/${product.idProduct}`);
                 }}
               >
                 Ver más
