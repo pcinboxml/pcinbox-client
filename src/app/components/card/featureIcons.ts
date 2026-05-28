@@ -11,33 +11,58 @@ const COLOR = "BB3D4B";
 
 const ICON_MAP = [
   {
-    kw: ["chipset", "socket", "procesador", "ryzen", "intel", "core"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/processor.png`,
-    label: (f: Feature) => f.value,
-  },
-  {
-    kw: ["memoria interna", "ddr", "ram", "dimm"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/memory-slot.png`,
-    label: (f: Feature) => f.value,
-  },
-  {
-    kw: ["almacenamiento", "disco", "sata", "nvme", "m.2", "ssd"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/ssd.png`,
+    kw: ["procesador", "cpu", "chipset", "socket", "ryzen", "intel", "core"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/cpu.png`,
     label: (f: Feature) => f.value,
   },
   {
     kw: [
-      "gráfico",
+      "tarjeta gr",
+      "tarjeta de video",
       "gpu",
-      "directx",
-      "radeon",
       "nvidia",
-      "geforce",
-      "vega",
       "rtx",
       "gtx",
+      "radeon",
+      "geforce",
+      "vega",
     ],
     icon: `https://img.icons8.com/ios/50/${COLOR}/video-card.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["tarjeta madre", "motherboard", "tarjeta m"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/motherboard.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["memoria ram", "ram", "ddr", "dimm", "memoria interna"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/memory-slot.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["ssd", "disco", "almacenamiento", "nvme", "m.2", "sata"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/ssd.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["gabinete", "case", "chasis"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/computer.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["disipador", "cooler", "ventilador", "refriger"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/fan.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["fuente", "psu", "watts", "poder"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/power.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["sistema operativo", "windows", "linux", "os"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/windows-10.png`,
     label: (f: Feature) => f.value,
   },
   {
@@ -46,49 +71,42 @@ const ICON_MAP = [
     label: (f: Feature) => f.value,
   },
   {
+    kw: ["wifi", "wireless", "bluetooth", "inalámbrico"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/wifi.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
+    kw: ["ethernet", "lan", "gigabit", "red"],
+    icon: `https://img.icons8.com/ios/50/${COLOR}/network-card.png`,
+    label: (f: Feature) => f.value,
+  },
+  {
     kw: ["hdmi", "displayport", "dvi"],
     icon: `https://img.icons8.com/ios/50/${COLOR}/hdmi-cable.png`,
-    label: (f: Feature) => `HDMI: ${f.value}`,
+    label: (f: Feature) => f.value,
   },
   {
     kw: ["usb"],
     icon: `https://img.icons8.com/ios/50/${COLOR}/usb-2.png`,
-    label: (f: Feature) =>
-      `${f.prop.replace(/cantidad de puertos /i, "")}: ${f.value}`,
-  },
-  {
-    kw: ["ethernet", "lan", "gigabit"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/network-card.png`,
-    label: (f: Feature) => (f.value !== "No" ? f.value : null),
-  },
-  {
-    kw: ["wifi", "wireless", "bluetooth"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/wifi.png`,
-    label: (f: Feature) => (f.value !== "No" ? `Wi-Fi: ${f.value}` : null),
-  },
-  {
-    kw: ["factor de forma", "atx"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/motherboard.png`,
-    label: (f: Feature) => f.value,
-  },
-  {
-    kw: ["bios", "uefi"],
-    icon: `https://img.icons8.com/ios/50/${COLOR}/bios.png`,
     label: (f: Feature) => f.value,
   },
 ];
+
+// Orden de prioridad — qué props se muestran primero
 const PRIORITY = [
-  "chipset",
-  "socket",
   "procesador",
-  "memoria interna",
-  "almacenamiento",
-  "gráfico",
-  "audio",
-  "hdmi",
-  "ethernet",
+  "tarjeta gr",
+  "tarjeta de video",
+  "tarjeta madre",
+  "memoria ram",
+  "ssd",
+  "disco",
+  "gabinete",
+  "disipador",
+  "fuente",
+  "sistema operativo",
   "wifi",
-  "factor",
+  "ethernet",
 ];
 
 export function getTopFeatures(
@@ -99,6 +117,7 @@ export function getTopFeatures(
   const matched: (MappedFeature & { prop: string })[] = [];
 
   for (const f of features) {
+    // lowercase para que "Procesador" y "procesador" hagan match igual
     const haystack = `${f.prop} ${f.value}`.toLowerCase();
     for (const rule of ICON_MAP) {
       if (rule.kw.some((k) => haystack.includes(k))) {
