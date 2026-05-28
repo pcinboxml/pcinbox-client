@@ -250,11 +250,15 @@ const Card = ({ product }: { product: ProductI }) => {
         </span>
         <span className="code">{product.sku}</span>
       </div>
+      {console.log(product.caracteristicas)}
       {product.caracteristicas && (
         <div className="feat-block">
           {(() => {
             try {
-              const parsed = JSON.parse(product.caracteristicas);
+              const parsed =
+                typeof product.caracteristicas == "string"
+                  ? JSON.parse(product.caracteristicas)
+                  : product.caracteristicas;
               const features = getTopFeatures(parsed, 3);
               if (!features.length) return null;
               return features.map((feat, i) => (
@@ -274,7 +278,7 @@ const Card = ({ product }: { product: ProductI }) => {
             }
           })()}
           {(() => {
-            return (
+            product.caracteristicas && (
               <button
                 className="bg-[#bb3d4b] text-white cursor-pointer flex justify-center items-center rounded mt-1"
                 style={{
