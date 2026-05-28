@@ -250,7 +250,7 @@ const Card = ({ product }: { product: ProductI }) => {
         </span>
         <span className="code">{product.sku}</span>
       </div>
-      {console.log(product.caracteristicas)}
+    
       {product.caracteristicas && (
         <div className="feat-block">
           {(() => {
