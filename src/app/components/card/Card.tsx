@@ -110,7 +110,6 @@ const Card = ({ product }: { product: ProductI }) => {
         {/* {product.reviews && product.reviews.length > 0 && ( */}
         <div className="comments flex">
           <StyledTooltip
-            interactive
             open={openTooltip}
             onClose={() => setOpenTooltip(false)}
             disableHoverListener={isMobile}

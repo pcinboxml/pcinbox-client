@@ -910,57 +910,59 @@ const SearchCategoryContent = () => {
                     <div key={index}>
                       <div
                         className="flex justify-end"
-                        style={{
-                          marginLeft: "auto",
-                        }}
+                        style={{ marginLeft: "auto" }}
                       >
-                        <button
-                          disabled={
-                            loadingToogleFavorite[Number(item?.idProduct)]
-                          }
-                          onClick={async () => {
-                            let isFavorite = (item as any)?.isFavorite;
-                            setLoadingToogleFavorite((prev) => ({
-                              ...prev,
-                              [item?.idProduct]: true,
-                            }));
-                            await handleToggleFavorites(
-                              isFavorite,
-                              Number(item?.idProduct),
-                              setData,
-                              setDataCopy,
-                            );
-                            setLoadingToogleFavorite((prev) => ({
-                              ...prev,
-                              [item?.idProduct]: false,
-                            }));
-                          }}
-                          aria-label={
-                            (item as any)?.isFavorite
-                              ? "Quitar de favoritos"
-                              : "Agregar a favoritos"
-                          }
-                          className={`
-          group relative flex h-10 w-10 items-center justify-center
-          rounded-lg border transition-all duration-150 active:scale-95
-          ${
-            (item as any)?.isFavorite
-              ? "border-red-200 bg-red-50 text-red-500 hover:bg-red-100"
-              : "border-neutral-200 bg-transparent text-neutral-400 hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-600"
-          }
-        `}
-                        >
-                          <Heart
-                            size={18}
-                            className="transition-transform duration-150 group-active:scale-90"
-                            fill={
-                              (item as any)?.isFavorite
-                                ? "currentColor"
-                                : "none"
+                        {/* Favorito */}
+                        <div>
+                          <button
+                            disabled={
+                              loadingToogleFavorite[Number(item?.idProduct)]
                             }
-                            strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
-                          />
-                        </button>
+                            onClick={async () => {
+                              let isFavorite = (item as any)?.isFavorite;
+                              setLoadingToogleFavorite((prev) => ({
+                                ...prev,
+                                [item?.idProduct]: true,
+                              }));
+                              await handleToggleFavorites(
+                                isFavorite,
+                                Number(item?.idProduct),
+                                setData,
+                                setDataCopy,
+                              );
+                              setLoadingToogleFavorite((prev) => ({
+                                ...prev,
+                                [item?.idProduct]: false,
+                              }));
+                            }}
+                            aria-label={
+                              (item as any)?.isFavorite
+                                ? "Quitar de favoritos"
+                                : "Agregar a favoritos"
+                            }
+                            className={`
+        group relative flex h-10 w-10 items-center justify-center
+        rounded-[10px] border-none backdrop-blur-sm
+        transition-all duration-200 active:scale-95
+        ${
+          (item as any)?.isFavorite
+            ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.6),0_4px_14px_rgba(185,28,28,0.4)]"
+            : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5),0_4px_14px_rgba(185,28,28,0.35)]"
+        }
+      `}
+                          >
+                            <Heart
+                              size={18}
+                              className="transition-transform duration-150 group-active:scale-90"
+                              fill={
+                                (item as any)?.isFavorite
+                                  ? "currentColor"
+                                  : "none"
+                              }
+                              strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
+                            />
+                          </button>
+                        </div>
 
                         {/* Compartir */}
                         <button
@@ -969,17 +971,24 @@ const SearchCategoryContent = () => {
                             await handleShare(
                               "Producto",
                               item?.name || item?.description,
-                              `${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? `http://localhost:3000/detailsProduct/${item?.idProduct}` : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`}`,
+                              `${
+                                process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                                  ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
+                                  : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
+                              }`,
                             );
                           }}
                           aria-label="Compartir"
                           className="
-          group relative flex h-10 w-10 items-center justify-center
-          rounded-lg border border-neutral-200 bg-transparent text-neutral-400
-          transition-all duration-150
-          hover:border-blue-200 hover:bg-blue-50 hover:text-blue-500
-          active:scale-95
-        "
+      group relative flex h-10 w-10 items-center justify-center
+      rounded-[10px] border-none backdrop-blur-sm
+      bg-slate-900/55 text-yellow-400
+      shadow-[inset_0_0_0_1px_rgba(96,165,250,0.2)]
+      transition-all duration-200
+      hover:bg-blue-800/75 hover:text-white
+      hover:shadow-[inset_0_0_0_1px_rgba(96,165,250,0.5),0_4px_14px_rgba(29,78,216,0.35)]
+      active:scale-95
+    "
                         >
                           <Share2
                             size={18}
