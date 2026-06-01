@@ -78,7 +78,9 @@ const WorkstationPage = () => {
         {productosPorTipo.map(
           ({ tipo, label, currentPageProducts, page, totalPages }) =>
             currentPageProducts.length > 0 && (
-              <div key={tipo} className="mb-10">
+              <div key={tipo} className="mb-10" style={{
+                marginBottom: "60px"
+              }}>
                 <div className="head-container">
                   <span>{label}</span>
                 </div>
