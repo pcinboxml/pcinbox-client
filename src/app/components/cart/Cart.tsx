@@ -11,9 +11,10 @@ import { MdAutorenew, MdClose } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
 import { CheckoutStep } from "../timeline/checkoutSteps";
 // import Link from "next/link";
+import Image from "next/image";
 
 export const Cart = () => {
-  return <img src="/carrito.png" loading="lazy" />;
+  return <img src="/carrito.png" loading="lazy" className="cart-icon-img" />;
 };
 
 export const ModalCart = ({
@@ -155,11 +156,13 @@ export const ModalCart = ({
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
                       >
                         {(product as any).image_url ? (
-                          <img
+                          <Image
                             src={(product as any).image_url[0]}
                             loading="lazy"
                             alt={"Imagen"}
-                            className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                            width={80}
+                            height={80}
+                            className="w-20 h-20 object-cover rounded-md cursor-pointer"
                             onClick={() => {
                               localStorage.setItem(
                                 "product",
@@ -171,11 +174,13 @@ export const ModalCart = ({
                             }}
                           />
                         ) : (
-                          <img
+                          <Image
                             src={(product as any).imageUrl[0]}
                             alt={"Imagen"}
                             loading="lazy"
-                            className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                            width={80}
+                            height={80}
+                            className="w-20 h-20 object-cover rounded-md cursor-pointer"
                             onClick={() => {
                               localStorage.setItem(
                                 "product",
@@ -273,10 +278,10 @@ export const ModalCart = ({
                               disabled={
                                 Number(product?.providerId) !== 1
                                   ? product.quantity >=
-                                    (product?.product_stock?.find(
-                                      (branch) =>
-                                        branch?.branchId === product?.storeId,
-                                    )?.stock || 0)
+                                  (product?.product_stock?.find(
+                                    (branch) =>
+                                      branch?.branchId === product?.storeId,
+                                  )?.stock || 0)
                                   : Number(product?.stock) === 0
                               }
                               onClick={() => {
@@ -329,15 +334,15 @@ export const ModalCart = ({
                               {formatCurrency(
                                 Number(
                                   Number(product.price) *
-                                    Number(
-                                      // primero busco en storage, si no está uso dataCart
-                                      dataCartStorege.find(
-                                        (item) =>
-                                          item.idProduct ===
-                                            product.idProduct &&
-                                          item.storeId === product.storeId,
-                                      )?.quantity ?? product.quantity,
-                                    ),
+                                  Number(
+                                    // primero busco en storage, si no está uso dataCart
+                                    dataCartStorege.find(
+                                      (item) =>
+                                        item.idProduct ===
+                                        product.idProduct &&
+                                        item.storeId === product.storeId,
+                                    )?.quantity ?? product.quantity,
+                                  ),
                                 ),
                               )}
                             </p>
