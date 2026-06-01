@@ -1,71 +1,16 @@
 "use client";
 import "./principal.css";
 import Carousel from "../components/carousel/Carousel";
-import Card from "../components/card/Card";
-import PaginationComponent from "../components/pagination/PaginationComponent";
 import { useTheContext } from "../services/globalContext";
-import useProducts from "../hooks/products";
 import { useEffect, useState } from "react";
 import GoogleReviewsCarousel from "../components/GoogleReviewsCarousel/GoogleReviewsCarousel";
-import CarouselMarcas from "../components/carouselMarcas/CarouselMarcas";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const PrincipalComponent = () => {
   const { socketServer } = useTheContext();
   const [banners, setBanners] = useState<string[]>([]);
-  const [pages, setPages] = useState<Record<string, number>>({});
-  const itemsPerPage = 8;
-
-  const { products } = useProducts();
-
-  const handlePageChange =
-    (tipo: string) => (_: React.ChangeEvent<unknown>, value: number) => {
-      setPages((prev) => ({
-        ...prev,
-        [tipo]: value,
-      }));
-    };
-  const tipos = [
-    // { tipo: "Oficina y Gaming", label: "Laptops, Escritorios y sillas Gamer" },
-    { tipo: "workStation", label: "PC Estación de trabajo" },
-    // { tipo: "", label: "" },
-    { tipo: "pro", label: "Pc Gamer Pro" },
-    { tipo: "intermedia", label: "Pc Gamer Intermedio" },
-    { tipo: "entrada", label: "Pc Gamer de entrada" },
-  ];
-
-  const productosPorTipo = tipos.map(({ tipo, label }) => {
-    const filtrados = products.filter((item) => {
-      if (!item.caracteristicas) return false;
-
-      try {
-        const arr =
-          typeof item.caracteristicas === "string"
-            ? JSON.parse(item.caracteristicas)
-            : item.caracteristicas;
-
-        const tipoProp = arr.find((c: any) => c.prop === "tipo");
-        return tipoProp?.value === tipo;
-      } catch {
-        return false;
-      }
-    });
-
-    const page = pages[tipo] || 1;
-    const totalPages = Math.ceil(filtrados.length / itemsPerPage);
-
-    const start = (page - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-
-    const currentPageProducts = filtrados.slice(start, end);
-
-    return {
-      tipo,
-      label,
-      currentPageProducts,
-      page,
-      totalPages,
-    };
-  });
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -102,6 +47,7 @@ const PrincipalComponent = () => {
       },
     );
   }, [socketServer.current]);
+
   return (
     <section className="mb-4">
       <div className="content-main">
@@ -112,56 +58,57 @@ const PrincipalComponent = () => {
         </div>
 
         <div className="content-index relative">
-          {/* {pathName == "/principal" || pathName == "/" ? (
-            <SubMenuProductos
-              styles={{
-                // left: "-160px",
-                top: "-43px",
-                paddingLeft: "2px",
-                paddingTop: "3px",
-                paddingRight: "3px",
-              }}
-            />
-          ) : null} */}
           <div className="container-carousel">
-            {/* {dataProducts && dataProducts.length > 0 ? ( */}
             <Carousel banners={banners} />
             <br />
-
-            {/* ) : (
-              <div className="w-full flex justify-end p-2">
-                <Alert severity="info">Sin contenido disponible</Alert>
-              </div>
-            )} */}
           </div>
-          {productosPorTipo.map(
-            ({ tipo, label, currentPageProducts, page, totalPages }) =>
-              currentPageProducts.length > 0 && (
-                <div key={tipo}>
-                  <div className="head-container">
-                    <span>{label}</span>
-                  </div>
 
-                  <div className="container-destacado">
-                    {currentPageProducts.map((product) => (
-                      <Card key={product.idProduct} product={product} />
-                    ))}
-                  </div>
+          <div className="w-full flex flex-col md:flex-row justify-center items-center my-8">
+            <div
+              onClick={() => router.push("/pc-gamer")}
+              className="group relative cursor-pointer overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] w-full md:w-1/2"
+            >
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl" />
+              <Image
+                src={"/dual_products_banners/boton_pc_gamer.png"}
+                alt="Boton PC Gamer"
+                width={850}
+                height={335}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  borderRadius: "5px",
+                  display: "block"
+                }}
+              />
+            </div>
 
-                  {totalPages > 1 && (
-                    <PaginationComponent
-                      page={page}
-                      count={totalPages}
-                      onChange={handlePageChange(tipo)}
-                    />
-                  )}
-                </div>
-              ),
-          )}
+            <div
+              onClick={() => router.push("/workstation")}
+              className="group relative cursor-pointer overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] w-full md:w-1/2"
+            >
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl" />
+              <Image
+                src={"/dual_products_banners/boton_ws.png"}
+                alt="Boton WS"
+                width={850}
+                height={334}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  borderRadius: "5px",
+                  display: "block"
+                }}
+              />
+            </div>
+          </div>
+
+          <GoogleReviewsCarousel />
         </div>
       </div>
 
-      <GoogleReviewsCarousel />
       <div className="mt-2">
         <iframe
           src="https://www.google.com/maps?q=pcinbox+León+Guanajuato&output=embed"
