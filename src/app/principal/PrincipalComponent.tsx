@@ -63,7 +63,7 @@ const PrincipalComponent = () => {
             <br />
           </div>
 
-          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-6 my-8">
+          <div className="w-full flex flex-col md:flex-row justify-center items-center my-8">
             <div
               onClick={() => router.push("/pc-gamer")}
               className="group relative cursor-pointer overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] w-full md:w-1/2"

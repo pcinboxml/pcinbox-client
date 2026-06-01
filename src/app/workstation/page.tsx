@@ -66,7 +66,7 @@ const WorkstationPage = () => {
   }, [productosPorTipo]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-8 pb-20">
       <div className="w-full mb-6">
 
         <h1 className="text-3xl font-extrabold text-zinc-950 mt-4 border-b pb-2">

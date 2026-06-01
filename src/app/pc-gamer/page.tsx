@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Card from "../components/card/Card";
 import PaginationComponent from "../components/pagination/PaginationComponent";
 import useProducts from "../hooks/products";
 import "../principal/principal.css";
 
 const PcGamerPage = () => {
-  const router = useRouter();
   const { products } = useProducts();
   const [pages, setPages] = useState<Record<string, number>>({});
   const itemsPerPage = 8;
@@ -68,7 +66,7 @@ const PcGamerPage = () => {
   }, [productosPorTipo]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-8 pb-20">
       <div className="w-full mb-6">
 
         <h1 className="text-3xl font-extrabold text-zinc-950 mt-4 border-b pb-2">
@@ -80,7 +78,9 @@ const PcGamerPage = () => {
         {productosPorTipo.map(
           ({ tipo, label, currentPageProducts, page, totalPages }) =>
             currentPageProducts.length > 0 && (
-              <div key={tipo} className="mb-10">
+              <div key={tipo} className="mb-10" style={{
+                marginBottom: "50px"
+              }}>
                 <div className="head-container">
                   <span>{label}</span>
                 </div>
