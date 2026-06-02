@@ -907,7 +907,7 @@ const SearchCategoryContent = () => {
                     return 0;
                   })
                   .map((item, index: number) => (
-                    <div key={index}>
+                    <div key={index} className={styles.productCard}>
                       <div
                         className="flex justify-end"
                         style={{ marginLeft: "auto" }}
@@ -1481,7 +1481,6 @@ const SearchCategoryContent = () => {
                           </Carousel>
                         </div>
                       </div>
-                      <hr />
                     </div>
                   ))
               ) : (

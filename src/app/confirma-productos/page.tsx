@@ -95,7 +95,7 @@ const ConfirmaProducts = () => {
 
     const existing = localStorage.getItem("checkout_products_snapshot");
 
-    if (existing) return;
+    if (existing) { return };
 
     const snapshot = productsToShow.map((p) => ({
       id: p.idProduct,
