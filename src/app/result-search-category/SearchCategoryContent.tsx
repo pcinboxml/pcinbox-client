@@ -861,7 +861,7 @@ const SearchCategoryContent = () => {
                     }
                     value={searchText}
                   />
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: "12px", flexWrap: "wrap" }}>
                     <div className={styles.viewModeToggle}>
                       <button
                         type="button"
