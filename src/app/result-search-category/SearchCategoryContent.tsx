@@ -587,8 +587,8 @@ const SearchCategoryContent = () => {
 
                 <Image
                   src={findImg?.pathImg}
-                  width={100}
-                  height={800}
+                  width={1920}
+                  height={470}
                   alt={`Img de categoria ${findNameCategory?.name}`}
                   className={`
                    rounded
