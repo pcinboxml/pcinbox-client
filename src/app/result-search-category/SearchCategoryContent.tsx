@@ -22,7 +22,7 @@ import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, LayoutGrid, Rows } from "lucide-react";
 const SearchCategoryContent = () => {
   // Al principio del componente
   //useScrollPosition("scroll-/result-search-category");
@@ -41,6 +41,12 @@ const SearchCategoryContent = () => {
     Record<number, boolean>
   >({});
   const [filterValue, setFilterValue] = useState<any>("");
+  const [viewMode, setViewMode] = useState<"rectangular" | "square">("rectangular");
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const { requestPostProveedor } = useProveedores();
   const [data, setData] = useState<ProductI[]>([]);
   const [dataCopy, setDataCopy] = useState<ProductI[]>([]);
@@ -545,6 +551,14 @@ const SearchCategoryContent = () => {
     };
   };
 
+  if (!isMounted) {
+    return (
+      <section className={styles.section}>
+        <Alert severity="info">Cargando...</Alert>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.section}>
       {(() => {
@@ -847,32 +861,43 @@ const SearchCategoryContent = () => {
                     }
                     value={searchText}
                   />
-                  <div className={styles.sortWrapper}>
-                    <span className={styles.sortLabel}>Ordenar por:</span>
-                    <select
-                      className="form-select"
-                      value={filterValue}
-                      onChange={(event) => {
-                        setFilterValue(event.target?.value);
-                        setOrderBy(event.target?.value);
-                        // setFilterValue(event.target?.value);
-                        // setData((prev) => {
-                        //   const sorted = [...prev].sort((a: any, b: any) =>
-                        //     event.target.value === "1"
-                        //       ? Number(b.price) - Number(a.price)
-                        //       : Number(a.price) - Number(b.price),
-                        //   );
-                        //   setPage(1);
-                        //   return sorted;
-                        // });
-                      }}
-                    >
-                      <option value={""} disabled>
-                        Selecciona una opción
-                      </option>
-                      <option value={"1"}>Mayor precio</option>
-                      <option value={"2"}>Menor precio</option>
-                    </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                    <div className={styles.viewModeToggle}>
+                      <button
+                        type="button"
+                        className={`${styles.toggleBtn} ${viewMode === "square" ? styles.toggleBtnActive : ""}`}
+                        onClick={() => setViewMode("square")}
+                        aria-label="Vista cuadrícula"
+                      >
+                        <LayoutGrid size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.toggleBtn} ${viewMode === "rectangular" ? styles.toggleBtnActive : ""}`}
+                        onClick={() => setViewMode("rectangular")}
+                        aria-label="Vista lista"
+                      >
+                        <Rows size={18} />
+                      </button>
+                    </div>
+
+                    <div className={styles.sortWrapper}>
+                      <span className={styles.sortLabel}>Ordenar por:</span>
+                      <select
+                        className="form-select"
+                        value={filterValue}
+                        onChange={(event) => {
+                          setFilterValue(event.target?.value);
+                          setOrderBy(event.target?.value);
+                        }}
+                      >
+                        <option value={""} disabled>
+                          Selecciona una opción
+                        </option>
+                        <option value={"1"}>Mayor precio</option>
+                        <option value={"2"}>Menor precio</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </>
@@ -899,15 +924,293 @@ const SearchCategoryContent = () => {
 
             <div>
               {data && data.length > 0 ? (
-                data
-                  .slice(startIndex, endIndex)
-                  .sort((a: any, b: any) => {
-                    if (a.stock > 0 && b.stock === 0) return -1;
-                    if (a.stock === 0 && b.stock > 0) return 1;
-                    return 0;
-                  })
-                  .map((item, index: number) => (
-                    <div key={index} className={styles.productCard}>
+                viewMode === "square" ? (
+                  <div className={styles.productsGrid}>
+                    {data
+                      .slice(startIndex, endIndex)
+                      .sort((a: any, b: any) => {
+                        if (a.stock > 0 && b.stock === 0) return -1;
+                        if (a.stock === 0 && b.stock > 0) return 1;
+                        return 0;
+                      })
+                      .map((item, index: number) => (
+                        <div key={index} className={styles.productSquareCard}>
+                          <div className={styles.squareCardHeader}>
+                            {/* Favorito */}
+                            <div>
+                              <button
+                                disabled={
+                                  loadingToogleFavorite[Number(item?.idProduct)]
+                                }
+                                onClick={async () => {
+                                  let isFavorite = (item as any)?.isFavorite;
+                                  setLoadingToogleFavorite((prev) => ({
+                                    ...prev,
+                                    [item?.idProduct]: true,
+                                  }));
+                                  await handleToggleFavorites(
+                                    isFavorite,
+                                    Number(item?.idProduct),
+                                    setData,
+                                    setDataCopy,
+                                  );
+                                  setLoadingToogleFavorite((prev) => ({
+                                    ...prev,
+                                    [item?.idProduct]: false,
+                                  }));
+                                }}
+                                aria-label={
+                                  (item as any)?.isFavorite
+                                    ? "Quitar de favoritos"
+                                    : "Agregar a favoritos"
+                                }
+                                className={`
+            group relative flex h-9 w-9 items-center justify-center
+            rounded-[8px] border-none backdrop-blur-sm
+            transition-all duration-200 active:scale-95
+            ${
+              (item as any)?.isFavorite
+                ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white"
+                : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white"
+            }
+          `}
+                              >
+                                <Heart
+                                  size={16}
+                                  className="transition-transform duration-150 group-active:scale-90"
+                                  fill={
+                                    (item as any)?.isFavorite
+                                      ? "currentColor"
+                                      : "none"
+                                  }
+                                  strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
+                                />
+                              </button>
+                            </div>
+
+                            {/* Compartir */}
+                            <button
+                              title="Compartir"
+                              onClick={async () => {
+                                await handleShare(
+                                  "Producto",
+                                  item?.name || item?.description,
+                                  `${
+                                    process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                                      ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
+                                      : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
+                                  }`,
+                                );
+                              }}
+                              aria-label="Compartir"
+                              className="
+          group relative flex h-9 w-9 items-center justify-center
+          rounded-[8px] border-none backdrop-blur-sm
+          bg-slate-900/55 text-yellow-400
+          shadow-[inset_0_0_0_1px_rgba(96,165,250,0.2)]
+          transition-all duration-200
+          hover:bg-blue-800/75 hover:text-white
+          active:scale-95
+        "
+                            >
+                              <Share2
+                                size={16}
+                                className="transition-transform duration-150 group-active:scale-90"
+                                strokeWidth={1.75}
+                              />
+                            </button>
+                          </div>
+
+                          <div className={styles.squareCarouselWrapper}>
+                            <Carousel
+                              showIndicators={true}
+                              showThumbs={false}
+                              showStatus={false}
+                              showArrows={true}
+                              onClickItem={() =>
+                                onRouterLink(`/detailsProduct/${item.idProduct}`)
+                              }
+                            >
+                              {(item as any).image_url &&
+                              (item as any).image_url.length > 0
+                                ? (item as any).image_url.map(
+                                    (img: string, i: number) => (
+                                      <div
+                                        key={i}
+                                        className={styles.squareCarouselSlide}
+                                      >
+                                        <Image
+                                          src={`${img}?tr=w-400,q-70,f-auto`}
+                                          alt="producto"
+                                          width={140}
+                                          height={140}
+                                          style={{
+                                            objectFit: "contain",
+                                            height: "140px",
+                                            width: "140px",
+                                            marginTop: "8px",
+                                          }}
+                                          sizes="(max-width: 768px) 100vw, 50vw"
+                                          priority={i === 0}
+                                        />
+                                      </div>
+                                    ),
+                                  )
+                                : [
+                                    <div key="no-img" style={{ padding: 8, fontSize: 12 }}>
+                                      Sin imágenes
+                                    </div>,
+                                  ]}
+                            </Carousel>
+                          </div>
+
+                          <div className={styles.squareCardBody}>
+                            <a
+                              role="button"
+                              onClick={() =>
+                                onRouterLink(`/detailsProduct/${item.idProduct}`)
+                              }
+                              className={styles.squareProductName}
+                              title={item.name}
+                            >
+                              {item.name}
+                            </a>
+
+                            <div className={styles.squareSkuRating}>
+                              <span className={styles.squareSku}>SKU: {item.sku}</span>
+                              {(() => {
+                                const promedioRating =
+                                  item.reviews.length > 0
+                                    ? item.reviews.reduce(
+                                        (sum: any, review: any) =>
+                                          sum + review.rating,
+                                        0,
+                                      ) / item.reviews.length
+                                    : 0;
+                                return (
+                                  <div className={styles.squareRatingRow}>
+                                    <Rating
+                                      name="simple-controlled-square"
+                                      max={5}
+                                      readOnly
+                                      value={promedioRating}
+                                      size="small"
+                                      sx={{ color: "#BB3D4B" }}
+                                    />
+                                    <span className={styles.squareReviewCount}>
+                                      ({item.reviews.length})
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+
+                            <div className={styles.squarePriceStockRow}>
+                              <span className={styles.squarePrice}>
+                                {formatCurrency(Number(item.price))}
+                              </span>
+                              <div className={styles.squareStockRow}>
+                                <span
+                                  className={`${styles.stockDot} ${
+                                    item?.stock === undefined
+                                      ? styles.stockDotOut
+                                      : item.stock > 10
+                                        ? styles.stockDotHigh
+                                        : item.stock > 0
+                                          ? styles.stockDotLow
+                                          : styles.stockDotOut
+                                  }`}
+                                />
+                                <span className={styles.squareStockText}>
+                                  {item.stock === 0
+                                    ? "Sin stock"
+                                    : item.stock < 10
+                                      ? `¡Solo ${item?.stock} pzas!`
+                                      : `${item?.stock} pzas.`}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className={styles.squareActions}>
+                              <button
+                                disabled={
+                                  loadingAddProductCar[item.idProduct] ||
+                                  item.stock == 0
+                                }
+                                className={styles.squareAddToCartBtn}
+                                onClick={() => {
+                                  if (
+                                    (item?.isPC == 0 || item?.isPc == 0) &&
+                                    item?.product_stock!.length > 0 &&
+                                    Number(item?.providerId) != 1
+                                  ) {
+                                    setDataModal({
+                                      isOpen: true,
+                                      message: (
+                                        <div className="w-[800px] border">
+                                          <BranchSelector
+                                            productSelected={item}
+                                          />
+                                        </div>
+                                      ),
+                                      title: "",
+                                      type: "success",
+                                      showActions: false,
+                                      onClose: () =>
+                                        setDataModal((prev) => ({
+                                          ...prev,
+                                          isOpen: false,
+                                        })),
+                                      onConfirm: () =>
+                                        setDataModal((prev) => ({
+                                          ...prev,
+                                          isOpen: false,
+                                        })),
+                                    });
+                                  } else {
+                                    handleAddProductCart(item);
+                                  }
+                                }}
+                              >
+                                {item?.isPC == 0 &&
+                                loadingAddProductCar[item.idProduct] &&
+                                Number(item?.providerId) != 1 ? (
+                                  <MdAutorenew
+                                    size={16}
+                                    className="m-auto the-spinner"
+                                  />
+                                ) : item.stock == 0 ? (
+                                  "No disponible"
+                                ) : (
+                                  <>
+                                    Agregar
+                                    <MdShoppingCart size={14} color="white" />
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                className={styles.squareBuyNowBtn}
+                                disabled={item?.stock === 0}
+                                onClick={() => handleComprarAhora(item)}
+                              >
+                                {item?.stock !== 0 ? "Comprar" : "No disponible"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  data
+                    .slice(startIndex, endIndex)
+                    .sort((a: any, b: any) => {
+                      if (a.stock > 0 && b.stock === 0) return -1;
+                      if (a.stock === 0 && b.stock > 0) return 1;
+                      return 0;
+                    })
+                    .map((item, index: number) => (
+                      <div key={index} className={styles.productCard}>
                       <div
                         className="flex justify-end"
                         style={{ marginLeft: "auto" }}
@@ -1335,21 +1638,20 @@ const SearchCategoryContent = () => {
                                 >
                                   {formatCurrency(Number(item.price))}
                                 </span>
-                                <br />
-                                <div className="dp-stock-row">
+                                <div className={styles.stockRow}>
                                   <span
-                                    className={`dp-stock-dot dp-stock-dot--${() => {
-                                      return item?.stock === undefined
-                                        ? null
+                                    className={`${styles.stockDot} ${
+                                      item?.stock === undefined
+                                        ? styles.stockDotOut
                                         : item.stock > 10
-                                          ? "high"
+                                          ? styles.stockDotHigh
                                           : item.stock > 0
-                                            ? "low"
-                                            : "out";
-                                    }}`}
+                                            ? styles.stockDotLow
+                                            : styles.stockDotOut
+                                    }`}
                                   />
 
-                                  <span className="dp-stock-text">
+                                  <span className={styles.stockText}>
                                     {item.stock === 0
                                       ? "Sin stock"
                                       : item.stock < 10
@@ -1357,7 +1659,6 @@ const SearchCategoryContent = () => {
                                         : `Disponibles: ${item?.stock} pzas.`}
                                   </span>
                                 </div>
-                                {/* <span>Disponibles: {item.stock} piezas</span> */}
                               </div>
 
                               <div className={styles.addToCartWrapper}>
@@ -1483,6 +1784,7 @@ const SearchCategoryContent = () => {
                       </div>
                     </div>
                   ))
+                )
               ) : (
                 <Alert severity="info">Sin contenido disponible</Alert>
               )}
