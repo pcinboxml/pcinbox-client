@@ -43,8 +43,15 @@ const SearchCategoryContent = () => {
   const [filterValue, setFilterValue] = useState<any>("");
   const [viewMode, setViewMode] = useState<"rectangular" | "square">("rectangular");
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedMode = localStorage.getItem("viewMode");
+      if (savedMode === "rectangular" || savedMode === "square") {
+        setViewMode(savedMode);
+      }
+    }
     setIsMounted(true);
   }, []);
   const { requestPostProveedor } = useProveedores();
@@ -259,9 +266,9 @@ const SearchCategoryContent = () => {
 
   useEffect(() => {
     if (prevPageRef.current !== page) {
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+      if (titleRef.current) {
+        titleRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
     prevPageRef.current = page;
   }, [page]);
@@ -838,7 +845,7 @@ const SearchCategoryContent = () => {
           )}
 
           <div className={styles.mainContent}>
-            <h3 className={styles.categoryTitle}>
+            <h3 className={styles.categoryTitle} ref={titleRef}>
               {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
             </h3>
 
@@ -859,7 +866,10 @@ const SearchCategoryContent = () => {
                       <button
                         type="button"
                         className={`${styles.toggleBtn} ${viewMode === "square" ? styles.toggleBtnActive : ""}`}
-                        onClick={() => setViewMode("square")}
+                        onClick={() => {
+                          setViewMode("square");
+                          localStorage.setItem("viewMode", "square");
+                        }}
                         aria-label="Vista cuadrícula"
                       >
                         <LayoutGrid size={18} />
@@ -867,7 +877,10 @@ const SearchCategoryContent = () => {
                       <button
                         type="button"
                         className={`${styles.toggleBtn} ${viewMode === "rectangular" ? styles.toggleBtnActive : ""}`}
-                        onClick={() => setViewMode("rectangular")}
+                        onClick={() => {
+                          setViewMode("rectangular");
+                          localStorage.setItem("viewMode", "rectangular");
+                        }}
                         aria-label="Vista lista"
                       >
                         <Rows size={18} />

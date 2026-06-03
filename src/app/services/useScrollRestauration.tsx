@@ -16,10 +16,9 @@ export function useScrollRestoration(
       if (!scrollRef.current) return;
 
       const isDetails = pathname.startsWith("/detailsProduct/");
-      const isResultSearch = pathname.startsWith("/result-search-category");
 
-      // NO guardar scroll en rutas excluidas
-      if (!isDetails && !isResultSearch) {
+      // Guardar scroll de la página de la que estamos saliendo
+      if (!isDetails) {
         sessionStorage.setItem(
           `scroll-${pathname}`,
           scrollRef.current.scrollTop.toString(),
@@ -33,16 +32,10 @@ export function useScrollRestoration(
   // --------------------------
   useEffect(() => {
     const isDetails = pathname.startsWith("/detailsProduct/");
-    const isResultSearch = pathname.startsWith("/result-search-category");
 
     // Si es ruta excluida, solo set scroll a 0 (opcional)
     if (isDetails) {
       if (scrollRef.current) scrollRef.current.scrollTop = 0;
-      return;
-    }
-
-    if (isResultSearch) {
-      // Restaurar scroll guardado manualmente en tu page.tsx o layout
       return;
     }
 
@@ -51,6 +44,9 @@ export function useScrollRestoration(
     if (!saved || !scrollRef.current) return;
 
     const y = parseInt(saved, 10);
+    let rafId: number;
+    let retries = 0;
+    const maxRetries = 150; // ~2.5 segundos a 60fps
 
     const restore = () => {
       if (!scrollRef.current) return;
@@ -59,12 +55,18 @@ export function useScrollRestoration(
 
       if (container.scrollHeight >= y) {
         container.scrollTop = y;
-      } else {
-        // Espera a que el contenido tenga altura suficiente
-        requestAnimationFrame(restore);
+      } else if (retries < maxRetries) {
+        retries++;
+        rafId = requestAnimationFrame(restore);
       }
     };
 
     restore();
+
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, [pathname, scrollRef]);
 }
