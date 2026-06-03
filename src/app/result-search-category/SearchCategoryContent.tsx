@@ -844,14 +844,7 @@ const SearchCategoryContent = () => {
 
             {dataCopy && dataCopy.length > 0 && (
               <>
-                <div
-                  className={`${styles.searchBar}`}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                  }}
-                >
+                <div className={styles.searchBar}>
                   <input
                     type="text"
                     placeholder="Buscar..."
@@ -861,7 +854,7 @@ const SearchCategoryContent = () => {
                     }
                     value={searchText}
                   />
-                  <div style={{ display: "flex", alignItems: "flex-end", gap: "12px", flexWrap: "wrap" }}>
+                  <div className={styles.searchActions}>
                     <div className={styles.viewModeToggle}>
                       <button
                         type="button"
@@ -884,7 +877,7 @@ const SearchCategoryContent = () => {
                     <div className={styles.sortWrapper}>
                       <span className={styles.sortLabel}>Ordenar por:</span>
                       <select
-                        className="form-select"
+                        className={`form-select ${styles.sortSelect}`}
                         value={filterValue}
                         onChange={(event) => {
                           setFilterValue(event.target?.value);

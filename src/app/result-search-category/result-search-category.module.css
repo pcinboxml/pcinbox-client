@@ -105,28 +105,92 @@
 .searchBar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   margin-top: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .searchInput {
   width: 100%;
+  height: 38px;
   border: 1px solid #ccc;
-  padding: 4px 16px;
+  border-radius: 8px;
+  padding: 0 16px;
   box-sizing: border-box;
+  font-size: 14px;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+  transition: all 0.2s ease-in-out;
+}
+
+.searchInput:focus {
+  border-color: #bb3d4b;
+  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.2);
+}
+
+:global(.dark) .searchInput {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+:global(.dark) .searchInput:focus {
+  border-color: #bb3d4b;
+  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.4);
+}
+
+.searchActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .sortWrapper {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .sortLabel {
   white-space: nowrap;
   flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sortSelect {
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 0 32px 0 12px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease-in-out;
+  min-width: 160px;
+}
+
+.sortSelect:focus {
+  border-color: #bb3d4b;
+  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.2);
+}
+
+:global(.dark) .sortSelect {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+:global(.dark) .sortSelect:focus {
+  border-color: #bb3d4b;
+  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.4);
 }
 
 /* ─── Fila del producto ─────────────────────────────────────── */
@@ -282,10 +346,19 @@
   .searchBar {
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
   .searchInput {
+    width: 300px;
+  }
+
+  .searchActions {
     width: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
   }
 }
 
