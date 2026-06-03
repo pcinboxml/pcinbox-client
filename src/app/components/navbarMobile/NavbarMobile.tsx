@@ -30,6 +30,7 @@ import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import useStorage from "@/app/services/useStorage";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const NavbarResponsive = () => {
   const {
@@ -142,9 +143,9 @@ const NavbarResponsive = () => {
   const totalPrice = useMemo(() => {
     const total = dataCart
       ? dataCart
-          .filter((itemF) => itemF.stock != 0)
-          .map((item) => Number(item.price) * item.quantity)
-          .reduce((sum, current) => sum + current, 0)
+        .filter((itemF) => itemF.stock != 0)
+        .map((item) => Number(item.price) * item.quantity)
+        .reduce((sum, current) => sum + current, 0)
       : 0;
 
     return Math.round((total + Number.EPSILON) * 100) / 100;
@@ -377,7 +378,10 @@ const NavbarResponsive = () => {
                           style={{ zIndex: "120" }}
                         >
                           <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
-                            <img
+                            <Image
+                              alt="Foto de perfil"
+                              width={120}
+                              height={120}
                               src={
                                 rutaImgPerfil === ""
                                   ? "/user.jpeg"
