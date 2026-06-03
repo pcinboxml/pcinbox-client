@@ -394,6 +394,7 @@ const NavbarResponsive = () => {
                                 margin: "auto",
                               }}
                               loading="lazy"
+                              priority={true}
                             />
                             <span
                               className="text-[#A67845] text-center"
