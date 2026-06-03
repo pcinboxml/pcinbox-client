@@ -393,7 +393,7 @@ const NavbarResponsive = () => {
                                 objectFit: "contain",
                                 margin: "auto",
                               }}
-                              loading="lazy"
+
                               priority={true}
                             />
                             <span
