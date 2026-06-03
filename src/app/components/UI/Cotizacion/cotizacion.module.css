@@ -1,0 +1,155 @@
+/* QuoteTemplate.module.css */
+
+.pdfContainer {
+  width: 794px;
+  min-height: 1123px;
+  margin: 0 auto;
+  padding: 40px 55px;
+  background: #fff;
+  color: #000;
+  font-family: Arial, Helvetica, sans-serif;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* HEADER */
+
+.header {
+  text-align: center;
+}
+
+.logo {
+  width: 220px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.date {
+  font-size: 24px;
+  margin-top: 5px;
+}
+
+/* CLIENT */
+
+.clientSection {
+  margin-top: 55px;
+}
+
+.clientSection h2 {
+  font-size: 34px;
+  margin-bottom: 5px;
+}
+
+.client {
+  font-size: 20px;
+}
+
+/* CONTENT */
+
+.content {
+  margin-top: 45px;
+  position: relative;
+}
+
+.leftSide {
+  width: 100%;
+  padding-right: 120px;
+  box-sizing: border-box;
+}
+
+.divider {
+  position: absolute;
+  top: 0;
+  right: 60px;
+  width: 2px;
+  height: 760px;
+  background: #444;
+}
+
+.quoteInfo {
+  text-align: right;
+  margin-bottom: 45px;
+  font-size: 18px;
+}
+
+.items {
+  text-align: center;
+}
+
+.item {
+  margin-bottom: 38px;
+}
+
+.item p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.totalRow {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 45px;
+  font-size: 24px;
+}
+
+.totalRow strong {
+  font-size: 28px;
+}
+
+/* RECOMMENDATION */
+
+.recommendation {
+  margin-top: 110px;
+  width: 92%;
+}
+
+.recommendation p {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* FOOTER */
+
+.footer {
+  margin-top: 140px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.red {
+  color: #d50000;
+  font-weight: 700;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.company {
+  margin-top: 35px;
+  text-align: center;
+}
+
+.companyName {
+  font-size: 22px !important;
+  margin-bottom: 10px !important;
+}
+
+.email {
+  color: #0047cc;
+  text-decoration: underline;
+}

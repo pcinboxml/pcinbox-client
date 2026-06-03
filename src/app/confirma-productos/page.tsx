@@ -95,7 +95,7 @@ const ConfirmaProducts = () => {
 
     const existing = localStorage.getItem("checkout_products_snapshot");
 
-    if (existing) return;
+    if (existing) { return };
 
     const snapshot = productsToShow.map((p) => ({
       id: p.idProduct,
@@ -187,7 +187,15 @@ const ConfirmaProducts = () => {
 
               <button
                 disabled={loadingCotizacion}
-                onClick={handleGenerateCotizacion}
+                onClick={() =>
+                  handleGenerateCotizacion(
+                    buyNowProduct === null && dataCart?.length > 0
+                      ? dataCart
+                      : buyNowProduct !== null && dataCart?.length === 0
+                        ? buyNowProduct
+                        : null,
+                  )
+                }
                 className="bg-[#666666] py-2 px-4 text-white rounded"
               >
                 {loadingCotizacion ? (

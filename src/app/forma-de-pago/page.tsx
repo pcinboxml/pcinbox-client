@@ -22,8 +22,14 @@ const FormaDePago = () => {
     getValuesStorage2,
   } = useFormaDePago();
 
-  const { selectedCard, dataCart, setDataModal, dataCard, buyNowProduct } =
-    useTheContext();
+  const {
+    selectedCard,
+    dataCart,
+    setDataModal,
+    dataCard,
+    buyNowProduct,
+    hasToken,
+  } = useTheContext();
   const { onRouterLink, productsToShow } = useService();
   const { checkoutMode } = useStorage();
 
@@ -237,6 +243,31 @@ const FormaDePago = () => {
                 <button
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
                   onClick={() => {
+                    if (!hasToken) {
+                      setDataModal({
+                        isOpen: true,
+                        message:
+                          "Tu sesión expiró, debes iniciar sesión nuevamente.",
+                        title: "Sesión expirada",
+
+                        onClose: () => {
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
+                        },
+
+                        onConfirm: async () => {
+                          setDataModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                          }));
+                        },
+
+                        type: "info",
+                      });
+                      return;
+                    }
                     if (!idMethodPay) {
                       setDataModal({
                         isOpen: true,

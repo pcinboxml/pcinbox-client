@@ -17,6 +17,7 @@ import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
 import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
 import useService from "./services/useService";
+import BtnAndroide from "./components/UI/BtnAndroide/BtnAndroide";
 
 export default function AppWrapper({
   children,
@@ -24,6 +25,8 @@ export default function AppWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [marginTop, setMarginTop] = useState("50px");
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const pathName = usePathname();
@@ -342,15 +345,19 @@ export default function AppWrapper({
     restoreScroll();
   }, [pathname, storageKey]);
   useEffect(() => {
+    if (!hasToken) return;
+
     const getTotalFavorites = async () => {
       if (!hasToken) return;
       try {
         const resp = await requestGet("/favorites/getTotalFavorites");
 
-        if (resp.status === 200) {
+        if (resp?.status === 200) {
           setTotalFavorites(resp.data.data.totalFavorites);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     getTotalFavorites();
@@ -377,6 +384,7 @@ export default function AppWrapper({
           pathName != "/terminos_y_condiciones" &&
           pathName != "/aviso_privacidad" && <NavbarResponsive />}
         <main
+          style={{ marginTop }}
           className={
             pathName !== "/estatusMP" && pathName !== "/estatusPay"
               ? "container main-content"
@@ -416,6 +424,7 @@ export default function AppWrapper({
             )}
         </main>
 
+        <BtnAndroide />
         <BtnFloat />
         {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"

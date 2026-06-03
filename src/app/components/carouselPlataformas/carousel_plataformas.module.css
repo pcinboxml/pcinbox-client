@@ -1,0 +1,39 @@
+.wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  height: 120px;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  gap: 50px; /* Cambiamos margin por gap */
+  animation: scroll 18s linear infinite;
+}
+
+/* Quitamos el margin-right de aquí */
+.slide {
+  flex: 0 0 auto;
+}
+
+.image {
+  border-radius: 12px;
+  object-fit: cover;
+  display: block; /* Evita espacios extra debajo de las imágenes */
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* Restamos 8px (la mitad de tu gap de 16px) para saltar el espacio en blanco del medio */
+    transform: translateX(calc(-50% - 8px));
+  }
+}
+
+/* EXTRA RECOMENDADO: Pausar la animación si el usuario pasa el ratón por encima */
+.wrapper:hover .track {
+  animation-play-state: paused;
+}

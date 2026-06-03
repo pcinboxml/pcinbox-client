@@ -3,9 +3,6 @@
 }
 
 .dropdownMenu {
-  /* position: absolute; */
-  /* top: -10%; o top: 0; left: 100% si quieres a la derecha */
-  /* left: 130px; */
   min-width: 250px;
   min-height: auto;
   margin-left: 30px;
@@ -36,17 +33,14 @@
   color: black;
 }
 
-/* Mostrar el submenú al hacer hover sobre el item */
 .dropdownSubmenu:hover .dropdownMenu {
   display: block;
 }
 
-/* Chrome, Edge, Safari */
 .menu1::-webkit-scrollbar {
   width: 3px !important;
 }
 
-/* Firefox */
 .menu1 {
   scrollbar-width: thin;
 }

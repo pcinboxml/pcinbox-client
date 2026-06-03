@@ -9,6 +9,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { getTopFeatures } from "./featureIcons";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -173,13 +174,7 @@ const Card = ({ product }: { product: ProductI }) => {
                               ></div>
                             </div>
                             <div className="text-[15px] text-[#606060] font-bold mx-2">
-                              {
-                                calcPorcentaje(
-                                  product,
-
-                                  progressRating,
-                                ).rating
-                              }
+                              {calcPorcentaje(product, progressRating).rating}
                             </div>
                             <div>
                               <MdStar color="#ccc" size={20} />
@@ -254,6 +249,58 @@ const Card = ({ product }: { product: ProductI }) => {
         </span>
         <span className="code">{product.sku}</span>
       </div>
+    
+      {product.caracteristicas && (
+        <div className="feat-block">
+          {(() => {
+            try {
+              const parsed =
+                typeof product.caracteristicas == "string"
+                  ? JSON.parse(product.caracteristicas)
+                  : product.caracteristicas;
+              const features = getTopFeatures(parsed, 3);
+              return features.map((feat, i) => (
+                <div key={i} className="feat-row">
+                  <Image
+                    src={feat.icon}
+                    alt="Imagen de caracteristica"
+                    width={18}
+                    height={18}
+                    style={{ flexShrink: 0 }}
+                  />
+                  <span className="feat-text">{feat.label}</span>
+                </div>
+              ));
+            } catch {
+              return null;
+            }
+          })()}
+          {(() => {
+            const parsed =
+              typeof product.caracteristicas == "string"
+                ? JSON.parse(product.caracteristicas)
+                : product.caracteristicas;
+            const features = getTopFeatures(parsed, 3);
+            if (!features.length) return null;
+
+            return (
+              features && (
+                <button
+                  className="bg-[#bb3d4b] text-white cursor-pointer flex justify-center items-center rounded mt-1"
+                  style={{
+                    padding: "5px",
+                  }}
+                  onClick={() => {
+                    onRouterLink(`/detailsProduct/${product.idProduct}`);
+                  }}
+                >
+                  Ver más
+                </button>
+              )
+            );
+          })()}
+        </div>
+      )}
 
       <div className="actions-product">
         <div className="buttons relative">

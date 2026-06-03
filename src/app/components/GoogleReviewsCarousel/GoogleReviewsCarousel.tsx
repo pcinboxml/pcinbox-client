@@ -222,11 +222,11 @@ export default function GoogleReviewsCarousel() {
     dataReviews.length > 0 && (
       <div
         className="border w-full"
-        style={{
-          marginTop: "120px",
-        }}
+      // style={{
+      //   marginTop: "120px",
+      // }}
       >
-        <section className="py-16 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
           {/* Header */}
           <div
             className="text-center mb-10 px-4"
