@@ -442,7 +442,7 @@ const NavbarResponsive = () => {
                   onMouseLeave={() => onMouseLeaveSubMenu("2")}
                 >
                   <a href="#">
-                    Favoritos ({totalFavorites.toLocaleString()})
+                    Favoritos ({(totalFavorites ?? 0).toLocaleString()})
                     <MdArrowDropDown size={22} color="gray" />
                   </a>
                   <div
@@ -455,7 +455,7 @@ const NavbarResponsive = () => {
                       top: "100%",
                     }}
                   >
-                    {totalFavorites > 0 ? (
+                    {(totalFavorites ?? 0) > 0 ? (
                       <div className="grid grid-cols-[1fr_1fr] w-[450px] border">
                         <div className="p-3 flex flex-col">
                           <span
@@ -471,7 +471,7 @@ const NavbarResponsive = () => {
                               borderBottom: "3px solid #a67845",
                             }}
                           >
-                            {totalFavorites} Articulos (predeterminada)
+                            {(totalFavorites ?? 0)} Articulos (predeterminada)
                           </a>
                         </div>
                         <div

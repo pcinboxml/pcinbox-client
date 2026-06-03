@@ -343,6 +343,7 @@ export default function AppWrapper({
   }, [pathname, storageKey]);
   useEffect(() => {
     const getTotalFavorites = async () => {
+      if (!hasToken) return;
       try {
         const resp = await requestGet("/favorites/getTotalFavorites");
 
@@ -353,7 +354,7 @@ export default function AppWrapper({
     };
 
     getTotalFavorites();
-  }, [totalFavorites]);
+  }, [hasToken]);
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
