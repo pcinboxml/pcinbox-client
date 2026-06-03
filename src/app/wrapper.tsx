@@ -348,6 +348,7 @@ export default function AppWrapper({
     if (!hasToken) return;
 
     const getTotalFavorites = async () => {
+      if (!hasToken) return;
       try {
         const resp = await requestGet("/favorites/getTotalFavorites");
 
@@ -360,18 +361,7 @@ export default function AppWrapper({
     };
 
     getTotalFavorites();
-  }, [totalFavorites]);
-
-  useEffect(() => {
-    setMarginTop(
-      pathName.startsWith("/result-search-category")
-        ? "10px"
-        : pathName.startsWith("/principal")
-          ? "0px"
-          : "50px",
-    );
-  }, [pathName]);
-
+  }, [hasToken]);
   useProtectedRoute();
 
   useScrollRestoration(scrollRef);
