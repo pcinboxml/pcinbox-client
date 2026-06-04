@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useService from "@/app/services/useService";
 import {
@@ -48,10 +48,13 @@ const SERVICES = [
   }
 ];
 
-// Horarios específicos (12:30 pm y 4:00 pm, 3 espacios disponibles)
+// Horarios específicos separados por hora (1 hora de duración cada uno)
 const TIME_SLOTS = [
-  { time: "12:30 PM", label: "12:30 PM", spots: "3 espacios disponibles" },
-  { time: "04:00 PM", label: "04:00 PM", spots: "3 espacios disponibles" }
+  { time: "12:00 PM", label: "12:00 PM", spots: "1 espacio disponible" },
+  { time: "01:00 PM", label: "01:00 PM", spots: "1 espacio disponible" },
+  { time: "02:00 PM", label: "02:00 PM", spots: "1 espacio disponible" },
+  { time: "03:00 PM", label: "03:00 PM", spots: "1 espacio disponible" },
+  { time: "04:00 PM", label: "04:00 PM", spots: "1 espacio disponible" }
 ];
 
 // Generar siguientes 14 días laborables (omitir sábados y domingos)
@@ -90,7 +93,7 @@ const formatDateFull = (date: Date) => {
 
 export default function MaintenanceBookingPage() {
   const router = useRouter();
-  const { requestPost } = useService();
+  const { requestPost, requestGet } = useService();
   
   // Estados del Formulario (Todos los campos de contacto están vacíos por defecto)
   const [selectedService, setSelectedService] = useState("");
@@ -114,13 +117,42 @@ export default function MaintenanceBookingPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRescheduling, setIsRescheduling] = useState(false);
 
+  // Estados para horarios ocupados dinámicos
+  const [busySlots, setBusySlots] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+
   const availableDates = useMemo(() => generateAvailableDates(), []);
 
-  // Simulación de franjas horarias ocupadas
-  const busySlots = useMemo(() => {
-    if (!selectedDate) return [];
-    const seed = selectedDate.getDate();
-    return TIME_SLOTS.filter((_, idx) => (seed + idx) % 3 === 0).map(s => s.time);
+  // Consultar disponibilidad de horarios en tiempo real
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!selectedDate) {
+        setBusySlots([]);
+        return;
+      }
+      
+      setIsLoadingSlots(true);
+      try {
+        const dateString = selectedDate.toISOString().split("T")[0];
+        const response = await requestGet(`/reservas/availability?date=${dateString}`);
+        if (response && response.status === 200 && response.data && response.data.slots) {
+          // Filtrar los slots ocupados (available = false)
+          const occupied = response.data.slots
+            .filter((slot: any) => !slot.available)
+            .map((slot: any) => slot.time);
+          setBusySlots(occupied);
+        } else {
+          setBusySlots([]);
+        }
+      } catch (error) {
+        console.error("Error al consultar disponibilidad:", error);
+        setBusySlots([]);
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    };
+    
+    fetchAvailability();
   }, [selectedDate]);
 
   // Generar y enviar mensaje por WhatsApp
@@ -225,7 +257,7 @@ export default function MaintenanceBookingPage() {
       const response = await requestPost({
         reference: randomRef,
         service: serviceDetails?.name || "",
-        deviceType,
+        deviceType: deviceType === "pc" ? "PC" : "Laptop",
         brand,
         model,
         description,
@@ -730,7 +762,10 @@ export default function MaintenanceBookingPage() {
                 <div 
                   className="grid grid-cols-2"
                   style={{
-                    gap: "12px"
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                    width: "100%"
                   }}
                 >
                   <div
@@ -770,7 +805,10 @@ export default function MaintenanceBookingPage() {
                 <div 
                   className="grid grid-cols-2"
                   style={{
-                    gap: "12px"
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                    width: "100%"
                   }}
                 >
                   <div>
@@ -789,6 +827,8 @@ export default function MaintenanceBookingPage() {
                       onChange={(e) => setBrand(e.target.value)}
                       className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#BB3D4B]"
                       style={{
+                        width: "100%",
+                        boxSizing: "border-box",
                         paddingLeft: "12px",
                         paddingRight: "12px",
                         paddingTop: "10px",
@@ -812,6 +852,8 @@ export default function MaintenanceBookingPage() {
                       onChange={(e) => setModel(e.target.value)}
                       className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#BB3D4B]"
                       style={{
+                        width: "100%",
+                        boxSizing: "border-box",
                         paddingLeft: "12px",
                         paddingRight: "12px",
                         paddingTop: "10px",
@@ -838,6 +880,8 @@ export default function MaintenanceBookingPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#BB3D4B] resize-none"
                     style={{
+                      width: "100%",
+                      boxSizing: "border-box",
                       paddingLeft: "12px",
                       paddingRight: "12px",
                       paddingTop: "10px",
@@ -867,8 +911,11 @@ export default function MaintenanceBookingPage() {
                   <div 
                     className="flex overflow-x-auto" 
                     style={{
+                      display: "flex",
+                      overflowX: "auto",
                       gap: "8px",
-                      paddingBottom: "8px"
+                      paddingBottom: "8px",
+                      width: "100%"
                     }}
                   >
                     {availableDates.map((date, idx) => {
@@ -926,50 +973,114 @@ export default function MaintenanceBookingPage() {
 
                 {/* Horarios Disponibles */}
                 {selectedDate && (
-                  <div 
-                    className="grid grid-cols-1 sm:grid-cols-2"
-                    style={{
-                      gap: "12px"
-                    }}
-                  >
-                    {TIME_SLOTS.map((slot) => {
-                      const isBusy = busySlots.includes(slot.time);
-                      const isSelected = selectedTime === slot.time;
-                      return (
-                        <button
-                          type="button"
-                          disabled={isBusy}
-                          key={slot.time}
-                          onClick={() => setSelectedTime(slot.time)}
-                          className={`rounded-xl border text-left flex flex-col justify-center transition-all ${
-                            isBusy
-                              ? "bg-zinc-100 dark:bg-zinc-800/40 text-zinc-300 dark:text-zinc-700 border-zinc-100 dark:border-zinc-800 cursor-not-allowed"
-                              : isSelected
-                              ? "border-[#BB3D4B] bg-red-50/20 dark:bg-[#BB3D4B]/5 ring-2 ring-[#BB3D4B]/20"
-                              : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700"
-                          }`}
-                          style={{
-                            paddingLeft: "16px",
-                            paddingRight: "16px",
-                            paddingTop: "12px",
-                            paddingBottom: "12px",
-                            cursor: isBusy ? "not-allowed" : "pointer"
-                          }}
-                        >
-                          <span className={`text-sm font-bold ${isSelected ? "text-[#BB3D4B]" : "text-zinc-800 dark:text-zinc-200"}`}>
-                            {slot.label}
-                          </span>
-                          <span 
-                            className="text-[10px] text-zinc-400"
-                            style={{
-                              marginTop: "2px"
-                            }}
-                          >
-                            {slot.spots}
-                          </span>
-                        </button>
-                      );
-                    })}
+                  <div>
+                    {isLoadingSlots ? (
+                      <div 
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          color: "#808080",
+                          fontSize: "12px",
+                          paddingTop: "8px",
+                          paddingBottom: "8px"
+                        }}
+                      >
+                        <MdAutorenew 
+                          className="animate-spin text-[#BB3D4B]" 
+                          style={{ animation: "spin 1s linear infinite" }} 
+                          size={16} 
+                        />
+                        <span>Consultando disponibilidad en tiempo real...</span>
+                      </div>
+                    ) : (
+                      <div 
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "12px",
+                          width: "100%",
+                          marginTop: "4px"
+                        }}
+                      >
+                        {TIME_SLOTS.map((slot) => {
+                          const isBusy = busySlots.includes(slot.time);
+                          const isSelected = selectedTime === slot.time;
+                          return (
+                            <button
+                              type="button"
+                              disabled={isBusy}
+                              key={slot.time}
+                              onClick={() => setSelectedTime(slot.time)}
+                              className={`rounded-full border transition-all duration-200 flex items-center justify-between ${
+                                isBusy
+                                  ? "bg-zinc-100 dark:bg-zinc-800/40 text-zinc-300 dark:text-zinc-700 border-zinc-200 dark:border-zinc-800 cursor-not-allowed"
+                                  : isSelected
+                                  ? "border-[#BB3D4B] bg-[#BB3D4B]/10 dark:bg-[#BB3D4B]/15 text-[#BB3D4B] shadow-sm shadow-[#BB3D4B]/10"
+                                  : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                              }`}
+                              style={{
+                                paddingLeft: "16px",
+                                paddingRight: "16px",
+                                paddingTop: "10px",
+                                paddingBottom: "10px",
+                                cursor: isBusy ? "not-allowed" : "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                outline: "none",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                <MdAccessTime size={16} className={isBusy ? "text-zinc-300 dark:text-zinc-700" : isSelected ? "text-[#BB3D4B]" : "text-zinc-400"} />
+                                <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                                  {slot.label}
+                                </span>
+                              </div>
+                              
+                              {/* Mini badge para espacios disponibles */}
+                              {!isBusy && (
+                                <span 
+                                  style={{
+                                    fontSize: "10px",
+                                    paddingLeft: "6px",
+                                    paddingRight: "6px",
+                                    paddingTop: "2px",
+                                    paddingBottom: "2px",
+                                    borderRadius: "9999px",
+                                    fontWeight: "600",
+                                    backgroundColor: isSelected ? "rgba(187, 61, 75, 0.15)" : "rgba(16, 185, 129, 0.1)",
+                                    color: isSelected ? "#BB3D4B" : "#10b981",
+                                    marginLeft: "4px"
+                                  }}
+                                >
+                                  Disponible
+                                </span>
+                              )}
+                              {isBusy && (
+                                <span 
+                                  style={{
+                                    fontSize: "10px",
+                                    paddingLeft: "6px",
+                                    paddingRight: "6px",
+                                    paddingTop: "2px",
+                                    paddingBottom: "2px",
+                                    borderRadius: "9999px",
+                                    fontWeight: "600",
+                                    backgroundColor: "rgba(239, 68, 68, 0.08)",
+                                    color: "rgba(239, 68, 68, 0.5)",
+                                    marginLeft: "4px"
+                                  }}
+                                >
+                                  Ocupado
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1048,6 +1159,8 @@ export default function MaintenanceBookingPage() {
                       onChange={(e) => setContactName(e.target.value)}
                       className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#BB3D4B]"
                       style={{
+                        width: "100%",
+                        boxSizing: "border-box",
                         paddingLeft: "12px",
                         paddingRight: "12px",
                         paddingTop: "10px",
@@ -1073,6 +1186,8 @@ export default function MaintenanceBookingPage() {
                       onChange={(e) => setContactEmail(e.target.value)}
                       className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#BB3D4B]"
                       style={{
+                        width: "100%",
+                        boxSizing: "border-box",
                         paddingLeft: "12px",
                         paddingRight: "12px",
                         paddingTop: "10px",
@@ -1090,7 +1205,7 @@ export default function MaintenanceBookingPage() {
                     >
                       Teléfono Celular
                     </label>
-                    <div className="flex" style={{ gap: "8px" }}>
+                    <div className="flex" style={{ display: "flex", gap: "8px", width: "100%" }}>
                       <select
                         value={phoneLada}
                         onChange={(e) => setPhoneLada(e.target.value)}
@@ -1100,18 +1215,20 @@ export default function MaintenanceBookingPage() {
                           paddingRight: "8px",
                           paddingTop: "10px",
                           paddingBottom: "10px",
-                          width: "80px"
+                          width: "95px",
+                          flexShrink: 0,
+                          boxSizing: "border-box"
                         }}
                       >
-                        <option value="+52">+52</option>
-                        <option value="+1">+1</option>
-                        <option value="+34">+34</option>
-                        <option value="+54">+54</option>
-                        <option value="+55">+55</option>
-                        <option value="+56">+56</option>
-                        <option value="+57">+57</option>
-                        <option value="+58">+58</option>
-                        <option value="+51">+51</option>
+                        <option value="+52">🇲🇽 +52</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+54">🇦🇷 +54</option>
+                        <option value="+55">🇧🇷 +55</option>
+                        <option value="+56">🇨🇱 +56</option>
+                        <option value="+57">🇨🇴 +57</option>
+                        <option value="+58">🇻🇪 +58</option>
+                        <option value="+51">🇵🇪 +51</option>
                       </select>
                       <input
                         type="tel"
@@ -1125,7 +1242,10 @@ export default function MaintenanceBookingPage() {
                           paddingLeft: "12px",
                           paddingRight: "12px",
                           paddingTop: "10px",
-                          paddingBottom: "10px"
+                          paddingBottom: "10px",
+                          flexGrow: 1,
+                          minWidth: 0,
+                          boxSizing: "border-box"
                         }}
                       />
                     </div>
