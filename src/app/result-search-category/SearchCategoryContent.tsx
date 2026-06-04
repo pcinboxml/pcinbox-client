@@ -195,28 +195,28 @@ const SearchCategoryContent = () => {
 
         const matchBrand = processorBrand
           ? caract.some(
-              (c) =>
-                c.prop === "Fabricante de procesador" &&
-                c.value?.toLowerCase() === processorBrand.toLowerCase(),
-            )
+            (c) =>
+              c.prop === "Fabricante de procesador" &&
+              c.value?.toLowerCase() === processorBrand.toLowerCase(),
+          )
           : true;
 
         const matchMemory = processorTipoMemoria
           ? caract.some(
-              (c) =>
-                c.prop === "Tipo de memoria interna" &&
-                c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
-            )
+            (c) =>
+              c.prop === "Tipo de memoria interna" &&
+              c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
+          )
           : true;
 
         const matchSocket = processorSocketProcesador
           ? caract.some(
-              (c) =>
-                c.prop === "Socket de procesador" &&
-                c.value
-                  ?.toLowerCase()
-                  .includes(processorSocketProcesador.toLowerCase()),
-            )
+            (c) =>
+              c.prop === "Socket de procesador" &&
+              c.value
+                ?.toLowerCase()
+                .includes(processorSocketProcesador.toLowerCase()),
+          )
           : true;
 
         return matchBrand && matchMemory && matchSocket;
@@ -324,14 +324,14 @@ const SearchCategoryContent = () => {
           const match = Number(item.idProduct) === Number(data.idProduct);
           return match
             ? {
-                ...item,
-                name: data.name,
-                description: data.description,
-                caracteristicas: data.caracteristicas,
-                price: Number(data.price).toString(),
-                stock: Number(data.stock),
-                sku: data.sku,
-              }
+              ...item,
+              name: data.name,
+              description: data.description,
+              caracteristicas: data.caracteristicas,
+              price: Number(data.price).toString(),
+              stock: Number(data.stock),
+              sku: data.sku,
+            }
             : item;
         });
       setDataCopy(updateFn);
@@ -344,14 +344,14 @@ const SearchCategoryContent = () => {
           const match = Number(item.idProduct) === Number(dataSocket.idProduct);
           return match
             ? {
-                ...item,
-                name: dataSocket.name,
-                description: dataSocket.description,
-                caracteristicas: dataSocket.caracteristicas,
-                price: Number(dataSocket.price).toString(),
-                stock: Number(dataSocket.stock),
-                sku: dataSocket.sku,
-              }
+              ...item,
+              name: dataSocket.name,
+              description: dataSocket.description,
+              caracteristicas: dataSocket.caracteristicas,
+              price: Number(dataSocket.price).toString(),
+              stock: Number(dataSocket.stock),
+              sku: dataSocket.sku,
+            }
             : item;
         });
       setDataCopy(updateFn);
@@ -361,13 +361,13 @@ const SearchCategoryContent = () => {
           const match = Number(item.productId) == Number(dataSocket.idProduct);
           return match
             ? {
-                ...item,
-                products: {
-                  ...item.products,
-                  stock: Number(dataSocket.stock),
-                  price: Number(dataSocket.price).toString(),
-                },
-              }
+              ...item,
+              products: {
+                ...item.products,
+                stock: Number(dataSocket.stock),
+                price: Number(dataSocket.price).toString(),
+              },
+            }
             : item;
         }),
       );
@@ -684,117 +684,66 @@ const SearchCategoryContent = () => {
                   (categorie) =>
                     Number(categorie?.idCategorie) === Number(categoryId),
                 )?.name === "MEMORIAS RAM Y FLASH" && (
-                  <div style={{ marginTop: 12 }}>
-                    <span className={styles?.sidebarTitle}>
-                      {"Tipo de memoria interna".toUpperCase()}
-                    </span>
-                    <ul className={styles.marcaList}>
-                      {(["DDR4", "DDR5"] as const).map((tipoMemoria) => {
-                        const lengthBrand = dataCopy.filter((item) => {
-                          const caract =
-                            typeof item?.caracteristicas === "string"
-                              ? JSON.parse(item.caracteristicas)
-                              : item.caracteristicas;
-                          if (!Array.isArray(caract)) return false;
-                          return caract.some(
-                            (c) =>
-                              c.prop === "Tipo de memoria interna" &&
-                              c.value?.toLowerCase() ===
+                    <div style={{ marginTop: 12 }}>
+                      <span className={styles?.sidebarTitle}>
+                        {"Tipo de memoria interna".toUpperCase()}
+                      </span>
+                      <ul className={styles.marcaList}>
+                        {(["DDR4", "DDR5"] as const).map((tipoMemoria) => {
+                          const lengthBrand = dataCopy.filter((item) => {
+                            const caract =
+                              typeof item?.caracteristicas === "string"
+                                ? JSON.parse(item.caracteristicas)
+                                : item.caracteristicas;
+                            if (!Array.isArray(caract)) return false;
+                            return caract.some(
+                              (c) =>
+                                c.prop === "Tipo de memoria interna" &&
+                                c.value?.toLowerCase() ===
                                 tipoMemoria.toLowerCase(),
-                          );
-                        }).length;
+                            );
+                          }).length;
 
-                        return (
-                          <li key={tipoMemoria}>
-                            <label
-                              htmlFor={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
-                              className={styles.marcaLabel}
-                            >
-                              <input
-                                type="radio"
-                                id={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
-                                name="tipo-memoria"
-                                checked={processorTipoMemoria === tipoMemoria}
-                                disabled={lengthBrand === 0}
-                                value={tipoMemoria === "DDR4" ? 1 : 2}
-                                onChange={handleOnSelectTipoMemoria}
-                              />
-                              <span style={{ margin: "0 4px" }}>
-                                {tipoMemoria}
-                              </span>
-                              <span style={{ margin: "0 4px" }}>
-                                {`(${Number(lengthBrand).toLocaleString()})`}
-                              </span>
-                            </label>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
+                          return (
+                            <li key={tipoMemoria}>
+                              <label
+                                htmlFor={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
+                                className={styles.marcaLabel}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`tipo-memoria-${tipoMemoria.toLowerCase()}`}
+                                  name="tipo-memoria"
+                                  checked={processorTipoMemoria === tipoMemoria}
+                                  disabled={lengthBrand === 0}
+                                  value={tipoMemoria === "DDR4" ? 1 : 2}
+                                  onChange={handleOnSelectTipoMemoria}
+                                />
+                                <span style={{ margin: "0 4px" }}>
+                                  {tipoMemoria}
+                                </span>
+                                <span style={{ margin: "0 4px" }}>
+                                  {`(${Number(lengthBrand).toLocaleString()})`}
+                                </span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
 
                 {dataCategories.find(
                   (categorie) =>
                     Number(categorie?.idCategorie) === Number(categoryId),
                 )?.name === "TARJETAS MADRE" && (
-                  <div style={{ marginTop: 12 }}>
-                    <span className={styles.sidebarTitle}>
-                      Marca del procesador
-                    </span>
-                    <ul className={styles.marcaList}>
-                      {(["INTEL", "AMD"] as const).map((brand) => {
-                        const lengthBrand = dataCopy.filter((item: any) => {
-                          const caract =
-                            typeof item?.caracteristicas === "string"
-                              ? JSON.parse(item.caracteristicas)
-                              : item.caracteristicas;
-                          if (!Array.isArray(caract)) return false;
-                          return caract.some(
-                            (c: any) =>
-                              c.prop === "Fabricante de procesador" &&
-                              c.value?.toLowerCase() === brand.toLowerCase(),
-                          );
-                        }).length;
-
-                        return (
-                          <li key={brand}>
-                            <label
-                              htmlFor={`marca-procesador-madre-${brand.toLowerCase()}`}
-                              className={styles.marcaLabel}
-                            >
-                              <input
-                                type="radio"
-                                id={`marca-procesador-madre-${brand.toLowerCase()}`}
-                                name="marca-procesador"
-                                checked={processorBrand === brand}
-                                disabled={lengthBrand === 0}
-                                value={brand === "INTEL" ? 1 : 2}
-                                onChange={handleOnSelectMarcaProcesadorMadre}
-                              />
-                              <span style={{ margin: "0 4px" }}>{brand}</span>
-                              <span style={{ margin: "0 4px" }}>
-                                {`(${Number(lengthBrand).toLocaleString()})`}
-                              </span>
-                            </label>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
-
-                {dataCategories.find(
-                  (categorie) =>
-                    Number(categorie?.idCategorie) === Number(categoryId),
-                )?.name === "TARJETAS MADRE" && (
-                  <div style={{ marginTop: 12 }}>
-                    <span className={styles.sidebarTitle}>
-                      Socket del procesador
-                    </span>
-                    <ul className={styles.marcaList}>
-                      {(["AM4", "AM5"] as const).map((socketProcesador) => {
-                        const lengthSocketProcesador = dataCopy.filter(
-                          (item) => {
+                    <div style={{ marginTop: 12 }}>
+                      <span className={styles.sidebarTitle}>
+                        Marca del procesador
+                      </span>
+                      <ul className={styles.marcaList}>
+                        {(["INTEL", "AMD"] as const).map((brand) => {
+                          const lengthBrand = dataCopy.filter((item: any) => {
                             const caract =
                               typeof item?.caracteristicas === "string"
                                 ? JSON.parse(item.caracteristicas)
@@ -802,44 +751,95 @@ const SearchCategoryContent = () => {
                             if (!Array.isArray(caract)) return false;
                             return caract.some(
                               (c: any) =>
-                                c.prop === "Socket de procesador" &&
-                                c.value
-                                  ?.toLowerCase()
-                                  .includes(socketProcesador.toLowerCase()),
+                                c.prop === "Fabricante de procesador" &&
+                                c.value?.toLowerCase() === brand.toLowerCase(),
                             );
-                          },
-                        ).length;
+                          }).length;
 
-                        return (
-                          <li key={socketProcesador}>
-                            <label
-                              htmlFor={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
-                              className={styles.marcaLabel}
-                            >
-                              <input
-                                type="radio"
-                                id={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
-                                name="socket-procesador"
-                                checked={
-                                  processorSocketProcesador === socketProcesador
-                                }
-                                disabled={lengthSocketProcesador === 0}
-                                value={socketProcesador === "AM4" ? 1 : 2}
-                                onChange={handleOnSelectSocketProcesador}
-                              />
-                              <span style={{ margin: "0 4px" }}>
-                                {socketProcesador}
-                              </span>
-                              <span style={{ margin: "0 4px" }}>
-                                {`(${Number(lengthSocketProcesador).toLocaleString()})`}
-                              </span>
-                            </label>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
+                          return (
+                            <li key={brand}>
+                              <label
+                                htmlFor={`marca-procesador-madre-${brand.toLowerCase()}`}
+                                className={styles.marcaLabel}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`marca-procesador-madre-${brand.toLowerCase()}`}
+                                  name="marca-procesador"
+                                  checked={processorBrand === brand}
+                                  disabled={lengthBrand === 0}
+                                  value={brand === "INTEL" ? 1 : 2}
+                                  onChange={handleOnSelectMarcaProcesadorMadre}
+                                />
+                                <span style={{ margin: "0 4px" }}>{brand}</span>
+                                <span style={{ margin: "0 4px" }}>
+                                  {`(${Number(lengthBrand).toLocaleString()})`}
+                                </span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                {dataCategories.find(
+                  (categorie) =>
+                    Number(categorie?.idCategorie) === Number(categoryId),
+                )?.name === "TARJETAS MADRE" && (
+                    <div style={{ marginTop: 12 }}>
+                      <span className={styles.sidebarTitle}>
+                        Socket del procesador
+                      </span>
+                      <ul className={styles.marcaList}>
+                        {(["AM4", "AM5"] as const).map((socketProcesador) => {
+                          const lengthSocketProcesador = dataCopy.filter(
+                            (item) => {
+                              const caract =
+                                typeof item?.caracteristicas === "string"
+                                  ? JSON.parse(item.caracteristicas)
+                                  : item.caracteristicas;
+                              if (!Array.isArray(caract)) return false;
+                              return caract.some(
+                                (c: any) =>
+                                  c.prop === "Socket de procesador" &&
+                                  c.value
+                                    ?.toLowerCase()
+                                    .includes(socketProcesador.toLowerCase()),
+                              );
+                            },
+                          ).length;
+
+                          return (
+                            <li key={socketProcesador}>
+                              <label
+                                htmlFor={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
+                                className={styles.marcaLabel}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`socket-procesador-madre-${socketProcesador.toLowerCase()}`}
+                                  name="socket-procesador"
+                                  checked={
+                                    processorSocketProcesador === socketProcesador
+                                  }
+                                  disabled={lengthSocketProcesador === 0}
+                                  value={socketProcesador === "AM4" ? 1 : 2}
+                                  onChange={handleOnSelectSocketProcesador}
+                                />
+                                <span style={{ margin: "0 4px" }}>
+                                  {socketProcesador}
+                                </span>
+                                <span style={{ margin: "0 4px" }}>
+                                  {`(${Number(lengthSocketProcesador).toLocaleString()})`}
+                                </span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
               </aside>
             </>
           )}
@@ -974,11 +974,10 @@ const SearchCategoryContent = () => {
             group relative flex h-9 w-9 items-center justify-center
             rounded-[8px] border-none backdrop-blur-sm
             transition-all duration-200 active:scale-95
-            ${
-              (item as any)?.isFavorite
-                ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white"
-                : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white"
-            }
+            ${(item as any)?.isFavorite
+                                    ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white"
+                                    : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white"
+                                  }
           `}
                               >
                                 <Heart
@@ -1001,10 +1000,9 @@ const SearchCategoryContent = () => {
                                 await handleShare(
                                   "Producto",
                                   item?.name || item?.description,
-                                  `${
-                                    process.env.NEXT_PUBLIC_NODE_ENV === "local"
-                                      ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
-                                      : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
+                                  `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                                    ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
+                                    : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
                                   }`,
                                 );
                               }}
@@ -1038,35 +1036,35 @@ const SearchCategoryContent = () => {
                               }
                             >
                               {(item as any).image_url &&
-                              (item as any).image_url.length > 0
+                                (item as any).image_url.length > 0
                                 ? (item as any).image_url.map(
-                                    (img: string, i: number) => (
-                                      <div
-                                        key={i}
-                                        className={styles.squareCarouselSlide}
-                                      >
-                                        <Image
-                                          src={`${img}?tr=w-400,q-70,f-auto`}
-                                          alt="producto"
-                                          width={140}
-                                          height={140}
-                                          style={{
-                                            objectFit: "contain",
-                                            height: "140px",
-                                            width: "140px",
-                                            marginTop: "8px",
-                                          }}
-                                          sizes="(max-width: 768px) 100vw, 50vw"
-                                          priority={i === 0}
-                                        />
-                                      </div>
-                                    ),
-                                  )
+                                  (img: string, i: number) => (
+                                    <div
+                                      key={i}
+                                      className={styles.squareCarouselSlide}
+                                    >
+                                      <Image
+                                        src={`${img}?tr=w-400,q-70,f-auto`}
+                                        alt="producto"
+                                        width={140}
+                                        height={140}
+                                        style={{
+                                          objectFit: "contain",
+                                          height: "140px",
+                                          width: "140px",
+                                          marginTop: "8px",
+                                        }}
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        priority={i === 0}
+                                      />
+                                    </div>
+                                  ),
+                                )
                                 : [
-                                    <div key="no-img" style={{ padding: 8, fontSize: 12 }}>
-                                      Sin imágenes
-                                    </div>,
-                                  ]}
+                                  <div key="no-img" style={{ padding: 8, fontSize: 12 }}>
+                                    Sin imágenes
+                                  </div>,
+                                ]}
                             </Carousel>
                           </div>
 
@@ -1088,10 +1086,10 @@ const SearchCategoryContent = () => {
                                 const promedioRating =
                                   item.reviews.length > 0
                                     ? item.reviews.reduce(
-                                        (sum: any, review: any) =>
-                                          sum + review.rating,
-                                        0,
-                                      ) / item.reviews.length
+                                      (sum: any, review: any) =>
+                                        sum + review.rating,
+                                      0,
+                                    ) / item.reviews.length
                                     : 0;
                                 return (
                                   <div className={styles.squareRatingRow}>
@@ -1117,15 +1115,14 @@ const SearchCategoryContent = () => {
                               </span>
                               <div className={styles.squareStockRow}>
                                 <span
-                                  className={`${styles.stockDot} ${
-                                    item?.stock === undefined
-                                      ? styles.stockDotOut
-                                      : item.stock > 10
-                                        ? styles.stockDotHigh
-                                        : item.stock > 0
-                                          ? styles.stockDotLow
-                                          : styles.stockDotOut
-                                  }`}
+                                  className={`${styles.stockDot} ${item?.stock === undefined
+                                    ? styles.stockDotOut
+                                    : item.stock > 10
+                                      ? styles.stockDotHigh
+                                      : item.stock > 0
+                                        ? styles.stockDotLow
+                                        : styles.stockDotOut
+                                    }`}
                                 />
                                 <span className={styles.squareStockText}>
                                   {item.stock === 0
@@ -1153,7 +1150,7 @@ const SearchCategoryContent = () => {
                                     setDataModal({
                                       isOpen: true,
                                       message: (
-                                        <div className="w-[800px] border">
+                                        <div className="border">
                                           <BranchSelector
                                             productSelected={item}
                                           />
@@ -1179,8 +1176,8 @@ const SearchCategoryContent = () => {
                                 }}
                               >
                                 {item?.isPC == 0 &&
-                                loadingAddProductCar[item.idProduct] &&
-                                Number(item?.providerId) != 1 ? (
+                                  loadingAddProductCar[item.idProduct] &&
+                                  Number(item?.providerId) != 1 ? (
                                   <MdAutorenew
                                     size={16}
                                     className="m-auto the-spinner"
@@ -1217,78 +1214,76 @@ const SearchCategoryContent = () => {
                     })
                     .map((item, index: number) => (
                       <div key={index} className={styles.productCard}>
-                      <div
-                        className="flex justify-end"
-                        style={{ marginLeft: "auto" }}
-                      >
-                        {/* Favorito */}
-                        <div>
-                          <button
-                            disabled={
-                              loadingToogleFavorite[Number(item?.idProduct)]
-                            }
-                            onClick={async () => {
-                              let isFavorite = (item as any)?.isFavorite;
-                              setLoadingToogleFavorite((prev) => ({
-                                ...prev,
-                                [item?.idProduct]: true,
-                              }));
-                              await handleToggleFavorites(
-                                isFavorite,
-                                Number(item?.idProduct),
-                                setData,
-                                setDataCopy,
-                              );
-                              setLoadingToogleFavorite((prev) => ({
-                                ...prev,
-                                [item?.idProduct]: false,
-                              }));
-                            }}
-                            aria-label={
-                              (item as any)?.isFavorite
-                                ? "Quitar de favoritos"
-                                : "Agregar a favoritos"
-                            }
-                            className={`
+                        <div
+                          className="flex justify-end"
+                          style={{ marginLeft: "auto" }}
+                        >
+                          {/* Favorito */}
+                          <div>
+                            <button
+                              disabled={
+                                loadingToogleFavorite[Number(item?.idProduct)]
+                              }
+                              onClick={async () => {
+                                let isFavorite = (item as any)?.isFavorite;
+                                setLoadingToogleFavorite((prev) => ({
+                                  ...prev,
+                                  [item?.idProduct]: true,
+                                }));
+                                await handleToggleFavorites(
+                                  isFavorite,
+                                  Number(item?.idProduct),
+                                  setData,
+                                  setDataCopy,
+                                );
+                                setLoadingToogleFavorite((prev) => ({
+                                  ...prev,
+                                  [item?.idProduct]: false,
+                                }));
+                              }}
+                              aria-label={
+                                (item as any)?.isFavorite
+                                  ? "Quitar de favoritos"
+                                  : "Agregar a favoritos"
+                              }
+                              className={`
         group relative flex h-10 w-10 items-center justify-center
         rounded-[10px] border-none backdrop-blur-sm
         transition-all duration-200 active:scale-95
-        ${
-          (item as any)?.isFavorite
-            ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.6),0_4px_14px_rgba(185,28,28,0.4)]"
-            : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5),0_4px_14px_rgba(185,28,28,0.35)]"
-        }
+        ${(item as any)?.isFavorite
+                                  ? "bg-red-900/70 text-red-300 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5)] hover:bg-red-700/85 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.6),0_4px_14px_rgba(185,28,28,0.4)]"
+                                  : "bg-black/55 text-red-400 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.25)] hover:bg-red-800/75 hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(248,113,113,0.5),0_4px_14px_rgba(185,28,28,0.35)]"
+                                }
       `}
-                          >
-                            <Heart
-                              size={18}
-                              className="transition-transform duration-150 group-active:scale-90"
-                              fill={
-                                (item as any)?.isFavorite
-                                  ? "currentColor"
-                                  : "none"
-                              }
-                              strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
-                            />
-                          </button>
-                        </div>
+                            >
+                              <Heart
+                                size={18}
+                                className="transition-transform duration-150 group-active:scale-90"
+                                fill={
+                                  (item as any)?.isFavorite
+                                    ? "currentColor"
+                                    : "none"
+                                }
+                                strokeWidth={(item as any)?.isFavorite ? 0 : 1.75}
+                              />
+                            </button>
+                          </div>
 
-                        {/* Compartir */}
-                        <button
-                          title="Compartir"
-                          onClick={async () => {
-                            await handleShare(
-                              "Producto",
-                              item?.name || item?.description,
-                              `${
-                                process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                          {/* Compartir */}
+                          <button
+                            title="Compartir"
+                            onClick={async () => {
+                              await handleShare(
+                                "Producto",
+                                item?.name || item?.description,
+                                `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
                                   ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
                                   : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
-                              }`,
-                            );
-                          }}
-                          aria-label="Compartir"
-                          className="
+                                }`,
+                              );
+                            }}
+                            aria-label="Compartir"
+                            className="
       group relative flex h-10 w-10 items-center justify-center
       rounded-[10px] border-none backdrop-blur-sm
       bg-slate-900/55 text-yellow-400
@@ -1298,462 +1293,461 @@ const SearchCategoryContent = () => {
       hover:shadow-[inset_0_0_0_1px_rgba(96,165,250,0.5),0_4px_14px_rgba(29,78,216,0.35)]
       active:scale-95
     "
-                        >
-                          <Share2
-                            size={18}
-                            className="transition-transform duration-150 group-active:scale-90"
-                            strokeWidth={1.75}
-                          />
-                        </button>
-                      </div>
+                          >
+                            <Share2
+                              size={18}
+                              className="transition-transform duration-150 group-active:scale-90"
+                              strokeWidth={1.75}
+                            />
+                          </button>
+                        </div>
 
-                      <div className={styles.productRow}>
-                        <div className={styles.productInfo}>
-                          <div className={styles.itemComponent}>
-                            <a
-                              role="button"
-                              onClick={() =>
-                                onRouterLink(
-                                  `/detailsProduct/${item.idProduct}`,
-                                )
-                              }
-                              className={styles.productName}
-                            >
-                              {item.name}
-                            </a>
+                        <div className={styles.productRow}>
+                          <div className={styles.productInfo}>
+                            <div className={styles.itemComponent}>
+                              <a
+                                role="button"
+                                onClick={() =>
+                                  onRouterLink(
+                                    `/detailsProduct/${item.idProduct}`,
+                                  )
+                                }
+                                className={styles.productName}
+                              >
+                                {item.name}
+                              </a>
 
-                            <div className={styles.skuRatingGrid}>
-                              <div>
-                                {item?.upc && (
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <span style={{ color: "#808080" }}>
-                                      SKU: {item.sku}
-                                    </span>
-                                    <span style={{ fontWeight: "bold" }}>
-                                      UPC:
-                                      <span
-                                        style={{
-                                          fontWeight: "normal",
-                                          marginLeft: 4,
-                                        }}
-                                      >
-                                        {item.upc}
+                              <div className={styles.skuRatingGrid}>
+                                <div>
+                                  {item?.upc && (
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: 4,
+                                      }}
+                                    >
+                                      <span style={{ color: "#808080" }}>
+                                        SKU: {item.sku}
                                       </span>
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
+                                      <span style={{ fontWeight: "bold" }}>
+                                        UPC:
+                                        <span
+                                          style={{
+                                            fontWeight: "normal",
+                                            marginLeft: 4,
+                                          }}
+                                        >
+                                          {item.upc}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
 
-                              {(() => {
-                                const promedioRating =
-                                  item.reviews.length > 0
-                                    ? item.reviews.reduce(
+                                {(() => {
+                                  const promedioRating =
+                                    item.reviews.length > 0
+                                      ? item.reviews.reduce(
                                         (sum: any, review: any) =>
                                           sum + review.rating,
                                         0,
                                       ) / item.reviews.length
-                                    : 0;
-                                return (
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 8,
-                                      flexWrap: "wrap",
-                                    }}
-                                  >
-                                    <Rating
-                                      name="simple-controlled"
-                                      max={5}
-                                      readOnly
-                                      value={promedioRating}
-                                      size="medium"
-                                      sx={{ color: "#BB3D4B" }}
-                                    />
+                                      : 0;
+                                  return (
                                     <div
                                       style={{
                                         display: "flex",
                                         alignItems: "center",
+                                        gap: 8,
+                                        flexWrap: "wrap",
                                       }}
                                     >
-                                      <StyledTooltip
-                                        title={
-                                          <div style={{ width: "100%" }}>
-                                            <Box>
-                                              <div
-                                                style={{
-                                                  display: "flex",
-                                                  alignItems: "center",
-                                                }}
-                                              >
-                                                <Rating
-                                                  value={promedioRating} // Usar promedioRating calculado
-                                                  readOnly
-                                                  size="medium"
-                                                  precision={0.5}
-                                                  sx={{ color: "#BB3D4B" }}
-                                                />
-                                                <span
+                                      <Rating
+                                        name="simple-controlled"
+                                        max={5}
+                                        readOnly
+                                        value={promedioRating}
+                                        size="medium"
+                                        sx={{ color: "#BB3D4B" }}
+                                      />
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <StyledTooltip
+                                          title={
+                                            <div style={{ width: "100%" }}>
+                                              <Box>
+                                                <div
                                                   style={{
-                                                    color: "#666",
-                                                    fontWeight: "bold",
-                                                    fontSize: 18,
-                                                    marginLeft: 8,
+                                                    display: "flex",
+                                                    alignItems: "center",
                                                   }}
                                                 >
-                                                  {item.reviews.length.toLocaleString()}{" "}
-                                                  Opiniones
-                                                </span>
-                                              </div>
-                                              <div style={{ marginTop: 8 }}>
-                                                <span
-                                                  style={{
-                                                    color: "#808080",
-                                                    fontSize: 16,
-                                                  }}
-                                                >
-                                                  {promedioRating.toFixed(1)}{" "}
-                                                  estrellas
-                                                </span>
-                                              </div>
-                                              <div style={{ marginTop: 12 }}>
-                                                {ratingProgress.map(
-                                                  (progressRating) => (
-                                                    <div
-                                                      key={progressRating.id}
-                                                      style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        marginBottom: 8,
-                                                      }}
-                                                    >
+                                                  <Rating
+                                                    value={promedioRating} // Usar promedioRating calculado
+                                                    readOnly
+                                                    size="medium"
+                                                    precision={0.5}
+                                                    sx={{ color: "#BB3D4B" }}
+                                                  />
+                                                  <span
+                                                    style={{
+                                                      color: "#666",
+                                                      fontWeight: "bold",
+                                                      fontSize: 18,
+                                                      marginLeft: 8,
+                                                    }}
+                                                  >
+                                                    {item.reviews.length.toLocaleString()}{" "}
+                                                    Opiniones
+                                                  </span>
+                                                </div>
+                                                <div style={{ marginTop: 8 }}>
+                                                  <span
+                                                    style={{
+                                                      color: "#808080",
+                                                      fontSize: 16,
+                                                    }}
+                                                  >
+                                                    {promedioRating.toFixed(1)}{" "}
+                                                    estrellas
+                                                  </span>
+                                                </div>
+                                                <div style={{ marginTop: 12 }}>
+                                                  {ratingProgress.map(
+                                                    (progressRating) => (
                                                       <div
+                                                        key={progressRating.id}
                                                         style={{
-                                                          width: 200,
-                                                          height: 15,
-                                                          borderRadius: 5,
-                                                          background: "#E7E7E7",
-                                                          position: "relative",
-                                                          overflow: "hidden",
+                                                          display: "flex",
+                                                          alignItems: "center",
+                                                          marginBottom: 8,
                                                         }}
                                                       >
                                                         <div
                                                           style={{
-                                                            width: `${calcPorcentaje(item, data, progressRating).percentage}%`,
+                                                            width: 200,
                                                             height: 15,
-                                                            background:
-                                                              "#BB3D4B",
                                                             borderRadius: 5,
+                                                            background: "#E7E7E7",
+                                                            position: "relative",
+                                                            overflow: "hidden",
                                                           }}
+                                                        >
+                                                          <div
+                                                            style={{
+                                                              width: `${calcPorcentaje(item, data, progressRating).percentage}%`,
+                                                              height: 15,
+                                                              background:
+                                                                "#BB3D4B",
+                                                              borderRadius: 5,
+                                                            }}
+                                                          />
+                                                        </div>
+                                                        <span
+                                                          style={{
+                                                            fontSize: 15,
+                                                            color: "#606060",
+                                                            fontWeight: "bold",
+                                                            margin: "0 8px",
+                                                          }}
+                                                        >
+                                                          {
+                                                            calcPorcentaje(
+                                                              item,
+                                                              data,
+                                                              progressRating,
+                                                            ).rating
+                                                          }
+                                                        </span>
+                                                        <MdStar
+                                                          color="#ccc"
+                                                          size={20}
                                                         />
-                                                      </div>
-                                                      <span
-                                                        style={{
-                                                          fontSize: 15,
-                                                          color: "#606060",
-                                                          fontWeight: "bold",
-                                                          margin: "0 8px",
-                                                        }}
-                                                      >
-                                                        {
-                                                          calcPorcentaje(
-                                                            item,
-                                                            data,
-                                                            progressRating,
-                                                          ).rating
-                                                        }
-                                                      </span>
-                                                      <MdStar
-                                                        color="#ccc"
-                                                        size={20}
-                                                      />
-                                                      <span
-                                                        style={{
-                                                          color: "#ccc",
-                                                          fontSize: 13,
-                                                          marginLeft: 4,
-                                                        }}
-                                                      >
-                                                        (
-                                                        {item.reviews.reduce(
+                                                        <span
+                                                          style={{
+                                                            color: "#ccc",
+                                                            fontSize: 13,
+                                                            marginLeft: 4,
+                                                          }}
+                                                        >
                                                           (
-                                                            acc: any,
-                                                            r: any,
-                                                          ) => {
-                                                            if (
-                                                              r.rating ===
-                                                              progressRating.rating
-                                                            )
-                                                              return acc + 1;
-                                                            return acc;
-                                                          },
-                                                          0,
-                                                        )}
-                                                        )
-                                                      </span>
-                                                    </div>
-                                                  ),
-                                                )}
-                                                <a
-                                                  role="button"
-                                                  onClick={() =>
-                                                    onRouterLink(
-                                                      `/review?idProduct=${item.idProduct}`,
-                                                    )
-                                                  }
-                                                  style={{
-                                                    display: "block",
-                                                    color: "#BB3D4B",
-                                                    textAlign: "center",
-                                                    fontSize: 17,
-                                                    textDecoration: "none",
-                                                    cursor: "pointer",
-                                                  }}
-                                                >
-                                                  Ver todas las (
-                                                  {item.reviews.length.toLocaleString()}
-                                                  ) opiniones
-                                                </a>
-                                              </div>
-                                            </Box>
-                                          </div>
-                                        }
-                                      >
-                                        <button
-                                          style={{
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            border: "1px solid #ccc",
-                                            borderRadius: 2,
-                                            width: 20,
-                                            height: 20,
-                                            marginLeft: 5,
-                                            background: "transparent",
-                                            cursor: "pointer",
-                                            flexShrink: 0,
-                                          }}
-                                        >
-                                          <MdArrowDropDown
-                                            size={10}
-                                            color="gray"
-                                          />
-                                        </button>
-                                      </StyledTooltip>
-                                      <a
-                                        style={{
-                                          marginLeft: 5,
-                                          whiteSpace: "nowrap",
-                                        }}
-                                      >
-                                        {item.reviews.length.toLocaleString()}{" "}
-                                        opiniones
-                                      </a>
-                                    </div>
-                                  </div>
-                                );
-                              })()}
-                            </div>
-
-                            <div className={styles.detailGrid}>
-                              <div>
-                                {item?.caracteristicas &&
-                                (typeof item?.caracteristicas === "object" ||
-                                  typeof item?.caracteristicas === "string") ? (
-                                  (() => {
-                                    try {
-                                      const caracs =
-                                        typeof item?.caracteristicas ===
-                                        "string"
-                                          ? JSON.parse(item.caracteristicas)
-                                          : item?.caracteristicas;
-                                      if (
-                                        Array.isArray(caracs) &&
-                                        caracs.length > 0
-                                      ) {
-                                        return (
-                                          <ul
-                                            style={{
-                                              listStyle: "none",
-                                              padding: 0,
-                                              margin: 0,
-                                            }}
-                                          >
-                                            {caracs
-                                              .slice(0, 6)
-                                              .map(
-                                                (carac: any, index: number) => (
-                                                  <li
-                                                    key={index}
+                                                          {item.reviews.reduce(
+                                                            (
+                                                              acc: any,
+                                                              r: any,
+                                                            ) => {
+                                                              if (
+                                                                r.rating ===
+                                                                progressRating.rating
+                                                              )
+                                                                return acc + 1;
+                                                              return acc;
+                                                            },
+                                                            0,
+                                                          )}
+                                                          )
+                                                        </span>
+                                                      </div>
+                                                    ),
+                                                  )}
+                                                  <a
+                                                    role="button"
+                                                    onClick={() =>
+                                                      onRouterLink(
+                                                        `/review?idProduct=${item.idProduct}`,
+                                                      )
+                                                    }
                                                     style={{
-                                                      fontSize: 13,
-                                                      marginTop: 4,
+                                                      display: "block",
+                                                      color: "#BB3D4B",
+                                                      textAlign: "center",
+                                                      fontSize: 17,
+                                                      textDecoration: "none",
+                                                      cursor: "pointer",
                                                     }}
                                                   >
-                                                    <span
-                                                      style={{
-                                                        fontWeight: "bold",
-                                                      }}
-                                                    >
-                                                      {carac.prop}:{" "}
-                                                    </span>
-                                                    <span
-                                                      style={{
-                                                        fontStyle: "italic",
-                                                        wordBreak: "break-word",
-                                                      }}
-                                                    >
-                                                      {carac.value &&
-                                                      carac.value.length > 70
-                                                        ? `${carac.value.slice(0, 70)}...`
-                                                        : carac.value || "—"}
-                                                    </span>
-                                                  </li>
-                                                ),
-                                              )}
-                                          </ul>
-                                        );
-                                      }
-                                      return (
-                                        <span>
-                                          Sin características disponibles
-                                        </span>
-                                      );
-                                    } catch (e) {
-                                      return (
-                                        <span>
-                                          Sin características disponibles
-                                        </span>
-                                      );
-                                    }
-                                  })()
-                                ) : (
-                                  <span>Sin características disponibles</span>
-                                )}
+                                                    Ver todas las (
+                                                    {item.reviews.length.toLocaleString()}
+                                                    ) opiniones
+                                                  </a>
+                                                </div>
+                                              </Box>
+                                            </div>
+                                          }
+                                        >
+                                          <button
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              border: "1px solid #ccc",
+                                              borderRadius: 2,
+                                              width: 20,
+                                              height: 20,
+                                              marginLeft: 5,
+                                              background: "transparent",
+                                              cursor: "pointer",
+                                              flexShrink: 0,
+                                            }}
+                                          >
+                                            <MdArrowDropDown
+                                              size={10}
+                                              color="gray"
+                                            />
+                                          </button>
+                                        </StyledTooltip>
+                                        <a
+                                          style={{
+                                            marginLeft: 5,
+                                            whiteSpace: "nowrap",
+                                          }}
+                                        >
+                                          {item.reviews.length.toLocaleString()}{" "}
+                                          opiniones
+                                        </a>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                               </div>
 
-                              <div style={{ padding: "0 12px" }}>
-                                <span
-                                  style={{ fontSize: 20, fontWeight: "bold" }}
-                                >
-                                  {formatCurrency(Number(item.price))}
-                                </span>
-                                <div className={styles.stockRow}>
+                              <div className={styles.detailGrid}>
+                                <div>
+                                  {item?.caracteristicas &&
+                                    (typeof item?.caracteristicas === "object" ||
+                                      typeof item?.caracteristicas === "string") ? (
+                                    (() => {
+                                      try {
+                                        const caracs =
+                                          typeof item?.caracteristicas ===
+                                            "string"
+                                            ? JSON.parse(item.caracteristicas)
+                                            : item?.caracteristicas;
+                                        if (
+                                          Array.isArray(caracs) &&
+                                          caracs.length > 0
+                                        ) {
+                                          return (
+                                            <ul
+                                              style={{
+                                                listStyle: "none",
+                                                padding: 0,
+                                                margin: 0,
+                                              }}
+                                            >
+                                              {caracs
+                                                .slice(0, 6)
+                                                .map(
+                                                  (carac: any, index: number) => (
+                                                    <li
+                                                      key={index}
+                                                      style={{
+                                                        fontSize: 13,
+                                                        marginTop: 4,
+                                                      }}
+                                                    >
+                                                      <span
+                                                        style={{
+                                                          fontWeight: "bold",
+                                                        }}
+                                                      >
+                                                        {carac.prop}:{" "}
+                                                      </span>
+                                                      <span
+                                                        style={{
+                                                          fontStyle: "italic",
+                                                          wordBreak: "break-word",
+                                                        }}
+                                                      >
+                                                        {carac.value &&
+                                                          carac.value.length > 70
+                                                          ? `${carac.value.slice(0, 70)}...`
+                                                          : carac.value || "—"}
+                                                      </span>
+                                                    </li>
+                                                  ),
+                                                )}
+                                            </ul>
+                                          );
+                                        }
+                                        return (
+                                          <span>
+                                            Sin características disponibles
+                                          </span>
+                                        );
+                                      } catch (e) {
+                                        return (
+                                          <span>
+                                            Sin características disponibles
+                                          </span>
+                                        );
+                                      }
+                                    })()
+                                  ) : (
+                                    <span>Sin características disponibles</span>
+                                  )}
+                                </div>
+
+                                <div style={{ padding: "0 12px" }}>
                                   <span
-                                    className={`${styles.stockDot} ${
-                                      item?.stock === undefined
+                                    style={{ fontSize: 20, fontWeight: "bold" }}
+                                  >
+                                    {formatCurrency(Number(item.price))}
+                                  </span>
+                                  <div className={styles.stockRow}>
+                                    <span
+                                      className={`${styles.stockDot} ${item?.stock === undefined
                                         ? styles.stockDotOut
                                         : item.stock > 10
                                           ? styles.stockDotHigh
                                           : item.stock > 0
                                             ? styles.stockDotLow
                                             : styles.stockDotOut
-                                    }`}
-                                  />
-
-                                  <span className={styles.stockText}>
-                                    {item.stock === 0
-                                      ? "Sin stock"
-                                      : item.stock < 10
-                                        ? `¡Solo quedan ${item?.stock} pzas!`
-                                        : `Disponibles: ${item?.stock} pzas.`}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className={styles.addToCartWrapper}>
-                                {/* === BOTÓN CORREGIDO === */}
-                                <button
-                                  disabled={
-                                    loadingAddProductCar[item.idProduct] ||
-                                    item.stock == 0
-                                  }
-                                  className={`${styles.addToCartBtn} bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2`}
-                                  onClick={() => {
-                                    if (
-                                      (item?.isPC == 0 || item?.isPc == 0) &&
-                                      item?.product_stock!.length > 0 &&
-                                      Number(item?.providerId) != 1
-                                    ) {
-                                      setDataModal({
-                                        isOpen: true,
-                                        message: (
-                                          <div className="w-[800px] border">
-                                            <BranchSelector
-                                              productSelected={item}
-                                            />
-                                          </div>
-                                        ),
-                                        title: "",
-                                        type: "success",
-                                        showActions: false,
-                                        onClose: () =>
-                                          setDataModal((prev) => ({
-                                            ...prev,
-                                            isOpen: false,
-                                          })),
-                                        onConfirm: () =>
-                                          setDataModal((prev) => ({
-                                            ...prev,
-                                            isOpen: false,
-                                          })),
-                                      });
-                                    } else {
-                                      handleAddProductCart(item);
-                                    }
-                                  }}
-                                >
-                                  {item?.isPC == 0 &&
-                                  loadingAddProductCar[item.idProduct] &&
-                                  Number(item?.providerId) != 1 ? (
-                                    <MdAutorenew
-                                      size={20}
-                                      className="m-auto the-spinner"
+                                        }`}
                                     />
-                                  ) : item.stock == 0 ? (
-                                    "No disponible"
-                                  ) : (
-                                    <>
-                                      Agregar al carrito
-                                      <MdShoppingCart size={20} color="white" />
-                                    </>
-                                  )}
-                                </button>
-                                {/* === FIN DEL BOTÓN CORREGIDO === */}
 
-                                <button
-                                  className={`w-full bg-[#BB3D4B] text-white px-4 py-1 rounded flex items-center justify-center mt-2`}
-                                  disabled={item?.stock === 0}
-                                  onClick={() => handleComprarAhora(item)}
-                                >
-                                  {item?.stock !== 0
-                                    ? "Comprar Ahora"
-                                    : "No disponible"}
-                                </button>
+                                    <span className={styles.stockText}>
+                                      {item.stock === 0
+                                        ? "Sin stock"
+                                        : item.stock < 10
+                                          ? `¡Solo quedan ${item?.stock} pzas!`
+                                          : `Disponibles: ${item?.stock} pzas.`}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className={styles.addToCartWrapper}>
+                                  {/* === BOTÓN CORREGIDO === */}
+                                  <button
+                                    disabled={
+                                      loadingAddProductCar[item.idProduct] ||
+                                      item.stock == 0
+                                    }
+                                    className={`${styles.addToCartBtn} bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2`}
+                                    onClick={() => {
+                                      if (
+                                        (item?.isPC == 0 || item?.isPc == 0) &&
+                                        item?.product_stock!.length > 0 &&
+                                        Number(item?.providerId) != 1
+                                      ) {
+                                        setDataModal({
+                                          isOpen: true,
+                                          message: (
+                                            <div className="w-[800px] border">
+                                              <BranchSelector
+                                                productSelected={item}
+                                              />
+                                            </div>
+                                          ),
+                                          title: "",
+                                          type: "success",
+                                          showActions: false,
+                                          onClose: () =>
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            })),
+                                          onConfirm: () =>
+                                            setDataModal((prev) => ({
+                                              ...prev,
+                                              isOpen: false,
+                                            })),
+                                        });
+                                      } else {
+                                        handleAddProductCart(item);
+                                      }
+                                    }}
+                                  >
+                                    {item?.isPC == 0 &&
+                                      loadingAddProductCar[item.idProduct] &&
+                                      Number(item?.providerId) != 1 ? (
+                                      <MdAutorenew
+                                        size={20}
+                                        className="m-auto the-spinner"
+                                      />
+                                    ) : item.stock == 0 ? (
+                                      "No disponible"
+                                    ) : (
+                                      <>
+                                        Agregar al carrito
+                                        <MdShoppingCart size={20} color="white" />
+                                      </>
+                                    )}
+                                  </button>
+                                  {/* === FIN DEL BOTÓN CORREGIDO === */}
+
+                                  <button
+                                    className={`w-full bg-[#BB3D4B] text-white px-4 py-1 rounded flex items-center justify-center mt-2`}
+                                    disabled={item?.stock === 0}
+                                    onClick={() => handleComprarAhora(item)}
+                                  >
+                                    {item?.stock !== 0
+                                      ? "Comprar Ahora"
+                                      : "No disponible"}
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className={styles.carouselWrapper}>
-                          <Carousel
-                            showIndicators={true}
-                            showThumbs={false}
-                            showStatus={false}
-                            showArrows={true}
-                            onClickItem={() =>
-                              onRouterLink(`/detailsProduct/${item.idProduct}`)
-                            }
-                          >
-                            {(item as any).image_url &&
-                            (item as any).image_url.length > 0
-                              ? (item as any).image_url.map(
+                          <div className={styles.carouselWrapper}>
+                            <Carousel
+                              showIndicators={true}
+                              showThumbs={false}
+                              showStatus={false}
+                              showArrows={true}
+                              onClickItem={() =>
+                                onRouterLink(`/detailsProduct/${item.idProduct}`)
+                              }
+                            >
+                              {(item as any).image_url &&
+                                (item as any).image_url.length > 0
+                                ? (item as any).image_url.map(
                                   (img: string, i: number) => (
                                     <div
                                       key={i}
@@ -1773,23 +1767,23 @@ const SearchCategoryContent = () => {
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                         priority={i === 0}
 
-                                        // className={styles.productImg}
-                                        // sizes="(max-width: 768px) 100vw, 50vw"
-                                        // priority={i === 0}
+                                      // className={styles.productImg}
+                                      // sizes="(max-width: 768px) 100vw, 50vw"
+                                      // priority={i === 0}
                                       />
                                     </div>
                                   ),
                                 )
-                              : [
+                                : [
                                   <div key="no-img" style={{ padding: 8 }}>
                                     Sin imágenes
                                   </div>,
                                 ]}
-                          </Carousel>
+                            </Carousel>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    ))
                 )
               ) : (
                 <Alert severity="info">Sin contenido disponible</Alert>

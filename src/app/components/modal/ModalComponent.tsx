@@ -130,7 +130,7 @@ const ModalComponent = ({
       />
 
       <div
-        className={`relative bg-[#E6E6E6] rounded shadow-2xl  mx-4 p-8 transform transition-all duration-300 ${
+        className={`relative bg-[#E6E6E6] rounded shadow-2xl mx-4 p-2 sm:p-4 md:p-8 transform transition-all duration-300 w-full max-w-[95vw] md:max-w-[700px] lg:max-w-[900px] ${
           isVisible
             ? "scale-100 opacity-100"
             : "scale-95 opacity-0 pointer-events-none"
@@ -142,18 +142,13 @@ const ModalComponent = ({
       >
         <button
           onClick={handleClose}
-          className="absolute p-2 bg-[#bb3d4b]"
-          style={{
-            right: "-18px",
-            top: "-15px",
-            borderRadius: "50%",
-          }}
+          className="absolute p-2 bg-[#bb3d4b] hover:bg-[#a32d39] transition-colors rounded-full shadow-md z-[60] right-2 top-2 md:-right-4 md:-top-4"
           aria-label="Cerrar modal"
         >
           <X className="w-5 h-5 text-[white] font-bold" />
         </button>
 
-        <div className="bg-[#E6E6E6] min-h-[200px] flex items-end p-3 mt-5 relative">
+        <div className="bg-[#E6E6E6] min-h-[200px] w-full flex items-end p-1 sm:p-3 mt-5 relative">
           <div
             className="absolute"
             style={{
@@ -174,7 +169,7 @@ const ModalComponent = ({
               ""
             )}
           </div>
-          <div className="bg-[white] w-full py-4 px-2 rounded">
+          <div className="bg-[white] w-full py-4 px-1 sm:px-2 rounded max-h-[70vh] md:max-h-[75vh] overflow-y-auto">
             {title && (
               <h3
                 id="modal-title"
