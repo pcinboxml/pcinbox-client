@@ -170,12 +170,12 @@ const useResultSearchCategory = () => {
             return prevCart.map((item) =>
               Number(item.idProduct) === Number(productProp.idProduct)
                 ? {
-                    ...item,
-                    quantity: Math.min(
-                      (Number(item.quantity) || 0) + 1,
-                      Number(productProp.stock) || 0,
-                    ),
-                  }
+                  ...item,
+                  quantity: Math.min(
+                    (Number(item.quantity) || 0) + 1,
+                    Number(productProp.stock) || 0,
+                  ),
+                }
                 : item,
             );
           } else {
@@ -248,7 +248,7 @@ const useResultSearchCategory = () => {
     setDataModal({
       isOpen: true,
       message: (
-        <div className="w-[800px] border">
+        <div className="border">
           <BranchSelector productSelected={dataProduct} comprarAhora={true} />
         </div>
       ),

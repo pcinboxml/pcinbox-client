@@ -44,13 +44,13 @@ export default function ProductPage({ params }: ProductPageProps) {
           productsArray.length === 1
             ? productsArray[0]
             : productsArray.find(
-                (p: any) =>
-                  p.idProduct.toString() === identifier.toString() ||
-                  p.sku === identifier ||
-                  p.upc === identifier ||
-                  p.name.toLowerCase() === identifier.toLowerCase() ||
-                  p.description?.toLowerCase() === identifier.toLowerCase(),
-              ) || productsArray[0];
+              (p: any) =>
+                p.idProduct.toString() === identifier.toString() ||
+                p.sku === identifier ||
+                p.upc === identifier ||
+                p.name.toLowerCase() === identifier.toLowerCase() ||
+                p.description?.toLowerCase() === identifier.toLowerCase(),
+            ) || productsArray[0];
 
         setProduct(productFound);
       } catch (err: any) {
@@ -96,12 +96,12 @@ export default function ProductPage({ params }: ProductPageProps) {
             return prev.map((item) =>
               Number(item.idProduct) === Number(productProp.idProduct)
                 ? {
-                    ...item,
-                    quantity: Math.min(
-                      Number(item.quantity) + 1,
-                      Number(productProp.stock),
-                    ),
-                  }
+                  ...item,
+                  quantity: Math.min(
+                    Number(item.quantity) + 1,
+                    Number(productProp.stock),
+                  ),
+                }
                 : item,
             );
           } else {
@@ -121,7 +121,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const promedioRating =
     product.reviews && product.reviews.length > 0
       ? product.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) /
-        product.reviews.length
+      product.reviews.length
       : 0;
 
   const Rating = ({ value }: { value: number }) => (
@@ -193,8 +193,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* Características */}
                 <div>
                   {product?.caracteristicas &&
-                  (typeof product?.caracteristicas === "object" ||
-                    typeof product?.caracteristicas === "string") ? (
+                    (typeof product?.caracteristicas === "object" ||
+                      typeof product?.caracteristicas === "string") ? (
                     (() => {
                       try {
                         const caracs =
@@ -290,7 +290,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         setDataModal({
                           isOpen: true,
                           message: (
-                            <div className="w-[800px] border">
+                            <div className="border">
                               <BranchSelector productSelected={product} />
                             </div>
                           ),
@@ -314,8 +314,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                     }}
                   >
                     {product?.isPC == 0 &&
-                    loading &&
-                    Number(product?.providerId) === 3 ? (
+                      loading &&
+                      Number(product?.providerId) === 3 ? (
                       <MdAutorenew size={20} className="m-auto the-spinner" />
                     ) : product.stock == "0" || product.stock == 0 ? (
                       "No disponible"
@@ -346,18 +346,18 @@ export default function ProductPage({ params }: ProductPageProps) {
             >
               {product.image_url && product.image_url.length > 0
                 ? product.image_url.map((img: string, i: number) => (
-                    <div key={i}>
-                      <img
-                        src={img}
-                        style={{
-                          objectFit: "contain",
-                          height: "150px",
-                          marginTop: "12px",
-                        }}
-                        loading="lazy"
-                      />
-                    </div>
-                  ))
+                  <div key={i}>
+                    <img
+                      src={img}
+                      style={{
+                        objectFit: "contain",
+                        height: "150px",
+                        marginTop: "12px",
+                      }}
+                      loading="lazy"
+                    />
+                  </div>
+                ))
                 : [<div key="no-img">Sin imágenes</div>]}
             </Carousel>
           </div>

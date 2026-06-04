@@ -1678,7 +1678,7 @@ const SearchCategoryContent = () => {
                                         setDataModal({
                                           isOpen: true,
                                           message: (
-                                            <div className="w-[800px] border">
+                                            <div className="border">
                                               <BranchSelector
                                                 productSelected={item}
                                               />

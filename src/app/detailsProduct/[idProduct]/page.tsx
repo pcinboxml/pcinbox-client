@@ -120,7 +120,7 @@ const DetailsProduct = () => {
       setDataModal({
         isOpen: true,
         message: (
-          <div className="w-[800px] border">
+          <div className="border">
             <BranchSelector productSelected={dataProduct} />
           </div>
         ),
@@ -166,7 +166,7 @@ const DetailsProduct = () => {
       setDataModal({
         isOpen: true,
         message: (
-          <div className="w-[800px] border">
+          <div className="border">
             <BranchSelector productSelected={dataProduct} comprarAhora={true} />
           </div>
         ),
