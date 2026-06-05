@@ -535,39 +535,41 @@ const NavbarResponsive = () => {
                     )}
                   </div>
                 </li>
-                <li
-                  className="relative"
-                  onMouseEnter={() => onMouseEnterSubmenu("3")}
-                  onMouseLeave={() => onMouseLeaveSubMenu("3")}
-                >
-                  <a href="#">
-                    Reservas
-                    <MdArrowDropDown size={22} color="gray" />
-                  </a>
-                  <div
-                    id="3"
-                    className="absolute w-auto bg-white cursor-default shadow-2xl rounded"
-                    style={{
-                      display: openSubmenu === "3" ? "block" : "none",
-                      zIndex: "60",
-                      top: "100%",
-                      left: "-20px",
-                      padding: "4px",
-                    }}
+                {hasToken && (
+                  <li
+                    className="relative"
+                    onMouseEnter={() => onMouseEnterSubmenu("3")}
+                    onMouseLeave={() => onMouseLeaveSubMenu("3")}
                   >
-                    <div className="w-[240px] flex flex-col" style={{ padding: "8px" }}>
-                      <a
-                        role="button"
-                        className="hover:!text-[#bb3d4b] hover:!font-semibold flex items-center gap-2 cursor-pointer text-sm"
-                        style={{ padding: "8px" }}
-                        onClick={() => onRouterLink("/reservas/mantenimiento")}
-                      >
-                        <MdBuild size={18} color="#bb3d4b" />
-                        <span>Mantenimiento de PC/Laptops</span>
-                      </a>
+                    <a href="#">
+                      Reservas
+                      <MdArrowDropDown size={22} color="gray" />
+                    </a>
+                    <div
+                      id="3"
+                      className="absolute w-auto bg-white cursor-default shadow-2xl rounded"
+                      style={{
+                        display: openSubmenu === "3" ? "block" : "none",
+                        zIndex: "60",
+                        top: "100%",
+                        left: "-20px",
+                        padding: "4px",
+                      }}
+                    >
+                      <div className="w-[240px] flex flex-col" style={{ padding: "8px" }}>
+                        <a
+                          role="button"
+                          className="hover:!text-[#bb3d4b] hover:!font-semibold flex items-center gap-2 cursor-pointer text-sm"
+                          style={{ padding: "8px" }}
+                          onClick={() => onRouterLink("/reservas/mantenimiento")}
+                        >
+                          <MdBuild size={18} color="#bb3d4b" />
+                          <span>Mantenimiento de PC/Laptops</span>
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                </li>
+                  </li>
+                )}
                 {!hasToken && (
                   <li>
                     <a
@@ -727,21 +729,23 @@ const NavbarResponsive = () => {
                     />
                   </button>
 
-                  <button
-                    className="drawer-nav-item"
-                    onClick={() => {
-                      onRouterLink("/reservas/mantenimiento");
-                      closeMobileMenu();
-                    }}
-                  >
-                    <MdBuild size={20} color="#bb3d4b" />
-                    <span>Mantenimiento de PC/Laptops</span>
-                    <MdChevronRight
-                      size={18}
-                      color="#ccc"
-                      className="ml-auto"
-                    />
-                  </button>
+                  {hasToken && (
+                    <button
+                      className="drawer-nav-item"
+                      onClick={() => {
+                        onRouterLink("/reservas/mantenimiento");
+                        closeMobileMenu();
+                      }}
+                    >
+                      <MdBuild size={20} color="#bb3d4b" />
+                      <span>Mantenimiento de PC/Laptops</span>
+                      <MdChevronRight
+                        size={18}
+                        color="#ccc"
+                        className="ml-auto"
+                      />
+                    </button>
+                  )}
 
                   {/* <button
                     className="drawer-nav-item"
