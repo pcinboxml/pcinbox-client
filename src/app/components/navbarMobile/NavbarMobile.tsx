@@ -16,6 +16,7 @@ import {
   MdChevronRight,
   MdLaptop,
   MdBuild,
+  MdHistory,
 } from "react-icons/md";
 import useNavbar from "./../navbar/useNavbar";
 import useService from "@/app/services/useService";
@@ -556,17 +557,26 @@ const NavbarResponsive = () => {
                         padding: "4px",
                       }}
                     >
-                      <div className="w-[240px] flex flex-col" style={{ padding: "8px" }}>
-                        <a
-                          role="button"
-                          className="hover:!text-[#bb3d4b] hover:!font-semibold flex items-center gap-2 cursor-pointer text-sm"
-                          style={{ padding: "8px" }}
-                          onClick={() => onRouterLink("/reservas/mantenimiento")}
-                        >
-                          <MdBuild size={18} color="#bb3d4b" />
-                          <span>Mantenimiento de PC/Laptops</span>
-                        </a>
-                      </div>
+                      <div className="w-[240px] flex flex-col gap-1" style={{ padding: "8px" }}>
+                          <a
+                            role="button"
+                            className="hover:!text-[#bb3d4b] hover:!font-semibold flex items-center gap-2 cursor-pointer text-sm"
+                            style={{ padding: "8px" }}
+                            onClick={() => onRouterLink("/reservas/mantenimiento")}
+                          >
+                            <MdBuild size={18} color="#bb3d4b" />
+                            <span>Mantenimiento de PC/Laptops</span>
+                          </a>
+                          <a
+                            role="button"
+                            className="hover:!text-[#bb3d4b] hover:!font-semibold flex items-center gap-2 cursor-pointer text-sm border-t pt-2 mt-1"
+                            style={{ padding: "8px" }}
+                            onClick={() => onRouterLink("/reservas/historial")}
+                          >
+                            <MdHistory size={18} color="#bb3d4b" />
+                            <span>Historial de reservas</span>
+                          </a>
+                        </div>
                     </div>
                   </li>
                 )}
@@ -730,21 +740,38 @@ const NavbarResponsive = () => {
                   </button>
 
                   {hasToken && (
-                    <button
-                      className="drawer-nav-item"
-                      onClick={() => {
-                        onRouterLink("/reservas/mantenimiento");
-                        closeMobileMenu();
-                      }}
-                    >
-                      <MdBuild size={20} color="#bb3d4b" />
-                      <span>Mantenimiento de PC/Laptops</span>
-                      <MdChevronRight
-                        size={18}
-                        color="#ccc"
-                        className="ml-auto"
-                      />
-                    </button>
+                    <>
+                      <button
+                        className="drawer-nav-item"
+                        onClick={() => {
+                          onRouterLink("/reservas/mantenimiento");
+                          closeMobileMenu();
+                        }}
+                      >
+                        <MdBuild size={20} color="#bb3d4b" />
+                        <span>Mantenimiento de PC/Laptops</span>
+                        <MdChevronRight
+                          size={18}
+                          color="#ccc"
+                          className="ml-auto"
+                        />
+                      </button>
+                      <button
+                        className="drawer-nav-item"
+                        onClick={() => {
+                          onRouterLink("/reservas/historial");
+                          closeMobileMenu();
+                        }}
+                      >
+                        <MdHistory size={20} color="#bb3d4b" />
+                        <span>Historial de reservas</span>
+                        <MdChevronRight
+                          size={18}
+                          color="#ccc"
+                          className="ml-auto"
+                        />
+                      </button>
+                    </>
                   )}
 
                   {/* <button

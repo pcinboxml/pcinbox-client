@@ -147,7 +147,10 @@ const useService = () => {
       } else {
         setDataModal({
           isOpen: true,
-          message: "Error interno del servidor",
+          message:
+            error?.response?.data?.message ||
+            error?.message ||
+            "Error interno del servidor",
           title: "Error",
 
           onClose: () => {
@@ -210,7 +213,10 @@ const useService = () => {
       } else {
         setDataModal({
           isOpen: true,
-          message: "Error interno del servidor",
+          message:
+            error?.response?.data?.message ||
+            error?.message ||
+            "Error interno del servidor",
           title: "Error",
 
           onClose: () => {
@@ -268,7 +274,10 @@ const useService = () => {
       } else {
         setDataModal({
           isOpen: true,
-          message: "Error interno del servidor",
+          message:
+            error?.response?.data?.message ||
+            error?.message ||
+            "Error interno del servidor",
           title: "Error",
 
           onClose: () => {
