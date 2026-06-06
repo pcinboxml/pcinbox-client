@@ -515,65 +515,65 @@ function MaintenanceBookingPageContent() {
         }}
       >
 
-          {/* Encabezado */}
-          <div
+        {/* Encabezado */}
+        <div
+          style={{
+            borderBottom: "1px solid #f4f4f5",
+            paddingBottom: "16px",
+            marginBottom: "24px"
+          }}
+        >
+          <span
+            className="text-[#BB3D4B] font-bold text-sm tracking-wider uppercase block"
             style={{
-              borderBottom: "1px solid #f4f4f5",
-              paddingBottom: "16px",
-              marginBottom: "24px"
+              marginBottom: "4px"
             }}
           >
-            <span
-              className="text-[#BB3D4B] font-bold text-sm tracking-wider uppercase block"
-              style={{
-                marginBottom: "4px"
-              }}
-            >
-              Mantenimiento Especializado
-            </span>
-            <h2 className="text-xl font-bold text-zinc-950 dark:text-white">
-              {isRescheduling ? "Reprogramar Reserva" : "Reserva de Mantenimiento"}
-            </h2>
-            <p
-              className="text-xs text-zinc-400"
-              style={{
-                marginTop: "4px"
-              }}
-            >
-              {isRescheduling ? "Reprograma tu cita seleccionando un nuevo día y horario." : "Agenda el servicio técnico para tu equipo en pocos pasos."}
-            </p>
+            Mantenimiento Especializado
+          </span>
+          <h2 className="text-xl font-bold text-zinc-950 dark:text-white">
+            {isRescheduling ? "Reprogramar Reserva" : "Reserva de Mantenimiento"}
+          </h2>
+          <p
+            className="text-xs text-zinc-400"
+            style={{
+              marginTop: "4px"
+            }}
+          >
+            {isRescheduling ? "Reprograma tu cita seleccionando un nuevo día y horario." : "Agenda el servicio técnico para tu equipo en pocos pasos."}
+          </p>
+        </div>
+
+        {/* Cajas de Alertas */}
+        {errorMsg && (
+          <div
+            className="bg-red-50 dark:bg-red-950/30 border-l-4 border-red-500 rounded-md text-red-700 dark:text-red-400 flex items-center"
+            style={{
+              marginBottom: "24px",
+              padding: "16px",
+              gap: "8px",
+              fontSize: "12px"
+            }}
+          >
+            <MdInfoOutline className="flex-shrink-0" size={18} />
+            <span className="font-medium">{errorMsg}</span>
           </div>
+        )}
 
-          {/* Cajas de Alertas */}
-          {errorMsg && (
-            <div
-              className="bg-red-50 dark:bg-red-950/30 border-l-4 border-red-500 rounded-md text-red-700 dark:text-red-400 flex items-center"
-              style={{
-                marginBottom: "24px",
-                padding: "16px",
-                gap: "8px",
-                fontSize: "12px"
-              }}
-            >
-              <MdInfoOutline className="flex-shrink-0" size={18} />
-              <span className="font-medium">{errorMsg}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div
-              className="bg-emerald-50 dark:bg-emerald-950/30 border-l-4 border-emerald-500 rounded-md text-emerald-700 dark:text-emerald-400 flex items-center"
-              style={{
-                marginBottom: "24px",
-                padding: "16px",
-                gap: "8px",
-                fontSize: "12px"
-              }}
-            >
-              <MdCheckCircle className="flex-shrink-0 text-emerald-500" size={18} />
-              <span className="font-medium">{successMsg}</span>
-            </div>
-          )}
+        {successMsg && (
+          <div
+            className="bg-emerald-50 dark:bg-emerald-950/30 border-l-4 border-emerald-500 rounded-md text-emerald-700 dark:text-emerald-400 flex items-center"
+            style={{
+              marginBottom: "24px",
+              padding: "16px",
+              gap: "8px",
+              fontSize: "12px"
+            }}
+          >
+            <MdCheckCircle className="flex-shrink-0 text-emerald-500" size={18} />
+            <span className="font-medium">{successMsg}</span>
+          </div>
+        )}
 
         {/* Vista del Ticket de Éxito */}
         {isSuccess ? (
@@ -1586,8 +1586,8 @@ function MaintenanceBookingPageContent() {
             </div>
           </form>
         )}
-        </div>
-      </section>
+      </div>
+    </section>
   );
 }
 
