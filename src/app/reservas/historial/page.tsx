@@ -32,6 +32,7 @@ interface Reservation {
   contactEmail: string;
   contactPhone: string;
   status: string;
+  cancelReason?: string;
   createdAt: string;
 }
 
@@ -41,6 +42,32 @@ interface Pagination {
   limit: number;
   totalPages: number;
 }
+
+const getStatusConfig = (status: string) => {
+  switch (status) {
+    case "cancelled":
+      return {
+        label: "CANCELADA",
+        colorClass: "bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/30"
+      };
+    case "completed":
+      return {
+        label: "COMPLETADA",
+        colorClass: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/30"
+      };
+    case "in_process":
+      return {
+        label: "EN PROCESO",
+        colorClass: "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/30"
+      };
+    case "pending":
+    default:
+      return {
+        label: "PENDIENTE",
+        colorClass: "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/30"
+      };
+  }
+};
 
 export default function BookingHistoryPage() {
   const router = useRouter();
@@ -289,33 +316,35 @@ export default function BookingHistoryPage() {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "16px"
+                  gap: "20px"
                 }}
               >
                 {reservations.map((res) => {
                   const isCancelled = res.status === "cancelled";
+                  const statusConf = getStatusConfig(res.status);
                   return (
                     <div
                       key={res.idReserva}
                       style={{
-                        padding: "16px",
+                        padding: "20px",
                         display: "flex",
                         flexDirection: "row", // default md
                         flexWrap: "wrap",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        gap: "16px",
-                        border: "1px solid #e4e4e7",
+                        gap: "20px",
+                        border: isCancelled ? "1px solid #fee2e2" : "1px solid #e4e4e7",
                         borderRadius: "16px",
-                        backgroundColor: isCancelled ? "#f9f9fb" : "#ffffff",
-                        opacity: isCancelled ? 0.75 : 1
+                        backgroundColor: isCancelled ? "#fffbfa" : "#ffffff",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04)"
                       }}
+                      className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200"
                     >
                       <div 
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          gap: "8px"
+                          gap: "12px"
                         }}
                       >
                         <div 
@@ -326,12 +355,12 @@ export default function BookingHistoryPage() {
                           }}
                         >
                           <span 
-                            className="font-mono text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                            className="font-mono text-sm font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
                             style={{
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                              paddingTop: "4px",
-                              paddingBottom: "4px",
+                              paddingLeft: "12px",
+                              paddingRight: "12px",
+                              paddingTop: "6px",
+                              paddingBottom: "6px",
                               borderRadius: "8px",
                               letterSpacing: "0.05em"
                             }}
@@ -341,21 +370,9 @@ export default function BookingHistoryPage() {
                           
                           {/* Badge de Estatus */}
                           <span
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: "800",
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                              paddingTop: "2px",
-                              paddingBottom: "2px",
-                              borderRadius: "9999px",
-                              border: "1px solid",
-                              backgroundColor: isCancelled ? "rgba(239, 68, 68, 0.05)" : "rgba(245, 158, 11, 0.05)",
-                              color: isCancelled ? "#ef4444" : "#d97706",
-                              borderColor: isCancelled ? "rgba(239, 68, 68, 0.15)" : "rgba(245, 158, 11, 0.15)"
-                            }}
+                            className={`text-xs font-extrabold tracking-wider rounded-full border px-3 py-1 ${statusConf.colorClass}`}
                           >
-                            {isCancelled ? "CANCELADA" : "PENDIENTE"}
+                            {statusConf.label}
                           </span>
                         </div>
 
@@ -363,12 +380,12 @@ export default function BookingHistoryPage() {
                           style={{
                             display: "flex",
                             flexDirection: "column",
-                            gap: "4px",
+                            gap: "6px",
                             marginTop: "4px"
                           }}
                         >
                           <h4 
-                            className="text-sm font-bold text-zinc-900 dark:text-white"
+                            className="text-base font-extrabold text-zinc-950 dark:text-white"
                             style={{
                               display: "flex",
                               alignItems: "center",
@@ -379,25 +396,36 @@ export default function BookingHistoryPage() {
                             {res.deviceType === "PC" ? <MdComputer className="text-[#BB3D4B]" /> : <MdLaptop className="text-[#BB3D4B]" />}
                             {res.service}
                           </h4>
-                          <p className="text-xs text-zinc-400" style={{ margin: "0px" }}>
-                            Equipo: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{res.brand} {res.model}</span>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400" style={{ margin: "0px" }}>
+                            Equipo: <span className="font-semibold text-zinc-800 dark:text-zinc-200">{res.brand} {res.model}</span>
                           </p>
                           <p 
-                            className="text-[11px] text-zinc-400 leading-relaxed italic bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-zinc-800/40"
+                            className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed italic bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-zinc-800/40"
                             style={{
                               marginTop: "4px",
                               marginBottom: "0px",
-                              padding: "8px",
+                              padding: "10px",
                               borderRadius: "8px",
                               maxWidth: "480px"
                             }}
                           >
                             &quot;{res.description}&quot;
                           </p>
+
+                          {isCancelled && res.cancelReason && (
+                            <div 
+                              className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl max-w-[480px] mt-2"
+                              style={{ padding: "10px 14px" }}
+                            >
+                              <p className="text-xs text-red-800 dark:text-red-300 leading-relaxed whitespace-pre-line">
+                                <strong className="text-red-900 dark:text-red-200 font-bold">Motivo de cancelación:</strong> {res.cancelReason}
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                         <div 
-                          className="text-xs text-zinc-500"
+                          className="text-sm text-zinc-700 dark:text-zinc-300"
                           style={{
                             display: "flex",
                             flexWrap: "wrap",
@@ -406,12 +434,12 @@ export default function BookingHistoryPage() {
                             marginTop: "8px"
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            <MdCalendarToday size={14} className="text-zinc-400" />
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <MdCalendarToday size={15} className="text-[#BB3D4B]" />
                             <span>{formatDate(res.date)}</span>
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            <MdAccessTime size={14} className="text-zinc-400" />
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <MdAccessTime size={15} className="text-[#BB3D4B]" />
                             <span className="font-semibold">{res.time}</span>
                           </div>
                         </div>
