@@ -28,25 +28,24 @@ const SERVICES = [
     id: "preventivo",
     name: "Mantenimiento preventivo",
     icon: MdBuild,
-    price: "$499 MXN",
     description: "Limpieza interna profunda, soplado de polvo, lubricación de ventiladores y cambio de pasta térmica de alto rendimiento.",
-    duration: "1.5 - 2 horas"
+
   },
   {
     id: "diagnostico",
     name: "Diagnóstico",
     icon: MdSearch,
-    price: "$299 MXN",
+
     description: "Detección y diagnóstico detallado de fallas de hardware y software con cotización formal de refacciones.",
-    duration: "1 hora"
+
   },
   {
     id: "actualizacion",
     name: "Actualización",
     icon: MdAutorenew,
-    price: "$399 MXN",
+
     description: "Instalación de unidades SSD, expansión de memoria RAM, clonación de disco y optimización de componentes.",
-    duration: "1 - 2 horas"
+
   }
 ];
 
@@ -77,7 +76,7 @@ const isHoliday = (date: Date): boolean => {
 
 const isSlotTimePassed = (selectedDate: Date, slotTime: string): boolean => {
   const today = new Date();
-  
+
   if (selectedDate.toDateString() !== today.toDateString()) {
     return false;
   }
@@ -244,7 +243,7 @@ function ReservationDetailContent() {
   ) => {
     if (!reservation) return;
     const deviceStr = `${reservation.deviceType === "PC" ? "PC" : "Laptop"} (${reservation.brand} ${reservation.model})`;
-    
+
     let titleText = "Me gustaría agendar una cita de mantenimiento.";
     let headerText = "*Detalles de la Reserva (Nueva Cita):*";
     let dateLabel = "• *Fecha:*";
@@ -309,7 +308,7 @@ ${timeLabel} ${timeStr}
       if (response && response.status === 200) {
         setSuccessMsg("Cita reprogramada con éxito.");
         setIsRescheduling(false);
-        
+
         // Actualizar datos locales
         setReservation((prev: any) => ({
           ...prev,
@@ -359,7 +358,7 @@ ${timeLabel} ${timeStr}
       const response = await requestPost({ reference: id }, "/reservas/cancel");
       if (response && response.status === 200) {
         setSuccessMsg("Cita cancelada correctamente.");
-        
+
         // Enviar WhatsApp de cancelación antes de cambiar el estado
         const dbDate = new Date(reservation.date);
         // Ajustar desfase de zona horaria si es necesario
@@ -392,7 +391,7 @@ ${timeLabel} ${timeStr}
   if (errorMsg && !reservation) {
     return (
       <section className="w-full flex flex-col lg:flex-row min-h-screen bg-[#fafafa] dark:bg-zinc-950">
-        <div className="hidden lg:block w-[280px] shrink-0" style={{ borderRight: "1px solid #e4e4e7", paddingRight: "16px" }}>
+        <div className="hidden lg:block w-[280px] shrink-0" style={{ border: "1px solid #e4e4e7", paddingRight: "16px" }}>
           <SidebarMiCuenta />
         </div>
         <div className="w-full lg:flex-grow flex flex-col items-center justify-center p-10">
@@ -518,7 +517,7 @@ ${timeLabel} ${timeStr}
             </div>
             <h2 className="text-2xl font-bold">{ticketTitle}</h2>
             <p className="text-white/80 text-sm mt-1">{ticketSubtitle}</p>
-            
+
             {/* Código de Cita */}
             <div
               className="inline-block bg-white/10 backdrop-blur-md rounded-xl text-lg font-mono tracking-wider font-semibold mt-4"
@@ -531,7 +530,7 @@ ${timeLabel} ${timeStr}
             >
               {id}
             </div>
-            
+
             {/* Círculos laterales del ticket */}
             <div className="absolute w-8 h-8 rounded-full bg-[#fafafa] dark:bg-zinc-950" style={{ bottom: "-16px", left: "-16px", zIndex: 20 }}></div>
             <div className="absolute w-8 h-8 rounded-full bg-[#fafafa] dark:bg-zinc-950" style={{ bottom: "-16px", right: "-16px", zIndex: 20 }}></div>
@@ -577,11 +576,10 @@ ${timeLabel} ${timeStr}
                           setSelectedDate(date);
                           setSelectedTime("");
                         }}
-                        className={`rounded-lg border text-center cursor-pointer min-w-[70px] transition-all flex flex-col justify-center items-center ${
-                          isSame
-                            ? "border-[#BB3D4B] bg-[#BB3D4B] text-white shadow-md shadow-[#BB3D4B]/20"
-                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700"
-                        }`}
+                        className={`rounded-lg border text-center cursor-pointer min-w-[70px] transition-all flex flex-col justify-center items-center ${isSame
+                          ? "border-[#BB3D4B] bg-[#BB3D4B] text-white shadow-md shadow-[#BB3D4B]/20"
+                          : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700"
+                          }`}
                         style={{ padding: "8px" }}
                       >
                         <span style={{ fontSize: "9px", fontWeight: "bold", textTransform: "uppercase", color: isSame ? "rgba(255,255,255,0.8)" : "#9e9e9e" }}>
@@ -618,13 +616,12 @@ ${timeLabel} ${timeStr}
                               disabled={isBusy}
                               key={slot.time}
                               onClick={() => setSelectedTime(slot.time)}
-                              className={`rounded-full border transition-all duration-200 flex items-center justify-between ${
-                                isBusy
-                                  ? "bg-zinc-100 dark:bg-zinc-800/40 text-zinc-300 dark:text-zinc-700 border-zinc-200 dark:border-zinc-800 cursor-not-allowed"
-                                  : isSelected
+                              className={`rounded-full border transition-all duration-200 flex items-center justify-between ${isBusy
+                                ? "bg-zinc-100 dark:bg-zinc-800/40 text-zinc-300 dark:text-zinc-700 border-zinc-200 dark:border-zinc-800 cursor-not-allowed"
+                                : isSelected
                                   ? "border-[#BB3D4B] bg-[#BB3D4B]/10 dark:bg-[#BB3D4B]/15 text-[#BB3D4B]"
                                   : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300"
-                              }`}
+                                }`}
                               style={{
                                 padding: "8px 14px",
                                 cursor: isBusy ? "not-allowed" : "pointer",

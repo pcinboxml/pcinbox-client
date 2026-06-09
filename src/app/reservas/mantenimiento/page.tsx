@@ -29,25 +29,25 @@ const SERVICES = [
     id: "preventivo",
     name: "Mantenimiento preventivo",
     icon: MdBuild,
-    price: "$499 MXN",
+
     description: "Limpieza interna profunda, soplado de polvo, lubricación de ventiladores y cambio de pasta térmica de alto rendimiento.",
-    duration: "1.5 - 2 horas"
+
   },
   {
     id: "diagnostico",
     name: "Diagnóstico",
     icon: MdSearch,
-    price: "$299 MXN",
+
     description: "Detección y diagnóstico detallado de fallas de hardware y software con cotización formal de refacciones.",
-    duration: "1 hora"
+
   },
   {
     id: "actualizacion",
     name: "Actualización",
     icon: MdAutorenew,
-    price: "$399 MXN",
+
     description: "Instalación de unidades SSD, expansión de memoria RAM, clonación de disco y optimización de componentes.",
-    duration: "1 - 2 horas"
+
   }
 ];
 
@@ -116,7 +116,7 @@ const isHoliday = (date: Date): boolean => {
 
 const isSlotTimePassed = (selectedDate: Date, slotTime: string): boolean => {
   const today = new Date();
-  
+
   if (selectedDate.toDateString() !== today.toDateString()) {
     return false;
   }
@@ -391,7 +391,7 @@ function MaintenanceBookingPageContent() {
       <div
         className="hidden lg:block w-[280px] shrink-0"
         style={{
-          borderRight: "1px solid #e4e4e7",
+          border: "1px solid #e4e4e7",
           paddingRight: "16px"
         }}
       >
@@ -540,10 +540,10 @@ function MaintenanceBookingPageContent() {
                         <p className="text-[10px] text-zinc-400 leading-tight" style={{ marginTop: "4px", marginBottom: "8px" }}>
                           {srv.description}
                         </p>
-                        <div className="flex justify-between items-center text-[10px] text-zinc-500 border-t border-zinc-100 dark:border-zinc-800/80" style={{ paddingTop: "6px" }}>
+                        {/* <div className="flex justify-between items-center text-[10px] text-zinc-500 border-t border-zinc-100 dark:border-zinc-800/80" style={{ paddingTop: "6px" }}>
                           <span className="font-extrabold text-[#A67845]">{srv.price}</span>
                           <span>{srv.duration}</span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   );
@@ -1038,12 +1038,12 @@ function MaintenanceBookingPageContent() {
                     {selectedServiceDetails?.name || "No seleccionado"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-xs">
+                {/* <div className="flex justify-between items-center text-xs">
                   <span className="text-zinc-500">Precio estimado:</span>
                   <span className="font-bold text-[#A67845]">
                     {selectedServiceDetails?.price || "$0 MXN"}
                   </span>
-                </div>
+                </div> */}
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-zinc-500">Dispositivo:</span>
                   <span className="font-semibold text-zinc-800 dark:text-zinc-200">

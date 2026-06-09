@@ -187,7 +187,6 @@ export default function BookingHistoryPage() {
         fetchHistory(); // Recargar la página actual
       }
     } catch (err: any) {
-      console.error("Error al cancelar reserva:", err);
       const message = err?.response?.data?.message || "Ocurrió un error al intentar cancelar la reservación.";
       setDataModal({
         isOpen: true,
@@ -223,7 +222,7 @@ export default function BookingHistoryPage() {
       <div
         className="hidden lg:block w-[280px] shrink-0"
         style={{
-          borderRight: "1px solid #e4e4e7",
+          border: "1px solid #e4e4e7",
           paddingRight: "16px"
         }}
       >
@@ -258,16 +257,27 @@ export default function BookingHistoryPage() {
           </div>
 
           {/* Panel de Búsqueda y Filtros Avanzados */}
-          <div style={{
-            marginBottom: "20px"
-          }} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end mb-6 bg-zinc-50 dark:bg-zinc-900/50 p-4 md:p-5 rounded-2xl border border-zinc-150 dark:border-zinc-800/60">
+          <div
+            className="grid grid-cols-1 md:grid-cols-6 items-end bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-150 dark:border-zinc-800/60"
+            style={{
+              padding: "16px",
+              marginBottom: "24px",
+              gap: "16px"
+            }}
+          >
             {/* Buscador de Texto */}
             <div className="md:col-span-2">
-              <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              <label
+                className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
+                style={{ marginBottom: "8px" }}
+              >
                 Búsqueda Avanzada
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-400 dark:text-zinc-500">
+                <span
+                  className="absolute inset-y-0 left-0 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500"
+                  style={{ paddingLeft: "12px" }}
+                >
                   <MdSearch size={18} />
                 </span>
                 <input
@@ -288,7 +298,10 @@ export default function BookingHistoryPage() {
 
             {/* Selector de Estado */}
             <div>
-              <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              <label
+                className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
+                style={{ marginBottom: "8px" }}
+              >
                 Estado
               </label>
               <select
@@ -316,7 +329,10 @@ export default function BookingHistoryPage() {
 
             {/* Selector de Fecha Inicio */}
             <div>
-              <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              <label
+                className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
+                style={{ marginBottom: "8px" }}
+              >
                 Desde
               </label>
               <input
@@ -339,7 +355,10 @@ export default function BookingHistoryPage() {
 
             {/* Selector de Fecha Fin */}
             <div>
-              <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+              <label
+                className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
+                style={{ marginBottom: "8px" }}
+              >
                 Hasta
               </label>
               <input
@@ -371,10 +390,11 @@ export default function BookingHistoryPage() {
                     setEndDate("");
                     setPage(1);
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-[#BB3D4B]/20 hover:border-[#BB3D4B]/40 bg-red-50/50 hover:bg-red-50 dark:bg-red-950/10 dark:hover:bg-red-950/20 text-[#BB3D4B] text-xs font-bold transition-all duration-200"
+                  className="w-full flex items-center justify-center rounded-lg border border-[#BB3D4B]/20 hover:border-[#BB3D4B]/40 bg-red-50/50 hover:bg-red-50 dark:bg-red-950/10 dark:hover:bg-red-950/20 text-[#BB3D4B] text-xs font-bold transition-all duration-200"
                   style={{
                     height: "38px",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    gap: "6px"
                   }}
                 >
                   <MdClose size={16} />
