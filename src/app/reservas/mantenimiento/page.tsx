@@ -599,10 +599,8 @@ function MaintenanceBookingPageContent() {
                 <div
                   onClick={() => {
                     setDeviceType("pc");
-                    if (deviceType !== "pc" || !brand) {
-                      setBrand("Generic/Ensamblada (Custom PC)");
-                      setIsCustomBrand(false);
-                    }
+                    setBrand("Generic/Ensamblada (Custom PC)");
+                    setIsCustomBrand(false);
                   }}
                   className={`rounded-xl border cursor-pointer text-center flex items-center justify-center transition-all ${deviceType === "pc"
                     ? "border-[#BB3D4B] bg-red-50/20 dark:bg-[#BB3D4B]/5 font-bold"
