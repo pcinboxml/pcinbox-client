@@ -599,7 +599,7 @@ function MaintenanceBookingPageContent() {
                 <div
                   onClick={() => {
                     setDeviceType("pc");
-                    if (!brand) {
+                    if (deviceType !== "pc" || !brand) {
                       setBrand("Generic/Ensamblada (Custom PC)");
                       setIsCustomBrand(false);
                     }
