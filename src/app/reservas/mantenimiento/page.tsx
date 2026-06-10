@@ -639,7 +639,7 @@ function MaintenanceBookingPageContent() {
                   </label>
 
                   {!isCustomBrand ? (
-                    <div>
+                    <>
                       {/* Selector principal */}
                       <div
                         onClick={() => setIsBrandDropdownOpen(!isBrandDropdownOpen)}
@@ -649,8 +649,7 @@ function MaintenanceBookingPageContent() {
                           boxSizing: "border-box",
                           paddingLeft: "12px",
                           paddingRight: "12px",
-                          paddingTop: "10px",
-                          paddingBottom: "10px"
+                          height: "38px"
                         }}
                       >
                         <span>{brand || "Selecciona una marca"}</span>
@@ -723,7 +722,7 @@ function MaintenanceBookingPageContent() {
                           )}
                         </div>
                       )}
-                    </div>
+                    </>
                   ) : (
                     <div className="flex gap-2">
                       {/* Input libre */}
@@ -737,8 +736,7 @@ function MaintenanceBookingPageContent() {
                           boxSizing: "border-box",
                           paddingLeft: "12px",
                           paddingRight: "12px",
-                          paddingTop: "10px",
-                          paddingBottom: "10px",
+                          height: "38px",
                           minWidth: 0
                         }}
                       />
@@ -748,7 +746,10 @@ function MaintenanceBookingPageContent() {
                           setIsCustomBrand(false);
                           setBrand("");
                         }}
-                        className="px-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-semibold cursor-pointer transition-all shrink-0"
+                        className="px-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-semibold cursor-pointer transition-all shrink-0 flex items-center justify-center"
+                        style={{
+                          height: "38px"
+                        }}
                       >
                         Lista
                       </button>
@@ -775,8 +776,7 @@ function MaintenanceBookingPageContent() {
                       boxSizing: "border-box",
                       paddingLeft: "12px",
                       paddingRight: "12px",
-                      paddingTop: "10px",
-                      paddingBottom: "10px"
+                      height: "38px"
                     }}
                   />
                 </div>
@@ -1032,9 +1032,9 @@ function MaintenanceBookingPageContent() {
                 }}
               >
                 <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">Resumen del servicio</span>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-zinc-500">Mantenimiento:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="flex justify-between items-start text-xs gap-4">
+                  <span className="text-zinc-500 shrink-0">Mantenimiento:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">
                     {selectedServiceDetails?.name || "No seleccionado"}
                   </span>
                 </div>
@@ -1044,15 +1044,15 @@ function MaintenanceBookingPageContent() {
                     {selectedServiceDetails?.price || "$0 MXN"}
                   </span>
                 </div> */}
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-zinc-500">Dispositivo:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="flex justify-between items-start text-xs gap-4">
+                  <span className="text-zinc-500 shrink-0">Dispositivo:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">
                     {deviceType ? (deviceType === "pc" ? "PC" : "Laptop") : "No elegido"} {brand && `(${brand})`}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-zinc-500">Fecha y Hora:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="flex justify-between items-start text-xs gap-4">
+                  <span className="text-zinc-500 shrink-0">Fecha y Hora:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">
                     {selectedDate ? `${selectedDate.getDate()}/${selectedDate.getMonth() + 1}` : ""} {selectedTime ? `@ ${selectedTime}` : "No programada"}
                   </span>
                 </div>
