@@ -493,7 +493,8 @@ ${timeLabel} ${timeStr}
           style={{
             borderBottom: "1px solid #f4f4f5",
             paddingBottom: "16px",
-            marginBottom: "24px"
+            marginBottom: "24px",
+            marginTop: "20px"
           }}
         >
           <span className="text-[#BB3D4B] font-bold text-sm tracking-wider uppercase block" style={{ marginBottom: "4px" }}>
