@@ -73,7 +73,7 @@ const getStatusConfig = (status: string) => {
 export default function BookingHistoryPage() {
   const router = useRouter();
   const { requestGet, requestPost } = useService();
-  const { setDataModal } = useTheContext();
+  const { setDataModal, socketServer } = useTheContext();
 
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -108,6 +108,33 @@ export default function BookingHistoryPage() {
       }
     }
   }, [router]);
+
+  // Escuchar actualizaciones de estatus de reservación vía Socket.io en tiempo real
+  useEffect(() => {
+    if (!socketServer || !socketServer.current) return;
+
+    const handleSocketUpdate = (data: any) => {
+      if (data && data.reference) {
+        setReservations((prev) =>
+          prev.map((res) =>
+            res.reference === data.reference
+              ? {
+                ...res,
+                status: data.status,
+                cancelReason: data.cancelReason !== undefined ? data.cancelReason : res.cancelReason,
+              }
+              : res
+          )
+        );
+      }
+    };
+
+    socketServer.current.on("reservationStatusUpdated", handleSocketUpdate);
+
+    return () => {
+      socketServer.current?.off("reservationStatusUpdated", handleSocketUpdate);
+    };
+  }, [socketServer]);
 
   const fetchHistory = async () => {
     setLoading(true);

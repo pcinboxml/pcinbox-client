@@ -157,7 +157,7 @@ function ReservationDetailContent() {
   const router = useRouter();
   const id = params.id as string;
   const { requestGet, requestPost } = useService();
-  const { setDataModal } = useTheContext();
+  const { setDataModal, socketServer } = useTheContext();
 
   const [reservation, setReservation] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,35 +174,59 @@ function ReservationDetailContent() {
 
   const availableDates = useMemo(() => generateAvailableDates(), []);
 
+  const fetchReservation = async () => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      const response = await requestGet(`/reservas/get/${id}`);
+      if (response && response.status === 200 && response.data && response.data.data) {
+        setReservation(response.data.data);
+        // Si viene con el parámetro reschedule=true, activar modo reprogramar directamente
+        if (searchParams.get("reschedule") === "true") {
+          setIsRescheduling(true);
+        }
+      } else {
+        setErrorMsg("No se pudo cargar la reservación.");
+      }
+    } catch (err: any) {
+      console.error("Error al obtener reserva:", err);
+      setErrorMsg("Reservación no encontrada o código inválido.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Cargar detalles de la reserva al montar
   useEffect(() => {
-    const fetchReservation = async () => {
-      setIsLoading(true);
-      setErrorMsg("");
-      try {
-        const response = await requestGet(`/reservas/get/${id}`);
-        if (response && response.status === 200 && response.data && response.data.data) {
-          setReservation(response.data.data);
-          // Si viene con el parámetro reschedule=true, activar modo reprogramar directamente
-          if (searchParams.get("reschedule") === "true") {
-            setIsRescheduling(true);
-          }
-        } else {
-          setErrorMsg("No se pudo cargar la reservación.");
-        }
-      } catch (err: any) {
-        console.error("Error al obtener reserva:", err);
-        setErrorMsg("Reservación no encontrada o código inválido.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
     if (id) {
       fetchReservation();
     }
   }, [id, searchParams]);
 
-  // Consultar disponibilidad al reprogramar
+  // Escuchar actualizaciones de estatus de esta reservación específica vía Socket.io
+  useEffect(() => {
+    if (!socketServer || !socketServer.current) return;
+
+    const handleSocketUpdate = (data: any) => {
+      if (data && data.reference === id) {
+        console.log("Socket: Notificación de estatus recibida en ticket:", data);
+        setReservation((prev: any) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            status: data.status,
+            cancelReason: data.cancelReason !== undefined ? data.cancelReason : prev.cancelReason,
+          };
+        });
+      }
+    };
+
+    socketServer.current.on("reservationStatusUpdated", handleSocketUpdate);
+
+    return () => {
+      socketServer.current?.off("reservationStatusUpdated", handleSocketUpdate);
+    };
+  }, [socketServer, id]);  // Consultar disponibilidad al reprogramar
   useEffect(() => {
     const fetchAvailability = async () => {
       if (!selectedDate) {
