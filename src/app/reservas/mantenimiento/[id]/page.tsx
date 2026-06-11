@@ -473,7 +473,7 @@ ${timeLabel} ${timeStr}
       <div
         className="hidden lg:block w-[280px] shrink-0"
         style={{
-          borderRight: "1px solid #e4e4e7",
+          border: "1px solid #e4e4e7",
           paddingRight: "16px"
         }}
       >
