@@ -597,6 +597,7 @@ export default function BookingHistoryPage() {
             >
               {reservations.map((res) => {
                 const isCancelled = res.status === "cancelled";
+                const isCompleted = res.status === "completed";
                 const statusConf = getStatusConfig(res.status);
                 return (
                   <div
@@ -722,7 +723,7 @@ export default function BookingHistoryPage() {
                     </div>
 
                     {/* Botones de acción */}
-                    {!isCancelled && (
+                    {!isCancelled && !isCompleted && (
                       <div
                         style={{
                           display: "flex",
