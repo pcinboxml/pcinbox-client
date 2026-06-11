@@ -109,6 +109,38 @@ const SidebarMiCuenta = () => {
           </a>
         </li>
 
+        <li
+          onClick={() => onRouterLink("/reservas/mantenimiento")}
+          className={`${styles.li} ${
+            isRouteActive("/reservas/mantenimiento")[1]
+          }`}
+        >
+          <a
+            role="button"
+            className={`${styles.tagA} ${
+              isRouteActive("/reservas/mantenimiento")[0]
+            }`}
+          >
+            Reservar mantenimiento
+          </a>
+        </li>
+
+        <li
+          onClick={() => onRouterLink("/reservas/historial")}
+          className={`${styles.li} ${
+            isRouteActive("/reservas/historial")[1]
+          }`}
+        >
+          <a
+            role="button"
+            className={`${styles.tagA} ${
+              isRouteActive("/reservas/historial")[0]
+            }`}
+          >
+            Historial de reservas
+          </a>
+        </li>
+
         {/* <li
           onClick={() => onRouterLink("/mis-compras")}
           className={`${styles.li} ${isRouteActive("/mis-compras")[1]}`}
