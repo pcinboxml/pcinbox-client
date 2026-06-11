@@ -36,71 +36,6 @@ const Stars = ({ rating }: { rating: number }) => (
   </div>
 );
 
-// ─── Default Fallback Reviews ──────────────────────────────────────────────────
-
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    author_name: "Alejandro Paredes",
-    author_url: "",
-    language: "es",
-    original_language: "es",
-    profile_photo_url: "",
-    rating: 5,
-    relative_time_description: "Hace 2 semanas",
-    text: "Excelente servicio y atención. Compré mi PC gamer aquí y todo funciona de maravilla, súper recomendados.",
-    time: Math.floor(Date.now() / 1000) - 14 * 86400,
-    translated: false,
-  },
-  {
-    author_name: "Sofía Rodríguez",
-    author_url: "",
-    language: "es",
-    original_language: "es",
-    profile_photo_url: "",
-    rating: 5,
-    relative_time_description: "Hace 1 mes",
-    text: "Muy buena atención por parte del personal, aclaran todas tus dudas sobre componentes y compatibilidad. Los precios son bastante competitivos.",
-    time: Math.floor(Date.now() / 1000) - 30 * 86400,
-    translated: false,
-  },
-  {
-    author_name: "Carlos Mendoza",
-    author_url: "",
-    language: "es",
-    original_language: "es",
-    profile_photo_url: "",
-    rating: 5,
-    relative_time_description: "Hace 3 semanas",
-    text: "La mejor tienda de León para armar tu PC gaming. Tienen variedad de componentes y el ensamble quedó impecable.",
-    time: Math.floor(Date.now() / 1000) - 21 * 86400,
-    translated: false,
-  },
-  {
-    author_name: "Mariana Gómez",
-    author_url: "",
-    language: "es",
-    original_language: "es",
-    profile_photo_url: "",
-    rating: 5,
-    relative_time_description: "Hace 2 meses",
-    text: "Excelente lugar para comprar componentes y periféricos. El servicio técnico de ensamble es de primera calidad.",
-    time: Math.floor(Date.now() / 1000) - 60 * 86400,
-    translated: false,
-  },
-  {
-    author_name: "Ricardo Torres",
-    author_url: "",
-    language: "es",
-    original_language: "es",
-    profile_photo_url: "",
-    rating: 5,
-    relative_time_description: "Hace 1 semana",
-    text: "Muy profesionales y dedicados. Me armaron una workstation a la medida de mis necesidades de diseño. 10/10.",
-    time: Math.floor(Date.now() / 1000) - 7 * 86400,
-    translated: false,
-  },
-];
-
 // ─── Review Card ──────────────────────────────────────────────────────────────
 
 const ReviewCard = ({ review }: { review: Review }) => {
@@ -286,85 +221,80 @@ export default function GoogleReviewsCarousel() {
         }
       }
 
-      useFallbackReviews();
+      setDataReviews([]);
     } catch (error) {
-      console.warn("Failed to load Google reviews, using fallback:", error);
-      useFallbackReviews();
+      console.warn("Failed to load Google reviews:", error);
+      setDataReviews([]);
     }
-  }
-
-  function useFallbackReviews() {
-    const doubleFallback = [...DEFAULT_REVIEWS, ...DEFAULT_REVIEWS];
-    setDataReviews(doubleFallback);
-    setMediaRating(5.0);
   }
 
   useEffect(() => {
     initGetReviewsGoogle();
   }, []);
 
+  if (!dataReviews || dataReviews.length === 0) {
+    return null;
+  }
+
   return (
-    dataReviews &&
-    dataReviews.length > 0 && (
-      <div
-        className="border w-full"
-      // style={{
-      //   marginTop: "120px",
-      // }}
-      >
-        <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
-          {/* Header */}
+    <div
+      className="border w-full"
+    // style={{
+    //   marginTop: "120px",
+    // }}
+    >
+      <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        {/* Header */}
+        <div
+          className="text-center mb-10 px-4"
+          style={{
+            padding: "10px",
+          }}
+        >
           <div
-            className="text-center mb-10 px-4"
             style={{
               padding: "10px",
             }}
+            className="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-1.5 mb-4 shadow-sm"
           >
-            <div
-              style={{
-                padding: "10px",
-              }}
-              className="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-1.5 mb-4 shadow-sm"
-            >
-              <GoogleIcon />
-              <span className="text-sm font-medium text-zinc-600">
-                Reseñas de Google
-              </span>
-            </div>
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
-              Lo que dicen nuestros clientes
-            </h2>
-            <div className="flex items-center justify-center gap-2 mt-3">
-              <Stars rating={mediaRating} />
-              <span className="text-zinc-500 text-sm font-medium">
-                {mediaRating}
-              </span>
+            <GoogleIcon />
+            <span className="text-sm font-medium text-zinc-600">
+              Reseñas de Google
+            </span>
+          </div>
+          <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+            Lo que dicen nuestros clientes
+          </h2>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <Stars rating={mediaRating} />
+            <span className="text-zinc-500 text-sm font-medium">
+              {mediaRating}
+            </span>
+          </div>
+        </div>
+
+        {/* Carousel */}
+        <div
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          {/* Fade edges */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
+
+          {/* Track */}
+          <div className="overflow-hidden">
+            <div ref={trackRef} className="flex will-change-transform py-4">
+              {dataReviews.map((review, idx) => (
+                <ReviewCard key={`${idx}`} review={review} />
+              ))}
             </div>
           </div>
-
-          {/* Carousel */}
-          <div
-            className="relative"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={() => setIsPaused(true)}
-            onTouchEnd={() => setIsPaused(false)}
-          >
-            {/* Fade edges */}
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
-
-            {/* Track */}
-            <div className="overflow-hidden">
-              <div ref={trackRef} className="flex will-change-transform py-4">
-                {dataReviews.map((review, idx) => (
-                  <ReviewCard key={`${idx}`} review={review} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    )
+        </div>
+      </section>
+    </div>
   );
 }
