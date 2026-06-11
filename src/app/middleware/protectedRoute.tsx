@@ -2,6 +2,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useTheContext } from "../services/globalContext";
 
 // Rutas que son SOLO para invitados (no logueados).
 // Si un usuario logueado intenta acceder, será redirigido.
@@ -15,9 +16,10 @@ const protectedRoutes: any[] = []; // <-- Deja esto vacío por ahora. /principal
 export default function useProtectedRoute() {
   const router = useRouter();
   const pathname = usePathname();
+  const { hasToken } = useTheContext();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || hasToken;
     const isGuestOnlyRoute = guestOnlyRoutes.includes(pathname);
     const isProtectedRoute = protectedRoutes.includes(pathname);
 
@@ -39,5 +41,5 @@ export default function useProtectedRoute() {
       }
       // Si está en /principal, /register o /forgotpassword, lo dejamos pasar.
     }
-  }, [pathname, router]);
+  }, [pathname, router, hasToken]);
 }
