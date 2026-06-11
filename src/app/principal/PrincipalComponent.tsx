@@ -106,18 +106,19 @@ const PrincipalComponent = () => {
           </div>
 
           <GoogleReviewsCarousel />
-        </div>
-      </div>
 
-      <div className="mt-2">
-        <iframe
-          src="https://www.google.com/maps?q=pcinbox+León+Guanajuato&output=embed"
-          className="footer-map w-full h-[400px]"
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Ubicación PcInbox"
-        />
+          <div style={{ marginTop: "48px" }}>
+            <iframe
+              src="https://www.google.com/maps?q=pcinbox+León+Guanajuato&output=embed"
+              className="footer-map w-full h-[400px]"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación PcInbox"
+              style={{ borderRadius: "5px" }}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

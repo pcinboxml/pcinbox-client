@@ -38,52 +38,62 @@ const Stars = ({ rating }: { rating: number }) => (
 
 // ─── Review Card ──────────────────────────────────────────────────────────────
 
-const ReviewCard = ({ review }: { review: Review }) => (
-  <div
-    style={{
-      padding: "10px",
-    }}
-    className="review-card flex-shrink-0 w-80 bg-white rounded-2xl p-6 shadow-sm border border-zinc-100 mx-3 select-none"
-  >
-    {/* Header */}
-    <div className="flex items-center gap-3 mb-4 relative">
-      <div
-        className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
-        style={{ background: avatarColor(review.author_name) }}
-      >
-        <Image
-          src={review.profile_photo_url}
-          width={100}
-          height={100}
-          alt="img"
-        />
+const ReviewCard = ({ review }: { review: Review }) => {
+  const [imgSrc, setImgSrc] = useState<string | null>(review.profile_photo_url || null);
+
+  return (
+    <div
+      style={{
+        padding: "10px",
+      }}
+      className="review-card flex-shrink-0 w-80 bg-white rounded-2xl p-6 shadow-sm border border-zinc-100 mx-3 select-none"
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4 relative">
+        <div
+          className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 relative overflow-hidden"
+          style={{ background: avatarColor(review.author_name) }}
+        >
+          {imgSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imgSrc}
+              className="w-full h-full object-cover absolute inset-0 z-10"
+              alt={review.author_name}
+              onError={() => setImgSrc(null)}
+            />
+          ) : null}
+          <span className="uppercase font-bold text-base select-none z-0">
+            {review.author_name ? review.author_name.charAt(0) : "U"}
+          </span>
+        </div>
+        <div className="overflow-hidden">
+          <p className="font-semibold text-zinc-800 text-sm truncate">
+            {review.author_name}
+          </p>
+          <p className="text-zinc-400 text-xs">
+            {(() => {
+              const date = new Date(review.time * 1000);
+              return date.toLocaleString("es-MX");
+            })()}
+          </p>
+        </div>
+        {/* Google icon */}
+        <div className="ml-auto flex-shrink-0  absolute right-1">
+          <GoogleIcon />
+        </div>
       </div>
-      <div className="overflow-hidden">
-        <p className="font-semibold text-zinc-800 text-sm truncate">
-          {review.author_name}
-        </p>
-        <p className="text-zinc-400 text-xs">
-          {(() => {
-            const date = new Date(review.time * 1000);
-            return date.toLocaleString("es-MX");
-          })()}
-        </p>
-      </div>
-      {/* Google icon */}
-      <div className="ml-auto flex-shrink-0  absolute right-1">
-        <GoogleIcon />
-      </div>
+
+      {/* Stars */}
+      <Stars rating={review.rating} />
+
+      {/* Text */}
+      <p className="mt-3 text-zinc-600 text-sm leading-relaxed line-clamp-4">
+        {review.text}
+      </p>
     </div>
-
-    {/* Stars */}
-    <Stars rating={review.rating} />
-
-    {/* Text */}
-    <p className="mt-3 text-zinc-600 text-sm leading-relaxed line-clamp-4">
-      {review.text}
-    </p>
-  </div>
-);
+  );
+};
 
 // ─── Google Icon ──────────────────────────────────────────────────────────────
 
@@ -196,19 +206,24 @@ export default function GoogleReviewsCarousel() {
       const response = await fetch("/api/google-reviews");
 
       if (!response.ok) {
-        setDataReviews([]);
         throw new Error("Error en API local");
       }
 
       const data: ReviewsGoogleI = await response.json();
 
-      const double = [...data.result.reviews, ...data.result.reviews].filter(
-        (d) => d.rating === 5,
-      );
+      if (data && data.result && Array.isArray(data.result.reviews)) {
+        const filtered = data.result.reviews.filter((d) => d.rating === 5);
+        if (filtered.length > 0) {
+          const double = [...filtered, ...filtered];
+          setDataReviews(double);
+          setMediaRating(data.result.rating || 5);
+          return;
+        }
+      }
 
-      setDataReviews(double);
-      setMediaRating(data?.result.rating);
+      setDataReviews([]);
     } catch (error) {
+      console.warn("Failed to load Google reviews:", error);
       setDataReviews([]);
     }
   }
@@ -217,68 +232,69 @@ export default function GoogleReviewsCarousel() {
     initGetReviewsGoogle();
   }, []);
 
+  if (!dataReviews || dataReviews.length === 0) {
+    return null;
+  }
+
   return (
-    dataReviews &&
-    dataReviews.length > 0 && (
-      <div
-        className="border w-full"
-      // style={{
-      //   marginTop: "120px",
-      // }}
-      >
-        <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
-          {/* Header */}
+    <div
+      className="border w-full"
+    // style={{
+    //   marginTop: "120px",
+    // }}
+    >
+      <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        {/* Header */}
+        <div
+          className="text-center mb-10 px-4"
+          style={{
+            padding: "10px",
+          }}
+        >
           <div
-            className="text-center mb-10 px-4"
             style={{
               padding: "10px",
             }}
+            className="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-1.5 mb-4 shadow-sm"
           >
-            <div
-              style={{
-                padding: "10px",
-              }}
-              className="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-1.5 mb-4 shadow-sm"
-            >
-              <GoogleIcon />
-              <span className="text-sm font-medium text-zinc-600">
-                Reseñas de Google
-              </span>
-            </div>
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
-              Lo que dicen nuestros clientes
-            </h2>
-            <div className="flex items-center justify-center gap-2 mt-3">
-              <Stars rating={mediaRating} />
-              <span className="text-zinc-500 text-sm font-medium">
-                {mediaRating}
-              </span>
+            <GoogleIcon />
+            <span className="text-sm font-medium text-zinc-600">
+              Reseñas de Google
+            </span>
+          </div>
+          <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+            Lo que dicen nuestros clientes
+          </h2>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <Stars rating={mediaRating} />
+            <span className="text-zinc-500 text-sm font-medium">
+              {mediaRating}
+            </span>
+          </div>
+        </div>
+
+        {/* Carousel */}
+        <div
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          {/* Fade edges */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
+
+          {/* Track */}
+          <div className="overflow-hidden">
+            <div ref={trackRef} className="flex will-change-transform py-4">
+              {dataReviews.map((review, idx) => (
+                <ReviewCard key={`${idx}`} review={review} />
+              ))}
             </div>
           </div>
-
-          {/* Carousel */}
-          <div
-            className="relative"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={() => setIsPaused(true)}
-            onTouchEnd={() => setIsPaused(false)}
-          >
-            {/* Fade edges */}
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
-
-            {/* Track */}
-            <div className="overflow-hidden">
-              <div ref={trackRef} className="flex will-change-transform py-4">
-                {dataReviews.map((review, idx) => (
-                  <ReviewCard key={`${idx}`} review={review} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    )
+        </div>
+      </section>
+    </div>
   );
 }
