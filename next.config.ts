@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // unoptimized: true,
+    unoptimized: true,
     domains: [
       "img.icons8.com",
       "authjs.dev",

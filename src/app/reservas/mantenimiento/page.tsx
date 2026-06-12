@@ -297,7 +297,7 @@ function MaintenanceBookingPageContent() {
 • *Teléfono:* ${phoneLada} ${contactPhone}`;
 
     const encodedText = encodeURIComponent(textMessage);
-    const whatsappUrl = `https://wa.me/524774803834?text=${encodedText}`;
+    const whatsappUrl = `https://wa.me/524775334127?text=${encodedText}`;
     window.open(whatsappUrl, "_blank");
   };
 
