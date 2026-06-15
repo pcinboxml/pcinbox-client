@@ -1,0 +1,39 @@
+{
+  "name": "PcInbox",
+  "rating": 5,
+  "googleReviewsUrl": "https://www.google.com/search?q=pcinbox#lrd=0x842bbf44ccdc84cd:0x38a155fcdc248313,1,,,,",
+  "reviews": [
+    {
+      "id": "1",
+      "author_name": "kenzo deus",
+      "profile_photo_url": "",
+      "rating": 5,
+      "text": "Fue una experiencia muy buena, si duda los mejores en León Gto, cuentan con muy buen servicio y atención al cliente resolvieron todas mis dudas con su experiencia, son personas muy capacitadas y actualizadas, se te da un seguimiento en todo tu proceso, y recibí muy buenas recomendaciones con base a tu presupuesto y necesidades",
+      "date": "2026-02-10"
+    },
+    {
+      "id": "2",
+      "author_name": "Emmanuel",
+      "profile_photo_url": "",
+      "rating": 5,
+      "text": "Muy recomendable. La atención es muy buena, te explican según tus necesidades y presupuesto. Satisfecho con mi nuevo equipo.",
+      "date": "2026-05-23"
+    },
+    {
+      "id": "3",
+      "author_name": "Isai Serrano",
+      "profile_photo_url": "",
+      "rating": 5,
+      "text": "Buen servicio de reparación, trabajo bastante rápido y eficaz, recomendado este lugar 10/10 :]",
+      "date": "2026-02-08"
+    },
+    {
+      "id": "4",
+      "author_name": "Keith Kogane",
+      "profile_photo_url": "",
+      "rating": 5,
+      "text": "Explicación buena del sistema y los fallos que tenia ya fueran o no de mi dispositivo, atención al cliente perfecta, y una accesibilidad para tiempos y entrega de dispositivos perfecta y rápido.",
+      "date": "2026-02-12"
+    }
+  ]
+}

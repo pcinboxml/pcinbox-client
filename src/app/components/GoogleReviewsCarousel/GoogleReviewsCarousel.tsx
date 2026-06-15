@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  FeaturableReview,
-  FeaturableReviewsResponse,
-} from "@/app/interfaces/featurableReviews.interface";
+import { GoogleReviewItem } from "@/app/interfaces/googleReviews.interface";
 import React, { useRef, useEffect, useState } from "react";
-
-const FEATURABLE_API_BASE = "https://api.featurable.com/v1/widgets";
 
 // ─── Star Component ───────────────────────────────────────────────────────────
 
@@ -27,11 +22,10 @@ const Stars = ({ rating }: { rating: number }) => (
 
 // ─── Review Card ──────────────────────────────────────────────────────────────
 
-const ReviewCard = ({ review }: { review: FeaturableReview }) => {
+const ReviewCard = ({ review }: { review: GoogleReviewItem }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(
-    review.reviewer.profilePhotoUrl || null,
+    review.profile_photo_url || null,
   );
-  const authorName = review.reviewer.displayName || "Usuario";
 
   return (
     <div
@@ -41,29 +35,31 @@ const ReviewCard = ({ review }: { review: FeaturableReview }) => {
       <div className="flex items-center gap-3 mb-4 relative">
         <div
           className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 relative overflow-hidden"
-          style={{ background: avatarColor(authorName) }}
+          style={{ background: avatarColor(review.author_name) }}
         >
           {imgSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imgSrc}
               className="w-full h-full object-cover absolute inset-0 z-10"
-              alt={authorName}
+              alt={review.author_name}
               onError={() => setImgSrc(null)}
             />
           ) : null}
           <span className="uppercase font-bold text-base select-none z-0">
-            {authorName.charAt(0)}
+            {review.author_name ? review.author_name.charAt(0) : "U"}
           </span>
         </div>
         <div className="overflow-hidden">
           <p className="font-semibold text-zinc-800 text-sm truncate">
-            {authorName}
+            {review.author_name}
           </p>
           <p className="text-zinc-400 text-xs">
-            {review.createTime
-              ? new Date(review.createTime).toLocaleString("es-MX")
-              : ""}
+            {new Date(review.date).toLocaleDateString("es-MX", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </p>
         </div>
         <div className="ml-auto flex-shrink-0 absolute right-1">
@@ -71,10 +67,10 @@ const ReviewCard = ({ review }: { review: FeaturableReview }) => {
         </div>
       </div>
 
-      <Stars rating={review.starRating} />
+      <Stars rating={review.rating} />
 
       <p className="mt-3 text-zinc-600 text-sm leading-relaxed line-clamp-4">
-        {review.comment}
+        {review.text}
       </p>
     </div>
   );
@@ -124,18 +120,6 @@ function avatarColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-function stripGoogleTranslation(comment: string): string {
-  if (comment.includes("(Original)")) {
-    const split = comment.split("(Original)");
-    if (split.length > 1) return split[1].trim();
-  }
-  if (comment.includes("(Translated by Google)")) {
-    const split = comment.split("(Translated by Google)");
-    if (split.length > 1) return split[0].trim();
-  }
-  return comment;
-}
-
 // ─── Main Carousel ────────────────────────────────────────────────────────────
 
 export default function GoogleReviewsCarousel() {
@@ -145,7 +129,8 @@ export default function GoogleReviewsCarousel() {
   const posRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
   const [mediaRating, setMediaRating] = useState(0);
-  const [dataReviews, setDataReviews] = useState<FeaturableReview[]>([]);
+  const [googleReviewsUrl, setGoogleReviewsUrl] = useState("");
+  const [dataReviews, setDataReviews] = useState<GoogleReviewItem[]>([]);
 
   const SPEED = 40;
 
@@ -177,32 +162,32 @@ export default function GoogleReviewsCarousel() {
   }, [isPaused, dataReviews]);
 
   useEffect(() => {
-    const widgetId = process.env.NEXT_PUBLIC_FEATURABLE_WIDGET_ID;
-    if (!widgetId) return;
-
-    async function fetchFeaturableReviews() {
+    async function loadReviews() {
       try {
-        const response = await fetch(`${FEATURABLE_API_BASE}/${widgetId}`);
+        const response = await fetch("/google-reviews.json");
 
         if (!response.ok) {
-          throw new Error("Error al obtener reseñas de Featurable");
+          throw new Error("No se pudo cargar google-reviews.json");
         }
 
-        const data: FeaturableReviewsResponse = await response.json();
+        const data = await response.json();
 
-        if (!data.success || !Array.isArray(data.reviews)) {
+        if (data?.rating) {
+          setMediaRating(data.rating);
+        }
+        if (data?.googleReviewsUrl) {
+          setGoogleReviewsUrl(data.googleReviewsUrl);
+        }
+
+        if (!data?.reviews || !Array.isArray(data.reviews)) {
           setDataReviews([]);
           return;
         }
 
-        const filtered = data.reviews
-          .map((review) => ({
-            ...review,
-            comment: stripGoogleTranslation(review.comment),
-          }))
-          .filter(
-            (review) => review.starRating === 5 && review.comment.trim() !== "",
-          );
+        const filtered = data.reviews.filter(
+          (review: GoogleReviewItem) =>
+            review.rating === 5 && review.text.trim() !== "",
+        );
 
         if (filtered.length === 0) {
           setDataReviews([]);
@@ -210,17 +195,16 @@ export default function GoogleReviewsCarousel() {
         }
 
         setDataReviews([...filtered, ...filtered]);
-        setMediaRating(data.averageRating || 5);
       } catch (error) {
-        console.warn("Failed to load Featurable reviews:", error);
+        console.warn("Failed to load Google reviews:", error);
         setDataReviews([]);
       }
     }
 
-    fetchFeaturableReviews();
+    loadReviews();
   }, []);
 
-  if (!process.env.NEXT_PUBLIC_FEATURABLE_WIDGET_ID || dataReviews.length === 0) {
+  if (dataReviews.length === 0 && !googleReviewsUrl) {
     return null;
   }
 
@@ -246,26 +230,38 @@ export default function GoogleReviewsCarousel() {
               {mediaRating}
             </span>
           </div>
+          {googleReviewsUrl ? (
+            <a
+              href={googleReviewsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-700 underline"
+            >
+              Ver todas las reseñas en Google
+            </a>
+          ) : null}
         </div>
 
-        <div
-          className="relative"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
-        >
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
+        {dataReviews.length > 0 ? (
+          <div
+            className="relative"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+          >
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
 
-          <div className="overflow-hidden">
-            <div ref={trackRef} className="flex will-change-transform py-4">
-              {dataReviews.map((review, idx) => (
-                <ReviewCard key={`${review.reviewId ?? idx}-${idx}`} review={review} />
-              ))}
+            <div className="overflow-hidden">
+              <div ref={trackRef} className="flex will-change-transform py-4">
+                {dataReviews.map((review, idx) => (
+                  <ReviewCard key={`${review.id}-${idx}`} review={review} />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
       </section>
     </div>
   );
