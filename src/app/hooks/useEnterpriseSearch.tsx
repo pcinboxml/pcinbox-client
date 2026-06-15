@@ -5,11 +5,13 @@ import useDebounced from "./useDebounced";
 
 const fetchEnterpriseProducts = async (search: string) => {
   if (!search) return [];
+  
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/searchProductInput?q=${encodeURIComponent(
       search,
     )}`,
   );
+
   if (!res.ok) throw new Error("Error al buscar productos");
   const data = await res.json();
   return data?.data ?? [];
