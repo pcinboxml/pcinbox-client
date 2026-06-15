@@ -4,7 +4,6 @@ import { useEffect, useState, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { GridLoader } from "react-spinners";
-
 import NotFound from "../components/openpay/notFound/NotFound";
 import PaySuccess from "../components/openpay/success/PaySuccess";
 import PayPending from "../components/openpay/pending/PayPending";
