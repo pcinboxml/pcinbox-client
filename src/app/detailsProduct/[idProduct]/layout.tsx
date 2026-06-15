@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: {
-      absolute: `${title} | PCInbox`,
+      absolute: `${title} | PCInBOX`,
     },
     description,
     alternates: {
