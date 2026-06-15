@@ -3,7 +3,7 @@ import {
   formatProductPrice,
   getProductImageUrl,
   getProductServer,
-  truncateText,
+  truncateText
 } from "@/app/lib/getProductServer";
 import { getProductUrl } from "@/app/lib/getSiteUrl";
 
