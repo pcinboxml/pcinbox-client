@@ -60,6 +60,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
               src={imgSrc}
               className="w-full h-full object-cover absolute inset-0 z-10"
               alt={review.author_name}
+              loading="lazy"
               onError={() => setImgSrc(null)}
             />
           ) : null}

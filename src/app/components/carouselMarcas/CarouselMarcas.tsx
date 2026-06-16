@@ -41,6 +41,7 @@ export default function CarouselMarcas() {
               width={50}
               height={50}
               className={styles.image}
+              loading="lazy"
               style={{
                 objectFit: "contain",
                 width: "100px",

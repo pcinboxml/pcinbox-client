@@ -6,6 +6,7 @@ import useCarousel from "./useCarousel";
 import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
 import Image from "next/image";
 import CarouselPlataforma from "../carouselPlataformas/CarouselPlataformas";
+import { appendImageKitTransform } from "@/app/lib/imageKit";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
@@ -70,19 +71,40 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             className="sliderTrack"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {banners.map((src, index) => (
-              <div className="slide" key={index}>
-                <Image
-                  src={src}
-                  width={800}
-                  height={400}
-                  alt={`Imagen ${index + 1}`}
-                  className="image"
-                  style={{ objectFit: "contain" }}
-                  priority={index === 0}
-                />
-              </div>
-            ))}
+            {banners.map((src, index) => {
+              const shouldLoad =
+                index === currentIndex ||
+                index === (currentIndex + 1) % banners.length;
+
+              return (
+                <div className="slide" key={index}>
+                  {shouldLoad ? (
+                    <Image
+                      src={appendImageKitTransform(
+                        src,
+                        "w-1200,q-75,f-auto",
+                      )}
+                      width={800}
+                      height={400}
+                      alt={`Imagen ${index + 1}`}
+                      className="image"
+                      style={{ objectFit: "contain" }}
+                      priority={index === 0 && currentIndex === 0}
+                      loading={
+                        index === 0 && currentIndex === 0 ? undefined : "lazy"
+                      }
+                      sizes="(max-width: 768px) 100vw, 800px"
+                    />
+                  ) : (
+                    <div
+                      className="image"
+                      aria-hidden
+                      style={{ minHeight: 400, width: "100%" }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
           {/* Dots + Flechas */}
           <div className="dotsOverlay">
