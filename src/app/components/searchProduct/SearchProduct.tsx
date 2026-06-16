@@ -16,7 +16,6 @@ import useEnterpriseSearch from "@/app/hooks/useEnterpriseSearch";
 import useService from "@/app/services/useService";
 import ProductI from "@/app/interfaces/products/product.interface";
 import "./searchProduct.css";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 interface SearchProductProps {
   setIsFocusedSearch: (focused: boolean) => void;
@@ -133,9 +132,7 @@ const SearchProduct = ({ setIsFocusedSearch }: SearchProductProps) => {
             }}
           >
             <Avatar
-              src={optimizeImageUrl(option.image_url?.[0], {
-                width: IMAGE_SIZES.thumbnail,
-              })}
+              src={option.image_url?.[0]}
               alt={option.name}
               variant="rounded"
               sx={{ width: { xs: 40, sm: 50 }, height: { xs: 40, sm: 50 } }}

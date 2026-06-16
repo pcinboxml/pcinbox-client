@@ -14,7 +14,6 @@ import {
   Truck,
   CheckCircle2,
 } from "lucide-react";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { MdAccountBalance, MdMoney } from "react-icons/md";
 
 const DetallesPedido = () => {
@@ -519,12 +518,11 @@ const DetallesPedido = () => {
                       <div style={{ flexShrink: 0 }}>
                         <div style={{ position: "relative" }}>
                           <img
-                            src={optimizeImageUrl(
+                            src={
                               product?.products?.image_url?.length > 0
                                 ? product?.products?.image_url[0]
-                                : "",
-                              { width: IMAGE_SIZES.cardLg },
-                            )}
+                                : ""
+                            }
                             alt={product?.products?.name}
                             style={{
                               width: "112px",

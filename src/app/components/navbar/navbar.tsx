@@ -23,7 +23,6 @@ import useCart from "../cart/useCart";
 import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { usePathname } from "next/navigation";
 import useStorage from "@/app/services/useStorage";
 import { useSession } from "next-auth/react";
@@ -605,9 +604,7 @@ const Navbar = () => {
                               return (
                                 <img
                                   key={index}
-                                  src={optimizeImageUrl(item.image_url[0], {
-                                    width: IMAGE_SIZES.thumbnail,
-                                  })}
+                                  src={item.image_url[0]}
                                   width={50}
                                   height={50}
                                   style={{ objectFit: "contain" }}

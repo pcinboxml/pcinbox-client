@@ -10,7 +10,6 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import { useTheContext } from "../services/globalContext";
 import styles from "./reviews.module.css";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const Reviews = () => {
   const {
@@ -54,14 +53,13 @@ const Reviews = () => {
 
           <div className={styles.productCardBody}>
             <img
-              src={optimizeImageUrl(
+              src={
                 dataProduct?.imageUrl &&
-                  Array.isArray(dataProduct?.imageUrl) &&
-                  dataProduct?.imageUrl.length > 0
+                Array.isArray(dataProduct?.imageUrl) &&
+                dataProduct?.imageUrl.length > 0
                   ? dataProduct?.imageUrl[0]
-                  : (dataProduct?.imageUrl as string),
-                { width: IMAGE_SIZES.cardLg },
-              )}
+                  : dataProduct?.imageUrl
+              }
               alt=""
               width={200}
               height={200}

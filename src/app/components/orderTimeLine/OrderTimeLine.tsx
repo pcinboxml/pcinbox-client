@@ -5,7 +5,6 @@ import useService from "@/app/services/useService";
 import { Alert } from "@mui/material";
 import { CheckCircle, Circle, X } from "lucide-react";
 import { MdAutorenew } from "react-icons/md";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 interface Step {
   id: string;
@@ -50,7 +49,7 @@ export const OrderTimeline = ({ steps, product }: OrderTimelineProps) => {
         <div className="p-4 bg-white shadow rounded my-5" key={index}>
           <div className="flex gap-4 mb-6  items-center p-3">
             <img
-              src={optimizeImageUrl(p.image_url[0], { width: IMAGE_SIZES.card })}
+              src={p.image_url[0]}
               alt={p.name}
               className="w-[150px] h-20 rounded object-cover"
               loading="lazy"

@@ -6,7 +6,6 @@ import useCarousel from "./useCarousel";
 import CarouselMarcas from "../carouselMarcas/CarouselMarcas";
 import Image from "next/image";
 import CarouselPlataforma from "../carouselPlataformas/CarouselPlataformas";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const Carousel = ({ banners }: { banners: string[] }) => {
   const { AUTO_PLAY_INTERVAL } = useCarousel();
@@ -74,15 +73,13 @@ const Carousel = ({ banners }: { banners: string[] }) => {
             {banners.map((src, index) => (
               <div className="slide" key={index}>
                 <Image
-                  src={optimizeImageUrl(src, { width: IMAGE_SIZES.banner })}
+                  src={src}
                   width={800}
                   height={400}
                   alt={`Imagen ${index + 1}`}
                   className="image"
                   style={{ objectFit: "contain" }}
                   priority={index === 0}
-                  loading={index === 0 ? undefined : "lazy"}
-                  sizes="(max-width: 768px) 100vw, 800px"
                 />
               </div>
             ))}

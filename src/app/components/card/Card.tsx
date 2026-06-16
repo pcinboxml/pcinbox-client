@@ -9,7 +9,6 @@ import { Carousel } from "react-responsive-carousel";
 import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { getTopFeatures } from "./featureIcons";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
@@ -67,18 +66,18 @@ const Card = ({ product }: { product: ProductI }) => {
             ? product.imageUrl.map((img: string, i: number) => (
                 <div key={i}>
                   <Image
-                    src={optimizeImageUrl(img, { width: IMAGE_SIZES.card })}
+                    src={`${img}?tr=w-600,q-70,f-auto`}
                     alt="producto"
                     width={150}
                     height={150}
-                    loading="lazy"
                     style={{
                       objectFit: "contain",
                       height: "150px",
                       width: "150px",
                       marginTop: "12px",
                     }}
-                    sizes="150px"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={i === 0}
                   />
                   {/* <img
                     src={img}
@@ -263,11 +262,10 @@ const Card = ({ product }: { product: ProductI }) => {
               return features.map((feat, i) => (
                 <div key={i} className="feat-row">
                   <Image
-                    src={optimizeImageUrl(feat.icon, { width: IMAGE_SIZES.icon })}
+                    src={feat.icon}
                     alt="Imagen de caracteristica"
                     width={18}
                     height={18}
-                    loading="lazy"
                     style={{ flexShrink: 0 }}
                   />
                   <span className="feat-text">{feat.label}</span>

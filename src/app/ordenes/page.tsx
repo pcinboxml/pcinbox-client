@@ -12,7 +12,6 @@ import { MdAutorenew } from "react-icons/md";
 import useStorage from "../services/useStorage";
 import useCart from "../components/cart/useCart";
 import ProductI from "../interfaces/products/product.interface";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useEffect, useState } from "react";
 
@@ -124,9 +123,7 @@ const Ordenes = () => {
                         >
                           {(product as any).image_url ? (
                             <img
-                              src={optimizeImageUrl((product as any).image_url[0], {
-                                width: IMAGE_SIZES.thumbnail,
-                              })}
+                              src={(product as any).image_url[0]}
                               loading="lazy"
                               alt={"Imagen"}
                               className="w-16 h-16 object-cover rounded-md cursor-pointer"
@@ -142,9 +139,7 @@ const Ordenes = () => {
                             />
                           ) : (
                             <img
-                              src={optimizeImageUrl((product as any).imageUrl[0], {
-                                width: IMAGE_SIZES.thumbnail,
-                              })}
+                              src={(product as any).imageUrl[0]}
                               alt={"Imagen"}
                               loading="lazy"
                               className="w-16 h-16 object-cover rounded-md cursor-pointer"

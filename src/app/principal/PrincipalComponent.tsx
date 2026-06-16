@@ -14,14 +14,12 @@ const PrincipalComponent = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const env =
-        process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod";
       setBanners([
-        `https://ik.imagekit.io/pcinboxkit/${env}/carrusel-principal/banner_prin_01.png`,
-        `https://ik.imagekit.io/pcinboxkit/${env}/carrusel-principal/banner_prin_02.png`,
-        `https://ik.imagekit.io/pcinboxkit/${env}/carrusel-principal/banner_prin_03.png`,
-        `https://ik.imagekit.io/pcinboxkit/${env}/carrusel-principal/banner_prin_04.png`,
-        `https://ik.imagekit.io/pcinboxkit/${env}/carrusel-principal/banner_prin_05.png`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_01.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_02.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_03.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_04.png?v=${Date.now()}`,
+        `https://ik.imagekit.io/pcinboxkit/${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? "local" : "prod"}/carrusel-principal/banner_prin_05.png?v=${Date.now()}`,
       ]);
     }
   }, []);
@@ -76,7 +74,6 @@ const PrincipalComponent = () => {
                 alt="Boton PC Gamer"
                 width={850}
                 height={335}
-                loading="lazy"
                 style={{
                   width: "100%",
                   height: "auto",
@@ -97,7 +94,6 @@ const PrincipalComponent = () => {
                 alt="Boton WS"
                 width={850}
                 height={334}
-                loading="lazy"
                 style={{
                   width: "100%",
                   height: "auto",
