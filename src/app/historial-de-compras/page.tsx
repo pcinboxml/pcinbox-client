@@ -8,6 +8,7 @@ import { Alert } from "@mui/material";
 import useService from "../services/useService";
 import { MdAutorenew, MdLocationOn } from "react-icons/md";
 import { useTheContext } from "../services/globalContext";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const HistoryShop = () => {
   const {
@@ -374,11 +375,12 @@ const HistoryShop = () => {
                       return (
                         <div className={style.item} key={indexD}>
                           <img
-                            src={
+                            src={optimizeImageUrl(
                               d.image_url && Array.isArray(d.image_url)
                                 ? d.image_url[0]
-                                : d.image_url
-                            }
+                                : d.image_url,
+                              { width: IMAGE_SIZES.thumbnail },
+                            )}
                             className={style.itemImage}
                             loading="lazy"
                           />

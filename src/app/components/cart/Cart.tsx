@@ -12,6 +12,7 @@ import useStorage from "@/app/services/useStorage";
 import { CheckoutStep } from "../timeline/checkoutSteps";
 // import Link from "next/link";
 import Image from "next/image";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 export const Cart = () => {
   return <img src="/carrito.png" loading="lazy" className="cart-icon-img" />;
@@ -157,7 +158,9 @@ export const ModalCart = ({
                       >
                         {(product as any).image_url ? (
                           <Image
-                            src={(product as any).image_url[0]}
+                            src={optimizeImageUrl((product as any).image_url[0], {
+                              width: IMAGE_SIZES.thumbnail,
+                            })}
                             loading="lazy"
                             alt={"Imagen"}
                             width={80}
@@ -175,7 +178,9 @@ export const ModalCart = ({
                           />
                         ) : (
                           <Image
-                            src={(product as any).imageUrl[0]}
+                            src={optimizeImageUrl((product as any).imageUrl[0], {
+                              width: IMAGE_SIZES.thumbnail,
+                            })}
                             alt={"Imagen"}
                             loading="lazy"
                             width={80}

@@ -24,6 +24,7 @@ import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 import useProveedores from "@/app/services/proveedores/useProveedores";
 import ProductI from "@/app/interfaces/products/product.interface";
 import { getProductUrl } from "@/app/lib/getSiteUrl";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { Share2 } from "lucide-react";
 
 const DetailsProduct = () => {
@@ -313,7 +314,10 @@ const DetailsProduct = () => {
                   onClick={() => setOpenModal(true)}
                 >
                   <img
-                    src={dataProduct?.imageUrl?.[activeImgIndex] ?? null}
+                    src={optimizeImageUrl(
+                      dataProduct?.imageUrl?.[activeImgIndex],
+                      { width: IMAGE_SIZES.productDetail },
+                    )}
                     alt={dataProduct?.name}
                     className="dp-main-img"
                   />
@@ -362,7 +366,7 @@ const DetailsProduct = () => {
                     style={{
                       width: `${ZOOM_PANEL_SIZE}px`,
                       height: `${ZOOM_PANEL_SIZE}px`,
-                      backgroundImage: `url(${dataProduct?.imageUrl?.[activeImgIndex] ?? ""})`,
+                      backgroundImage: `url(${optimizeImageUrl(dataProduct?.imageUrl?.[activeImgIndex], { width: IMAGE_SIZES.productZoom })})`,
                       backgroundSize: `${ZOOM_FACTOR * 100}%`,
                       backgroundPosition: `${lensPos.x}% ${lensPos.y}%`,
                     }}
@@ -382,7 +386,11 @@ const DetailsProduct = () => {
                         setChangeImg(img);
                       }}
                     >
-                      <img src={img} alt={`Vista ${i + 1}`} loading="lazy" />
+                      <img
+                        src={optimizeImageUrl(img, { width: IMAGE_SIZES.thumbnail })}
+                        alt={`Vista ${i + 1}`}
+                        loading="lazy"
+                      />
                     </div>
                   ))}
                 </div>
@@ -625,7 +633,10 @@ const DetailsProduct = () => {
           </button>
           <div className="dp-modal-grid">
             <div className="dp-modal-main-img">
-              <img src={changeImg} alt="Ampliada" />
+              <img
+                src={optimizeImageUrl(changeImg, { width: IMAGE_SIZES.productZoom })}
+                alt="Ampliada"
+              />
             </div>
             <div className="dp-modal-thumbs">
               {dataProduct?.imageUrl?.map((img: string, i: number) => (
@@ -634,7 +645,11 @@ const DetailsProduct = () => {
                   className={`dp-modal-thumb ${img === changeImg ? "dp-modal-thumb--active" : ""}`}
                   onClick={() => setChangeImg(img)}
                 >
-                  <img src={img} loading="lazy" alt={`Imagen ${i + 1}`} />
+                  <img
+                    src={optimizeImageUrl(img, { width: IMAGE_SIZES.thumbnail })}
+                    loading="lazy"
+                    alt={`Imagen ${i + 1}`}
+                  />
                 </div>
               ))}
             </div>
