@@ -31,7 +31,6 @@ export default function CarouselPlataforma() {
               width={90}
               height={90}
               className={styles.image}
-              loading="lazy"
               style={{
                 objectFit: "contain",
                 width: "100px",

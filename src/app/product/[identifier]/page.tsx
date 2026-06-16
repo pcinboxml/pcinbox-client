@@ -8,7 +8,6 @@ import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import { Carousel } from "react-responsive-carousel";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 interface ProductPageProps {
   params: Promise<{ identifier: string }>;
@@ -349,7 +348,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 ? product.image_url.map((img: string, i: number) => (
                   <div key={i}>
                     <img
-                      src={optimizeImageUrl(img, { width: IMAGE_SIZES.card })}
+                      src={img}
                       style={{
                         objectFit: "contain",
                         height: "150px",

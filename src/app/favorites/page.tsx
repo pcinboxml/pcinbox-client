@@ -13,7 +13,6 @@ import { Carousel } from "react-responsive-carousel";
 import ProductI from "../interfaces/products/product.interface";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import styles from "./favorites.module.css";
-import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const Favorites = () => {
   const {
@@ -507,7 +506,7 @@ const Favorites = () => {
                             (img: string, i: number) => (
                               <div key={i} className={styles.carouselSlide}>
                                 <img
-                                  src={optimizeImageUrl(img, { width: IMAGE_SIZES.card })}
+                                  src={img}
                                   className={styles.productImg}
                                   loading="lazy"
                                 />
