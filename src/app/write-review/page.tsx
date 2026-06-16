@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import useWriteReview from "./useWriteReview";
 import { MdAutorenew } from "react-icons/md";
 import styles from "./write-review.module.css";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const WriteReview = () => {
   const { setDataAddReview, handleAddReview, loadingAddReview, dataAddReview } =
@@ -49,7 +50,7 @@ const WriteReview = () => {
       {/* Imagen + descripción del producto */}
       <div className={styles.productPreview}>
         <img
-          src={image_url}
+          src={optimizeImageUrl(image_url, { width: IMAGE_SIZES.cardLg })}
           alt=""
           width={200}
           height={200}

@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useState } from "react";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 
 const useOrdenes = () => {
   const { formatCurrency } = useService();
@@ -37,12 +38,14 @@ const useOrdenes = () => {
   const rows = dataCart.map((itemCart) => {
     return {
       id: itemCart.idProduct,
-      img:
+      img: optimizeImageUrl(
         (itemCart as any)?.image_url?.[0] ??
-        itemCart?.imageUrl?.[0] ??
-        (itemCart as any)?.image_url ??
-        itemCart?.imageUrl ??
-        "",
+          itemCart?.imageUrl?.[0] ??
+          (itemCart as any)?.image_url ??
+          itemCart?.imageUrl ??
+          "",
+        { width: IMAGE_SIZES.thumbnail },
+      ),
       description:
         (itemCart?.name && itemCart?.name?.length > 50
           ? itemCart?.name?.slice(0, 50)

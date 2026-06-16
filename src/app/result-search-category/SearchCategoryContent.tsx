@@ -2,6 +2,7 @@
 
 import styles from "./result-search-category.module.css";
 import Image from "next/image";
+import { IMAGE_SIZES, optimizeImageUrl } from "@/app/lib/optimizeImage";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import useProveedores from "../services/proveedores/useProveedores";
@@ -608,7 +609,9 @@ const SearchCategoryContent = () => {
                 {/* <div className="absolute inset-0 bg-white/5 pointer-events-none" /> */}
 
                 <Image
-                  src={findImg?.pathImg}
+                  src={optimizeImageUrl(findImg?.pathImg, {
+                    width: IMAGE_SIZES.categoryBanner,
+                  })}
                   width={1920}
                   height={470}
                   alt={`Img de categoria ${findNameCategory?.name}`}
@@ -620,6 +623,7 @@ const SearchCategoryContent = () => {
                   ${styles.imgPortada}
               `}
                   priority
+                  sizes="(max-width: 768px) 100vw, 1200px"
                 />
                 {/* </div> */}
               </div>
@@ -1042,18 +1046,20 @@ const SearchCategoryContent = () => {
                                       className={styles.squareCarouselSlide}
                                     >
                                       <Image
-                                        src={`${img}?tr=w-400,q-70,f-auto`}
+                                        src={optimizeImageUrl(img, {
+                                          width: IMAGE_SIZES.cardLg,
+                                        })}
                                         alt="producto"
                                         width={140}
                                         height={140}
+                                        loading="lazy"
                                         style={{
                                           objectFit: "contain",
                                           height: "140px",
                                           width: "140px",
                                           marginTop: "8px",
                                         }}
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority={i === 0}
+                                        sizes="140px"
                                       />
                                     </div>
                                   ),
@@ -1749,22 +1755,20 @@ const SearchCategoryContent = () => {
                                       className={styles.carouselSlide}
                                     >
                                       <Image
-                                        src={`${img}?tr=w-600,q-70,f-auto`}
+                                        src={optimizeImageUrl(img, {
+                                          width: IMAGE_SIZES.card,
+                                        })}
                                         alt="producto"
                                         width={150}
                                         height={150}
+                                        loading="lazy"
                                         style={{
                                           objectFit: "contain",
                                           height: "150px",
                                           width: "150px",
                                           marginTop: "12px",
                                         }}
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority={i === 0}
-
-                                      // className={styles.productImg}
-                                      // sizes="(max-width: 768px) 100vw, 50vw"
-                                      // priority={i === 0}
+                                        sizes="150px"
                                       />
                                     </div>
                                   ),
