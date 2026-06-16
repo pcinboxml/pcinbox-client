@@ -23,7 +23,6 @@ import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 import { Heart, Share2, LayoutGrid, Rows } from "lucide-react";
-import { getProductUrl } from "../lib/getSiteUrl";
 const SearchCategoryContent = () => {
   // Al principio del componente
   //useScrollPosition("scroll-/result-search-category");
@@ -999,9 +998,12 @@ const SearchCategoryContent = () => {
                               title="Compartir"
                               onClick={async () => {
                                 await handleShare(
-                                  item?.name ?? "Producto",
-                                  `${item?.name ?? ""} - ${formatCurrency(Number(item?.price))}`,
-                                  getProductUrl(item?.idProduct),
+                                  "Producto",
+                                  item?.name || item?.description,
+                                  `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                                    ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
+                                    : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
+                                  }`,
                                 );
                               }}
                               aria-label="Compartir"
@@ -1272,9 +1274,12 @@ const SearchCategoryContent = () => {
                             title="Compartir"
                             onClick={async () => {
                               await handleShare(
-                                item?.name ?? "Producto",
-                                `${item?.name ?? ""} - ${formatCurrency(Number(item?.price))}`,
-                                getProductUrl(item?.idProduct),
+                                "Producto",
+                                item?.name || item?.description,
+                                `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
+                                  ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
+                                  : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
+                                }`,
                               );
                             }}
                             aria-label="Compartir"

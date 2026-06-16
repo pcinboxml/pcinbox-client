@@ -23,7 +23,6 @@ import { useTheContext } from "@/app/services/globalContext";
 import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 import useProveedores from "@/app/services/proveedores/useProveedores";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { getProductUrl } from "@/app/lib/getSiteUrl";
 import { Share2 } from "lucide-react";
 
 const DetailsProduct = () => {
@@ -402,9 +401,9 @@ const DetailsProduct = () => {
                   title="Compartir"
                   onClick={async () => {
                     await handleShare(
-                      dataProduct?.name ?? "Producto",
-                      `${dataProduct?.name ?? ""} - ${formatCurrency(Number(dataProduct?.price))}`,
-                      getProductUrl(dataProduct?.idProduct!),
+                      "Producto",
+                      dataProduct?.name! || dataProduct?.description!,
+                      `${process.env.NEXT_PUBLIC_NODE_ENV === "local" ? `http://localhost:3000/detailsProduct/${dataProduct?.idProduct}` : `https://www.pcinbox.com.mx/detailsProduct/${dataProduct?.idProduct}`}`,
                     );
                   }}
                   aria-label="Compartir"
