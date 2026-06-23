@@ -24,7 +24,7 @@ const BranchStockTooltipPopper = styled(({ className, ...props }: any) => (
 }));
 
 type BranchStockTooltipProps = {
-  product: ProductI;
+  product?: ProductI | null;
   children: ReactNode;
   className?: string;
 };
@@ -140,6 +140,10 @@ const BranchStockTooltip = ({
   children,
   className,
 }: BranchStockTooltipProps) => {
+  if (!product) {
+    return <>{children}</>;
+  }
+
   const branches = getFilteredBranchStocks(product);
   const showTooltip =
     shouldShowBranchStockTooltip(product) && branches.length > 0;
