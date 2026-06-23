@@ -24,6 +24,7 @@ import BranchSelector from "@/app/components/branchSelector/BranchSelector";
 import useProveedores from "@/app/services/proveedores/useProveedores";
 import ProductI from "@/app/interfaces/products/product.interface";
 import { Share2 } from "lucide-react";
+import BranchStockTooltip from "@/app/components/branchStockTooltip/BranchStockTooltip";
 
 const DetailsProduct = () => {
   const [dataProduct, setDataProduct] = useState<ProductI | null>();
@@ -467,13 +468,15 @@ const DetailsProduct = () => {
               {/* Stock indicator */}
               <div className="dp-stock-row">
                 <span className={`dp-stock-dot dp-stock-dot--${stockStatus}`} />
-                <span className="dp-stock-text">
-                  {stockStatus === "out"
-                    ? "Sin stock"
-                    : stockStatus === "low"
-                      ? `¡Solo quedan ${dataProduct?.stock} pzas!`
-                      : `En stock: ${dataProduct?.stock} pzas.`}
-                </span>
+                <BranchStockTooltip product={dataProduct!}>
+                  <span className="dp-stock-text">
+                    {stockStatus === "out"
+                      ? "Sin stock"
+                      : stockStatus === "low"
+                        ? `¡Solo quedan ${dataProduct?.stock} pzas!`
+                        : `En stock: ${dataProduct?.stock} pzas.`}
+                  </span>
+                </BranchStockTooltip>
               </div>
 
               {/* Quantity selector */}

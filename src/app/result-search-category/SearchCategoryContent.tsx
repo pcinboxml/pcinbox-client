@@ -21,6 +21,7 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "../services/globalContext";
 import BranchSelector from "../components/branchSelector/BranchSelector";
+import BranchStockTooltip from "../components/branchStockTooltip/BranchStockTooltip";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 import { Heart, Share2, LayoutGrid, Rows } from "lucide-react";
 const SearchCategoryContent = () => {
@@ -1124,13 +1125,15 @@ const SearchCategoryContent = () => {
                                         : styles.stockDotOut
                                     }`}
                                 />
-                                <span className={styles.squareStockText}>
-                                  {item.stock === 0
-                                    ? "Sin stock"
-                                    : item.stock < 10
-                                      ? `¡Solo ${item?.stock} pzas!`
-                                      : `${item?.stock} pzas.`}
-                                </span>
+                                <BranchStockTooltip product={item}>
+                                  <span className={styles.squareStockText}>
+                                    {item.stock === 0
+                                      ? "Sin stock"
+                                      : item.stock < 10
+                                        ? `¡Solo ${item?.stock} pzas!`
+                                        : `${item?.stock} pzas.`}
+                                  </span>
+                                </BranchStockTooltip>
                               </div>
                             </div>
 
@@ -1651,13 +1654,15 @@ const SearchCategoryContent = () => {
                                         }`}
                                     />
 
-                                    <span className={styles.stockText}>
-                                      {item.stock === 0
-                                        ? "Sin stock"
-                                        : item.stock < 10
-                                          ? `¡Solo quedan ${item?.stock} pzas!`
-                                          : `Disponibles: ${item?.stock} pzas.`}
-                                    </span>
+                                    <BranchStockTooltip product={item}>
+                                      <span className={styles.stockText}>
+                                        {item.stock === 0
+                                          ? "Sin stock"
+                                          : item.stock < 10
+                                            ? `¡Solo quedan ${item?.stock} pzas!`
+                                            : `Disponibles: ${item?.stock} pzas.`}
+                                      </span>
+                                    </BranchStockTooltip>
                                   </div>
                                 </div>
 

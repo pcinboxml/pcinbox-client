@@ -10,6 +10,7 @@ import { Box, Tooltip, styled, useMediaQuery } from "@mui/material";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { getTopFeatures } from "./featureIcons";
+import BranchStockTooltip from "../branchStockTooltip/BranchStockTooltip";
 
 const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -323,7 +324,9 @@ const Card = ({ product }: { product: ProductI }) => {
             {formatCurrency(Number(product.price))}
           </span>
           {/* <span className="costoEnvio">Costo de envío desde $155.00.</span> */}
-          <span className="stock">Disponible: {product.stock} pzas.</span>
+          <BranchStockTooltip product={product}>
+            <span className="stock">Disponible: {product.stock} pzas.</span>
+          </BranchStockTooltip>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import { Carousel } from "react-responsive-carousel";
 import ProductI from "../interfaces/products/product.interface";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import styles from "./favorites.module.css";
+import BranchStockTooltip from "../components/branchStockTooltip/BranchStockTooltip";
 
 const Favorites = () => {
   const {
@@ -394,9 +395,11 @@ const Favorites = () => {
                             {formatCurrency(Number(favorite?.products?.price))}
                           </span>
                           <br />
-                          <span>
-                            Disponibles: {favorite?.products?.stock} piezas
-                          </span>
+                          <BranchStockTooltip product={favorite.products}>
+                            <span>
+                              Disponibles: {favorite?.products?.stock} piezas
+                            </span>
+                          </BranchStockTooltip>
                         </div>
 
                         {/* Botones */}
