@@ -1,5 +1,6 @@
 import ProductI from "@/app/interfaces/products/product.interface";
 
+export const PCINBOX_PROVIDER_ID = 1;
 export const TECHSMART_PROVIDER_ID = 2;
 export const DICOTECH_PROVIDER_ID = 3;
 
@@ -73,6 +74,14 @@ export function shouldShowBranchStockTooltip(
   product: Pick<ProductI, "providerId" | "product_stock">,
 ): boolean {
   const providerId = Number(product.providerId);
+
+  if (
+    providerId === PCINBOX_PROVIDER_ID ||
+    Number.isNaN(providerId)
+  ) {
+    return false;
+  }
+
   return (
     (providerId === TECHSMART_PROVIDER_ID ||
       providerId === DICOTECH_PROVIDER_ID) &&

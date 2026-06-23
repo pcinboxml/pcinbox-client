@@ -3,6 +3,7 @@
 import ProductI from "@/app/interfaces/products/product.interface";
 import {
   getFilteredBranchStocks,
+  PCINBOX_PROVIDER_ID,
   shouldShowBranchStockTooltip,
 } from "@/app/utils/branchDisplay";
 import { Tooltip, styled } from "@mui/material";
@@ -141,6 +142,10 @@ const BranchStockTooltip = ({
   className,
 }: BranchStockTooltipProps) => {
   if (!product) {
+    return <>{children}</>;
+  }
+
+  if (Number(product.providerId) === PCINBOX_PROVIDER_ID) {
     return <>{children}</>;
   }
 
