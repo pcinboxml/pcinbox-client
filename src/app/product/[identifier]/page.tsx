@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { MdAutorenew, MdShoppingCart, MdStar } from "react-icons/md";
 import dynamic from "next/dynamic";
 import BranchSelector from "@/app/components/branchSelector/BranchSelector";
+import BranchStockTooltip from "@/app/components/branchStockTooltip/BranchStockTooltip";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import { Carousel } from "react-responsive-carousel";
@@ -249,7 +250,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {formatCurrency(Number(product.price))}
                   </span>
                   <br />
-                  <span>Disponibles: {product.stock} piezas</span>
+                  <BranchStockTooltip product={product}>
+                    <span>Disponibles: {product.stock} piezas</span>
+                  </BranchStockTooltip>
                 </div>
 
                 {/* Botón */}
@@ -393,7 +396,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {formatCurrency(product.price)}
               </span>
               <br />
-              <span>Disponibles: {product.stock} piezas</span>
+              <BranchStockTooltip product={product}>
+                <span>Disponibles: {product.stock} piezas</span>
+              </BranchStockTooltip>
             </div>
             <button
               disabled={loading || product?.stock == 0 || product?.stock == "0"}

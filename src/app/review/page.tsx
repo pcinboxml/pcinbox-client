@@ -10,6 +10,7 @@ import PaginationComponent from "../components/pagination/PaginationComponent";
 import BranchSelector from "../components/branchSelector/BranchSelector";
 import { useTheContext } from "../services/globalContext";
 import styles from "./reviews.module.css";
+import BranchStockTooltip from "../components/branchStockTooltip/BranchStockTooltip";
 
 const Reviews = () => {
   const {
@@ -71,9 +72,11 @@ const Reviews = () => {
               <span className={styles.priceText}>
                 {formatCurrency(Number(dataProduct?.price))}
               </span>
-              <span className={styles.stockText}>
-                Disponibles: {dataProduct?.stock.toLocaleString()} piezas
-              </span>
+              <BranchStockTooltip product={dataProduct!}>
+                <span className={styles.stockText}>
+                  Disponibles: {dataProduct?.stock.toLocaleString()} piezas
+                </span>
+              </BranchStockTooltip>
             </div>
           </div>
 
