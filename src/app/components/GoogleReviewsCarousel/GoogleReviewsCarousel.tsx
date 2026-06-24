@@ -1,23 +1,7 @@
 "use client";
 
-import { ReviewsGoogleI } from "@/app/interfaces/reviewsGoogle.interface";
+import { GoogleReviewItem } from "@/app/interfaces/googleReviews.interface";
 import React, { useRef, useEffect, useState } from "react";
-import Image from "next/image";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Review {
-  author_name: string;
-  author_url: string;
-  language: string;
-  original_language: string;
-  profile_photo_url: string;
-  rating: number;
-  relative_time_description: string;
-  text: string;
-  time: number;
-  translated: boolean;
-}
 
 // ─── Star Component ───────────────────────────────────────────────────────────
 
@@ -26,7 +10,7 @@ const Stars = ({ rating }: { rating: number }) => (
     {Array.from({ length: 5 }).map((_, i) => (
       <svg
         key={i}
-        className={`w-4 h-4 ${i < rating ? "text-amber-400" : "text-zinc-200"}`}
+        className={`w-4 h-4 ${i < Math.round(rating) ? "text-amber-400" : "text-zinc-200"}`}
         fill="currentColor"
         viewBox="0 0 20 20"
       >
@@ -38,17 +22,16 @@ const Stars = ({ rating }: { rating: number }) => (
 
 // ─── Review Card ──────────────────────────────────────────────────────────────
 
-const ReviewCard = ({ review }: { review: Review }) => {
-  const [imgSrc, setImgSrc] = useState<string | null>(review.profile_photo_url || null);
+const ReviewCard = ({ review }: { review: GoogleReviewItem }) => {
+  const [imgSrc, setImgSrc] = useState<string | null>(
+    review.profile_photo_url || null,
+  );
 
   return (
     <div
-      style={{
-        padding: "10px",
-      }}
+      style={{ padding: "10px" }}
       className="review-card flex-shrink-0 w-80 bg-white rounded-2xl p-6 shadow-sm border border-zinc-100 mx-3 select-none"
     >
-      {/* Header */}
       <div className="flex items-center gap-3 mb-4 relative">
         <div
           className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 relative overflow-hidden"
@@ -73,22 +56,20 @@ const ReviewCard = ({ review }: { review: Review }) => {
             {review.author_name}
           </p>
           <p className="text-zinc-400 text-xs">
-            {(() => {
-              const date = new Date(review.time * 1000);
-              return date.toLocaleString("es-MX");
-            })()}
+            {new Date(review.date).toLocaleDateString("es-MX", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </p>
         </div>
-        {/* Google icon */}
-        <div className="ml-auto flex-shrink-0  absolute right-1">
+        <div className="ml-auto flex-shrink-0 absolute right-1">
           <GoogleIcon />
         </div>
       </div>
 
-      {/* Stars */}
       <Stars rating={review.rating} />
 
-      {/* Text */}
       <p className="mt-3 text-zinc-600 text-sm leading-relaxed line-clamp-4">
         {review.text}
       </p>
@@ -123,8 +104,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function avatarColor(name: string): string {
   const colors = [
     "#4F7BE8",
@@ -146,39 +125,20 @@ function avatarColor(name: string): string {
 
 export default function GoogleReviewsCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState(false);
   const animFrameRef = useRef<number | null>(null);
   const posRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
-  const [mediaRating, setMediaRating] = useState<number>(0);
-  const [dataReviews, setDataReviews] = useState<
-    {
-      author_name: string;
-      author_url: string;
-      language: string;
-      original_language: string;
-      profile_photo_url: string;
-      rating: number;
-      relative_time_description: string;
-      text: string;
-      time: number;
-      translated: boolean;
-    }[]
-  >([]);
+  const [mediaRating, setMediaRating] = useState(0);
+  const [googleReviewsUrl, setGoogleReviewsUrl] = useState("");
+  const [dataReviews, setDataReviews] = useState<GoogleReviewItem[]>([]);
 
-  // Duplicate reviews for seamless loop
-  //   const doubled = [
-  //     ...reviewsData.result.reviews,
-  //     ...reviewsData.result.reviews,
-  //   ];
-
-  const SPEED = 40; // px per second
+  const SPEED = 40;
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || dataReviews.length === 0) return;
 
-    // Width of one set of cards
     const halfWidth = track.scrollWidth / 2;
 
     const animate = (timestamp: number) => {
@@ -200,62 +160,61 @@ export default function GoogleReviewsCarousel() {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isPaused]);
-
-  async function initGetReviewsGoogle() {
-    try {
-      const response = await fetch("/api/google-reviews");
-
-      if (!response.ok) {
-        throw new Error("Error en API local");
-      }
-
-      const data: ReviewsGoogleI = await response.json();
-
-      if (data && data.result && Array.isArray(data.result.reviews)) {
-        const filtered = data.result.reviews.filter((d) => d.rating === 5);
-        if (filtered.length > 0) {
-          const double = [...filtered, ...filtered];
-          setDataReviews(double);
-          setMediaRating(data.result.rating || 5);
-          return;
-        }
-      }
-
-      setDataReviews([]);
-    } catch (error) {
-      console.warn("Failed to load Google reviews:", error);
-      setDataReviews([]);
-    }
-  }
+  }, [isPaused, dataReviews]);
 
   useEffect(() => {
-    initGetReviewsGoogle();
+    async function loadReviews() {
+      try {
+        const response = await fetch("/google-reviews.json");
+
+        if (!response.ok) {
+          throw new Error("No se pudo cargar google-reviews.json");
+        }
+
+        const data = await response.json();
+
+        if (data?.rating) {
+          setMediaRating(data.rating);
+        }
+        if (data?.googleReviewsUrl) {
+          setGoogleReviewsUrl(data.googleReviewsUrl);
+        }
+
+        if (!data?.reviews || !Array.isArray(data.reviews)) {
+          setDataReviews([]);
+          return;
+        }
+
+        const filtered = data.reviews.filter(
+          (review: GoogleReviewItem) =>
+            review.rating === 5 && review.text.trim() !== "",
+        );
+
+        if (filtered.length === 0) {
+          setDataReviews([]);
+          return;
+        }
+
+        setDataReviews([...filtered, ...filtered]);
+      } catch (error) {
+        console.warn("Failed to load Google reviews:", error);
+        setDataReviews([]);
+      }
+    }
+
+    loadReviews();
   }, []);
 
-  if (!dataReviews || dataReviews.length === 0) {
+  if (dataReviews.length === 0 && !googleReviewsUrl) {
     return null;
   }
 
   return (
-    <div
-      className="border w-full"
-    // style={{
-    //   marginTop: "120px",
-    // }}
-    >
+    <div className="border w-full">
       <section className="bg-gradient-to-b from-slate-50 to-white overflow-hidden">
-        {/* Header */}
-        <div
-          className="text-center mb-10 px-4"
-          style={{
-            padding: "10px",
-          }}
-        >
+        <div className="text-center mb-10 px-4" style={{ padding: "10px" }}>
           <div
-            style={{
-              padding: "10px",
-            }}
+            style={{ padding: "10px" }}
             className="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-1.5 mb-4 shadow-sm"
           >
             <GoogleIcon />
@@ -272,29 +231,38 @@ export default function GoogleReviewsCarousel() {
               {mediaRating}
             </span>
           </div>
+          {googleReviewsUrl ? (
+            <a
+              href={googleReviewsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-700 underline"
+            >
+              Ver todas las reseñas en Google
+            </a>
+          ) : null}
         </div>
 
-        {/* Carousel */}
-        <div
-          className="relative"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
-        >
-          {/* Fade edges */}
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
+        {dataReviews.length > 0 ? (
+          <div
+            className="relative"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+          >
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-24 z-10 bg-gradient-to-r from-slate-50 to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-24 z-10 bg-gradient-to-l from-white to-transparent" />
 
-          {/* Track */}
-          <div className="overflow-hidden">
-            <div ref={trackRef} className="flex will-change-transform py-4">
-              {dataReviews.map((review, idx) => (
-                <ReviewCard key={`${idx}`} review={review} />
-              ))}
+            <div className="overflow-hidden">
+              <div ref={trackRef} className="flex will-change-transform py-4">
+                {dataReviews.map((review, idx) => (
+                  <ReviewCard key={`${review.id}-${idx}`} review={review} />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
       </section>
     </div>
   );
