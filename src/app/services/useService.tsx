@@ -733,17 +733,43 @@ const useService = () => {
     }
   };
 
-  const handleShare = async (title: string, text: string, url: string) => {
-    try {
-      await navigator.share({
-        title: title,
-        text: text,
-        url: url,
-      });
+  const handleShare = async (url: string) => {
+    const shareData: ShareData = { url };
 
-      console.log("Compartido");
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        if (!navigator.canShare || navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
+        }
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "AbortError") return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setDataModal({
+        title: "Enlace copiado",
+        isOpen: true,
+        message:
+          "El enlace se copió al portapapeles. Pégalo en WhatsApp u otra app para ver la vista previa.",
+        type: "success",
+        showActions: true,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
     } catch (error) {
       console.error("Error al compartir:", error);
+      setDataModal({
+        title: "No se pudo compartir",
+        isOpen: true,
+        message: "No fue posible compartir ni copiar el enlace.",
+        type: "error",
+        showActions: true,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
     }
   };
   return {

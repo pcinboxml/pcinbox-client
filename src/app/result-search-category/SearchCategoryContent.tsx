@@ -24,6 +24,7 @@ import BranchSelector from "../components/branchSelector/BranchSelector";
 import BranchStockTooltip from "../components/branchStockTooltip/BranchStockTooltip";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 import { Heart, Share2, LayoutGrid, Rows } from "lucide-react";
+import { getShareProductUrl } from "../lib/getSiteUrl";
 const SearchCategoryContent = () => {
   // Al principio del componente
   //useScrollPosition("scroll-/result-search-category");
@@ -998,14 +999,7 @@ const SearchCategoryContent = () => {
                             <button
                               title="Compartir"
                               onClick={async () => {
-                                await handleShare(
-                                  "Producto",
-                                  item?.name || item?.description,
-                                  `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
-                                    ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
-                                    : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
-                                  }`,
-                                );
+                                await handleShare(getShareProductUrl(item?.idProduct));
                               }}
                               aria-label="Compartir"
                               className="
@@ -1276,14 +1270,7 @@ const SearchCategoryContent = () => {
                           <button
                             title="Compartir"
                             onClick={async () => {
-                              await handleShare(
-                                "Producto",
-                                item?.name || item?.description,
-                                `${process.env.NEXT_PUBLIC_NODE_ENV === "local"
-                                  ? `http://localhost:3000/detailsProduct/${item?.idProduct}`
-                                  : `https://www.pcinbox.com.mx/detailsProduct/${item?.idProduct}`
-                                }`,
-                              );
+                              await handleShare(getShareProductUrl(item?.idProduct));
                             }}
                             aria-label="Compartir"
                             className="
