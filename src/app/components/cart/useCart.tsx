@@ -35,7 +35,11 @@ const useCart = () => {
 
         if (resp && resp.status == 200) {
           const removeProduct = dataCartProp.filter(
-            (item: ProductI) => item.idProduct != productProp.idProduct,
+            (item: ProductI) =>
+              !(
+                String(item.idProduct) === String(productProp.idProduct) &&
+                String(item.storeId ?? "") === String(productProp.storeId ?? "")
+              ),
           );
 
           if (removeProduct.length === 0) {
@@ -59,7 +63,11 @@ const useCart = () => {
       if (localStorage.getItem("dataCart")) {
         const storage = JSON.parse(localStorage.getItem("dataCart") || "");
         let removeProductStorage = storage.filter(
-          (item: ProductI) => item.idProduct != productProp.idProduct,
+          (item: ProductI) =>
+            !(
+              String(item.idProduct) === String(productProp.idProduct) &&
+              String(item.storeId ?? "") === String(productProp.storeId ?? "")
+            ),
         );
 
         setDataCart(removeProductStorage);
@@ -110,7 +118,7 @@ const useCart = () => {
 
         const status = await resp!.status;
         if (status == 200) {
-          // setDataCart([]);
+          setDataCart([]);
           onMouseLeaveCartProp();
         }
       } catch (error) {
@@ -130,10 +138,30 @@ const useCart = () => {
       }
     } else {
       if (localStorage.getItem("dataCart")) {
-        // setDataCart([]);
+        setDataCart([]);
         localStorage.setItem("dataCart", JSON.stringify([]));
+        onMouseLeaveCartProp();
       }
     }
+  };
+
+  const handleConfirmEmptyCart = (
+    dataCartProp: ProductI[],
+    onCloseCart?: () => void,
+  ) => {
+    setDataModal({
+      isOpen: true,
+      message:
+        "¿Estás seguro de que deseas eliminar todos los productos del carrito?",
+      title: "Vaciar carrito",
+      type: "warning",
+      showActions: true,
+      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
+        void handleRemoveAllCart(dataCartProp, onCloseCart);
+      },
+    });
   };
 
   return {
@@ -144,6 +172,7 @@ const useCart = () => {
     onMouseLeaveCart,
     addProductFromStorage,
     handleRemoveAllCart,
+    handleConfirmEmptyCart,
   };
 };
 

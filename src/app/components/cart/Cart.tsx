@@ -7,24 +7,23 @@ import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
-import { MdAutorenew, MdClose } from "react-icons/md";
+import { MdAutorenew } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
 import { CheckoutStep } from "../timeline/checkoutSteps";
-// import Link from "next/link";
 import Image from "next/image";
 
 export const Cart = () => {
-  return <img src="/carrito.png" loading="lazy" className="cart-icon-img" />;
+  return <img src="/carrito.png" loading="lazy" className="cart-icon-img" alt="" />;
 };
 
 export const ModalCart = ({
   onMouseLeaveCart,
   showDivCart,
 }: {
-  onMouseLeaveCart: any;
+  onMouseLeaveCart: () => void;
   showDivCart: boolean;
 }) => {
-  const [runCheckoutSync, setRunCheckoutSync] = useState<boolean>(false);
+  const [runCheckoutSync, setRunCheckoutSync] = useState(false);
   const { dataCart, setDataCart, buyNowProduct } = useTheContext();
   const {
     dataCartStorege,
@@ -33,8 +32,28 @@ export const ModalCart = ({
   } = useStorage();
   const { formatCurrency, onRouterLink, totalPrice, productsToShow } =
     useService();
-  const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
-    useCart();
+  const {
+    handleRemoveItemCart,
+    handleConfirmEmptyCart,
+    loadingRmAllCart,
+  } = useCart();
+
+  const itemCount = useMemo(
+    () =>
+      dataCart?.reduce((sum, item) => sum + Number(item.quantity || 1), 0) ?? 0,
+    [dataCart],
+  );
+
+  useEffect(() => {
+    if (!showDivCart || typeof document === "undefined") return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onMouseLeaveCart();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showDivCart, onMouseLeaveCart]);
 
   useEffect(() => {
     if (!runCheckoutSync) return;
@@ -68,365 +87,270 @@ export const ModalCart = ({
       localStorage.removeItem("checkout_products_snapshot");
     }
 
-    // reset del trigger
     setRunCheckoutSync(false);
   }, [runCheckoutSync, buyNowProduct, dataCart, productsToShow]);
 
+  const getItemQuantity = (product: ProductI) => {
+    const itemStorage = dataCartStorege?.find(
+      (item) =>
+        String(item.idProduct) === String(product.idProduct) &&
+        String(item.storeId ?? "") === String(product.storeId ?? ""),
+    );
+    if (itemStorage) return Number(itemStorage.quantity);
+
+    const itemCart = dataCart?.find(
+      (item) =>
+        String(item.idProduct) === String(product.idProduct) &&
+        String(item.storeId ?? "") === String(product.storeId ?? ""),
+    );
+    return Number(itemCart?.quantity ?? 1);
+  };
+
+  const updateQuantity = (product: ProductI, delta: number) => {
+    const stockByStore =
+      product?.product_stock?.find(
+        (branch) => branch?.branchId === product?.storeId,
+      )?.stock ?? Number(product?.stock ?? 0);
+
+    const updateItems = dataCart.map((item) => {
+      const matches =
+        String(item.idProduct) === String(product.idProduct) &&
+        String(item.storeId ?? "") === String(product.storeId ?? "");
+      if (!matches) return item;
+
+      const maxStock =
+        Number(item.providerId) !== 1 ? stockByStore : Number(item.stock);
+      const nextQty = Math.max(
+        1,
+        Math.min(maxStock, Number(item.quantity) + delta),
+      );
+      return { ...item, quantity: nextQty };
+    });
+
+    setDataCart(updateItems);
+    handleWriteStorageDataCart(updateItems);
+  };
+
+  if (!showDivCart) return null;
+
   return (
     <div
-      className="fixed inset-0 z-90  bg-black bg-opacity-50"
-      style={{
-        display: showDivCart ? "block" : "none",
-      }}
+      className="cart-modal-backdrop"
+      role="presentation"
+      onClick={onMouseLeaveCart}
     >
       <div
-        className="bg-white flex flex-col rounded-lg shadow-xl cursor-default"
-        style={{
-          position: "absolute",
-          top: "50px",
-          right: "120px",
-          minWidth: "500px",
-          maxWidth: "600px",
-        }}
-        onMouseLeave={() => {
-          onMouseLeaveCart();
-        }}
+        className="cart-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mi carrito"
+        onClick={(e) => e.stopPropagation()}
+        onMouseLeave={onMouseLeaveCart}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-2 relative  w-full">
-            <h5 className="text-xl font-bold text-gray-800">
-              {/* Mi Carrito ({itemCount} {itemCount === 1 ? 'artículo' : 'artículos'}) */}
-              Mi carrito
-            </h5>
-            <button
-              style={{ position: "absolute", right: "5px", top: "5px" }}
-              onClick={() => onMouseLeaveCart()}
-            >
-              <MdClose size={20} />
-            </button>
+        <header className="cart-modal-header">
+          <div>
+            <h5 className="cart-modal-title">Mi carrito</h5>
+            {itemCount > 0 ? (
+              <p className="cart-modal-subtitle">
+                {itemCount} producto{itemCount !== 1 ? "s" : ""}
+              </p>
+            ) : null}
           </div>
-        </div>
+          <button
+            type="button"
+            className="cart-modal-close"
+            onClick={onMouseLeaveCart}
+            aria-label="Cerrar carrito"
+          >
+            <X size={20} />
+          </button>
+        </header>
 
         {dataCart && dataCart.length > 0 ? (
-          <div className="w-full flex justify-end py-2 px-2">
+          <div className="cart-empty-btn-wrap">
             <button
-              className="border flex justify-center items-center p-2"
+              type="button"
+              className="cart-empty-btn"
               disabled={loadingRmAllCart}
               onClick={() => {
-                handleRemoveStorageDataCart();
-                localStorage.removeItem("progressPay2");
-                handleRemoveAllCart(dataCart, onMouseLeaveCart);
-                localStorage.removeItem("checkout_step");
-                setRunCheckoutSync(true);
+                handleConfirmEmptyCart(dataCart, () => {
+                  handleRemoveStorageDataCart();
+                  localStorage.removeItem("progressPay2");
+                  localStorage.removeItem("checkout_step");
+                  setRunCheckoutSync(true);
+                  onMouseLeaveCart();
+                });
               }}
             >
               {loadingRmAllCart ? (
-                <MdAutorenew size={20} className="m-auto the-spinner" />
+                <MdAutorenew size={18} className="the-spinner" />
               ) : (
                 <>
-                  <span className="mx-2">Vaciar carrito</span>
-                  <Trash2 size={20} />
+                  Vaciar todo
+                  <Trash2 size={16} />
                 </>
               )}
             </button>
           </div>
         ) : null}
 
-        {/* Content */}
-        <div
-          className="flex-1 overflow-y-auto p-4 contentCart"
-          style={{
-            height: "45vh",
-            maxHeight: "60vh",
-          }}
-        >
-          {dataCart && dataCart.length == 0 ? (
-            <div className="text-center py-12">
-              <ShoppingCart className="mx-auto text-gray-300 mb-4" size={64} />
-              <p className="text-gray-500 text-lg">Tu carrito está vacío</p>
+        <div className="flex-1 overflow-y-auto p-4 contentCart">
+          {!dataCart?.length ? (
+            <div className="cart-empty-state">
+              <ShoppingCart
+                size={64}
+                color="#d1d5db"
+                style={{ margin: "0 auto", display: "block" }}
+              />
+              <p className="cart-empty-title">Tu carrito está vacío</p>
+              <button
+                type="button"
+                className="cart-empty-link"
+                onClick={() => {
+                  onRouterLink("/");
+                  onMouseLeaveCart();
+                }}
+              >
+                Explorar productos
+              </button>
             </div>
           ) : (
             <div className="space-y-4">
-              {dataCart &&
-                dataCart.map((product: ProductI) => {
-                  if (product.stock != 0) {
-                    return (
+              {dataCart.map((product: ProductI) => {
+                if (product.stock == 0) return null;
+
+                const qty = getItemQuantity(product);
+                const stockByStore =
+                  product?.product_stock?.find(
+                    (branch) => branch?.branchId == product?.storeId,
+                  )?.stock ?? product?.stock ?? 0;
+                const imageSrc =
+                  (product as any).image_url?.[0] ||
+                  (product as any).imageUrl?.[0];
+
+                return (
+                  <article
+                    key={`${product.idProduct}-${product.storeId}`}
+                    className="cart-item-card"
+                  >
+                    {imageSrc ? (
+                      <Image
+                        src={imageSrc}
+                        loading="lazy"
+                        alt={product.name || "Producto"}
+                        width={88}
+                        height={88}
+                        className="cart-item-image"
+                        onClick={() => {
+                          localStorage.setItem(
+                            "product",
+                            JSON.stringify(product),
+                          );
+                          onRouterLink(`/detailsProduct/${product.idProduct}`);
+                          onMouseLeaveCart();
+                        }}
+                      />
+                    ) : (
                       <div
-                        key={`${product.idProduct}-${product.storeId}`}
-                        className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 mt-3"
-                      >
-                        {(product as any).image_url ? (
-                          <Image
-                            src={(product as any).image_url[0]}
-                            loading="lazy"
-                            alt={"Imagen"}
-                            width={80}
-                            height={80}
-                            className="w-20 h-20 object-cover rounded-md cursor-pointer"
-                            onClick={() => {
-                              localStorage.setItem(
-                                "product",
-                                JSON.stringify(product),
-                              );
-                              onRouterLink(
-                                `/detailsProduct/${product.idProduct}`,
-                              );
-                            }}
-                          />
-                        ) : (
-                          <Image
-                            src={(product as any).imageUrl[0]}
-                            alt={"Imagen"}
-                            loading="lazy"
-                            width={80}
-                            height={80}
-                            className="w-20 h-20 object-cover rounded-md cursor-pointer"
-                            onClick={() => {
-                              localStorage.setItem(
-                                "product",
-                                JSON.stringify(product),
-                              );
-                              onRouterLink(
-                                `/detailsProduct/${product.idProduct}`,
-                              );
-                            }}
-                          />
-                        )}
+                        className="cart-item-image"
+                        style={{ background: "#e5e7eb" }}
+                      />
+                    )}
 
-                        <div className="flex-1">
-                          <h3
-                            className="font-semibold text-gray-800 text-sm line-clamp-2"
-                            title={product.name}
+                    <div className="cart-item-body">
+                      <h3 className="cart-item-name">{product.name}</h3>
+                      <p className="cart-item-meta">
+                        Disponibles: {stockByStore} piezas · SKU: {product.sku}
+                      </p>
+                      <p className="cart-item-unit-price">
+                        {formatCurrency(Number(product.price))} c/u
+                      </p>
+
+                      <div className="cart-item-footer">
+                        <div className="cart-qty-control">
+                          <button
+                            type="button"
+                            className="cart-qty-btn"
+                            onClick={() => updateQuantity(product, -1)}
+                            aria-label="Disminuir cantidad"
                           >
-                            {product.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Disponibles:{" "}
-                            {(() => {
-                              let findStockStore = product?.product_stock?.find(
-                                (branch) =>
-                                  branch?.branchId == product?.storeId,
-                              );
-
-                              return (
-                                findStockStore?.stock || product?.stock || 0
-                              );
-                            })()}{" "}
-                            piezas.
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            SKU: {product.sku}
-                          </p>
+                            <Minus size={16} />
+                          </button>
+                          <span className="cart-qty-value">{qty}</span>
+                          <button
+                            type="button"
+                            className="cart-qty-btn"
+                            disabled={
+                              Number(product?.providerId) !== 1
+                                ? qty >= Number(stockByStore)
+                                : qty >= Number(product?.stock)
+                            }
+                            onClick={() => updateQuantity(product, 1)}
+                            aria-label="Aumentar cantidad"
+                          >
+                            <Plus size={16} />
+                          </button>
                         </div>
 
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="flex items-center border border-gray-300 rounded">
-                            {/*Boton de menos quantity*/}
-                            <button
-                              onClick={() => {
-                                const updateItems = dataCart.map((item) => {
-                                  if (
-                                    item.idProduct === product.idProduct &&
-                                    item.storeId === product?.storeId
-                                  ) {
-                                    const newQuantity =
-                                      Number(item.quantity) > 1
-                                        ? Number(item.quantity) - Number(1)
-                                        : 1;
-
-                                    return { ...item, quantity: newQuantity };
-                                  }
-                                  return { ...item };
-                                });
-
-                                setDataCart(updateItems);
-                                handleWriteStorageDataCart(updateItems);
-                              }}
-                              className="p-1 hover:bg-gray-100 text-gray-600"
-                            >
-                              <Minus size={16} />
-                            </button>
-                            <input
-                              readOnly
-                              value={(() => {
-                                // Buscamos primero en storage
-
-                                const itemStorage = dataCartStorege?.find(
-                                  (item) =>
-                                    item.idProduct === product.idProduct &&
-                                    item.storeId === product.storeId,
-                                );
-                                if (itemStorage) return itemStorage.quantity;
-
-                                // Si no está en storage, buscamos en dataCart
-                                const itemCart = dataCart?.find(
-                                  (item) =>
-                                    item.idProduct === product.idProduct &&
-                                    item.storeId === product.storeId,
-                                );
-                                if (itemCart) return itemCart.quantity;
-
-                                // Si no está en ninguno, devolvemos 1
-                                return 1;
-                              })()}
-                              style={{ minWidth: "45px", maxWidth: "55px" }}
-                              className="px-3 py-1 text-sm font-semibold min-w-[40px] text-center"
-                            />
-
-                            {/*Boton de mas quantity*/}
-                            <button
-                              disabled={
-                                Number(product?.providerId) !== 1
-                                  ? product.quantity >=
-                                  (product?.product_stock?.find(
-                                    (branch) =>
-                                      branch?.branchId === product?.storeId,
-                                  )?.stock || 0)
-                                  : Number(product?.stock) === 0
-                              }
-                              onClick={() => {
-                                const stockByStore =
-                                  product?.product_stock?.find(
-                                    (branch) =>
-                                      branch?.branchId === product?.storeId,
-                                  )?.stock || 0;
-
-                                const updateItems = dataCart.map((item) => {
-                                  if (
-                                    Number(item?.providerId) !== 1 &&
-                                    item.idProduct === product.idProduct &&
-                                    item.storeId === product.storeId
-                                  ) {
-                                    const newQuantity =
-                                      Number(item.quantity) + 1 <= stockByStore
-                                        ? Number(item.quantity) + 1
-                                        : item.quantity;
-
-                                    return { ...item, quantity: newQuantity };
-                                  }
-
-                                  if (
-                                    Number(item?.providerId) === 1 &&
-                                    item.idProduct === product.idProduct
-                                  ) {
-                                    const newQuantity =
-                                      Number(item.quantity) + 1 <= item.stock
-                                        ? Number(item.quantity) + 1
-                                        : item.quantity;
-
-                                    return { ...item, quantity: newQuantity };
-                                  }
-
-                                  return item;
-                                });
-
-                                setDataCart(updateItems);
-                                handleWriteStorageDataCart(updateItems);
-                              }}
-                              className="p-1 hover:bg-gray-100 text-gray-600"
-                            >
-                              <Plus size={16} />
-                            </button>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-gray-800">
-                              {formatCurrency(
-                                Number(
-                                  Number(product.price) *
-                                  Number(
-                                    // primero busco en storage, si no está uso dataCart
-                                    dataCartStorege.find(
-                                      (item) =>
-                                        item.idProduct ===
-                                        product.idProduct &&
-                                        item.storeId === product.storeId,
-                                    )?.quantity ?? product.quantity,
-                                  ),
-                                ),
-                              )}
-                            </p>
-
-                            <button
-                              onClick={() =>
-                                handleRemoveItemCart(
-                                  dataCart,
-                                  product,
-                                  onMouseLeaveCart,
-                                )
-                              }
-                              className="text-red-500 hover:text-red-700 p-1 mt-2"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
+                        <div className="cart-item-price-row">
+                          <p className="cart-item-total">
+                            {formatCurrency(Number(product.price) * qty)}
+                          </p>
+                          <button
+                            type="button"
+                            className="cart-remove-btn"
+                            onClick={() =>
+                              handleRemoveItemCart(
+                                dataCart,
+                                product,
+                                onMouseLeaveCart,
+                              )
+                            }
+                            aria-label="Eliminar producto"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </div>
-                    );
-                  }
-                })}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
 
-        {/* Footer with totals and actions */}
         {dataCart && dataCart.length > 0 && (
-          <div className="border-t border-gray-200 p-4 bg-gray-50">
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                {/* <span className="text-gray-600">Subtotal:</span>
-                <span className="font-semibold">{formatCurrency(10)}</span> */}
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">
-                  {/* Envío: {shipping === 0 && <span className="text-green-600 font-semibold">¡GRATIS!</span>} */}
-                </span>
-                <span className="font-semibold">
-                  {/* {shipping === 0 ? 'GRATIS' : formatPrice(shipping)} */}
-                </span>
-              </div>
-              {/* {shipping > 0 && (
-                <p className="text-xs text-gray-500">
-                  Envío gratis en compras mayores a $1,500
-                </p>
-              )} */}
-              <div className="flex justify-between text-lg font-bold text-[#bb3d4b] border-t border-gray-300 pt-2">
-                <span>Subtotal:</span>
-
-                <span>{formatCurrency(Number(totalPrice))}</span>
-              </div>
+          <footer className="cart-modal-footer">
+            <div className="cart-subtotal-row">
+              <span>Subtotal</span>
+              <span>{formatCurrency(Number(totalPrice))}</span>
             </div>
-
-            <div className="flex gap-2">
+            <div className="cart-footer-actions">
               <button
-                onClick={() => onMouseLeaveCart()}
-                className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-semibold transition-colors"
+                type="button"
+                className="cart-btn-secondary"
+                onClick={onMouseLeaveCart}
               >
                 Seguir comprando
               </button>
-              {/* <Link href="/confirma-productos" onClick={onMouseLeaveCart}>
-                <button className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors">
-                  Proceder al pago
-                </button>
-              </Link> */}
               <button
+                type="button"
+                className="cart-btn-primary"
                 onClick={() => {
                   localStorage.setItem(
                     "checkout_step",
                     String(CheckoutStep.CONFIRMAR_PRODUCTOS),
                   );
-
                   localStorage.setItem("checkout_mode", "cart");
-
                   onRouterLink("/confirma-productos");
                   onMouseLeaveCart();
                 }}
-                className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"
               >
                 Proceder al pago
               </button>
             </div>
-          </div>
+          </footer>
         )}
       </div>
     </div>
