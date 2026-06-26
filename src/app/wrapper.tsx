@@ -12,6 +12,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import ProductI from "./interfaces/products/product.interface";
 import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
+import useCartSync from "./hooks/useCartSync";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
@@ -48,13 +49,37 @@ export default function AppWrapper({
   } = useTheContext();
 
   const { dataCartStorege } = useStorage();
+  const { syncCartOnAuth } = useCartSync();
 
   useEffect(() => {
     if (dataCart && hasToken) {
       localStorage.setItem("dataCartStorage", JSON.stringify(dataCart));
-      setDataCart(dataCart);
     }
-  }, [dataCart, hasToken, dataCartStorege]);
+  }, [dataCart, hasToken]);
+
+  useEffect(() => {
+    if (!hasToken) return;
+    void syncCartOnAuth();
+  }, [hasToken]);
+
+  useEffect(() => {
+    if (!hasToken || typeof window === "undefined") return;
+
+    const refreshOnFocus = () => {
+      void syncCartOnAuth();
+    };
+
+    window.addEventListener("focus", refreshOnFocus);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        refreshOnFocus();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("focus", refreshOnFocus);
+    };
+  }, [hasToken]);
 
   useEffect(() => {
     if (!socketPagos.current) return;

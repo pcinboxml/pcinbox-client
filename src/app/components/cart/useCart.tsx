@@ -3,12 +3,15 @@ import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useStorage from "@/app/services/useStorage";
+import useCartSync from "@/app/hooks/useCartSync";
 import { useState } from "react";
 
 const useCart = () => {
   const { setDataCart, setDataModal, hasToken } = useTheContext();
   const { requestPost } = useService();
-  const { handleWriteStorageDataCart } = useStorage();
+  const { handleWriteStorageDataCart, handleRemoveStorageDataCart } =
+    useStorage();
+  const { refreshCartFromServer, clearCartEverywhere } = useCartSync();
 
   const [showDivCart, setShowDivCart] = useState<boolean>(false);
   const [loadingRmAllCart, setLoadingRmAllCart] = useState<boolean>(false);
@@ -29,24 +32,18 @@ const useCart = () => {
     if (hasToken) {
       try {
         const resp = await requestPost(
-          { idProduct: productProp.idProduct },
+          {
+            idProduct: productProp.idProduct,
+            storeId: productProp.storeId ?? null,
+          },
           "/cart/removeProduct",
         );
 
         if (resp && resp.status == 200) {
-          const removeProduct = dataCartProp.filter(
-            (item: ProductI) =>
-              !(
-                String(item.idProduct) === String(productProp.idProduct) &&
-                String(item.storeId ?? "") === String(productProp.storeId ?? "")
-              ),
-          );
-
-          if (removeProduct.length === 0) {
+          const remaining = await refreshCartFromServer();
+          if (remaining.length === 0) {
             handleRemoveItemCartProp();
           }
-
-          setDataCart(removeProduct);
         }
       } catch (error: any) {
         setDataModal({
@@ -59,44 +56,43 @@ const useCart = () => {
         });
       }
       return;
-    } else {
-      if (localStorage.getItem("dataCart")) {
-        const storage = JSON.parse(localStorage.getItem("dataCart") || "");
-        let removeProductStorage = storage.filter(
-          (item: ProductI) =>
-            !(
-              String(item.idProduct) === String(productProp.idProduct) &&
-              String(item.storeId ?? "") === String(productProp.storeId ?? "")
-            ),
-        );
+    }
 
-        setDataCart(removeProductStorage);
-        localStorage.setItem("dataCart", JSON.stringify(removeProductStorage));
+    const removeProductStorage = dataCartProp.filter(
+      (item: ProductI) =>
+        !(
+          String(item.idProduct) === String(productProp.idProduct) &&
+          String(item.storeId ?? "") === String(productProp.storeId ?? "")
+        ),
+    );
 
-        // 🔥 Cierra el modal si ya no hay productos
-        if (removeProductStorage.length === 0) {
-          setShowDivCart(false);
-        }
-      }
+    setDataCart(removeProductStorage);
+    handleWriteStorageDataCart(removeProductStorage);
+
+    if (removeProductStorage.length === 0) {
+      setShowDivCart(false);
+      handleRemoveItemCartProp?.();
     }
   };
 
   const addProductFromStorage = async () => {
-    if (localStorage.getItem("dataCart")) {
-      const storage = JSON.parse(localStorage.getItem("dataCart") || "");
+    const { readLocalCartStorage } = await import("../utils/cartSync");
+    const storage = readLocalCartStorage();
+    if (storage.length === 0) return;
 
-      try {
-        const getStatus = await requestPost(
-          {
-            dataCart: storage,
-          },
-          "/cart/addProductFromStorage",
-        );
+    try {
+      const getStatus = await requestPost(
+        { dataCart: storage },
+        "/cart/addProductFromStorage",
+      );
 
-        if (getStatus!.status == 200) {
-          localStorage.removeItem("dataCart");
-        }
-      } catch (error: any) {}
+      if (getStatus?.status === 200) {
+        const { clearLocalCartStorage } = await import("../utils/cartSync");
+        clearLocalCartStorage();
+        await refreshCartFromServer();
+      }
+    } catch {
+      // Sin sesión o error de red
     }
   };
 
@@ -107,42 +103,26 @@ const useCart = () => {
     if (hasToken) {
       try {
         setLoadingRmAllCart(true);
-        const resp = await requestPost(
-          {
-            dataCart: dataCartProp,
-          },
-          "/cart/removeAllCart",
-        );
-
-        setLoadingRmAllCart(false);
-
-        const status = await resp!.status;
-        if (status == 200) {
-          setDataCart([]);
-          onMouseLeaveCartProp();
-        }
-      } catch (error) {
-        setLoadingRmAllCart(false);
+        await clearCartEverywhere(dataCartProp);
+        handleRemoveStorageDataCart();
+        onMouseLeaveCartProp();
+      } catch {
         setDataModal({
           isOpen: true,
-          message: "Ocurrio un error al borrar el carrito",
+          message: "Ocurrió un error al borrar el carrito",
           title: "Error",
           type: "error",
-          onClose: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
         });
+      } finally {
+        setLoadingRmAllCart(false);
       }
-    } else {
-      if (localStorage.getItem("dataCart")) {
-        setDataCart([]);
-        localStorage.setItem("dataCart", JSON.stringify([]));
-        onMouseLeaveCartProp();
-      }
+      return;
     }
+
+    handleRemoveStorageDataCart();
+    onMouseLeaveCartProp?.();
   };
 
   const handleConfirmEmptyCart = (

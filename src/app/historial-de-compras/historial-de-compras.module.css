@@ -111,6 +111,27 @@
   font-size: 0.875rem;
 }
 
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filtersTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.paginationBar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 8px 0 20px;
+}
+
 .orderList {
   display: flex;
   flex-direction: column;

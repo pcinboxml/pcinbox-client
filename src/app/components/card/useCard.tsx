@@ -3,6 +3,7 @@
 import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
+import useCartSync from "@/app/hooks/useCartSync";
 import { useState } from "react";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
@@ -10,6 +11,7 @@ const useCard = () => {
   const { setDataCart, setDataModal, setDataNotification, hasToken, dataCart } =
     useTheContext();
   const { requestPost } = useService();
+  const { refreshCartFromServer } = useCartSync();
 
   const [loadingAgregar, setLoadingAgregar] = useState<boolean>(false);
 
@@ -90,37 +92,6 @@ const useCard = () => {
     }
 
     try {
-      const stored = localStorage.getItem("dataCartStorage");
-      const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
-
-      const existingProductIndex = products.findIndex(
-        (p: any) =>
-          Number(p.idProduct) === Number(product.idProduct) &&
-          Number(p.storeId) === Number(product.storeId),
-      );
-
-      const stock = Number(product?.stock);
-
-      if (existingProductIndex !== -1) {
-        const currentQuantity = products[existingProductIndex].quantity;
-
-        // Validar límite de stock
-        if (currentQuantity >= stock) {
-          return;
-        }
-
-        products[existingProductIndex].quantity += 1;
-      } else {
-        // Si el stock es 0 tampoco agregar
-        if (stock <= 0) return;
-
-        products.push({
-          ...product,
-          quantity: 1,
-        });
-      }
-
-      localStorage.setItem("dataCartStorage", JSON.stringify(products));
       setLoadingAgregar(true);
 
       const resp = await requestPost(
@@ -128,6 +99,7 @@ const useCard = () => {
           idProduct: Number(product?.idProduct),
           quantity: 1,
           price: product.price,
+          storeId: product.storeId ?? null,
           isDetails: false,
         },
         "/cart/addProduct",
@@ -136,58 +108,7 @@ const useCard = () => {
       setLoadingAgregar(false);
 
       if (resp && resp.status == 200) {
-        // setDataNotification({
-        //   open: true,
-        //   handleClose: () =>
-        //     setDataNotification((prevNoti) => ({
-        //       ...prevNoti,
-        //       open: false,
-        //     })),
-        //   message: "Producto agregado al carrito correctamente",
-        //   type: "success",
-        // });
-
-        setDataCart((prev) => {
-          const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(product.idProduct),
-          );
-          if (existingProduct) {
-            return prev.map((item) =>
-              Number(item.idProduct) == Number(existingProduct.idProduct)
-                ? { ...item, quantity: Number(item.quantity) + Number(1) }
-                : item,
-            );
-          } else {
-            return [
-              ...prev,
-              {
-                categoryId: product.categoryId,
-                createdAt: product.createdAt,
-                description: product.description,
-                idProduct: product.idProduct,
-                imageUrl: product.imageUrl,
-                name: product.name,
-                price: product.price,
-                providerId: product.providerId,
-                stock: product.stock,
-                rating: product.rating,
-                reviews: product.reviews,
-                sku: product.sku,
-                quantity: 1,
-                isPC: product?.isPC,
-                isPc: product?.isPc,
-                caracteristicas: product?.caracteristicas,
-                height: product?.height,
-                idProductExt: product?.idProductExt,
-                product_stock: product?.product_stock,
-                largo: product?.largo,
-                storeId: product?.storeId,
-                upc: product?.upc,
-                width: product?.width,
-              },
-            ];
-          }
-        });
+        await refreshCartFromServer();
       }
     } catch (error: any) {
       setLoadingAgregar(false);

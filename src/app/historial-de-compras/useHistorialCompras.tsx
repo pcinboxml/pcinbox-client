@@ -1,16 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
-import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
 import { HistoryComprasI } from "../interfaces/compras/historyCompras.interface";
 import CancelledCompra from "../components/cancelledCompra/CancelledCompra";
 import { Clock } from "lucide-react";
 import { MdLocationOn } from "react-icons/md";
-
-const UNPAID_ORDER_STATUSES = new Set(["payment_pending", "pending"]);
-const UNPAID_PAY_METHODS = new Set(["esperando"]);
+import {
+  formatPaymentMethodLabel,
+  getCancelRefundMessage,
+  getCancelSuccessMessage,
+} from "../utils/historyPaymentMessages";
 
 export type HistoryFilterState = {
   status: string;
@@ -26,15 +27,7 @@ const DEFAULT_HISTORY_FILTERS: HistoryFilterState = {
   searchProduct: "",
 };
 
-function isPaidHistoryOrder(item: HistoryComprasI): boolean {
-  const payMethod = (item.payment_method || "").toLowerCase();
-  const orderStatus = (item.orderStatus || "").toLowerCase();
-
-  if (UNPAID_PAY_METHODS.has(payMethod)) return false;
-  if (UNPAID_ORDER_STATUSES.has(orderStatus)) return false;
-
-  return true;
-}
+export const HISTORY_ITEMS_PER_PAGE = 10;
 
 export function getOrderTotal(historyCompra: HistoryComprasI): number {
   if (Number.isFinite(Number(historyCompra.totalSales))) {
@@ -49,17 +42,21 @@ export function getOrderTotal(historyCompra: HistoryComprasI): number {
 }
 
 export function formatPaymentMethod(method?: string): string {
-  const labels: Record<string, string> = {
-    tarjeta_de_credito: "Tarjeta de crédito",
-    tarjeta_de_debito: "Tarjeta de débito",
-    transferencia_bancaria: "Transferencia bancaria",
-    mercadopago: "Mercado Pago",
-    openpay: "OpenPay",
-    efectivo: "Efectivo",
-  };
+  return formatPaymentMethodLabel(method);
+}
 
-  if (!method) return "Pago registrado";
-  return labels[method] ?? method.replace(/_/g, " ");
+export function isOrderCancelled(historyCompra: HistoryComprasI): boolean {
+  return (
+    historyCompra.products?.some((item) => item.statusShip === "cancelado") ??
+    false
+  );
+}
+
+export function canCancelOrder(historyCompra: HistoryComprasI): boolean {
+  const blocked = new Set(["entregado", "cancelado", "disponible", "enviado"]);
+  return !historyCompra.products?.some((item) =>
+    blocked.has(String(item.statusShip ?? "")),
+  );
 }
 
 const useHistorialDeCompras = () => {
@@ -70,91 +67,65 @@ const useHistorialDeCompras = () => {
     Record<number, boolean>
   >({});
   const { setDataModal } = useTheContext();
-  const { requestPostPagos } = usePasarelaDePagos();
   const [dataHistoryCompras, setDataHistoryCompras] = useState<
-    HistoryComprasI[]
-  >([]);
-  const [dataHistoryComprasCopy, setDataHistoryComprasCopy] = useState<
     HistoryComprasI[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const applyClientFilters = useCallback(
-    (source: HistoryComprasI[], filters: HistoryFilterState) => {
-      return source.filter((item) => {
-        const statusMatch =
-          filters.status && filters.status !== "allState"
-            ? item.products.some((p) => p.statusShip === filters.status)
-            : true;
+  const fetchHistory = useCallback(
+    async (targetPage: number, filters: HistoryFilterState) => {
+      setLoading(true);
+      setErrorMsg("");
 
-        const dateMatch =
-          filters.startDate && filters.endDate
-            ? (() => {
-                const itemDate = new Date(item.createdAt);
-                const start = new Date(filters.startDate);
-                const end = new Date(filters.endDate);
+      try {
+        const resp = await requestPost(
+          {
+            userId: localStorage.getItem("idUser"),
+            status: filters.status,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            searchProduct: filters.searchProduct,
+            page: targetPage,
+            limit: HISTORY_ITEMS_PER_PAGE,
+          },
+          "/sales/filterSales",
+        );
 
-                start.setHours(0, 0, 0, 0);
-                end.setHours(23, 59, 59, 999);
-                itemDate.setHours(0, 0, 0, 0);
+        if (resp.status == 200) {
+          const list = resp?.data?.data?.data;
+          const pagination = resp?.data?.data?.pagination;
+          const safeList = Array.isArray(list) ? list : [];
 
-                return itemDate >= start && itemDate <= end;
-              })()
-            : true;
-
-        const searchTextMatch = filters.searchProduct
-          ? item.products.some((p) =>
-              p.name
-                .toLowerCase()
-                .includes(filters.searchProduct.toLowerCase()),
-            )
-          : true;
-
-        return statusMatch && dateMatch && searchTextMatch;
-      });
+          setDataHistoryCompras(safeList);
+          setPage(pagination?.page ?? targetPage);
+          setTotalPages(pagination?.totalPages ?? 0);
+          setTotalItems(pagination?.total ?? safeList.length);
+        } else {
+          setDataHistoryCompras([]);
+          setTotalPages(0);
+          setTotalItems(0);
+          setErrorMsg("No se pudo cargar tu historial de compras.");
+        }
+      } catch {
+        setDataHistoryCompras([]);
+        setTotalPages(0);
+        setTotalItems(0);
+        setErrorMsg("Error al cargar tu historial de compras.");
+      } finally {
+        setLoading(false);
+      }
     },
-    [],
+    [requestPost],
   );
 
-  useEffect(() => {
-    setDataHistoryCompras(applyClientFilters(dataHistoryComprasCopy, dataFilter));
-  }, [dataFilter, dataHistoryComprasCopy, applyClientFilters]);
-
-  const initDataHistory = async () => {
-    setLoading(true);
-    setErrorMsg("");
-
-    try {
-      const resp = await requestPost(
-        {
-          userId: localStorage.getItem("idUser"),
-          status: "allState",
-        },
-        "/sales/filterSales",
-      );
-
-      if (resp.status == 200) {
-        const list = resp?.data?.data?.data;
-        const safeList = (Array.isArray(list) ? list : []).filter(
-          isPaidHistoryOrder,
-        );
-        setDataHistoryComprasCopy(safeList);
-        setDataHistoryCompras(applyClientFilters(safeList, dataFilter));
-      } else {
-        setDataHistoryComprasCopy([]);
-        setDataHistoryCompras([]);
-        setErrorMsg("No se pudo cargar tu historial de compras.");
-      }
-    } catch {
-      setDataHistoryComprasCopy([]);
-      setDataHistoryCompras([]);
-      setErrorMsg("Error al cargar tu historial de compras.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const initDataHistory = useCallback(() => {
+    fetchHistory(page, dataFilter);
+  }, [page, dataFilter, fetchHistory]);
 
   const updateFilter = (patch: Partial<HistoryFilterState>) => {
     const nextFilters = { ...dataFilter, ...patch };
@@ -168,12 +139,16 @@ const useHistorialDeCompras = () => {
 
     if (isSearchOnly) {
       searchDebounceRef.current = setTimeout(() => {
+        setPage(1);
+        fetchHistory(1, nextFilters);
         setDataFilter(nextFilters);
-      }, 350);
+      }, 400);
       return;
     }
 
     setDataFilter(nextFilters);
+    setPage(1);
+    fetchHistory(1, nextFilters);
   };
 
   const clearFilters = () => {
@@ -181,6 +156,19 @@ const useHistorialDeCompras = () => {
       clearTimeout(searchDebounceRef.current);
     }
     setDataFilter(DEFAULT_HISTORY_FILTERS);
+    setPage(1);
+    fetchHistory(1, DEFAULT_HISTORY_FILTERS);
+  };
+
+  const handleChangePage = (
+    _event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
+    setPage(value);
+    fetchHistory(value, dataFilter);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const hasActiveFilters =
@@ -211,7 +199,7 @@ const useHistorialDeCompras = () => {
   };
 
   const showUbicationStore = (storeId: string): void => {
-    let horarios: { horarios: { dia: any; hora: any }[]; storeId: string }[] =
+    const horarios: { horarios: { dia: string; hora: string }[]; storeId: string }[] =
       [
         {
           storeId: "PCinBOX-SFD",
@@ -301,7 +289,8 @@ const useHistorialDeCompras = () => {
             </div>
           </div>
 
-          <a
+          <button
+            type="button"
             onClick={() => {
               let url = "";
               switch (storeId) {
@@ -326,7 +315,7 @@ const useHistorialDeCompras = () => {
           >
             <MdLocationOn className="w-4 h-4" />
             Ver en Google Maps
-          </a>
+          </button>
         </div>
       ),
       title: "",
@@ -347,18 +336,7 @@ const useHistorialDeCompras = () => {
         [historyCompra?.idOrder]: true,
       }));
 
-      const estadosNoCancelables = new Set([
-        "entregado",
-        "cancelado",
-        "disponible",
-        "enviado",
-      ]);
-
-      const tieneEstadoNoCancelable = historyCompra?.products?.some((item) =>
-        estadosNoCancelables.has(item?.statusShip),
-      );
-
-      if (tieneEstadoNoCancelable) {
+      if (!canCancelOrder(historyCompra)) {
         setLoadingCancelledCompra((prev) => ({
           ...prev,
           [historyCompra?.idOrder]: false,
@@ -366,22 +344,18 @@ const useHistorialDeCompras = () => {
         setDataModal({
           isOpen: true,
           type: "error",
-          title: "Error",
-          message: "No es posible cancelar la compra",
+          title: "No es posible cancelar",
+          message: "Esta compra ya no puede cancelarse por su estado de envío.",
           showActions: true,
-          onClose: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
-          onConfirm: () => {
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
-          },
+          onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+          onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
         });
         return;
       }
 
-      const resp = await requestPostPagos(
+      const resp = await requestPost(
         { idOrder: historyCompra.idOrder },
-        "/orders/cancelOrder",
+        "/sales/cancelOrder",
       );
 
       setLoadingCancelledCompra((prev) => ({
@@ -390,11 +364,9 @@ const useHistorialDeCompras = () => {
       }));
 
       if (resp.status == 200) {
-        const data = resp.data;
-
-        const updateOrder = (list: HistoryComprasI[]) =>
-          list.map((item) => {
-            if (Number(item.idOrder) === Number(data.data.data.idOrder)) {
+        setDataHistoryCompras((prev) =>
+          prev.map((item) => {
+            if (Number(item.idOrder) === Number(historyCompra.idOrder)) {
               return {
                 ...item,
                 products: item.products?.map((product) => ({
@@ -404,15 +376,16 @@ const useHistorialDeCompras = () => {
               };
             }
             return item;
-          });
-
-        setDataHistoryComprasCopy((prev) => updateOrder(prev));
-        setDataHistoryCompras((prev) => updateOrder(prev));
+          }),
+        );
 
         setDataModal({
           isOpen: true,
           type: "success",
-          message: `Compra ${historyCompra.idOrder} cancelada correctamente.`,
+          message: getCancelSuccessMessage(
+            historyCompra.idOrder,
+            historyCompra.payment_method,
+          ),
           title: "Compra cancelada",
           onConfirm: () => {
             setDataModal((prev) => ({ ...prev, isOpen: false }));
@@ -452,8 +425,14 @@ const useHistorialDeCompras = () => {
     dataFilter,
     showUbicationStore,
     setDataHistoryCompras,
-    setDataHistoryComprasCopy,
     initDataHistory,
+    page,
+    totalPages,
+    totalItems,
+    handleChangePage,
+    getCancelRefundMessage,
+    canCancelOrder,
+    isOrderCancelled,
   };
 };
 

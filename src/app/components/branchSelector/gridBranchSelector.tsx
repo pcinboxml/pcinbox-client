@@ -3,10 +3,12 @@
 import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
+import useCartSync from "@/app/hooks/useCartSync";
 import { SetStateAction, useState } from "react";
 
 const GridBranchSelector = () => {
   const { requestPost, onRouterLink } = useService();
+  const { refreshCartFromServer } = useCartSync();
   const { setDataCart, setDataModal, setBuyNowProduct } = useTheContext();
   const [quantities, setQuantities] = useState<Record<number, number | "">>({});
 
@@ -124,6 +126,7 @@ const GridBranchSelector = () => {
       }));
 
       if (resp!.status == 200) {
+        await refreshCartFromServer();
         setDataCart((prev) => {
           const existingProduct = prev.find(
             (item) =>

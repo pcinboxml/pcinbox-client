@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
+import useCartSync from "@/app/hooks/useCartSync";
 import { MdAutorenew } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
 import { CheckoutStep } from "../timeline/checkoutSteps";
@@ -24,7 +25,7 @@ export const ModalCart = ({
   showDivCart: boolean;
 }) => {
   const [runCheckoutSync, setRunCheckoutSync] = useState(false);
-  const { dataCart, setDataCart, buyNowProduct } = useTheContext();
+  const { dataCart, setDataCart, buyNowProduct, hasToken } = useTheContext();
   const {
     dataCartStorege,
     handleRemoveStorageDataCart,
@@ -37,6 +38,8 @@ export const ModalCart = ({
     handleConfirmEmptyCart,
     loadingRmAllCart,
   } = useCart();
+  const { syncCartLineQuantity } = useCartSync();
+  const [updatingQtyKey, setUpdatingQtyKey] = useState<string | null>(null);
 
   const itemCount = useMemo(
     () =>
@@ -106,24 +109,48 @@ export const ModalCart = ({
     return Number(itemCart?.quantity ?? 1);
   };
 
-  const updateQuantity = (product: ProductI, delta: number) => {
+  const updateQuantity = async (product: ProductI, delta: number) => {
+    const lineKey = `${product.idProduct}-${product.storeId ?? ""}`;
+    if (updatingQtyKey === lineKey) return;
+
+    const currentItem = dataCart.find(
+      (entry) =>
+        String(entry.idProduct) === String(product.idProduct) &&
+        String(entry.storeId ?? "") === String(product.storeId ?? ""),
+    );
+    if (!currentItem) return;
+
     const stockByStore =
       product?.product_stock?.find(
         (branch) => branch?.branchId === product?.storeId,
       )?.stock ?? Number(product?.stock ?? 0);
+
+    const maxStock =
+      Number(currentItem.providerId) !== 1
+        ? stockByStore
+        : Number(currentItem.stock);
+    const nextQty = Math.max(
+      1,
+      Math.min(maxStock, Number(currentItem.quantity) + delta),
+    );
+
+    if (nextQty === Number(currentItem.quantity)) return;
+
+    if (hasToken) {
+      setUpdatingQtyKey(lineKey);
+      try {
+        await syncCartLineQuantity(product, nextQty);
+      } finally {
+        setUpdatingQtyKey(null);
+      }
+      return;
+    }
 
     const updateItems = dataCart.map((item) => {
       const matches =
         String(item.idProduct) === String(product.idProduct) &&
         String(item.storeId ?? "") === String(product.storeId ?? "");
       if (!matches) return item;
-
-      const maxStock =
-        Number(item.providerId) !== 1 ? stockByStore : Number(item.stock);
-      const nextQty = Math.max(
-        1,
-        Math.min(maxStock, Number(item.quantity) + delta),
-      );
       return { ...item, quantity: nextQty };
     });
 

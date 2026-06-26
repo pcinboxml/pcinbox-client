@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CartI from "../interfaces/cart/cart.interface";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "./globalContext";
+import {
+  hasAuthToken,
+  readLocalCartStorage,
+} from "../utils/cartSync";
 
 interface progressPayI {
   optionSend: {
@@ -105,14 +108,14 @@ const useStorage = () => {
       console.error("Error parsing progressPay2 from localStorage:", error);
     }
 
-    // Cargar datos del carrito - ESTA ES LA PARTE CORREGIDA
+    // Carrito local solo para invitados; usuarios logueados se sincronizan desde el servidor.
     try {
-      const stored3 = localStorage.getItem("dataCartStorage");
-      if (stored3) {
-        const parsed3 = JSON.parse(stored3);
-        // Reemplaza completamente el estado en lugar de concatenar
-        setDataCartStorege(parsed3);
-        setDataCart(parsed3);
+      if (!hasAuthToken()) {
+        const parsed3 = readLocalCartStorage();
+        if (parsed3.length > 0) {
+          setDataCartStorege(parsed3);
+          setDataCart(parsed3);
+        }
       }
     } catch (error) {
       console.error("Error parsing dataCartStorage from localStorage:", error);
