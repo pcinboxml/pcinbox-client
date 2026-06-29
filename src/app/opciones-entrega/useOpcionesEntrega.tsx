@@ -11,6 +11,8 @@ import EliminarDomicilio from "../components/eliminarDomicilio/EliminarDomicilio
 import { Clock, ExternalLink, MapPin } from "lucide-react";
 import { MdLocationOn } from "react-icons/md";
 
+import { readCheckoutUiSession, writeCheckoutUiSession } from "../utils/checkoutSessionStorage";
+
 const useOpcionesEntrega = () => {
   const IVA = 0.16;
 
@@ -37,61 +39,55 @@ const useOpcionesEntrega = () => {
     "Abasolo",
   ];
 
-  // --- ESTADOS CORREGIDOS ---
-  // Se inicializan con una función que lee desde localStorage.
-  // Esto garantiza que el estado tenga el valor correcto en el primer render.
-  const [optionEnvio, setOptionEnvio] = useState<Record<string, string>>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("progressPay2");
-      if (stored) {
-        const store = JSON.parse(stored);
-        return store.optionEnvio || {};
-      }
-    }
-    return {};
-  });
+  const [optionEnvio, setOptionEnvioState] = useState<Record<string, string>>({});
 
-  const [seguroEnvio, setSeguroEnvio] = useState<Record<any, any>>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("progressPay2");
-      if (stored) {
-        const store = JSON.parse(stored);
-        return store.seguroEnvio || {};
-      }
-    }
-    return {};
-  });
-  const [addressByStore, setAddressByStore] = useState<Record<string, number>>(
-    () => {
-      if (typeof window !== "undefined") {
-        const stored = localStorage.getItem("progressPay");
-        if (stored) {
-          const store = JSON.parse(stored);
-          return store.addressByStore || {};
-        }
-      }
-      return {};
-    },
-  );
+  const setOptionEnvio = (
+    updater: Record<string, string> | ((prev: Record<string, string>) => Record<string, string>),
+  ) => {
+    setOptionEnvioState((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      writeCheckoutUiSession({ optionEnvio: next });
+      return next;
+    });
+  };
+
+  const [seguroEnvio, setSeguroEnvioState] = useState<Record<string, { required?: string; costo?: number }>>({});
+
+  const setSeguroEnvio = (
+    updater:
+      | Record<string, { required?: string; costo?: number }>
+      | ((prev: Record<string, { required?: string; costo?: number }>) => Record<string, { required?: string; costo?: number }>),
+  ) => {
+    setSeguroEnvioState((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      const requiredOnly = Object.fromEntries(
+        Object.entries(next).map(([k, v]) => [k, v?.required ?? ""]),
+      ) as Record<string, "si" | "no" | "">;
+      writeCheckoutUiSession({ seguroEnvioRequired: requiredOnly });
+      return next;
+    });
+  };
+
+  const [addressByStore, setAddressByStoreState] = useState<Record<string, number>>({});
+
+  const setAddressByStore = (
+    updater: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>),
+  ) => {
+    setAddressByStoreState((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      writeCheckoutUiSession({ addressByStore: next });
+      return next;
+    });
+  };
 
   const [costoEnvioProductByZone, setCostoEnvioProductByZone] = useState<
     Record<string, number>
-  >(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("progressPay");
-      if (stored) {
-        const store = JSON.parse(stored);
-        return store.costoEnvioProductByZone || {};
-      }
-    }
-    return {};
-  });
-  // --- FIN DE ESTADOS CORREGIDOS ---
+  >({});
 
   const { requestGet, requestPost, productsToShow } = useService();
   const { setDataModal } = useTheContext();
 
-  const handleOnChangeSeguroEnvio = (
+  const handleOnChangeSeguroEnvio = async (
     event: ChangeEvent<HTMLInputElement>,
     envioKey: string,
   ) => {
@@ -115,12 +111,24 @@ const useOpcionesEntrega = () => {
             Number.EPSILON * 100,
         );
 
+        let insuranceCost = 0;
+        if (value === "si") {
+          try {
+            const resp = await requestPost(
+              { subtotal: totalPriceStoreProvider3 },
+              "/checkout/calculateInsurance",
+            );
+            insuranceCost = Number(resp?.data?.data?.cost ?? 0);
+          } catch {
+            insuranceCost = 0;
+          }
+        }
+
         setSeguroEnvio((prev) => ({
           ...prev,
           [envioKey]: {
             required: value,
-            costo:
-              value === "no" ? 0 : calcPriceEnvio(totalPriceStoreProvider3),
+            costo: insuranceCost,
           },
         }));
       }
@@ -223,41 +231,67 @@ const useOpcionesEntrega = () => {
   //   }
   // };
 
-  const getValuesStorage2 = () => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("progressPay2");
-      if (stored) {
-        const store = JSON.parse(stored);
+  const getValuesStorage2 = async () => {
+    try {
+      const resp = await requestGet("/checkout/getDraft", true);
+      const draft = resp?.data?.data;
+      if (!draft?.deliveryGroups) return;
 
-        delete store.dataPurchase.dataPurchase;
+      const newOptionEnvio: Record<string, string> = {};
+      const newSeguroEnvio: Record<string, any> = {};
+      const newAddressByStore: Record<string, number> = {};
+      const newCostoEnvioProductByZone: Record<string, number> = {};
 
-        // "store" tiene algo como { "null-1": {...}, "4-3": {...} }
-
-        const newOptionEnvio: Record<string, string> = {};
-        const newSeguroEnvio: Record<string, any> = {};
-        const newAddressByStore: Record<string, number> = {};
-        const newCostoEnvioProductByZone: Record<string, number> = {};
-
-        Object.keys(store.dataPurchase).forEach((key) => {
-          const item = store.dataPurchase[key];
-
-          newOptionEnvio[key] = item.shipping_method || "";
-
-          newSeguroEnvio[key] = {
-            required: item.costoSeguroEnvio ? "si" : "no",
-            costo: item.costoSeguroEnvio ?? 0,
-          };
-
-          newAddressByStore[key] = item.idAddress || 0;
-
-          newCostoEnvioProductByZone[key] = item.costoEnvioProductByZone || 0;
-        });
-
-        setOptionEnvio(newOptionEnvio);
-        setSeguroEnvio(newSeguroEnvio);
-        setAddressByStore(newAddressByStore);
-        setCostoEnvioProductByZone(newCostoEnvioProductByZone);
+      for (const [key, selection] of Object.entries(draft.deliveryGroups)) {
+        const item = selection as any;
+        newOptionEnvio[key] = item.shipping_method || "";
+        newSeguroEnvio[key] = {
+          required: item.wantsInsurance ?? "",
+          costo: 0,
+        };
+        newAddressByStore[key] = item.idAddress || 0;
+        newCostoEnvioProductByZone[key] = 0;
       }
+
+      setOptionEnvio(newOptionEnvio);
+      setSeguroEnvio(newSeguroEnvio);
+      setAddressByStore(newAddressByStore);
+      setCostoEnvioProductByZone(newCostoEnvioProductByZone);
+
+      if (productsToShow?.length) {
+        for (const [key, selection] of Object.entries(draft.deliveryGroups)) {
+          const groupProducts = productsToShow.filter(
+            (p) => `${p.storeId ?? "null"}-${p.providerId}` === key,
+          );
+          if (!groupProducts.length) continue;
+
+          const quoteResp = await requestPost(
+            {
+              products: groupProducts,
+              selection,
+            },
+            "/checkout/calculateGroupQuote",
+          );
+          const costs = quoteResp?.data?.data;
+          if (costs) {
+            setCostoEnvioProductByZone((prev) => ({
+              ...prev,
+              [key]: costs.shippingCost,
+            }));
+            if ((selection as any).wantsInsurance === "si") {
+              setSeguroEnvio((prev) => ({
+                ...prev,
+                [key]: {
+                  required: "si",
+                  costo: costs.insuranceCost,
+                },
+              }));
+            }
+          }
+        }
+      }
+    } catch {
+      // sin borrador previo
     }
   };
 
@@ -333,9 +367,12 @@ const useOpcionesEntrega = () => {
 
   const generateCostoByZone = async (destino: any) => {
     try {
-      const resp = await requestPost({ destino }, "/geonames/ShippingByZone");
+      const resp = await requestPost(
+        { idAddress: destino },
+        "/checkout/calculateZoneShipping",
+      );
       if (resp!.status === 200) {
-        return resp!.data.data?.costo || 0;
+        return resp!.data.data?.cost || 0;
       }
     } catch (error) {}
     return 0;
@@ -494,6 +531,28 @@ const useOpcionesEntrega = () => {
     const bloque = Math.ceil(cantidad / 1000);
     return bloque * 17.4;
   }
+
+  useEffect(() => {
+    void getValuesStorage2();
+    const ui = readCheckoutUiSession();
+    if (ui.optionEnvio && Object.keys(ui.optionEnvio).length > 0) {
+      setOptionEnvioState(ui.optionEnvio);
+    }
+    if (ui.addressByStore && Object.keys(ui.addressByStore).length > 0) {
+      setAddressByStoreState(ui.addressByStore);
+    }
+    if (ui.seguroEnvioRequired && Object.keys(ui.seguroEnvioRequired).length > 0) {
+      setSeguroEnvioState(
+        Object.fromEntries(
+          Object.entries(ui.seguroEnvioRequired).map(([k, v]) => [
+            k,
+            { required: v, costo: 0 },
+          ]),
+        ),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     showUbicationStore,

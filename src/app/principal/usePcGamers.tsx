@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
+import { publicEnv } from "@/app/config/env";
 
 interface UseProductsParams {
   tipo: string;
@@ -17,7 +18,7 @@ const usePcGamers = ({ tipo, itemsPerPage = 8 }: UseProductsParams) => {
     const getListProducts = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct?page=${page}&limit=${itemsPerPage}&tipo=${tipo}`,
+          `${publicEnv.apiUrlProveedor}/getAllProduct?page=${page}&limit=${itemsPerPage}&tipo=${tipo}`,
           { signal: controller.signal },
         );
 

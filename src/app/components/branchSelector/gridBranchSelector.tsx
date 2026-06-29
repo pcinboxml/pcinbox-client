@@ -4,12 +4,14 @@ import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCartSync from "@/app/hooks/useCartSync";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 import { SetStateAction, useState } from "react";
 
 const GridBranchSelector = () => {
   const { requestPost, onRouterLink } = useService();
   const { refreshCartFromServer } = useCartSync();
-  const { setDataCart, setDataModal, setBuyNowProduct } = useTheContext();
+  const { startBuyNow } = useCheckoutSession();
+  const { setDataModal } = useTheContext();
   const [quantities, setQuantities] = useState<Record<number, number | "">>({});
 
   const [loadingByBranch, setLoadingByBranch] = useState<
@@ -19,65 +21,15 @@ const GridBranchSelector = () => {
   const handleBuyNowProduct = async (
     productSelected: ProductI,
     quantity: number,
-    sucursal: any,
+    _sucursal: any,
   ) => {
     try {
-      localStorage.setItem("checkout_mode", "buy_now");
-
-      setBuyNowProduct({
-        ...productSelected,
-        categoryId: productSelected!.categoryId,
-        createdAt: productSelected!.createdAt,
-        description: productSelected!.description,
-        idProduct: productSelected!.idProduct,
-        imageUrl: productSelected!.imageUrl,
-        name: productSelected!.name,
-        price: productSelected!.price,
-        providerId: productSelected!.providerId,
-        stock: productSelected!.stock,
-        rating: productSelected!.rating,
-        reviews: productSelected!.reviews,
-        quantity: Number(quantity),
-        sku: productSelected!.sku,
-        isPC: productSelected?.isPC,
-        isPc: productSelected?.isPc,
-        caracteristicas: productSelected?.caracteristicas,
-        height: productSelected?.height,
-        idProductExt: productSelected?.idProductExt,
-        largo: productSelected?.largo,
-        storeId: productSelected?.storeId,
-        upc: productSelected?.upc,
-        width: productSelected?.width,
-        product_stock: productSelected?.product_stock,
-      });
-      localStorage.setItem(
-        "buyNowProduct",
-        JSON.stringify({
+      startBuyNow(
+        {
           ...productSelected,
-          categoryId: productSelected!.categoryId,
-          createdAt: productSelected!.createdAt,
-          description: productSelected!.description,
-          idProduct: productSelected!.idProduct,
-          imageUrl: productSelected!.imageUrl,
-          name: productSelected!.name,
-          price: productSelected!.price,
-          providerId: productSelected!.providerId,
-          stock: productSelected!.stock,
-          rating: productSelected!.rating,
-          reviews: productSelected!.reviews,
-          quantity: Number(quantity),
-          sku: productSelected!.sku,
-          isPC: productSelected?.isPC,
-          isPc: productSelected?.isPc,
-          caracteristicas: productSelected?.caracteristicas,
-          height: productSelected?.height,
-          idProductExt: productSelected?.idProductExt,
-          largo: productSelected?.largo,
-          storeId: productSelected?.storeId,
-          upc: productSelected?.upc,
-          width: productSelected?.width,
-          product_stock: productSelected?.product_stock,
-        }),
+          storeId: productSelected.storeId,
+        },
+        quantity,
       );
       setDataModal((prev) => ({ ...prev, isOpen: false }));
       onRouterLink("/confirma-productos");
@@ -127,44 +79,6 @@ const GridBranchSelector = () => {
 
       if (resp!.status == 200) {
         await refreshCartFromServer();
-        setDataCart((prev) => {
-          const existingProduct = prev.find(
-            (item) =>
-              Number(item.idProduct) === Number(product.idProduct) &&
-              Number(item.storeId) === Number(sucursal.idBranche),
-          );
-
-          const stock =
-            product.product_stock?.find(
-              (b) => b.branchId === sucursal.idBranche,
-            )?.stock ?? 0;
-
-          if (existingProduct) {
-            const newQuantity = Math.min(
-              Number(existingProduct.quantity) + Number(quantity),
-              stock,
-            );
-
-            return prev.map((item) =>
-              Number(item.idProduct) === Number(product.idProduct) &&
-              Number(item.storeId) === Number(sucursal.idBranche)
-                ? { ...item, quantity: newQuantity }
-                : item,
-            );
-          }
-
-          const newQuantity = Math.min(quantity, stock);
-
-          return [
-            ...prev,
-            {
-              ...product,
-              quantity: newQuantity,
-              storeId: sucursal.idBranche,
-            },
-          ];
-        });
-
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       }
     } catch (error) {

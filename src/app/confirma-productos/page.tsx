@@ -11,11 +11,25 @@ import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
 import style from "./confirma-productos.module.css";
 import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
+import {
+  getCheckoutMode,
+  getCheckoutStep,
+  readCheckoutSnapshot,
+  setCheckoutMode,
+  setCheckoutStep,
+  writeCheckoutSnapshot,
+} from "../utils/checkoutStorage";
+import {
+  evaluateCheckoutProceed,
+  hasCartLinesChanged,
+  requiresDeliveryReconfiguration,
+  toCheckoutSnapshot,
+} from "../utils/checkoutValidation";
 
 const ConfirmaProducts = () => {
   const [runCheckoutSync, setRunCheckoutSync] = useState(false);
 
-  const { dataCart, buyNowProduct } = useTheContext();
+  const { dataCart, buyNowProduct, setDataModal } = useTheContext();
   const { formatCurrency, onRouterLink, productsToShow } = useService();
 
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
@@ -35,15 +49,15 @@ const ConfirmaProducts = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const mode = localStorage.getItem("checkout_mode");
+    const mode = getCheckoutMode();
 
     if (!mode) {
       if (buyNowProduct === null && dataCart?.length > 0) {
-        localStorage.setItem("checkout_mode", "cart");
+        setCheckoutMode("cart");
       } else if (buyNowProduct !== null && dataCart?.length === 0) {
-        localStorage.setItem("checkout_mode", "buy_now");
+        setCheckoutMode("buy_now");
       } else if (buyNowProduct === null && dataCart.length === 0) {
-        localStorage.removeItem("checkout_mode");
+        setCheckoutMode(null);
       }
     }
   }, [dataCart, buyNowProduct]);
@@ -54,30 +68,22 @@ const ConfirmaProducts = () => {
   useEffect(() => {
     if (!runCheckoutSync) return;
 
-    const snapshot = productsToShow?.map((p) => ({
-      id: p.idProduct,
-      quantity: p.quantity,
-      storeId: p.storeId ?? null,
-    }));
+    const snapshot = toCheckoutSnapshot(productsToShow ?? []);
 
     if (buyNowProduct != null && dataCart?.length === 0) {
-      localStorage.setItem("checkout_mode", "buy_now");
+      setCheckoutMode("buy_now");
     }
 
     if (dataCart?.length > 0 && buyNowProduct === null) {
-      localStorage.setItem("checkout_mode", "cart");
+      setCheckoutMode("cart");
     }
 
     if (buyNowProduct === null && dataCart.length === 0) {
-      localStorage.removeItem("checkout_mode");
-      localStorage.removeItem("checkout_products_snapshot");
+      setCheckoutMode(null);
     }
 
-    if (snapshot) {
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(snapshot),
-      );
+    if (snapshot.length) {
+      writeCheckoutSnapshot(snapshot);
     }
 
     setRunCheckoutSync(false);
@@ -89,28 +95,70 @@ const ConfirmaProducts = () => {
   useEffect(() => {
     if (!productsToShow?.length) return;
 
-    const step = Number(localStorage.getItem("checkout_step"));
+    const step = getCheckoutStep();
 
-    if (step !== CheckoutStep.CONFIRMAR_PRODUCTOS) return;
+    if (step !== CheckoutStep.CONFIRMAR_PRODUCTOS && step !== null) return;
 
-    const existing = localStorage.getItem("checkout_products_snapshot");
+    const existing = readCheckoutSnapshot();
 
-    if (existing) { return };
+    if (existing.length) return;
 
-    const snapshot = productsToShow.map((p) => ({
-      id: p.idProduct,
-      quantity: p.quantity,
-      storeId: p.storeId ?? null,
-    }));
+    writeCheckoutSnapshot(toCheckoutSnapshot(productsToShow));
+  }, [productsToShow]);
 
-    localStorage.setItem(
-      "checkout_products_snapshot",
-      JSON.stringify(snapshot),
+  const deliveryReconfigWarning = useMemo(() => {
+    if (!productsToShow?.length) return false;
+    const snapshot = readCheckoutSnapshot();
+    if (!snapshot.length) return false;
+    return (
+      hasCartLinesChanged(snapshot, productsToShow) &&
+      requiresDeliveryReconfiguration(snapshot, productsToShow)
     );
   }, [productsToShow]);
 
+  const handleNextStep = () => {
+    if (!productsToShow?.length) return;
+
+    const previousSnapshot = readCheckoutSnapshot();
+    const currentSnapshot = toCheckoutSnapshot(productsToShow);
+    const { needsDeliveryWarning, cartChanged } = evaluateCheckoutProceed(
+      previousSnapshot,
+      productsToShow,
+    );
+
+    const goToDelivery = () => {
+      writeCheckoutSnapshot(currentSnapshot);
+      setCheckoutStep(CheckoutStep.OPCIONES_ENTREGA);
+      onRouterLink("/opciones-entrega");
+    };
+
+    if (needsDeliveryWarning && cartChanged) {
+      setDataModal({
+        isOpen: true,
+        type: "info",
+        title: "Configura tu entrega",
+        message:
+          "Tu carrito incluye productos de otra sucursal o proveedor. Debes configurar la opción de entrega antes de continuar.",
+        showActions: true,
+        onConfirm: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+          goToDelivery();
+        },
+        onClose: () => {
+          setDataModal((prev) => ({ ...prev, isOpen: false }));
+        },
+      });
+      return;
+    }
+
+    if (cartChanged) {
+      writeCheckoutSnapshot(currentSnapshot);
+    }
+
+    goToDelivery();
+  };
+
   // -------------------------------
-  // SUBTOTAL
   // -------------------------------
   const subTotal = useMemo(() => {
     if (!productsToShow) return 0;
@@ -131,6 +179,13 @@ const ConfirmaProducts = () => {
       {productsToShow && productsToShow.length > 0 ? (
         <>
           <TimelineComponent activeStep={0} />
+
+          {deliveryReconfigWarning && (
+            <Alert severity="warning" className="w-[90%] mx-auto my-3">
+              Tu carrito cambió e incluye productos de otra sucursal o proveedor.
+              Debes configurar la opción de entrega antes de continuar.
+            </Alert>
+          )}
 
           <div className="container-tabla w-[90%] mx-auto my-3">
             <div className="header-container-tabla w-full p-2 bg-[#666666] rounded-t-lg">
@@ -206,14 +261,7 @@ const ConfirmaProducts = () => {
               </button>
 
               <button
-                onClick={() => {
-                  localStorage.setItem(
-                    "checkout_step",
-                    String(CheckoutStep.OPCIONES_ENTREGA),
-                  );
-
-                  onRouterLink("/opciones-entrega");
-                }}
+                onClick={handleNextStep}
                 className="bg-[#B92B3D] py-2 px-5 text-white rounded"
               >
                 Siguiente paso

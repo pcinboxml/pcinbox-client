@@ -16,6 +16,8 @@ import useStorage from "../services/useStorage";
 import { CheckCircle } from "lucide-react";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
+import useCheckoutDraft from "../hooks/useCheckoutDraft";
+import { setCheckoutStep } from "../utils/checkoutStorage";
 import style from "./opciones-entrega.module.css";
 
 const OpcionesEntrega = () => {
@@ -56,7 +58,8 @@ const OpcionesEntrega = () => {
     calcPriceEnvio,
   } = useOpcionesEntrega();
 
-  const { handleWriteStorageProgressPay2, checkoutMode } = useStorage();
+  const { checkoutMode } = useStorage();
+  const { saveDraft } = useCheckoutDraft();
 
   const {
     dataCart,
@@ -1022,7 +1025,7 @@ const OpcionesEntrega = () => {
               </button>
               <button
                 className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                onClick={() => {
+                onClick={async () => {
                   if (!hasToken) {
                     setDataModal({
                       isOpen: true,
@@ -1119,36 +1122,36 @@ const OpcionesEntrega = () => {
                     }
                   }
 
-                  // ✅ Construir dataPurchase SOLO con los grupos actuales
-                  let dataPurchase: any = {};
+                  const deliveryGroups: Record<string, any> = {};
 
                   groupedProducts.forEach((group: any) => {
                     const groupKey = `${group.storeId || "null"}-${group.providerId}`;
                     const shippingMethod = optionEnvio[groupKey];
                     const seguro = seguroEnvio[groupKey];
                     const theAddressByStore = addressByStore[groupKey];
-                    const theCostoEnvioProductByZone =
-                      costoEnvioProductByZone[groupKey];
 
-                    dataPurchase[groupKey] = {
+                    deliveryGroups[groupKey] = {
                       shipping_method: shippingMethod,
-                      costoSeguroEnvio: seguro ? seguro.costo : null,
                       idAddress: theAddressByStore || null,
-                      costoEnvioProductByZone:
-                        shippingMethod === "estafeta"
-                          ? 178.0
-                          : theCostoEnvioProductByZone || null,
+                      wantsInsurance: seguro?.required ?? null,
                     };
                   });
 
-                  handleWriteStorageProgressPay2({
-                    dataPurchase,
+                  await saveDraft({
+                    checkoutMode: checkoutMode as "cart" | "buy_now",
+                    checkoutStep: CheckoutStep.FORMA_DE_PAGO,
+                    deliveryGroups,
+                    buyNow:
+                      checkoutMode === "buy_now" && buyNowProduct
+                        ? {
+                            idProduct: buyNowProduct.idProduct,
+                            quantity: Number(buyNowProduct.quantity),
+                            storeId: buyNowProduct.storeId ?? null,
+                          }
+                        : null,
                   });
 
-                  localStorage.setItem(
-                    "checkout_step",
-                    String(CheckoutStep.FORMA_DE_PAGO),
-                  );
+                  setCheckoutStep(CheckoutStep.FORMA_DE_PAGO);
 
                   onRouterLink("/forma-de-pago");
                 }}

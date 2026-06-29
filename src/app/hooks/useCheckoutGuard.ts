@@ -8,12 +8,18 @@ import {
 } from "./../components/timeline/checkoutSteps";
 import useService from "./../services/useService";
 import { useTheContext } from "../services/globalContext";
-
-type ProductSnapshot = {
-  id: number;
-  quantity: number;
-  storeId: number | null;
-};
+import {
+  getCheckoutMode,
+  getCheckoutStep,
+  readCheckoutSnapshot,
+  setCheckoutStep,
+  writeCheckoutSnapshot,
+} from "../utils/checkoutStorage";
+import {
+  hasCartLinesChanged,
+  requiresDeliveryReconfiguration,
+  toCheckoutSnapshot,
+} from "../utils/checkoutValidation";
 
 export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
   const router = useRouter();
@@ -21,125 +27,76 @@ export const useCheckoutGuard = (requiredStep: CheckoutStep) => {
   const { productsToShow, onRouterLink } = useService();
   const { setDataModal } = useTheContext();
 
-  const normalizeStoreId = (id: any): number | null => {
-    if (id === null || id === undefined || id === "null") return null;
-    const num = Number(id);
-    return isNaN(num) ? null : num;
-  };
-
-  const normalizeProducts = (products: any[]): ProductSnapshot[] => {
-    return (products || []).map((p) => ({
-      id: Number(p.idProduct),
-      quantity: Number(p.quantity),
-      storeId: normalizeStoreId(p.storeId),
-    }));
-  };
-
-  const createKey = (p: ProductSnapshot) => `${p.id}-${p.storeId ?? "null"}`;
-
   useEffect(() => {
-    const step = Number(localStorage.getItem("checkout_step")) as CheckoutStep;
+    const step = getCheckoutStep() ?? CheckoutStep.CONFIRMAR_PRODUCTOS;
 
-    // 🚫 No puede acceder a un paso mayor al permitido
     if (step < requiredStep) {
       router.replace(checkoutRoutes[step]);
       return;
     }
 
-    // 🚫 URL inválida
     if (pathname !== checkoutRoutes[requiredStep]) {
       router.replace(checkoutRoutes[requiredStep]);
       return;
     }
 
-    // 🚨 SOLO aplica a carrito y después de entrega
     if (
       step <= CheckoutStep.OPCIONES_ENTREGA ||
       !productsToShow?.length ||
-      localStorage.getItem("checkout_mode") !== "cart"
+      getCheckoutMode() !== "cart"
     ) {
       return;
     }
 
-    const snapshotStr = localStorage.getItem("checkout_products_snapshot");
+    const snapshotRaw = readCheckoutSnapshot();
+    let snapshotProducts = snapshotRaw;
 
-    const currentProducts = normalizeProducts(productsToShow);
-
-    // 🟢 CASO 1: no existe snapshot → lo creamos y salimos
-    if (!snapshotStr) {
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(currentProducts),
-      );
-      return;
-    }
-
-    let snapshotProducts: ProductSnapshot[];
-
-    try {
-      snapshotProducts = JSON.parse(snapshotStr);
-    } catch {
+    if (!snapshotProducts.length) {
       snapshotProducts = [];
     }
 
-    // 🟡 CASO 2: snapshot inválido o vacío → lo re-creamos
+    const currentSnapshot = toCheckoutSnapshot(productsToShow);
+
     if (!snapshotProducts.length) {
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(currentProducts),
-      );
+      writeCheckoutSnapshot(currentSnapshot);
       return;
     }
 
-    // 🔥 MAPA para comparación estable (sin .find)
-    const snapshotMap = new Map<string, ProductSnapshot>();
+    const cartChanged = hasCartLinesChanged(snapshotProducts, productsToShow);
+    const needsDeliveryReconfig = requiresDeliveryReconfiguration(
+      snapshotProducts,
+      productsToShow,
+    );
 
-    snapshotProducts.forEach((p) => {
-      snapshotMap.set(createKey(p), p);
-    });
-
-    const hasChanges = currentProducts.some((cp) => {
-      const snap = snapshotMap.get(createKey(cp));
-
-      if (!snap) return true; // producto nuevo/eliminado
-
-      return snap.quantity !== cp.quantity;
-    });
-
-    if (hasChanges) {
-      localStorage.setItem(
-        "checkout_step",
-        String(CheckoutStep.OPCIONES_ENTREGA),
-      );
-
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(currentProducts),
-      );
-
-      setDataModal({
-        isOpen: true,
-        type: "info",
-        title: "Información",
-        message:
-          "Se detectaron cambios en tu carrito. Debes configurar nuevamente la opción de entrega.",
-        showActions: true,
-        onConfirm: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-          onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-        },
-        onClose: () => {
-          setDataModal((prev) => ({ ...prev, isOpen: false }));
-          onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
-        },
-      });
-    } else {
-      // 🟢 opcional: mantener snapshot sincronizado
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(currentProducts),
-      );
+    if (!cartChanged) {
+      writeCheckoutSnapshot(currentSnapshot);
+      return;
     }
+
+    writeCheckoutSnapshot(currentSnapshot);
+
+    if (!needsDeliveryReconfig) {
+      return;
+    }
+
+    setCheckoutStep(CheckoutStep.OPCIONES_ENTREGA);
+
+    setDataModal({
+      isOpen: true,
+      type: "info",
+      title: "Información",
+      message:
+        "Agregaste productos de otra sucursal o proveedor. Debes configurar nuevamente la opción de entrega.",
+      showActions: true,
+      onConfirm: () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
+        onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
+      },
+      onClose: () => {
+        setDataModal((prev) => ({ ...prev, isOpen: false }));
+        onRouterLink(checkoutRoutes[CheckoutStep.OPCIONES_ENTREGA]);
+      },
+    });
   }, [
     requiredStep,
     pathname,

@@ -16,6 +16,10 @@ import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 import { CardI } from "../interfaces/card/card.interface";
 import type { Socket } from "socket.io-client";
 import io from "socket.io-client";
+import {
+  getSocketPagosUrl,
+  getSocketProveedorUrl,
+} from "../utils/socketConfig";
 import { AddressI } from "../interfaces/address/address.interface";
 import { DataSendI } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
@@ -38,6 +42,8 @@ interface ModalData {
   onConfirm: () => void;
   children?: any;
   showActions?: boolean;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 interface NotificationData {
@@ -324,35 +330,54 @@ export const GlobalProvider = ({ children }: { children: any }) => {
   }, []);
 
   useEffect(() => {
-    socketServer.current = io(process.env.NEXT_PUBLIC_SOCKET_PROVEEDOR || "", {
+    const isDev = process.env.NODE_ENV === "development";
+    const socketOptions = {
       reconnection: true,
-      reconnectionAttempts: Infinity, // intenta siempre
-      reconnectionDelay: 1000, // empieza con 1s
-      reconnectionDelayMax: 5000, // máximo 5s
-      timeout: 20000,
-    });
-    socketPagos.current = io(process.env.NEXT_PUBLIC_SOCKET_PAGOS || "", {
-      reconnection: true,
-      reconnectionAttempts: Infinity, // intenta siempre
-      reconnectionDelay: 1000, // empieza con 1s
-      reconnectionDelayMax: 5000, // máximo 5s
-      timeout: 20000,
-    });
+      reconnectionAttempts: isDev ? 3 : Infinity,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 8000,
+      timeout: 15000,
+    };
 
-    // socketCron.current = io(process.env.NEXT_PUBLIC_SOCKET_CRON || "", {
-    //   reconnection: true,
-    //   reconnectionAttempts: Infinity, // intenta siempre
-    //   reconnectionDelay: 1000, // empieza con 1s
-    //   reconnectionDelayMax: 5000, // máximo 5s
-    //   timeout: 20000,
-    // });
+    const proveedorUrl = getSocketProveedorUrl();
+    if (proveedorUrl) {
+      socketServer.current?.disconnect();
+      socketServer.current = io(proveedorUrl, socketOptions);
+    }
 
     return () => {
       socketServer.current?.disconnect();
-      socketPagos.current?.disconnect();
-      // socketCron?.current?.disconnect();
+      socketServer.current = null;
     };
   }, []);
+
+  // Pasarela (8009): solo con sesión activa — evita ERR_CONNECTION_REFUSED al navegar sin login.
+  useEffect(() => {
+    const isDev = process.env.NODE_ENV === "development";
+    const pagosUrl = getSocketPagosUrl();
+
+    if (!hasToken || !pagosUrl) {
+      socketPagos.current?.disconnect();
+      socketPagos.current = null;
+      return;
+    }
+
+    const socketOptions = {
+      reconnection: true,
+      reconnectionAttempts: isDev ? 3 : Infinity,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 8000,
+      timeout: 15000,
+    };
+
+    socketPagos.current?.disconnect();
+    socketPagos.current = io(pagosUrl, socketOptions);
+
+    return () => {
+      socketPagos.current?.disconnect();
+      socketPagos.current = null;
+    };
+  }, [hasToken]);
   return (
     <CreateContext.Provider
       value={{

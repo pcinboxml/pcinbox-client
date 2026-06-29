@@ -5,8 +5,9 @@ import Table from "../components/table/Table";
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import useStorage from "../services/useStorage";
 import useResumen from "./useResumen";
+import useCheckoutDraft from "../hooks/useCheckoutDraft";
+import useStorage from "../services/useStorage";
 import { Alert, Checkbox, FormControlLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
@@ -18,6 +19,7 @@ const Resumen = () => {
 
   const { dataCart, buyNowProduct, hasToken, setDataModal } = useTheContext();
   const { checkoutMode } = useStorage();
+  const { fetchSummary, summary, loadingSummary } = useCheckoutDraft();
   const {
     onRouterLink,
     formatCurrency,
@@ -35,90 +37,20 @@ const Resumen = () => {
     handleSelectedFactura,
   } = useResumen();
 
-  const { progressPay2 } = useStorage();
-
   const [costoTotalEnvio, setCostoTotalEnvio] = useState<number>(0);
-  // const productsToShow =
-  //   checkoutMode === "buy_now" && buyNowProduct != null
-  //     ? [buyNowProduct]
-  //     : dataCart;
-
-  // useEffect(() => {
-  //   if (!dataCart?.length) {
-  //     setEnvio(0);
-  //     return;
-  //   }
-
-  //   const optionSend = progressPay?.optionSend?.name;
-
-  //   // Si aún no está definido, no calcules nada
-  //   if (!optionSend) return;
-
-  //   // Entrega en sucursal
-  //   if (totalPagar <= 1000 || optionSend === "sucursal") {
-  //     setEnvio(0);
-  //     return;
-  //   }
-
-  //   if (optionSend === "paqueteexpress" && tarifasPaqueteExpress?.length > 0) {
-  //     const pesoTotal = dataCart.reduce(
-  //       (total, product) => total + calcPesoVolumetrico(product),
-  //       0,
-  //     );
-
-  //     const tarifa = tarifasPaqueteExpress.find(
-  //       (t) => pesoTotal >= t.de && pesoTotal <= t.a,
-  //     );
-
-  //     setEnvio(tarifa?.price ?? 0);
-  //   }
-  // }, [
-  //   progressPay?.optionSend?.name,
-  //   dataCart,
-  //   tarifasPaqueteExpress,
-  //   totalPagar,
-  // ]);
-
-  // useEffect(() => {
-  //   const pesoTotal = calcPesoPaquetExpress(dataCart).reduce(
-  //     (acc, item) => acc + (item?.pesoVolumetrico ?? 0),
-  //     0,
-  //   );
-
-  //   const pesoRedondeado = Math.ceil(pesoTotal);
-
-  //   const tarifa = tarifasPaqueteExpress.find(
-  //     (t) => pesoRedondeado >= t.de && pesoRedondeado <= t.a,
-  //   );
-
-  //   const precio = tarifa?.price ?? 0;
-
-  //   console.log(precio);
-  // }, [dataCart]);
 
   useEffect(() => {
-    if (productsToShow) {
-      //antes dataCart
-      let costoEnvioPurchase = Object.entries(progressPay2?.dataPurchase!)
-        .map((d: any) => {
-          let key = d[0].toString().split("-");
-          let objData = d[1];
-
-          return {
-            storeId: key[0],
-            provider: key[1],
-            data: objData,
-          };
-        })
-        .reduce((acc, item) => {
-          const envio = item.data.costoEnvioProductByZone ?? 0;
-          const seguro = item.data.costoSeguroEnvio ?? 0;
-          return acc + envio + seguro;
-        }, 0);
-
-      setCostoTotalEnvio(Number(costoEnvioPurchase));
+    if (!productsToShow?.length) {
+      setCostoTotalEnvio(0);
+      return;
     }
-  }, [progressPay2, dataCart, buyNowProduct]);
+
+    void fetchSummary(productsToShow).then((data) => {
+      if (data) {
+        setCostoTotalEnvio(Number(data.shippingTotal) || 0);
+      }
+    });
+  }, [productsToShow, fetchSummary]);
 
   return (
     <section>
@@ -164,19 +96,19 @@ const Resumen = () => {
                 </span>
 
                 <span className="text-[#808080] text-sm">
-                  {progressPay2.pay?.name == "tarjeta_debito_credito"
+                  {summary?.paymentMethod?.name == "tarjeta_debito_credito"
                     ? "Tarjeta Crédito/Débito"
-                    : progressPay2.pay?.name == "transferencia"
+                    : summary?.paymentMethod?.name == "transferencia"
                       ? "Transferencia"
-                      : progressPay2.pay?.name == "efectivo_al_recoger"
+                      : summary?.paymentMethod?.name == "efectivo_al_recoger"
                         ? "Efectivo en sucursal"
-                        : progressPay2.pay?.name == "tarjeta_al_recoger"
+                        : summary?.paymentMethod?.name == "tarjeta_al_recoger"
                           ? "Tarjeta Crédito/Débito en sucursal"
-                          : progressPay2.pay?.name == "efectivo"
+                          : summary?.paymentMethod?.name == "efectivo"
                             ? "Efectivo (OXXO)"
-                            : progressPay2.pay?.name == "mercadopago"
+                            : summary?.paymentMethod?.name == "mercadopago"
                               ? "Mercado Pago"
-                              : progressPay2.pay?.name}
+                              : summary?.paymentMethod?.name ?? "—"}
                 </span>
               </div>
             </div>

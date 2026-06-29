@@ -1,11 +1,100 @@
-.btnAndroide {
-  width: 100px;
-  height: 140px;
+.wrapper {
+  position: fixed;
+  z-index: 51;
+  left: calc(var(--fab-offset-x) + env(safe-area-inset-left, 0px));
+  bottom: calc(var(--fab-offset-y) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
 }
 
-@media (max-width: 992px) {
-  .btnAndroide {
-    width: 50px !important;
-    height: 60px !important;
+.btnAndroide {
+  position: relative;
+  width: 100px;
+  height: 120px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+  box-shadow: none;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+
+.btnAndroide:hover {
+  transform: scale(1.03);
+}
+
+.btnAndroide:active {
+  transform: scale(0.98);
+}
+
+.imageClip {
+  display: block;
+  width: 100px;
+  height: 120px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tooltip {
+  position: relative;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.tooltipText {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 5px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tooltipArrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+}
+
+@media (max-width: 1199px) {
+  .wrapper {
+    position: relative;
+    left: auto;
+    bottom: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .tooltipText {
+    font-size: 12px;
+    padding: 6px 10px;
   }
 }

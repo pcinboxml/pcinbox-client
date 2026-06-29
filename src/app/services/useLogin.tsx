@@ -3,8 +3,9 @@
 import { LoginI } from "@/app/interfaces/login.interface";
 import { useState } from "react";
 import useService from "@/app/services/useService";
+import { useTheContext } from "@/app/services/globalContext";
 import { signIn } from "next-auth/react";
-import { useTheContext } from "./globalContext";
+import { setAuthSession } from "@/app/utils/authStorage";
 
 const useLogin = () => {
   const [formData, setFormData] = useState<LoginI>({
@@ -50,12 +51,14 @@ const useLogin = () => {
       if (res && res.status == 200) {
         const data = await res.data;
 
-        localStorage.setItem("email", formData?.email || "");
-        localStorage.setItem("authGoogle", "false");
-        localStorage.setItem("token", data?.data?.token || data?.token || "");
-        localStorage.setItem("name", data?.data?.name || "");
-        localStorage.setItem("lastname", data?.data?.lastname || "");
-        localStorage.setItem("idUser", data?.data?.idUser || data?.idUser);
+        setAuthSession({
+          token: data?.data?.token || data?.token || "",
+          idUser: data?.data?.idUser || data?.idUser,
+          email: formData?.email || "",
+          name: data?.data?.name || "",
+          lastname: data?.data?.lastname || "",
+          authGoogle: false,
+        });
         setTotalFavorites(data?.data?.totalFavorites);
         window.location.href = "/principal";
       }
@@ -75,14 +78,20 @@ const useLogin = () => {
   const onLoginGoogle = async (callbackUrl?: string) => {
     setLoadingLogingGoogle(true);
     document.cookie = "mode=login; path=/";
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("authGoogle", "true");
+    }
+
+    const defaultCallback =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/principal"
+        : undefined;
 
     await signIn("google", {
       redirect: true,
-      callbackUrl: callbackUrl != null ? callbackUrl : undefined,
-      // callbackUrl: (callbackUrl as string) || "/principal",
+      callbackUrl: callbackUrl ?? defaultCallback,
     });
     setLoadingLogingGoogle(false);
-    localStorage.setItem("authGoogle", "true");
   };
 
   const closeAlert = () => {

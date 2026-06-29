@@ -3,6 +3,7 @@ import axios from "axios";
 import { useTheContext } from "../globalContext";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { publicEnv } from "@/app/config/env";
 
 const useProveedores = () => {
   const { setDataModal } = useTheContext();
@@ -11,7 +12,7 @@ const useProveedores = () => {
 
   const api = useMemo(() => {
     const instance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL_PROVEEDOR,
+      baseURL: publicEnv.apiUrlProveedor,
     });
 
     // ✅ MANEJO DE ERRORES

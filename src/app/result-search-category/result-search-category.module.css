@@ -1,25 +1,24 @@
 /* ============================================================
-   result-search-category.module.css
-   Mobile-first responsive — carousel siempre visible
-   Breakpoints: <640 | 640-767 | 768-1023 | 1024+
+   result-search-category — layout responsive unificado
    ============================================================ */
 
-/* ─── Sección raíz ─────────────────────────────────────────── */
 .section {
   width: 100%;
-  overflow-x: hidden;
+  max-width: 100%;
+  overflow-x: clip;
+  box-sizing: border-box;
 }
 
-/* ─── Layout principal (sidebar + contenido) ───────────────── */
-/* Móvil: columna única */
+/* ─── Layout principal ─────────────────────────────────────── */
 .mainGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 12px;
   align-items: start;
+  width: 100%;
+  min-width: 0;
 }
 
-/* ─── Botón toggle de filtros (oculto en desktop) ──────────── */
 .filterToggle {
   display: flex;
   align-items: center;
@@ -30,33 +29,30 @@
   color: #fff;
   font-weight: bold;
   border: none;
-  border-radius: 4px;
-  padding: 8px 14px;
+  border-radius: 6px;
+  padding: 10px 14px;
   cursor: pointer;
-  margin-bottom: 8px;
 }
 
-/* ─── Sidebar ───────────────────────────────────────────────── */
-/* Oculto por defecto en móvil */
 .sidebar {
   display: none;
   width: 100%;
   border: 1px solid #e0e0e0;
   padding: 12px;
   box-sizing: border-box;
+  border-radius: 8px;
 }
 
 .sidebarOpen {
   display: block;
 }
 
-/* Botón reset dentro del sidebar */
 .resetFilterBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 5px 10px;
+  padding: 6px 10px;
   margin-left: auto;
   margin-bottom: 10px;
   background-color: #bb3d4b;
@@ -87,42 +83,43 @@
   cursor: pointer;
   padding: 4px 8px;
   gap: 4px;
+  word-break: break-word;
 }
 
-/* ─── Contenido principal ───────────────────────────────────── */
 .mainContent {
-  min-width: 0; /* evita overflow en grid */
-  padding: 0 4px;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .categoryTitle {
   color: #bb3d4b;
   font-weight: bold;
   margin-bottom: 8px;
+  word-break: break-word;
 }
 
-/* ─── Barra búsqueda + ordenar ──────────────────────────────── */
+/* ─── Barra búsqueda ───────────────────────────────────────── */
 .searchBar {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 12px;
+  margin: 16px 0 12px;
   width: 100%;
 }
 
 .searchInput {
   width: 100%;
-  height: 38px;
+  height: 40px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 0 16px;
+  padding: 0 14px;
   box-sizing: border-box;
   font-size: 14px;
   outline: none;
   background-color: #fff;
   color: #333;
-  transition: all 0.2s ease-in-out;
 }
 
 .searchInput:focus {
@@ -136,16 +133,11 @@
   color: #f3f4f6;
 }
 
-:global(.dark) .searchInput:focus {
-  border-color: #bb3d4b;
-  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.4);
-}
-
 .searchActions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   flex-wrap: wrap;
 }
@@ -154,6 +146,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .sortLabel {
@@ -167,14 +161,15 @@
   height: 38px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  padding: 0 32px 0 12px;
+  padding: 0 28px 0 10px;
   background-color: #fff;
   color: #333;
   outline: none;
   cursor: pointer;
   font-size: 13px;
-  transition: all 0.2s ease-in-out;
-  min-width: 160px;
+  min-width: 0;
+  flex: 1 1 140px;
+  max-width: 100%;
 }
 
 .sortSelect:focus {
@@ -188,26 +183,45 @@
   color: #f3f4f6;
 }
 
-:global(.dark) .sortSelect:focus {
-  border-color: #bb3d4b;
-  box-shadow: 0 0 0 2px rgba(187, 61, 75, 0.4);
+/* ─── Vista lista (rectangular) ────────────────────────────── */
+.productsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
 
-/* ─── Fila del producto ─────────────────────────────────────── */
-/*
-  Móvil (<640px): 1 columna, carousel debajo
-  640-767px:      imagen fija 130px a la derecha
-  768-1023px:     imagen fija 160px a la derecha
-  1024+:          imagen fija 160px a la derecha (desktop)
-*/
+.productCard {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: clamp(12px, 2vw, 16px);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.productCard:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+:global(.dark) .productCard:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
 .productRow {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  padding: 8px 0;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
-/* ─── Info del producto (columna izquierda) ─────────────────── */
 .productInfo {
   display: flex;
   flex-direction: column;
@@ -215,7 +229,8 @@
 }
 
 .itemComponent {
-  padding: 8px;
+  padding: 4px 0;
+  min-width: 0;
 }
 
 .productName {
@@ -223,12 +238,12 @@
   font-weight: bold;
   cursor: pointer;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-decoration: none;
   word-break: break-word;
+  line-height: 1.35;
 }
 
-/* ─── Grid SKU + Rating ─────────────────────────────────────── */
 .skuRatingGrid {
   display: flex;
   flex-direction: column;
@@ -236,17 +251,19 @@
   margin: 6px 0;
 }
 
-/* ─── Grid Características / Precio / Botón ─────────────────── */
 .detailGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
   margin: 8px 0;
+  min-width: 0;
 }
 
-/* ─── Botón agregar al carrito ──────────────────────────────── */
 .addToCartWrapper {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .addToCartBtn {
@@ -258,11 +275,10 @@
   background-color: #bb3d4b;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
+  border-radius: 6px;
+  padding: 10px 16px;
   cursor: pointer;
   font-size: 14px;
-  white-space: nowrap;
 }
 
 .addToCartBtn:disabled {
@@ -270,429 +286,147 @@
   cursor: not-allowed;
 }
 
-/* ─── Carousel wrapper — SIEMPRE visible ───────────────────── */
-/*
-  En móvil (<640px) va debajo del info (1 columna)
-  Desde 640px en adelante va a la derecha (columna fija)
-  NUNCA se oculta — esa era la causa del bug a ~980px
-*/
 .carouselWrapper {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-shrink: 0;
+  max-width: 280px;
+  margin: 0 auto;
+  min-width: 0;
+  position: relative;
+}
+
+.carouselWrapper > * {
+  width: 100%;
 }
 
 .carouselSlide {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.productImg {
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-  margin-top: 12px;
-  display: block;
-}
-
-/* ─── BranchSelector modal ──────────────────────────────────── */
-.branchSelectorWrapper {
-  width: 95vw;
-  max-width: 95vw;
-  border: 1px solid #e0e0e0;
-}
-
-/* ─── Paginación ────────────────────────────────────────────── */
-.paginationWrapper {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  min-height: 160px;
   padding: 8px;
-}
-
-.imgPortada {
-  object-fit: unset;
-
-  width: 100%;
-  height: 470px;
-}
-/* ============================================================
-   BREAKPOINT: 640px — imagen a la derecha, tamaño reducido
-   ============================================================ */
-
-@media (max-width: 640px) {
-  .sortWrapper {
-    width: 100%;
-  }
-}
-@media (min-width: 640px) {
-  .productRow {
-    /* imagen fija 130px siempre a la derecha */
-    grid-template-columns: 1fr 130px;
-    gap: 8px;
-  }
-
-  .carouselWrapper {
-    width: 130px;
-  }
-
-  .productImg {
-    height: 130px;
-  }
-
-  .searchBar {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .searchInput {
-    width: 300px;
-  }
-
-  .searchActions {
-    width: auto;
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-  }
-}
-
-/* ============================================================
-   BREAKPOINT: 768px — tablet
-   ============================================================ */
-@media (min-width: 768px) {
-  /* Mostrar sidebar permanentemente */
-  .filterToggle {
-    display: none;
-  }
-
-  .sidebar {
-    display: block;
-    width: 200px;
-    min-width: 180px;
-  }
-
-  /* Layout: sidebar + contenido */
-  .mainGrid {
-    grid-template-columns: 200px 1fr;
-  }
-
-  /* Imagen más grande en tablet */
-  .productRow {
-    grid-template-columns: 1fr 160px;
-    gap: 12px;
-  }
-
-  .carouselWrapper {
-    width: 160px;
-  }
-
-  .productImg {
-    height: 160px;
-  }
-
-  /* SKU + Rating en fila */
-  .skuRatingGrid {
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  /* Características + Precio en 2 columnas, botón abajo full width */
-  .detailGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .addToCartWrapper {
-    grid-column: 1 / -1;
-    width: auto;
-  }
-
-  .addToCartBtn {
-    width: auto;
-    justify-content: center;
-  }
-
-  .branchSelectorWrapper {
-    width: 560px;
-    max-width: 95vw;
-  }
-}
-
-/* ============================================================
-   BREAKPOINT: 900px — zona problemática ~980px
-   Refuerzo explícito para que el carousel NO desaparezca
-   ============================================================ */
-@media (max-width: 996px) {
-  .imgPortada {
-    object-fit: contain !important;
-    height: 390px;
-  }
-}
-
-@media (max-width: 991px) {
-  .imgPortada {
-    height: 275px !important;
-  }
-}
-@media (min-width: 900px) {
-  .productRow {
-    grid-template-columns: 1fr 160px !important;
-  }
-
-  .carouselWrapper {
-    width: 160px !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  .productImg {
-    height: 160px;
-  }
-}
-
-/* ============================================================
-   BREAKPOINT: 1024px — desktop
-   ============================================================ */
-@media (min-width: 1024px) {
-  .filterToggle {
-    display: none;
-  }
-
-  .sidebar {
-    display: block;
-    width: auto;
-    min-width: 200px;
-  }
-
-  .mainGrid {
-    grid-template-columns: auto 1fr;
-  }
-
-  .productRow {
-    grid-template-columns: 1fr 160px;
-    gap: 16px;
-  }
-
-  .carouselWrapper {
-    width: 160px;
-    display: flex;
-    align-items: flex-start;
-  }
-
-  .productImg {
-    height: 150px;
-  }
-
-  /* SKU + Rating + tercera columna vacía */
-  .skuRatingGrid {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  /* Características + Precio + Botón en 3 columnas */
-  .detailGrid {
-    grid-template-columns: 1fr 1fr auto;
-  }
-
-  .addToCartWrapper {
-    grid-column: auto;
-    width: auto;
-  }
-
-  .addToCartBtn {
-    width: auto;
-  }
-
-  .branchSelectorWrapper {
-    width: 800px;
-    max-width: 800px;
-  }
-
-  .itemComponent {
-    padding: 12px;
-  }
-}
-
-.productCard {
-  background-color: var(--card);
-  color: var(--card-foreground);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 16px;
-  margin-bottom: 20px;
-  transition: box-shadow 0.25s ease-in-out, border-color 0.25s ease-in-out;
-}
-
-.productCard:hover {
-  border-color: rgba(0, 0, 0, 0.25);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-}
-
-:global(.dark) .productCard:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
-}
-
-/* ============================================================
-   Vista Switch (Píldora de Alternancia)
-   ============================================================ */
-.viewModeToggle {
-  display: inline-flex;
-  align-items: center;
-  background-color: #e5e7eb;
-  border-radius: 9999px;
-  padding: 3px;
-  gap: 2px;
-  height: 38px;
   box-sizing: border-box;
-  margin: 0 4px;
 }
 
-:global(.dark) .viewModeToggle {
-  background-color: #374151;
+.listProductImg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
-.toggleBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-:global(.dark) .toggleBtn {
-  color: #9ca3af;
-}
-
-.toggleBtnActive {
-  background-color: #bb3d4b;
-  color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(187, 61, 75, 0.3);
-}
-
-:global(.dark) .toggleBtnActive {
-  background-color: #bb3d4b;
-  box-shadow: 0 2px 6px rgba(187, 61, 75, 0.4);
-}
-
-/* ============================================================
-   Cuadrícula de productos (Grid)
-   ============================================================ */
+/* ─── Vista cuadrícula ─────────────────────────────────────── */
+/* Móvil: siempre 2 cards por fila */
 .productsGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 2vw, 16px);
+  width: 100%;
   margin-top: 16px;
 }
 
-@media (min-width: 480px) {
-  .productsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-}
-
-@media (min-width: 768px) {
-  .productsGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .productsGrid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
-}
-
-/* ============================================================
-   Tarjeta Cuadrada de Producto (productSquareCard)
-   ============================================================ */
 .productSquareCard {
   background-color: var(--card);
   color: var(--card-foreground);
   border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 14px;
+  border-radius: 8px;
+  padding: clamp(10px, 2vw, 14px);
   display: flex;
   flex-direction: column;
-  position: relative;
-  transition: box-shadow 0.25s ease-in-out, border-color 0.25s ease-in-out;
-  min-height: 400px;
+  height: 100%;
+  min-width: 0;
   box-sizing: border-box;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  container-type: inline-size;
+  container-name: product-card;
 }
 
-.productSquareCard:hover {
-  border-color: rgba(0, 0, 0, 0.25);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+.squareMedia {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  flex-shrink: 0;
 }
 
-:global(.dark) .productSquareCard:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-}
-
-/* Acciones arriba (Favorito y Compartir en fila, no absoluto) */
 .squareCardHeader {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .squareCarouselWrapper {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  height: 160px;
-  margin-top: 0;
+  aspect-ratio: 1;
+  max-height: 200px;
+  min-height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   overflow: hidden;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.squareCarouselWrapper > * {
+  width: 100%;
+  height: 100%;
+}
+
+.squareCarouselWrapper :global(.slider-wrapper) {
+  border-radius: 6px;
+  background: transparent;
 }
 
 .squareCarouselSlide {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 160px;
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.squareProductImg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .squareCardBody {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  margin-top: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 8px;
+  gap: 6px;
 }
 
 .squareProductName {
   color: #bb3d4b;
   font-weight: bold;
-  font-size: 13.5px;
+  font-size: clamp(12px, 2.8vw, 14px);
   line-height: 1.4;
-  height: 38px;
+  min-height: 2.8em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   text-decoration: none;
   cursor: pointer;
-  margin-bottom: 6px;
   word-break: break-word;
 }
 
@@ -700,12 +434,12 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 8px;
 }
 
 .squareSku {
   font-size: 11px;
   color: #808080;
+  word-break: break-all;
 }
 
 .squareRatingRow {
@@ -724,14 +458,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* Empuja el precio/stock al fondo de la tarjeta */
-  margin-bottom: 12px;
+  margin-top: auto;
+  padding-top: 8px;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
 .squarePrice {
-  font-size: 17px;
+  font-size: clamp(15px, 3vw, 17px);
   font-weight: bold;
 }
 
@@ -746,15 +480,16 @@
   color: #606060;
 }
 
-/* Botones de acción en cuadrícula de dos columnas */
 .squareActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   width: 100%;
+  margin-top: 8px;
 }
 
-.squareAddToCartBtn {
+.squareAddToCartBtn,
+.squareBuyNowBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -762,51 +497,115 @@
   background-color: #bb3d4b;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 8px 4px;
+  border-radius: 6px;
+  padding: 9px 6px;
   cursor: pointer;
   font-size: 11px;
   font-weight: bold;
-  white-space: nowrap;
-  transition: background-color 0.2s;
-}
-
-.squareAddToCartBtn:hover:not(:disabled) {
-  background-color: #a32d39;
-}
-
-.squareAddToCartBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.squareBuyNowBtn {
-  background-color: #bb3d4b;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 4px;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: bold;
+  min-width: 0;
   text-align: center;
-  transition: background-color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+@container product-card (max-width: 280px) {
+  .squareActions {
+    grid-template-columns: 1fr;
+  }
+
+  .squareAddToCartBtn,
+  .squareBuyNowBtn {
+    font-size: 10px;
+  }
+}
+
+.productSquareCard:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+:global(.dark) .productSquareCard:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.squareAddToCartBtn:hover:not(:disabled),
 .squareBuyNowBtn:hover:not(:disabled) {
   background-color: #a32d39;
 }
 
+.squareAddToCartBtn:disabled,
 .squareBuyNowBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Estilos de Stock Dot */
+/* ─── Banner portada ───────────────────────────────────────── */
+.imgPortada {
+  width: 100%;
+  height: auto;
+  max-height: clamp(160px, 32vw, 470px);
+  object-fit: contain;
+  display: block;
+}
+
+/* ─── Paginación ───────────────────────────────────────────── */
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 8px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.branchSelectorWrapper {
+  width: min(95vw, 800px);
+  max-width: 100%;
+  border: 1px solid #e0e0e0;
+  box-sizing: border-box;
+}
+
+/* ─── Vista toggle ─────────────────────────────────────────── */
+.viewModeToggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+:global(.dark) .viewModeToggle {
+  background-color: #374151;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.toggleBtnActive {
+  background-color: #bb3d4b;
+  color: #fff !important;
+}
+
+/* ─── Stock dots ───────────────────────────────────────────── */
 .stockRow {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .stockText {
@@ -819,21 +618,146 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  display: inline-block;
   flex-shrink: 0;
 }
 
 .stockDotHigh {
   background: #3ecf6e;
-  box-shadow: 0 0 6px rgba(62, 207, 110, 0.5);
 }
 
 .stockDotLow {
   background: #f5a623;
-  box-shadow: 0 0 6px rgba(245, 166, 35, 0.5);
 }
 
 .stockDotOut {
   background: #e55;
-  box-shadow: 0 0 6px rgba(238, 85, 85, 0.4);
+}
+
+/* ============================================================
+   BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .searchBar {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .searchInput {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  .searchActions {
+    flex: 1 1 280px;
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .skuRatingGrid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .detailGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .addToCartWrapper {
+    grid-column: 1 / -1;
+  }
+
+  /* Sin sidebar fijo: más espacio para las cards */
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .productRow {
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 200px);
+    align-items: start;
+    gap: 20px;
+  }
+
+  .carouselWrapper {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+  }
+
+  .carouselSlide {
+    min-height: 180px;
+  }
+
+  .listProductImg {
+    max-width: 100%;
+    max-height: 180px;
+  }
+
+  .detailGrid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) auto;
+  }
+
+  .addToCartWrapper {
+    grid-column: auto;
+    width: auto;
+    min-width: 180px;
+  }
+
+  .addToCartBtn {
+    width: 100%;
+  }
+
+  .paginationWrapper {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 1200px) {
+  .filterToggle {
+    display: none;
+  }
+
+  .sidebar {
+    display: block;
+  }
+
+  .mainGrid {
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  }
+
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: clamp(12px, 1.5vw, 18px);
+  }
+}
+
+@media (max-width: 479px) {
+  .sortWrapper {
+    width: 100%;
+  }
+
+  .searchActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .viewModeToggle {
+    align-self: flex-start;
+  }
+
+  .squareActions {
+    grid-template-columns: 1fr;
+  }
 }

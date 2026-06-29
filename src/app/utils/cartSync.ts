@@ -1,41 +1,87 @@
 import ProductI from "../interfaces/products/product.interface";
 
-export const CART_STORAGE_KEY = "dataCartStorage";
-export const LEGACY_CART_STORAGE_KEY = "dataCart";
+import {
+
+  CHECKOUT_STORAGE_KEYS,
+
+  CartLineRef,
+
+  clearCartLineRefs,
+
+  readCartLineRefs,
+
+  writeCartLineRefs,
+
+} from "./checkoutStorage";
+
+import { hasAuthToken } from "./authStorage";
+
+
+
+export const CART_STORAGE_KEY = CHECKOUT_STORAGE_KEYS.cart;
+
+export const LEGACY_CART_STORAGE_KEY = CHECKOUT_STORAGE_KEYS.legacyCart;
+
+
 
 export function getCartLineKey(product: Pick<ProductI, "idProduct" | "storeId">) {
+
   return `${product.idProduct}-${product.storeId ?? ""}`;
+
 }
 
-export function readLocalCartStorage(): ProductI[] {
-  if (typeof window === "undefined") return [];
 
-  try {
-    const raw =
-      localStorage.getItem(CART_STORAGE_KEY) ||
-      localStorage.getItem(LEGACY_CART_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+
+/** Devuelve refs mínimas persistidas (no ProductI completos). */
+
+export function readLocalCartStorage(): CartLineRef[] {
+
+  return readCartLineRefs();
+
 }
 
-export function writeLocalCartStorage(items: ProductI[]) {
+
+
+export function writeLocalCartRefs(refs: CartLineRef[]) {
+
+  writeCartLineRefs(refs);
+
+}
+
+
+
+/** Persiste solo refs mínimas derivadas del carrito en memoria. */
+
+export function writeLocalCartStorageFromProducts(items: ProductI[]) {
+
   if (typeof window === "undefined") return;
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+
+  const refs: CartLineRef[] = items.map((item) => ({
+
+    idProduct: item.idProduct,
+
+    quantity: Number(item.quantity) || 1,
+
+    storeId: item.storeId ?? null,
+
+    providerId: item.providerId ?? null,
+
+  }));
+
+  writeCartLineRefs(refs);
+
 }
+
+
 
 export function clearLocalCartStorage() {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(CART_STORAGE_KEY);
-  localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+
+  clearCartLineRefs();
+
 }
 
-export function hasAuthToken(): boolean {
-  if (typeof window === "undefined") return false;
-  const token = localStorage.getItem("token");
-  return Boolean(token && token !== "null" && token !== "undefined");
-}
+
+
+export { hasAuthToken };
+
+

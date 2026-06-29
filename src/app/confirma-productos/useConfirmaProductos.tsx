@@ -6,7 +6,17 @@ import useService from "../services/useService";
 import { useEffect, useState } from "react";
 import GridConfirmaProductos from "./gridConfirmaProductos";
 import axios from "axios";
+import useCheckoutSession from "../hooks/useCheckoutSession";
 import useStorage from "../services/useStorage";
+import useConfirmEmptyCart from "../hooks/useConfirmEmptyCart";
+import useCheckoutDraft from "../hooks/useCheckoutDraft";
+import useCartSync from "../hooks/useCartSync";
+import {
+  clearCheckoutLocalStorage,
+  setCheckoutMode,
+  writeCheckoutSnapshot,
+} from "../utils/checkoutStorage";
+import { toCheckoutSnapshot } from "../utils/checkoutValidation";
 import { pdf } from "@react-pdf/renderer";
 import CotizacionPDF from "../components/UI/Cotizacion/Cotizacion";
 import ProductI from "../interfaces/products/product.interface";
@@ -17,10 +27,13 @@ const useConfirmaProductos = () => {
     setDataCart,
     setDataModal,
     buyNowProduct,
-    setBuyNowProduct,
   } = useTheContext();
   const { requestPost, formatCurrency } = useService();
   const { handleRemoveStorageDataCart } = useStorage();
+  const { clearBuyNow } = useCheckoutSession();
+  const { refreshCartFromServer } = useCartSync();
+  const { confirmEmptyCart } = useConfirmEmptyCart();
+  const { clearDraft } = useCheckoutDraft();
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", { noSsr: true });
 
   const [loadingClearCar, setLoadingClearCar] = useState<boolean>(false);
@@ -40,9 +53,7 @@ const useConfirmaProductos = () => {
           : [];
 
     if (sourceProducts?.length === 0) {
-      localStorage.removeItem("checkout_step");
-      localStorage.removeItem("checkout_mode");
-      localStorage.removeItem("checkout_products_snapshot");
+      clearCheckoutLocalStorage({ clearProgress: false, clearBuyNow: false });
     }
 
     setRowsConfirmProducts(
@@ -68,11 +79,10 @@ const useConfirmaProductos = () => {
         const resp = await requestPost({ idProduct }, "/cart/removeProduct");
 
         if (resp?.status === 200) {
-          const updatedCart = dataCart.filter(
+          await refreshCartFromServer();
+          writeCheckoutSnapshot(toCheckoutSnapshot(dataCart.filter(
             (item) => item.idProduct !== idProduct,
-          );
-
-          setDataCart(updatedCart);
+          )));
         }
       } catch (error) {
         setDataModal({
@@ -92,51 +102,27 @@ const useConfirmaProductos = () => {
         setLoadingRemoveProduct(false);
       }
     } else {
-      // Si es buyNowProduct, solo limpiar
-      localStorage.removeItem("buyNowProduct");
-      localStorage.removeItem("checkout_step");
-      localStorage.setItem("checkout_mode", "cart");
-      localStorage.removeItem("checkout_products_snapshot");
-      setRowsConfirmProducts(
-        dataCart && dataCart.length > 0
-          ? dataCart.map((itemCart) => ({
-              id: itemCart.idProduct,
-              products: `${itemCart.name} ${itemCart.description}`,
-              quantity: Number(itemCart.quantity),
-              sucursal: itemCart.product_stock,
-              storeId: itemCart?.storeId,
-              totalConIva: Number(itemCart.price),
-              total: Number(itemCart.price) * Number(itemCart.quantity),
-              action: 1,
-            }))
-          : [],
-      );
-      setBuyNowProduct(null);
-
+      clearBuyNow();
+      setCheckoutMode("cart");
+      if (dataCart?.length) {
+        writeCheckoutSnapshot(toCheckoutSnapshot(dataCart));
+      }
       setLoadingRemoveProduct(false);
-      // El useEffect se encargará de actualizar rowsConfirmProducts automáticamente
     }
   };
 
   // ---------- Vaciar carrito ----------
   const handleShowModalVaciarCarrito = () => {
-    setDataModal({
-      isOpen: true,
-      message: "¿Seguro que deseas vaciar el carrito de compras?",
-      title: "Vaciar carrito",
-      type: "info",
-      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      onConfirm: async () => {
+    confirmEmptyCart({
+      onConfirmEmpty: async () => {
         try {
           setLoadingClearCar(true);
           const resp = await requestPost({ dataCart }, "/cart/removeAllCart");
 
           if (resp?.status === 200) {
             handleRemoveStorageDataCart();
-            localStorage.removeItem("progressPay2");
-            localStorage.removeItem("checkout_step");
-            setDataCart([]);
-            setDataModal((prev) => ({ ...prev, isOpen: false }));
+            clearCheckoutLocalStorage({ clearProgress: true, clearBuyNow: true });
+            await clearDraft();
           }
         } catch (error) {
           console.error(error);

@@ -20,7 +20,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./../navbar/useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
 import { FcGoogle } from "react-icons/fc";
@@ -32,6 +32,8 @@ import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import useStorage from "@/app/services/useStorage";
 import { useSession } from "next-auth/react";
+import { getAuthProfile, getAuthUserId, isAuthGoogle, setAuthSession } from "@/app/utils/authStorage";
+import { resolveProfilePhotoUrl } from "@/app/utils/profilePhoto";
 import Image from "next/image";
 
 const NavbarResponsive = () => {
@@ -68,15 +70,27 @@ const NavbarResponsive = () => {
     setHasToken,
     hasToken,
     rutaImgPerfil,
+    setRutaImgPerfil,
     dataFavorites,
     dataCategories,
     totalFavorites,
   } = useTheContext();
 
   const [totalItems, setTotalItems] = useState<number>(0);
-  const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+  const { onMouseEnterCart, onMouseLeaveCart, closeCartNow, showDivCart, cartOpenMode, cancelCloseCart, toggleCart } = useCart();
+  const cartAnchorRef = useRef<HTMLDivElement>(null);
   // const { totalPrice } = useService();
   const { data: session, status } = useSession();
+  const authProfile = useMemo(() => getAuthProfile(), [hasToken, status]);
+  const profilePhotoUrl = useMemo(
+    () =>
+      resolveProfilePhotoUrl(rutaImgPerfil, {
+        googleImageUrl: isAuthGoogle() ? session?.user?.image : null,
+        sessionEmail: session?.user?.email,
+        userId: getAuthUserId(),
+      }),
+    [rutaImgPerfil, session?.user?.image, session?.user?.email, hasToken],
+  );
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
 
@@ -97,29 +111,34 @@ const NavbarResponsive = () => {
   }, []);
 
   useEffect(() => {
-    const authGoogle = localStorage.getItem("authGoogle");
-    if (session && status === "authenticated" && authGoogle === "true") {
-      const token = (session as any)?.token;
-      const idUser = (session as any)?.idUser;
-      const isValidToken = (session as any)?.isValidToken;
-      const totalFavoritesSession = (session as any)?.totalFavorites;
-      console.log(totalFavoritesSession);
+    if (session && status === "authenticated" && (session as any)?.token) {
+      const token = (session as any).token;
+      const idUser = (session as any).idUser;
+      const isValidToken = (session as any).isValidToken;
 
       if (token && token !== "undefined" && token !== "null" && token != null) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("email", session.user?.email!);
-        localStorage.setItem("name", session.user?.name!);
-        localStorage.setItem("idUser", idUser);
-        localStorage.setItem("lastname", "");
+        setAuthSession({
+          token,
+          idUser: String(idUser),
+          email: session.user?.email ?? "",
+          name: session.user?.name ?? "",
+          lastname: "",
+          authGoogle: true,
+        });
+
         if (isValidToken?.idUser) {
           const now = Math.floor(Date.now() / 1000);
-          setHasToken(isValidToken?.exp < now ? false : true);
+          setHasToken(isValidToken.exp >= now);
         }
       }
-    } else if (authGoogle === "false") {
-      if (localStorage.getItem("token")) {
-        const validToken = isTokenExpired(localStorage.getItem("token")!);
-        setHasToken(validToken === true ? false : true);
+      return;
+    }
+
+    if (localStorage.getItem("authGoogle") === "false") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const validToken = isTokenExpired(token);
+        setHasToken(validToken !== true);
       } else {
         setHasToken(false);
       }
@@ -127,7 +146,12 @@ const NavbarResponsive = () => {
   }, [session, status]);
 
   useEffect(() => {
-    if (hasToken) getPhotoUser();
+    const userId = getAuthUserId();
+    if (hasToken && userId) {
+      getPhotoUser();
+    } else if (!hasToken) {
+      setRutaImgPerfil("");
+    }
   }, [hasToken]);
 
   useEffect(() => {
@@ -177,14 +201,22 @@ const NavbarResponsive = () => {
             <SearchProduct setIsFocusedSearch={setIsFocusedSearch} />
           </div>
           <div className="container-car container-car-first">
-            <div className="icon-car relative cursor-pointer">
-              <div onMouseEnter={onMouseEnterCart}>
+            <div
+              ref={cartAnchorRef}
+              className="icon-car relative cursor-pointer"
+              onMouseEnter={onMouseEnterCart}
+              onMouseLeave={onMouseLeaveCart}
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={toggleCart}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") toggleCart();
+                }}
+              >
                 <Cart />
               </div>
-              <ModalCart
-                showDivCart={showDivCart}
-                onMouseLeaveCart={onMouseLeaveCart}
-              />
               {totalItems > 0 && (
                 <span
                   className="absolute badge badge-car"
@@ -198,6 +230,14 @@ const NavbarResponsive = () => {
               <b style={{ color: "#BB3D4B" }}>{formatCurrency(totalPrice)}</b>
             </div>
           </div>
+          <ModalCart
+            showDivCart={showDivCart}
+            cartOpenMode={cartOpenMode}
+            onMouseLeaveCart={onMouseLeaveCart}
+            closeCartNow={closeCartNow}
+            cancelCloseCart={cancelCloseCart}
+            anchorRef={cartAnchorRef}
+          />
         </div>
         <div className="flex container">
           <div className="container-products">
@@ -385,9 +425,7 @@ const NavbarResponsive = () => {
                               width={120}
                               height={120}
                               src={
-                                rutaImgPerfil === ""
-                                  ? "/user.jpeg"
-                                  : rutaImgPerfil
+                                profilePhotoUrl
                               }
                               style={{
                                 width: "120px",
@@ -406,7 +444,7 @@ const NavbarResponsive = () => {
                                 marginTop: "10px",
                               }}
                             >
-                              {`${localStorage.getItem("name") || ""} ${localStorage.getItem("lastname") || ""}`}
+                              {`${authProfile.name || ""} ${authProfile.lastname || ""}`}
                             </span>
                           </div>
                           <div className="ml-2 flex flex-col justify-center min-w-[150px]">
@@ -677,16 +715,16 @@ const NavbarResponsive = () => {
                 {hasToken && (
                   <div className="drawer-user-card">
                     <img
-                      src={rutaImgPerfil === "" ? "/user.jpeg" : rutaImgPerfil}
+                      src={profilePhotoUrl}
                       alt="perfil"
                       className="drawer-user-avatar"
                     />
                     <div>
                       <p className="drawer-user-name">
-                        {`${localStorage.getItem("name") || ""} ${localStorage.getItem("lastname") || ""}`.trim()}
+                        {`${authProfile.name || ""} ${authProfile.lastname || ""}`.trim()}
                       </p>
                       <p className="drawer-user-email">
-                        {localStorage.getItem("email") || ""}
+                        {authProfile.email || ""}
                       </p>
                     </div>
                   </div>

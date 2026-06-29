@@ -10,6 +10,12 @@ import {
 } from "../interfaces/perfil/perfil.interface";
 import PostalCodeLookupI from "../interfaces/geonames/postalCodeLookupJSON/postalCodeLookupJSON.interface";
 import RemoveAccountComponent from "../components/removeAccountComponent/RemoveAccountComponent";
+import { getAuthUserId } from "../utils/authStorage";
+import {
+  getCachedProfilePhotoUrl,
+  setCachedProfilePhotoUrl,
+  clearCachedProfilePhotoUrl,
+} from "../utils/profilePhoto";
 
 const usePerfil = () => {
   const { setDataModal, setRutaImgPerfil } = useTheContext();
@@ -101,7 +107,12 @@ const usePerfil = () => {
         setShowLoader(false);
         setShowLinearProgress(false);
         if (resp.status == 200) {
-          setRutaImgPerfil(resp.data.data.rutaImg);
+          const uploadedUrl = String(resp.data.data.rutaImg || "").trim();
+          setRutaImgPerfil(uploadedUrl);
+          const userId = getAuthUserId();
+          if (userId && uploadedUrl) {
+            setCachedProfilePhotoUrl(userId, uploadedUrl);
+          }
           setDataModal({
             isOpen: true,
             type: "success",
@@ -133,12 +144,31 @@ const usePerfil = () => {
   };
 
   const getPhotoUser = async () => {
+    const userId = getAuthUserId();
+    const cachedPhoto = userId ? getCachedProfilePhotoUrl(userId) : "";
+
+    if (cachedPhoto) {
+      setRutaImgPerfil(cachedPhoto);
+    }
+
     try {
-      const resp = await requestGet("/user/getPhotoUser");
-      if (resp.status == 200) {
-        setRutaImgPerfil(resp.data.data.rutaImg);
+      const resp = await requestGet("/user/getPhotoUser", true);
+      const rutaImg = resp?.data?.data?.rutaImg;
+      if (resp.status === 200) {
+        const url = typeof rutaImg === "string" ? rutaImg.trim() : "";
+        if (url) {
+          setRutaImgPerfil(url);
+          if (userId) setCachedProfilePhotoUrl(userId, url);
+        } else if (!cachedPhoto) {
+          setRutaImgPerfil("");
+          if (userId) clearCachedProfilePhotoUrl(userId);
+        }
       }
-    } catch (error: any) {}
+    } catch {
+      if (cachedPhoto) {
+        setRutaImgPerfil(cachedPhoto);
+      }
+    }
   };
 
   const handleOnChange = async (event: ChangeEvent<HTMLInputElement>) => {

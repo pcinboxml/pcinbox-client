@@ -6,189 +6,153 @@ import { useTheContext } from "./globalContext";
 import {
   hasAuthToken,
   readLocalCartStorage,
+  writeLocalCartStorageFromProducts,
+  clearLocalCartStorage,
 } from "../utils/cartSync";
+import {
+  buyNowSessionToProduct,
+  CHECKOUT_STORAGE_KEYS,
+  CheckoutMode,
+  getCheckoutMode,
+  readBuyNowSession,
+  setCheckoutMode,
+} from "../utils/checkoutStorage";
 
-interface progressPayI {
-  optionSend: {
+/** Solo preferencias de checkout — sin montos manipulables. */
+export type ProgressPayPersisted = {
+  optionSend?: {
     name?: string;
     address?: number;
-    costo?: any;
-    storeIdDico?: any;
+    storeIdDico?: unknown;
   };
-  methodPay: {
+  methodPay?: {
     name: string;
     typeMethod?: string;
-    idCard?: any;
+    idCard?: unknown;
   };
-}
+  addressByStore?: Record<string, number>;
+};
 
-interface progressPayI2 {
-  dataPurchase?: {};
+/** Estado en memoria para paso de entrega (costos vienen del servidor). */
+export type ProgressPay2State = {
+  dataPurchase?: Record<string, unknown>;
   pay?: {
-    id?: any;
-    name?: any;
+    id?: unknown;
+    name?: unknown;
   };
-  // optionEnvio?: any;
-  // addressByStore?: any;
-  // costoEnvioProductByZone?: any;
-  // seguroEnvio?: any;
-  // pay?: {
-  //   id?: any;
-  //   name?: any;
-  // };
+};
+
+function safeParse<T>(raw: string | null): T | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
 }
 
-type CheckoutMode = "cart" | "buy_now";
+function sanitizeProgressPay(data: Partial<ProgressPayPersisted>): ProgressPayPersisted {
+  return {
+    optionSend: data.optionSend
+      ? {
+          name: data.optionSend.name,
+          address: data.optionSend.address,
+          storeIdDico: data.optionSend.storeIdDico,
+        }
+      : undefined,
+    methodPay: data.methodPay,
+    addressByStore: data.addressByStore,
+  };
+}
 
 const useStorage = () => {
   const { setDataCart, setBuyNowProduct } = useTheContext();
   const [dataCartStorege, setDataCartStorege] = useState<ProductI[]>([]);
-  const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>("cart");
+  const [checkoutMode, setCheckoutModeState] = useState<CheckoutMode>("cart");
 
-  const [progressPay, setProgressPay] = useState<progressPayI>({
-    optionSend: {
-      name: "",
-      address: 0,
-      costo: 0,
-    },
-    methodPay: {
-      name: "",
-      typeMethod: "",
-      idCard: "",
-    },
+  const [progressPay, setProgressPay] = useState<ProgressPayPersisted>({
+    optionSend: { name: "", address: 0 },
+    methodPay: { name: "", typeMethod: "", idCard: "" },
   });
 
-  const [progressPay2, setProgressPay2] = useState<progressPayI2>({
+  const [progressPay2, setProgressPay2] = useState<ProgressPay2State>({
     dataPurchase: {},
     pay: {},
   });
 
   useEffect(() => {
-    // Cargar datos de progressPay
-    try {
-      const stored = localStorage.getItem("progressPay");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setProgressPay((prev) => ({
-          ...prev,
-          ...parsed,
-          optionSend: {
-            ...prev.optionSend,
-            ...parsed.optionSend,
-          },
-          methodPay: {
-            ...prev.methodPay,
-            ...parsed.methodPay,
-          },
-        }));
-      }
-    } catch (error) {
-      console.error("Error parsing progressPay from localStorage:", error);
+    const stored = safeParse<ProgressPayPersisted>(
+      localStorage.getItem(CHECKOUT_STORAGE_KEYS.progressPay),
+    );
+    if (stored) {
+      setProgressPay((prev) => ({
+        ...prev,
+        ...sanitizeProgressPay(stored),
+        optionSend: { ...prev.optionSend, ...stored.optionSend },
+        methodPay: { ...prev.methodPay, ...stored.methodPay },
+      }));
     }
 
-    // Cargar datos de progressPay2
-    try {
-      const stored2 = localStorage.getItem("progressPay2");
-      if (stored2) {
-        const parsed2 = JSON.parse(stored2);
-        setProgressPay2((prev2) => ({
-          ...prev2,
-          ...parsed2,
-          dataPurchase: {
-            ...prev2.dataPurchase,
-            ...parsed2?.dataPurchase,
-          },
-          pay: {
-            ...prev2?.pay,
-            ...parsed2?.pay,
-          },
-        }));
-      }
-    } catch (error) {
-      console.error("Error parsing progressPay2 from localStorage:", error);
-    }
-
-    // Carrito local solo para invitados; usuarios logueados se sincronizan desde el servidor.
-    try {
-      if (!hasAuthToken()) {
-        const parsed3 = readLocalCartStorage();
-        if (parsed3.length > 0) {
-          setDataCartStorege(parsed3);
-          setDataCart(parsed3);
-        }
-      }
-    } catch (error) {
-      console.error("Error parsing dataCartStorage from localStorage:", error);
+    if (!hasAuthToken()) {
+      readLocalCartStorage();
     }
 
     try {
-      const storageBuyNowProduct = localStorage.getItem("buyNowProduct");
-      const mode = localStorage.getItem("checkout_mode") as "cart" | "buy_now";
-
-      setCheckoutMode(mode || "cart");
-
-      if (storageBuyNowProduct) {
-        const parsed4 = JSON.parse(storageBuyNowProduct);
-        setBuyNowProduct(parsed4);
+      const buyNowSession = readBuyNowSession();
+      const mode = getCheckoutMode() ?? "cart";
+      setCheckoutModeState(mode);
+      if (buyNowSession) {
+        setBuyNowProduct(buyNowSessionToProduct(buyNowSession));
       }
-    } catch (error) {
-      console.log("Error parsing buyNow", error);
+    } catch {
+      // sin sesión buy now
     }
-  }, []);
+  }, [setBuyNowProduct]);
 
-  const handleWriteStorageProgressPay = (obj: Partial<progressPayI>) => {
-    const stored = localStorage.getItem("progressPay");
-    const prevStorage = stored ? JSON.parse(stored) : progressPay;
+  const handleWriteStorageProgressPay = (obj: Partial<ProgressPayPersisted>) => {
+    const stored = safeParse<ProgressPayPersisted>(
+      localStorage.getItem(CHECKOUT_STORAGE_KEYS.progressPay),
+    );
+    const prevStorage = stored ?? progressPay;
 
-    const updated: progressPayI = {
-      optionSend: {
-        ...prevStorage.optionSend,
-        ...obj.optionSend,
-      },
-      methodPay: {
-        ...prevStorage.methodPay,
-        ...obj.methodPay,
-      },
-    };
+    const updated = sanitizeProgressPay({
+      optionSend: { ...prevStorage.optionSend, ...obj.optionSend },
+      methodPay: { ...prevStorage.methodPay, ...obj.methodPay },
+      addressByStore: obj.addressByStore ?? prevStorage.addressByStore,
+    });
 
     setProgressPay(updated);
-    localStorage.setItem("progressPay", JSON.stringify(updated));
+    localStorage.setItem(
+      CHECKOUT_STORAGE_KEYS.progressPay,
+      JSON.stringify(updated),
+    );
   };
 
-  const handleWriteStorageProgressPay2 = (obj: Partial<progressPayI2>) => {
-    const stored = localStorage.getItem("progressPay2");
-    const prevStorage = stored ? JSON.parse(stored) : progressPay2;
-
-    const updated: progressPayI2 = {
-      dataPurchase: {
-        ...prevStorage.dataPurchase,
-        ...obj?.dataPurchase,
-      },
-      pay: {
-        ...prevStorage?.pay,
-        ...obj?.pay,
-      },
-    };
-
-    setProgressPay2(updated);
-    localStorage.setItem("progressPay2", JSON.stringify(updated));
+  /** Solo memoria — montos y dataPurchase viven en el borrador del servidor. */
+  const handleWriteStorageProgressPay2 = (obj: Partial<ProgressPay2State>) => {
+    setProgressPay2((prev) => ({
+      dataPurchase: { ...prev.dataPurchase, ...obj.dataPurchase },
+      pay: { ...prev.pay, ...obj.pay },
+    }));
   };
 
   const handleWriteStorageDataCart = (updatedCart: ProductI[]) => {
-    setDataCartStorege(updatedCart); // actualiza el estado
-    localStorage.setItem("dataCartStorage", JSON.stringify(updatedCart)); // actualiza storage
+    setDataCartStorege(updatedCart);
+    if (!hasAuthToken()) {
+      writeLocalCartStorageFromProducts(updatedCart);
+    }
   };
 
   const handleRemoveStorageDataCart = () => {
     setDataCartStorege([]);
     setDataCart([]);
-    localStorage.removeItem("dataCartStorage");
+    clearLocalCartStorage();
   };
 
-  // const syncStorageWithGlobalCart = (globalCart: ProductI[]) => {
-  //   setDataCartStorege(globalCart);
-  //   localStorage.setItem("dataCartStorage", JSON.stringify(globalCart));
-  // };
+  const handleSetCheckoutMode = (mode: CheckoutMode) => {
+    setCheckoutModeState(mode);
+    setCheckoutMode(mode);
+  };
 
   return {
     progressPay,
@@ -197,10 +161,9 @@ const useStorage = () => {
     handleWriteStorageProgressPay,
     handleWriteStorageProgressPay2,
     handleWriteStorageDataCart,
-    // syncStorageWithGlobalCart,
     handleRemoveStorageDataCart,
     checkoutMode,
-    setCheckoutMode,
+    setCheckoutMode: handleSetCheckoutMode,
   };
 };
 

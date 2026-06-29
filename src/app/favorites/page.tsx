@@ -1,19 +1,82 @@
 "use client";
+
 import {
   MdArrowDropDown,
   MdAutorenew,
   MdShoppingCart,
   MdStar,
 } from "react-icons/md";
+import { LayoutGrid, Rows, Trash2 } from "lucide-react";
+import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import useFavorites from "../services/useFavorites";
+import useConfirmRemoveFavorite from "../hooks/useConfirmRemoveFavorite";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
-import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
-import { Carousel } from "react-responsive-carousel";
 import ProductI from "../interfaces/products/product.interface";
+import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 import BranchSelector from "../components/branchSelector/BranchSelector";
-import styles from "./favorites.module.css";
 import BranchStockTooltip from "../components/branchStockTooltip/BranchStockTooltip";
+import ProductImageCarousel from "../components/productImageCarousel/ProductImageCarousel";
+import styles from "../result-search-category/result-search-category.module.css";
+import favStyles from "./favorites.module.css";
+
+const StyledTooltip = styled(({ className, ...props }: any) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(() => ({
+  [`& .MuiTooltip-tooltip`]: {
+    backgroundColor: "#fff",
+    color: "#000",
+    borderRadius: 8,
+    boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+    padding: 12,
+    minWidth: 300,
+    maxWidth: 400,
+  },
+  [`& .MuiTooltip-arrow`]: {
+    color: "#fff",
+  },
+}));
+
+const ratingProgress = [
+  { id: 1, rating: 5 },
+  { id: 2, rating: 4 },
+  { id: 3, rating: 3 },
+  { id: 4, rating: 2 },
+  { id: 5, rating: 1 },
+];
+
+const getProductImages = (favorite: FavoritesI) => {
+  const fromProduct = (favorite.products as any)?.image_url;
+  if (Array.isArray(fromProduct) && fromProduct.length > 0) return fromProduct;
+  if (Array.isArray(favorite.image_url) && favorite.image_url.length > 0) {
+    return favorite.image_url;
+  }
+  return [];
+};
+
+const parseCaracteristicas = (caracteristicas: unknown) => {
+  if (!caracteristicas) return null;
+  try {
+    const parsed =
+      typeof caracteristicas === "string"
+        ? JSON.parse(caracteristicas)
+        : caracteristicas;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const calcPorcentaje = (
+  reviews: ProductI["reviews"],
+  progressRating: { rating: number },
+) => {
+  const list = reviews ?? [];
+  const ratingCount = list.filter((r) => r.rating === progressRating.rating).length;
+  const percentage = list.length > 0 ? (ratingCount / list.length) * 100 : 0;
+  return { percentage, rating: progressRating.rating };
+};
 
 const Favorites = () => {
   const {
@@ -23,507 +86,569 @@ const Favorites = () => {
     loadingAddId,
     loadingRemoveId,
   } = useFavorites();
-  const { dataFavorites, dataProducts, setDataModal } = useTheContext();
+  const { confirmRemoveFavorite } = useConfirmRemoveFavorite();
+  const { dataFavorites, setDataModal } = useTheContext();
   const { formatCurrency, onRouterLink } = useService();
 
-  const StyledTooltip = styled(({ className, ...props }: any) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
-  ))(() => ({
-    [`& .MuiTooltip-tooltip`]: {
-      backgroundColor: "#fff",
-      color: "#000",
-      borderRadius: 8,
-      boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-      padding: 12,
-      minWidth: 300,
-      maxWidth: 400,
-    },
-    [`& .MuiTooltip-arrow`]: {
-      color: "#fff",
-    },
-  }));
+  const [viewMode, setViewMode] = useState<"rectangular" | "square">("rectangular");
+  const [searchText, setSearchText] = useState("");
+  const [sortValue, setSortValue] = useState("date");
+  const [isReady, setIsReady] = useState(false);
 
-  const ratingProgress = [
-    { id: 1, rating: 5 },
-    { id: 2, rating: 4 },
-    { id: 3, rating: 3 },
-    { id: 4, rating: 2 },
-    { id: 5, rating: 1 },
-  ];
+  useEffect(() => {
+    const savedMode = localStorage.getItem("favoritesViewMode");
+    if (savedMode === "square" || savedMode === "rectangular") {
+      setViewMode(savedMode);
+    }
+    setIsReady(true);
+  }, []);
 
-  const calcPorcentaje = (
-    reviews: {
-      idReview: string;
-      productId: string;
-      rating: number;
-      title: string;
-      description: string;
-      date: string;
-      reviewerName: string;
-    }[],
-    dataProducts: ProductI[],
-    progressRating: any,
-    idProduct: number,
-  ) => {
-    const ratingCount = reviews?.reduce((acc, item) => {
-      if (item.rating === progressRating.rating) {
-        return acc + 1;
-      }
-      return acc;
-    }, 0);
+  const filteredFavorites = useMemo(() => {
+    if (!dataFavorites?.length) return [];
+    const query = searchText.trim().toLowerCase();
+    if (!query) return dataFavorites;
 
-    const totalRatingCount = dataProducts.reduce((acc, item) => {
-      if (item.reviews) {
-        return (
-          acc +
-          item.reviews.filter(
-            (r) =>
-              r.rating === progressRating.rating &&
-              item.idProduct == String(idProduct),
-          ).length
-        );
-      } else {
-        return 0;
-      }
-    }, 0);
+    return dataFavorites.filter((favorite) => {
+      const product = favorite.products;
+      return (
+        product?.name?.toLowerCase().includes(query) ||
+        product?.sku?.toLowerCase().includes(query) ||
+        product?.upc?.toLowerCase().includes(query)
+      );
+    });
+  }, [dataFavorites, searchText]);
 
-    const percentage =
-      totalRatingCount > 0 ? (ratingCount / totalRatingCount) * 100 : 0;
+  const handleSortChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSortValue(event.target.value);
+    handleSelectOrden(event);
+  };
 
-    return {
-      percentage,
-      rating: progressRating.rating,
-    };
+  const handleAddToCart = (favorite: FavoritesI) => {
+    const product = favorite.products;
+    if (!product) return;
+
+    if (
+      (product.isPC == 0 || product.isPc == 0) &&
+      product.product_stock!.length > 0 &&
+      Number(product.providerId) != 1
+    ) {
+      setDataModal({
+        isOpen: true,
+        message: (
+          <div className={favStyles.branchSelectorWrapper}>
+            <BranchSelector productSelected={product} />
+          </div>
+        ),
+        title: "",
+        type: "success",
+        showActions: false,
+        onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+        onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
+
+    handleAddFavoriteCart(favorite);
+  };
+
+  const requestRemoveFavorite = (favorite: FavoritesI) => {
+    confirmRemoveFavorite({
+      favorite,
+      onConfirmRemove: handleRemoveFavorite,
+    });
+  };
+
+  const renderDeleteHeaderBtn = (favorite: FavoritesI) => (
+    <button
+      type="button"
+      className={favStyles.deleteHeaderBtn}
+      disabled={loadingRemoveId === String(favorite.productId)}
+      onClick={() => requestRemoveFavorite(favorite)}
+      aria-label="Eliminar de favoritos"
+      title="Eliminar"
+    >
+      {loadingRemoveId === String(favorite.productId) ? (
+        <MdAutorenew size={18} className="the-spinner" />
+      ) : (
+        <Trash2 size={16} strokeWidth={2} />
+      )}
+    </button>
+  );
+
+  const renderRatingBlock = (product: ProductI) => {
+    const reviews = product.reviews ?? [];
+    const promedioRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+        : 0;
+
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <Rating
+          max={5}
+          readOnly
+          value={promedioRating}
+          size="medium"
+          sx={{ color: "#BB3D4B" }}
+        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <StyledTooltip
+            title={
+              <div style={{ width: "100%" }}>
+                <Box>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Rating
+                      value={promedioRating}
+                      readOnly
+                      size="medium"
+                      precision={0.5}
+                      sx={{ color: "#BB3D4B" }}
+                    />
+                    <span
+                      style={{
+                        color: "#666",
+                        fontWeight: "bold",
+                        fontSize: 18,
+                        marginLeft: 8,
+                      }}
+                    >
+                      {reviews.length.toLocaleString()} Opiniones
+                    </span>
+                  </div>
+                  <div style={{ marginTop: 8 }}>
+                    <span style={{ color: "#808080", fontSize: 16 }}>
+                      {promedioRating.toFixed(1)} estrellas
+                    </span>
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    {ratingProgress.map((progressRating) => (
+                      <div
+                        key={progressRating.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 200,
+                            height: 15,
+                            borderRadius: 5,
+                            background: "#E7E7E7",
+                            position: "relative",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${calcPorcentaje(reviews, progressRating).percentage}%`,
+                              height: 15,
+                              background: "#BB3D4B",
+                              borderRadius: 5,
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: 15,
+                            color: "#606060",
+                            fontWeight: "bold",
+                            margin: "0 8px",
+                          }}
+                        >
+                          {calcPorcentaje(reviews, progressRating).rating}
+                        </span>
+                        <MdStar color="#ccc" size={20} />
+                        <span style={{ color: "#ccc", fontSize: 13, marginLeft: 4 }}>
+                          (
+                          {reviews.filter((r) => r.rating === progressRating.rating).length}
+                          )
+                        </span>
+                      </div>
+                    ))}
+                    <a
+                      role="button"
+                      onClick={() =>
+                        onRouterLink(`/review?idProduct=${product.idProduct}`)
+                      }
+                      style={{
+                        display: "block",
+                        color: "#BB3D4B",
+                        textAlign: "center",
+                        fontSize: 17,
+                        textDecoration: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Ver todas las ({reviews.length.toLocaleString()}) opiniones
+                    </a>
+                  </div>
+                </Box>
+              </div>
+            }
+          >
+            <button
+              type="button"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "1px solid #ccc",
+                borderRadius: 2,
+                width: 20,
+                height: 20,
+                marginLeft: 5,
+                background: "transparent",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              <MdArrowDropDown size={10} color="gray" />
+            </button>
+          </StyledTooltip>
+          <span style={{ marginLeft: 5, whiteSpace: "nowrap" }}>
+            {reviews.length.toLocaleString()} opiniones
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCaracteristicas = (product: ProductI) => {
+    const caracs = parseCaracteristicas(product.caracteristicas);
+    if (!caracs) {
+      return <span>Sin características disponibles</span>;
+    }
+
+    return (
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {caracs.slice(0, 6).map((carac: any, index: number) => (
+          <li key={index} style={{ fontSize: 13, marginTop: 4 }}>
+            <span style={{ fontWeight: "bold" }}>{carac.prop}: </span>
+            <span style={{ fontStyle: "italic", wordBreak: "break-word" }}>
+              {carac.value && carac.value.length > 70
+                ? `${carac.value.slice(0, 70)}...`
+                : carac.value || "—"}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderStock = (product: ProductI, compact = false) => {
+    const stock = product.stock ?? 0;
+    return (
+      <div className={compact ? styles.squareStockRow : styles.stockRow}>
+        <span
+          className={`${styles.stockDot} ${
+            stock === undefined
+              ? styles.stockDotOut
+              : stock > 10
+                ? styles.stockDotHigh
+                : stock > 0
+                  ? styles.stockDotLow
+                  : styles.stockDotOut
+          }`}
+        />
+        <BranchStockTooltip product={product}>
+          <span className={compact ? styles.squareStockText : styles.stockText}>
+            {stock === 0
+              ? "Sin stock"
+              : stock < 10
+                ? compact
+                  ? `¡Solo ${stock} pzas!`
+                  : `¡Solo quedan ${stock} pzas!`
+                : compact
+                  ? `${stock} pzas.`
+                  : `Disponibles: ${stock} pzas.`}
+          </span>
+        </BranchStockTooltip>
+      </div>
+    );
+  };
+
+  const renderSquareCard = (favorite: FavoritesI) => {
+    const product = favorite.products;
+    if (!product) return null;
+
+    const reviews = product.reviews ?? [];
+    const promedioRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+        : 0;
+    const images = getProductImages(favorite);
+
+    return (
+      <div key={favorite.idFavorite} className={styles.productSquareCard}>
+        <div className={styles.squareMedia}>
+          <div className={styles.squareCardHeader}>{renderDeleteHeaderBtn(favorite)}</div>
+          <div className={styles.squareCarouselWrapper}>
+            <ProductImageCarousel
+              images={images}
+              imageClassName={styles.squareProductImg}
+              slideClassName={styles.squareCarouselSlide}
+              imageSizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
+              imageTransform="tr=w-400,q-70,f-auto"
+              onNavigate={() => onRouterLink(`/detailsProduct/${product.idProduct}`)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.squareCardBody}>
+          <a
+            role="button"
+            onClick={() => onRouterLink(`/detailsProduct/${product.idProduct}`)}
+            className={styles.squareProductName}
+            title={product.name}
+          >
+            {product.name}
+          </a>
+
+          <div className={styles.squareSkuRating}>
+            <span className={styles.squareSku}>SKU: {product.sku}</span>
+            <div className={styles.squareRatingRow}>
+              <Rating
+                max={5}
+                readOnly
+                value={promedioRating}
+                size="small"
+                sx={{ color: "#BB3D4B" }}
+              />
+              <span className={styles.squareReviewCount}>({reviews.length})</span>
+            </div>
+          </div>
+
+          <div className={styles.squarePriceStockRow}>
+            <span className={styles.squarePrice}>
+              {formatCurrency(Number(product.price))}
+            </span>
+            {renderStock(product, true)}
+          </div>
+
+          <div className={styles.squareActions}>
+            <button
+              type="button"
+              disabled={
+                loadingAddId == product.idProduct || product.stock == 0
+              }
+              className={styles.squareAddToCartBtn}
+              onClick={() => handleAddToCart(favorite)}
+            >
+              {loadingAddId == product.idProduct ? (
+                <MdAutorenew size={16} className="m-auto the-spinner" />
+              ) : product.stock == 0 ? (
+                "No disponible"
+              ) : (
+                <>
+                  Agregar
+                  <MdShoppingCart size={14} color="white" />
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className={favStyles.squareRemoveBtn}
+              disabled={loadingRemoveId === String(favorite.productId)}
+              onClick={() => requestRemoveFavorite(favorite)}
+            >
+              {loadingRemoveId === String(favorite.productId) ? (
+                <MdAutorenew size={16} className="m-auto the-spinner" />
+              ) : (
+                "Eliminar"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderListCard = (favorite: FavoritesI) => {
+    const product = favorite.products;
+    if (!product) return null;
+
+    const images = getProductImages(favorite);
+
+    return (
+      <div key={favorite.idFavorite} className={styles.productCard}>
+        <div className="flex justify-end" style={{ marginLeft: "auto" }}>
+          {renderDeleteHeaderBtn(favorite)}
+        </div>
+
+        <div className={styles.productRow}>
+          <div className={styles.productInfo}>
+            <div className={styles.itemComponent}>
+              <a
+                role="button"
+                onClick={() => onRouterLink(`/detailsProduct/${product.idProduct}`)}
+                className={styles.productName}
+              >
+                {product.name}
+              </a>
+
+              <div className={styles.skuRatingGrid}>
+                <div>
+                  {product.upc && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <span style={{ color: "#808080" }}>SKU: {product.sku}</span>
+                      <span style={{ fontWeight: "bold" }}>
+                        UPC:
+                        <span style={{ fontWeight: "normal", marginLeft: 4 }}>
+                          {product.upc}
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {renderRatingBlock(product)}
+              </div>
+
+              <div className={styles.detailGrid}>
+                <div>{renderCaracteristicas(product)}</div>
+
+                <div style={{ padding: "0 12px" }}>
+                  <span style={{ fontSize: 20, fontWeight: "bold" }}>
+                    {formatCurrency(Number(product.price))}
+                  </span>
+                  {renderStock(product)}
+                </div>
+
+                <div className={styles.addToCartWrapper}>
+                  <button
+                    type="button"
+                    disabled={
+                      loadingAddId == product.idProduct || product.stock == 0
+                    }
+                    className={`${styles.addToCartBtn} bg-[#BB3D4B] text-white px-4 py-2 rounded flex items-center gap-2`}
+                    onClick={() => handleAddToCart(favorite)}
+                  >
+                    {loadingAddId == product.idProduct ? (
+                      <MdAutorenew size={20} className="m-auto the-spinner" />
+                    ) : product.stock == 0 ? (
+                      "No disponible"
+                    ) : (
+                      <>
+                        Agregar al carrito
+                        <MdShoppingCart size={20} color="white" />
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`${favStyles.removeBtn} ${favStyles.listRemoveBtn}`}
+                    disabled={loadingRemoveId === String(favorite.productId)}
+                    onClick={() => requestRemoveFavorite(favorite)}
+                  >
+                    {loadingRemoveId === String(favorite.productId) ? (
+                      <MdAutorenew size={20} className="m-auto the-spinner" />
+                    ) : (
+                      "Eliminar"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.carouselWrapper}>
+            <ProductImageCarousel
+              images={images}
+              imageClassName={styles.listProductImg}
+              slideClassName={styles.carouselSlide}
+              imageSizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 200px"
+              imageTransform="tr=w-600,q-70,f-auto"
+              onNavigate={() => onRouterLink(`/detailsProduct/${product.idProduct}`)}
+            />
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <section>
-      <h5 style={{ color: "#bb3d4b", fontWeight: "bold" }}>Mis Favoritos</h5>
+    <section className={styles.section}>
+      <div className={styles.mainContent}>
+        <h3 className={styles.categoryTitle}>Mis Favoritos</h3>
 
-      <br />
+        {!isReady ? (
+          <div className={favStyles.hydrationPlaceholder} aria-hidden="true" />
+        ) : dataFavorites && dataFavorites.length > 0 ? (
+          <>
+            <div className={styles.searchBar}>
+              <input
+                type="text"
+                placeholder="Buscar..."
+                className={styles.searchInput}
+                value={searchText}
+                onChange={(event) => setSearchText(event.currentTarget.value)}
+              />
 
-      {dataFavorites && dataFavorites.length > 0 ? (
-        <div className="w-full flex justify-end items-center p-2">
-          <div className={styles.ordenarGrid}>
-            <div className="flex justify-end px-1">
-              <label htmlFor="fecha" className="col-form-label">
-                Ordenar:
-              </label>
-            </div>
-            <div>
-              <select
-                name="fecha"
-                id="fecha"
-                className="form-select"
-                onChange={handleSelectOrden}
-              >
-                <option defaultValue="date">Fecha</option>
-                <option value="z_a">Nombre Z-A</option>
-                <option value="a_z">Nombre A-Z</option>
-                <option value="mayor_precio">Mayor Precio</option>
-                <option value="menor_precio">Menor Precio</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <Alert severity="info">No hay datos para mostrar</Alert>
-      )}
-
-      <div className="mb-11">
-        {dataFavorites &&
-          dataFavorites.length > 0 &&
-          dataFavorites.map((favorite, index) => {
-            return (
-              <div key={index}>
-                {/* ── Fila del producto ── */}
-                <div className={styles.productRow}>
-                  {/* Columna izquierda: info */}
-                  <div className="flex flex-col">
-                    <div className="item-component p-3">
-                      {/* Nombre */}
-                      <a
-                        role="button"
-                        onClick={() => {
-                          onRouterLink(`/detailsProduct/${favorite.productId}`);
-                        }}
-                        className="text-[#BB3D4B] font-bold"
-                        style={{ color: "#BB3D4B" }}
-                      >
-                        {favorite?.products?.name}
-                      </a>
-
-                      {/* SKU + Rating */}
-                      <div className={styles.skuRatingGrid}>
-                        <div className="flex">
-                          {favorite?.products?.upc && (
-                            <div className="flex flex-col gap-1">
-                              <span className="text-[#808080]">
-                                SKU: {favorite?.products?.sku}
-                              </span>
-                              <span className="font-bold text-black">
-                                UPC:
-                                <span className="font-normal mx-1">
-                                  {favorite?.products?.upc}
-                                </span>
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {(() => {
-                          const promedioRating =
-                            favorite?.products?.reviews?.length! > 0
-                              ? favorite?.products?.reviews.reduce(
-                                  (sum: any, review: any) =>
-                                    sum + review.rating,
-                                  0,
-                                ) / favorite?.products?.reviews?.length!
-                              : 0;
-                          return (
-                            <div className="container-rating flex gap-2">
-                              <div className="rating">
-                                <Rating
-                                  name="simple-controlled"
-                                  max={5}
-                                  readOnly
-                                  value={promedioRating}
-                                  size="medium"
-                                  sx={{ color: "#BB3D4B" }}
-                                />
-                              </div>
-                              <div className="comments flex h-[10px]">
-                                <StyledTooltip
-                                  title={
-                                    <div className="w-full flex justify-center">
-                                      <Box>
-                                        <div className="w-full flex items-center">
-                                          <Rating
-                                            value={favorite?.products?.rating}
-                                            readOnly
-                                            size="medium"
-                                            precision={0.5}
-                                            sx={{ color: "#BB3D4B" }}
-                                          />
-                                          <span className="text-[#666666] font-bold text-[18px] block mx-2">
-                                            {favorite?.products?.reviews?.length.toLocaleString()}{" "}
-                                            Opiniones
-                                          </span>
-                                        </div>
-                                        <div className="mt-2">
-                                          <span className="text-[#808080] text-[16px]">
-                                            {favorite?.products?.rating}{" "}
-                                            estrellas
-                                          </span>
-                                        </div>
-                                        <div className="mt-3 grid grid-cols[1fr_auto] w-full">
-                                          {ratingProgress &&
-                                            ratingProgress.map(
-                                              (progressRating) => {
-                                                return (
-                                                  <div
-                                                    className="flex items-center mb-2"
-                                                    key={progressRating.id}
-                                                  >
-                                                    <div
-                                                      className="barProgress"
-                                                      style={{
-                                                        width: "200px",
-                                                        height: "15px",
-                                                        borderRadius: "5px",
-                                                        background: "#E7E7E7",
-                                                        position: "relative",
-                                                      }}
-                                                    >
-                                                      <div
-                                                        style={{
-                                                          width: calcPorcentaje(
-                                                            favorite.products
-                                                              ?.reviews!,
-                                                            dataProducts,
-                                                            progressRating,
-                                                            favorite.productId,
-                                                          ).percentage,
-                                                          height: "15px",
-                                                          top: "0",
-                                                          left: "0",
-                                                          bottom: "0",
-                                                          background: "#BB3D4B",
-                                                          borderRadius: "5px",
-                                                        }}
-                                                      ></div>
-                                                    </div>
-                                                    <div className="text-[15px] text-[#606060] font-bold mx-2">
-                                                      {
-                                                        calcPorcentaje(
-                                                          favorite.products
-                                                            ?.reviews!,
-                                                          dataProducts,
-                                                          progressRating,
-                                                          favorite.productId,
-                                                        ).rating
-                                                      }
-                                                    </div>
-                                                    <div>
-                                                      <MdStar
-                                                        color="#ccc"
-                                                        size={20}
-                                                      />
-                                                    </div>
-                                                    <div>
-                                                      <span className="text-[#ccc] text-[13px] mx-1">
-                                                        (
-                                                        {favorite?.products?.reviews.reduce(
-                                                          (
-                                                            acc: any,
-                                                            item: any,
-                                                          ) => {
-                                                            if (
-                                                              item.rating ===
-                                                              progressRating.rating
-                                                            ) {
-                                                              return acc + 1;
-                                                            }
-                                                            return acc;
-                                                          },
-                                                          0,
-                                                        )}
-                                                        )
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                );
-                                              },
-                                            )}
-                                          <a
-                                            role="button"
-                                            onClick={() =>
-                                              onRouterLink(
-                                                `/review?idProduct=${favorite?.products?.idProduct}`,
-                                              )
-                                            }
-                                            style={{
-                                              display: "block",
-                                              color: "#BB3D4B",
-                                              textAlign: "center",
-                                              fontSize: "17px",
-                                              textDecoration: "none",
-                                            }}
-                                          >
-                                            Ver todas las (
-                                            {favorite?.products?.reviews.length.toLocaleString()}
-                                            ) opiniones
-                                          </a>
-                                        </div>
-                                      </Box>
-                                    </div>
-                                  }
-                                >
-                                  <div className="flex">
-                                    <button
-                                      className="flex justify-center items-center border"
-                                      style={{
-                                        marginLeft: "5px",
-                                        borderRadius: "2px",
-                                        width: "20px",
-                                        height: "20px",
-                                      }}
-                                    >
-                                      <MdArrowDropDown size={10} color="gray" />
-                                    </button>
-                                  </div>
-                                </StyledTooltip>
-                                <a style={{ marginLeft: "5px" }}>
-                                  {favorite?.products?.reviews
-                                    .filter(
-                                      (itemF: any) =>
-                                        itemF.productId ==
-                                        favorite?.products?.idProduct,
-                                    )
-                                    .length.toLocaleString()}{" "}
-                                  opiniones
-                                </a>
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-
-                      {/* Características / Precio / Botones */}
-                      <div className={styles.detailGrid}>
-                        {/* Características */}
-                        <div>
-                          <ul>
-                            {favorite?.products?.caracteristicas
-                              ? (() => {
-                                  try {
-                                    const caracs = JSON.parse(
-                                      favorite?.products?.caracteristicas,
-                                    );
-                                    if (
-                                      Array.isArray(caracs) &&
-                                      caracs.length > 0
-                                    ) {
-                                      return caracs
-                                        .slice(0, 6)
-                                        .map((carac: any, index: number) => (
-                                          <li
-                                            key={index}
-                                            className="flex gap-2 items-end"
-                                          >
-                                            <span className="font-bold text-black text-[13px]">
-                                              {carac.prop}:
-                                            </span>
-                                            <span className="italic text-[13px]">
-                                              {carac.value}
-                                            </span>
-                                          </li>
-                                        ));
-                                    }
-                                    return "Sin caracteristicas disponibles";
-                                  } catch (e) {
-                                    return "Sin caracteristicas disponibles";
-                                  }
-                                })()
-                              : "Sin caracteristicas disponibles"}
-                          </ul>
-                        </div>
-
-                        {/* Precio */}
-                        <div className="px-3">
-                          <span className="text-[20px] font-bold">
-                            {formatCurrency(Number(favorite?.products?.price))}
-                          </span>
-                          <br />
-                          <BranchStockTooltip product={favorite.products}>
-                            <span>
-                              Disponibles: {favorite?.products?.stock} piezas
-                            </span>
-                          </BranchStockTooltip>
-                        </div>
-
-                        {/* Botones */}
-                        <div className={styles.btnsWrapper}>
-                          <button
-                            disabled={
-                              loadingAddId == favorite.products?.idProduct ||
-                              favorite?.products?.stock == 0
-                            }
-                            className={`bg-[#BB3D4B] text-white px-2 py-2 rounded flex items-center gap-2 ${styles.addToCartBtn}`}
-                            onClick={() => {
-                              if (
-                                (favorite?.products?.isPC == 0 ||
-                                  favorite?.products?.isPc == 0) &&
-                                favorite?.products?.product_stock!.length > 0 &&
-                                Number(favorite?.products?.providerId) != 1
-                              ) {
-                                setDataModal({
-                                  isOpen: true,
-                                  message: (
-                                    <div
-                                      className={styles.branchSelectorWrapper}
-                                    >
-                                      <BranchSelector
-                                        productSelected={favorite?.products}
-                                      />
-                                    </div>
-                                  ),
-                                  title: "",
-                                  type: "success",
-                                  showActions: false,
-                                  onClose: () => {
-                                    setDataModal((prev) => ({
-                                      ...prev,
-                                      isOpen: false,
-                                    }));
-                                  },
-                                  onConfirm: () => {
-                                    setDataModal((prev) => ({
-                                      ...prev,
-                                      isOpen: false,
-                                    }));
-                                  },
-                                });
-                              } else {
-                                handleAddFavoriteCart(favorite);
-                              }
-                            }}
-                          >
-                            {loadingAddId == favorite.products?.idProduct ? (
-                              <MdAutorenew
-                                size={20}
-                                className="m-auto the-spinner"
-                              />
-                            ) : (
-                              <>
-                                {favorite?.products?.stock == 0 ? (
-                                  "No disponible"
-                                ) : (
-                                  <>
-                                    Agregar al carrito
-                                    <MdShoppingCart size={20} color="white" />
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </button>
-
-                          <button
-                            className={`border bg-white text-black rounded px-2 py-2 my-2 ${styles.removeBtn}`}
-                            disabled={
-                              loadingRemoveId === favorite?.products?.idProduct
-                            }
-                            onClick={() => handleRemoveFavorite(favorite)}
-                          >
-                            {loadingRemoveId ===
-                            favorite?.products?.idProduct ? (
-                              <MdAutorenew
-                                size={20}
-                                className="m-auto the-spinner"
-                              />
-                            ) : (
-                              "Eliminar"
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Columna derecha: Carousel — SIEMPRE visible */}
-                  <div className={styles.carouselWrapper}>
-                    <Carousel
-                      showIndicators={true}
-                      showThumbs={false}
-                      showStatus={false}
-                      showArrows={true}
-                      onClickItem={() => {
-                        onRouterLink(
-                          `/detailsProduct/${favorite?.products?.idProduct}`,
-                        );
-                      }}
-                    >
-                      {(favorite?.products as any).image_url &&
-                      (favorite?.products as any).image_url.length > 0
-                        ? (favorite?.products as any).image_url.map(
-                            (img: string, i: number) => (
-                              <div key={i} className={styles.carouselSlide}>
-                                <img
-                                  src={img}
-                                  className={styles.productImg}
-                                  loading="lazy"
-                                />
-                              </div>
-                            ),
-                          )
-                        : [<div key="no-img">Sin imágenes</div>]}
-                    </Carousel>
-                  </div>
+              <div className={styles.searchActions}>
+                <div className={styles.viewModeToggle}>
+                  <button
+                    type="button"
+                    className={`${styles.toggleBtn} ${viewMode === "square" ? styles.toggleBtnActive : ""}`}
+                    onClick={() => {
+                      setViewMode("square");
+                      localStorage.setItem("favoritesViewMode", "square");
+                    }}
+                    aria-label="Vista cuadrícula"
+                  >
+                    <LayoutGrid size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.toggleBtn} ${viewMode === "rectangular" ? styles.toggleBtnActive : ""}`}
+                    onClick={() => {
+                      setViewMode("rectangular");
+                      localStorage.setItem("favoritesViewMode", "rectangular");
+                    }}
+                    aria-label="Vista lista"
+                  >
+                    <Rows size={18} />
+                  </button>
                 </div>
-                <hr />
+
+                <div className={styles.sortWrapper}>
+                  <span className={styles.sortLabel}>Ordenar por:</span>
+                  <select
+                    className={`form-select ${styles.sortSelect}`}
+                    value={sortValue}
+                    onChange={handleSortChange}
+                  >
+                    <option value="date">Fecha</option>
+                    <option value="z_a">Nombre Z-A</option>
+                    <option value="a_z">Nombre A-Z</option>
+                    <option value="mayor_precio">Mayor precio</option>
+                    <option value="menor_precio">Menor precio</option>
+                  </select>
+                </div>
               </div>
-            );
-          })}
+            </div>
+
+            <hr />
+
+            {filteredFavorites.length > 0 ? (
+              viewMode === "square" ? (
+                <div className={styles.productsGrid}>
+                  {filteredFavorites.map(renderSquareCard)}
+                </div>
+              ) : (
+                <div className={styles.productsList}>
+                  {filteredFavorites.map(renderListCard)}
+                </div>
+              )
+            ) : (
+              <Alert severity="info">No se encontraron favoritos con ese criterio</Alert>
+            )}
+          </>
+        ) : (
+          <Alert severity="info">No hay datos para mostrar</Alert>
+        )}
       </div>
     </section>
   );

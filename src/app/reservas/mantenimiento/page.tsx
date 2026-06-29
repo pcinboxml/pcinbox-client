@@ -314,8 +314,8 @@ function MaintenanceBookingPageContent() {
       setErrorMsg("Por favor, selecciona si tu equipo es Laptop o PC de Escritorio.");
       return;
     }
-    if (!brand.trim() || !model.trim()) {
-      setErrorMsg("Por favor, ingresa la marca y modelo de tu dispositivo.");
+    if (!brand.trim()) {
+      setErrorMsg("Por favor, ingresa la marca de tu dispositivo.");
       return;
     }
     if (description.trim().length < 10) {
@@ -761,7 +761,7 @@ function MaintenanceBookingPageContent() {
                       marginBottom: "6px"
                     }}
                   >
-                    Modelo
+                    Modelo (opcional)
                   </label>
                   <input
                     type="text"

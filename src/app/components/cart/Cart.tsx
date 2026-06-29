@@ -3,14 +3,21 @@
 import "./cart.css";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ProductI from "@/app/interfaces/products/product.interface";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState, RefObject } from "react";
+import { createPortal } from "react-dom";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCart from "./useCart";
+import type { CartOpenMode } from "./useCart";
 import useCartSync from "@/app/hooks/useCartSync";
 import { MdAutorenew } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
-import { CheckoutStep } from "../timeline/checkoutSteps";
+import {
+  clearCheckoutProgressStorage,
+  syncCheckoutFromProducts,
+  setCheckoutStep,
+} from "@/app/utils/checkoutStorage";
+import { CheckoutStep } from "@/app/components/timeline/checkoutSteps";
 import Image from "next/image";
 
 export const Cart = () => {
@@ -19,11 +26,23 @@ export const Cart = () => {
 
 export const ModalCart = ({
   onMouseLeaveCart,
+  closeCartNow,
   showDivCart,
+  cartOpenMode,
+  anchorRef,
+  cancelCloseCart,
 }: {
   onMouseLeaveCart: () => void;
+  closeCartNow: () => void;
   showDivCart: boolean;
+  cartOpenMode: CartOpenMode;
+  anchorRef?: RefObject<HTMLElement | null>;
+  cancelCloseCart?: () => void;
 }) => {
+  const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
+  const [bridgeStyle, setBridgeStyle] = useState<React.CSSProperties>({});
+  const [isMobile, setIsMobile] = useState(false);
+  const [isAnchoredDesktop, setIsAnchoredDesktop] = useState(false);
   const [runCheckoutSync, setRunCheckoutSync] = useState(false);
   const { dataCart, setDataCart, buyNowProduct, hasToken } = useTheContext();
   const {
@@ -47,49 +66,87 @@ export const ModalCart = ({
     [dataCart],
   );
 
+  useLayoutEffect(() => {
+    if (!showDivCart || typeof window === "undefined") return;
+
+    const updateLayout = () => {
+      const mobile = window.innerWidth <= 640;
+      setIsMobile(mobile);
+
+      if (mobile || !anchorRef?.current) {
+        setIsAnchoredDesktop(false);
+        setPanelStyle({});
+        setBridgeStyle({});
+        return;
+      }
+
+      const rect = anchorRef.current.getBoundingClientRect();
+      const viewportPad = 12;
+      const gap = 8;
+      const panelWidth = Math.min(600, window.innerWidth - viewportPad * 2);
+
+      let left = rect.right - panelWidth;
+      left = Math.max(
+        viewportPad,
+        Math.min(left, window.innerWidth - panelWidth - viewportPad),
+      );
+
+      const top = rect.bottom + gap;
+      const availableHeight = window.innerHeight - top - viewportPad;
+      const maxHeight = Math.min(680, availableHeight);
+      const minHeight = Math.min(540, maxHeight);
+
+      const bridgeLeft = Math.min(rect.left, left);
+      const bridgeRight = Math.max(rect.right, left + panelWidth);
+
+      setIsAnchoredDesktop(true);
+      setPanelStyle({
+        top,
+        left,
+        width: panelWidth,
+        minHeight,
+        maxHeight,
+      });
+      setBridgeStyle({
+        top: Math.max(0, rect.bottom - 2),
+        left: bridgeLeft,
+        width: bridgeRight - bridgeLeft,
+        height: gap + 4,
+      });
+    };
+
+    updateLayout();
+    window.addEventListener("resize", updateLayout);
+    window.addEventListener("scroll", updateLayout, true);
+
+    return () => {
+      window.removeEventListener("resize", updateLayout);
+      window.removeEventListener("scroll", updateLayout, true);
+    };
+  }, [showDivCart, anchorRef]);
+
   useEffect(() => {
     if (!showDivCart || typeof document === "undefined") return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onMouseLeaveCart();
+      if (event.key === "Escape") closeCartNow();
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showDivCart, onMouseLeaveCart]);
+  }, [showDivCart, onMouseLeaveCart, closeCartNow]);
+
+  const keepCartOpen = () => {
+    cancelCloseCart?.();
+  };
+
+  const scheduleCartClose = () => {
+    onMouseLeaveCart();
+  };
 
   useEffect(() => {
     if (!runCheckoutSync) return;
-
-    if (buyNowProduct != null && dataCart?.length === 0) {
-      localStorage.setItem("checkout_mode", "buy_now");
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(
-          productsToShow!.map((p) => ({
-            id: p.idProduct,
-            quantity: p.quantity,
-            storeId: p.storeId,
-          })),
-        ),
-      );
-    } else if (dataCart?.length > 0 && buyNowProduct === null) {
-      localStorage.setItem("checkout_mode", "cart");
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(
-          productsToShow!.map((p) => ({
-            id: p.idProduct,
-            quantity: p.quantity,
-            storeId: p.storeId,
-          })),
-        ),
-      );
-    } else if (buyNowProduct === null && dataCart.length === 0) {
-      localStorage.removeItem("checkout_mode");
-      localStorage.removeItem("checkout_products_snapshot");
-    }
-
+    syncCheckoutFromProducts(buyNowProduct, dataCart ?? [], productsToShow);
     setRunCheckoutSync(false);
   }, [runCheckoutSync, buyNowProduct, dataCart, productsToShow]);
 
@@ -160,19 +217,33 @@ export const ModalCart = ({
 
   if (!showDivCart) return null;
 
-  return (
-    <div
-      className="cart-modal-backdrop"
-      role="presentation"
-      onClick={onMouseLeaveCart}
-    >
+  const backdropClickable = isMobile || cartOpenMode === "click";
+
+  const modal = (
+    <>
       <div
-        className="cart-modal-panel"
+        className={`cart-modal-backdrop ${backdropClickable ? "cart-modal-backdrop--clickable" : ""}`}
+        role="presentation"
+        onClick={backdropClickable ? closeCartNow : undefined}
+      />
+      {isAnchoredDesktop && (
+        <div
+          className="cart-modal-bridge"
+          style={bridgeStyle}
+          aria-hidden
+          onMouseEnter={keepCartOpen}
+          onMouseLeave={scheduleCartClose}
+        />
+      )}
+      <div
+        className={`cart-modal-panel ${isMobile ? "cart-modal-panel--mobile" : ""} ${isAnchoredDesktop ? "cart-modal-panel--anchored" : ""}`}
+        style={isAnchoredDesktop ? panelStyle : undefined}
         role="dialog"
         aria-modal="true"
         aria-label="Mi carrito"
         onClick={(e) => e.stopPropagation()}
-        onMouseLeave={onMouseLeaveCart}
+        onMouseEnter={keepCartOpen}
+        onMouseLeave={scheduleCartClose}
       >
         <header className="cart-modal-header">
           <div>
@@ -186,7 +257,7 @@ export const ModalCart = ({
           <button
             type="button"
             className="cart-modal-close"
-            onClick={onMouseLeaveCart}
+            onClick={closeCartNow}
             aria-label="Cerrar carrito"
           >
             <X size={20} />
@@ -202,10 +273,10 @@ export const ModalCart = ({
               onClick={() => {
                 handleConfirmEmptyCart(dataCart, () => {
                   handleRemoveStorageDataCart();
-                  localStorage.removeItem("progressPay2");
-                  localStorage.removeItem("checkout_step");
+                  clearCheckoutProgressStorage();
+                  setCheckoutStep(null);
                   setRunCheckoutSync(true);
-                  onMouseLeaveCart();
+                  closeCartNow();
                 });
               }}
             >
@@ -221,7 +292,7 @@ export const ModalCart = ({
           </div>
         ) : null}
 
-        <div className="flex-1 overflow-y-auto p-4 contentCart">
+        <div className="cart-modal-body contentCart">
           {!dataCart?.length ? (
             <div className="cart-empty-state">
               <ShoppingCart
@@ -235,14 +306,14 @@ export const ModalCart = ({
                 className="cart-empty-link"
                 onClick={() => {
                   onRouterLink("/");
-                  onMouseLeaveCart();
+                  closeCartNow();
                 }}
               >
                 Explorar productos
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="cart-items-list">
               {dataCart.map((product: ProductI) => {
                 if (product.stock == 0) return null;
 
@@ -269,12 +340,8 @@ export const ModalCart = ({
                         height={88}
                         className="cart-item-image"
                         onClick={() => {
-                          localStorage.setItem(
-                            "product",
-                            JSON.stringify(product),
-                          );
                           onRouterLink(`/detailsProduct/${product.idProduct}`);
-                          onMouseLeaveCart();
+                          closeCartNow();
                         }}
                       />
                     ) : (
@@ -330,7 +397,7 @@ export const ModalCart = ({
                               handleRemoveItemCart(
                                 dataCart,
                                 product,
-                                onMouseLeaveCart,
+                                closeCartNow,
                               )
                             }
                             aria-label="Eliminar producto"
@@ -350,14 +417,16 @@ export const ModalCart = ({
         {dataCart && dataCart.length > 0 && (
           <footer className="cart-modal-footer">
             <div className="cart-subtotal-row">
-              <span>Subtotal</span>
-              <span>{formatCurrency(Number(totalPrice))}</span>
+              <span className="cart-subtotal-label">Subtotal</span>
+              <span className="cart-subtotal-value">
+                {formatCurrency(Number(totalPrice))}
+              </span>
             </div>
             <div className="cart-footer-actions">
               <button
                 type="button"
                 className="cart-btn-secondary"
-                onClick={onMouseLeaveCart}
+                onClick={closeCartNow}
               >
                 Seguir comprando
               </button>
@@ -365,13 +434,10 @@ export const ModalCart = ({
                 type="button"
                 className="cart-btn-primary"
                 onClick={() => {
-                  localStorage.setItem(
-                    "checkout_step",
-                    String(CheckoutStep.CONFIRMAR_PRODUCTOS),
-                  );
-                  localStorage.setItem("checkout_mode", "cart");
+                  setCheckoutStep(CheckoutStep.CONFIRMAR_PRODUCTOS);
+                  syncCheckoutFromProducts(buyNowProduct, dataCart ?? [], productsToShow);
                   onRouterLink("/confirma-productos");
-                  onMouseLeaveCart();
+                  closeCartNow();
                 }}
               >
                 Proceder al pago
@@ -380,6 +446,10 @@ export const ModalCart = ({
           </footer>
         )}
       </div>
-    </div>
+    </>
   );
+
+  if (typeof document === "undefined") return modal;
+
+  return createPortal(modal, document.body);
 };

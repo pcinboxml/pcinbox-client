@@ -1,13 +1,23 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { cookies } from "next/headers";
 import { verify } from "jsonwebtoken";
+import { getGoogleOAuthConfig } from "@/app/utils/googleAuth";
+import { publicEnv } from "@/app/config/env";
 
-const handler = NextAuth({
-  providers: [
+if (process.env.NODE_ENV === "development") {
+  process.env.NEXTAUTH_URL = "http://localhost:3000";
+}
+
+const googleOAuth = getGoogleOAuthConfig();
+
+const providers: NextAuthOptions["providers"] = [];
+
+if (googleOAuth.enabled) {
+  providers.push(
     GoogleProvider({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET!,
+      clientId: googleOAuth.clientId,
+      clientSecret: googleOAuth.clientSecret,
       profile(profile) {
         return {
           id: profile.sub,
@@ -22,59 +32,78 @@ const handler = NextAuth({
         },
       },
     }),
-  ],
+  );
+}
+
+const handler = NextAuth({
+  providers,
+  trustHost: true,
 
   callbacks: {
     async signIn({ user }) {
       const cookieStore = cookies();
       const mode = (await cookieStore).get("mode")?.value;
 
-      if (mode && mode == "login") {
-        const resp = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/user/loginGoogle`,
-          {
-            method: "POST",
-            // credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.name,
-            }),
-          },
-        );
-        const status = await resp.status;
-        const data = await resp.json();
-
-        if (status == 200) {
-          const isValidToken = verify(
-            data.data.token,
-            process.env.NEXT_PUBLIC_KEY_JWT || "",
-          );
-
-          (user as any).idUser = Number(data.data.idUser.toString());
-          // (user as any).jwt = token;
-          (user as any).token = data.data.token;
-          (user as any).rol = "customer";
-          (user as any).idValidToken = isValidToken;
-          (user as any).active = data.data.active;
-          (user as any).totalFavorites = data.data.totalFavorites;
-          return true;
-        } else {
-          throw new Error(
-            data?.message ||
-              data?.data?.message ||
-              "Error interno del servidor",
-          );
-        }
+      if (mode !== "login") {
+        return false;
       }
 
-      return false;
+      const email = user.email?.trim();
+      const name =
+        user.name?.trim() ||
+        email?.split("@")[0] ||
+        "Usuario Google";
+
+      if (!email) {
+        throw new Error("Google no devolvió un correo electrónico válido.");
+      }
+
+      try {
+        const resp = await fetch(`${publicEnv.apiUrl}/user/loginGoogle`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, name }),
+        });
+
+        const data = await resp.json().catch(() => ({}));
+
+        if (resp.status !== 200) {
+          throw new Error(
+            data?.message ||
+              data?.error ||
+              `No se pudo iniciar sesión con Google (${resp.status}). Verifica que pcinbox-server esté corriendo en ${publicEnv.apiUrl}.`,
+          );
+        }
+
+        const jwtSecret = publicEnv.keyJwt;
+        if (!jwtSecret) {
+          throw new Error(
+            "Falta NEXT_PUBLIC_KEY_JWT en el cliente. Debe coincidir con KEY_JWT de pcinbox-server.",
+          );
+        }
+
+        const isValidToken = verify(data.data.token, jwtSecret);
+
+        (user as any).idUser = Number(data.data.idUser.toString());
+        (user as any).token = data.data.token;
+        (user as any).rol = "customer";
+        (user as any).idValidToken = isValidToken;
+        (user as any).active = data.data.active;
+        (user as any).totalFavorites = data.data.totalFavorites;
+        return true;
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Error interno del servidor";
+        console.error("[next-auth] loginGoogle:", message);
+        throw new Error(message);
+      }
     },
 
     async jwt({ token, user }) {
-      // Si viene del login (primer vez)
       if (user) {
         token.email = user.email;
         token.name = user.name;
@@ -104,10 +133,6 @@ const handler = NextAuth({
       }
       return session;
     },
-
-    // redirect({ baseUrl, url }) {
-    //   return `${baseUrl}/principal`;
-    // },
   },
 
   pages: {
@@ -118,7 +143,11 @@ const handler = NextAuth({
     strategy: "jwt",
   },
 
-  secret: process.env.NEXTAUTH_SECRET,
+  secret:
+    publicEnv.nextAuthSecret ||
+    (process.env.NODE_ENV === "development"
+      ? "dev-pcinbox-nextauth-secret"
+      : undefined),
 });
 
 export { handler as GET, handler as POST };

@@ -3,6 +3,8 @@ import React, { useState, useEffect, JSX } from "react";
 
 const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
   const { onRouterLink } = useService();
+  const orderIdFromMeta =
+    dataMpPay?.metadata?.id_order ?? dataMpPay?.metadata?.idOrder ?? "";
   useEffect(() => {
     createConfetti();
   }, []);
@@ -181,7 +183,7 @@ const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
             >
               <span className="text-sm text-gray-600">Número de orden</span>
               <span className="text-sm font-semibold text-gray-900">
-                #{dataMpPay?.metadata?.id_order}
+                #{orderIdFromMeta}
               </span>
             </div>
 
@@ -281,7 +283,7 @@ const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
               //   setLoadingRoute(true);
 
               onRouterLink(
-                `/pay-end?id=${dataMpPay?.id}&idOrder=${dataMpPay?.metadata?.id_order}&method_pay=mercadopago&provider=mp`
+                `/pay-end?id=${dataMpPay?.id}&idOrder=${orderIdFromMeta}&method_pay=mercadopago&provider=mp`
               );
               //  setLoadingRoute(false);
             }}

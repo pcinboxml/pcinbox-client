@@ -169,9 +169,12 @@ const useRegister = () => {
 
     await signIn("google", {
       redirect: true,
-      callbackUrl: "/principal",
+      callbackUrl:
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3000/principal"
+          : "/principal",
     });
-    setLoadingRegisterGoogle(true);
+    setLoadingRegisterGoogle(false);
 
     localStorage.setItem("authGoogle", "true");
   };

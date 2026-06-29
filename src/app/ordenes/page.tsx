@@ -14,6 +14,11 @@ import useCart from "../components/cart/useCart";
 import ProductI from "../interfaces/products/product.interface";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useEffect, useState } from "react";
+import {
+  clearCheckoutProgressStorage,
+  setCheckoutStep,
+  syncCheckoutFromProducts,
+} from "../utils/checkoutStorage";
 
 const Ordenes = () => {
   // const { rows, columns, subTotal } = useOrdenes();
@@ -27,42 +32,12 @@ const Ordenes = () => {
   } = useStorage();
   const { formatCurrency, onRouterLink, totalPrice, productsToShow } =
     useService();
-  const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart } =
+  const { handleRemoveItemCart, handleRemoveAllCart, loadingRmAllCart, handleConfirmEmptyCart } =
     useCart();
 
   useEffect(() => {
     if (!runCheckoutSync) return;
-
-    if (buyNowProduct != null && dataCart?.length === 0) {
-      localStorage.setItem("checkout_mode", "buy_now");
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(
-          productsToShow!.map((p) => ({
-            id: p.idProduct,
-            quantity: p.quantity,
-            storeId: p.storeId,
-          })),
-        ),
-      );
-    } else if (dataCart?.length > 0 && buyNowProduct === null) {
-      localStorage.setItem("checkout_mode", "cart");
-      localStorage.setItem(
-        "checkout_products_snapshot",
-        JSON.stringify(
-          productsToShow!.map((p) => ({
-            id: p.idProduct,
-            quantity: p.quantity,
-            storeId: p.storeId,
-          })),
-        ),
-      );
-    } else if (buyNowProduct === null && dataCart.length === 0) {
-      localStorage.removeItem("checkout_mode");
-      localStorage.removeItem("checkout_products_snapshot");
-    }
-
-    // reset del trigger
+    syncCheckoutFromProducts(buyNowProduct, dataCart ?? [], productsToShow);
     setRunCheckoutSync(false);
   }, [runCheckoutSync, buyNowProduct, dataCart, productsToShow]);
 
@@ -83,10 +58,12 @@ const Ordenes = () => {
               className="border flex justify-center items-center p-2"
               disabled={loadingRmAllCart}
               onClick={() => {
-                handleRemoveStorageDataCart();
-                localStorage.removeItem("progressPay2");
-                handleRemoveAllCart(dataCart, () => {});
-                setRunCheckoutSync(false);
+                handleConfirmEmptyCart(dataCart, () => {
+                  handleRemoveStorageDataCart();
+                  clearCheckoutProgressStorage();
+                  setCheckoutStep(null);
+                  setRunCheckoutSync(false);
+                });
               }}
             >
               {loadingRmAllCart ? (
@@ -361,13 +338,8 @@ const Ordenes = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  localStorage.setItem(
-                    "checkout_step",
-                    String(CheckoutStep.CONFIRMAR_PRODUCTOS),
-                  );
-
-                  localStorage.setItem("checkout_mode", "cart");
-
+                  setCheckoutStep(CheckoutStep.CONFIRMAR_PRODUCTOS);
+                  syncCheckoutFromProducts(buyNowProduct, dataCart ?? [], productsToShow);
                   onRouterLink("/confirma-productos");
                 }}
                 className="flex-1 py-3 px-4 bg-[#bb3d4b] text-white rounded-lg font-semibold transition-colors"

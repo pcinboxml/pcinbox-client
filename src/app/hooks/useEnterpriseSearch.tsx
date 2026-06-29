@@ -2,12 +2,13 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import useDebounced from "./useDebounced";
+import { publicEnv } from "@/app/config/env";
 
 const fetchEnterpriseProducts = async (search: string) => {
   if (!search) return [];
-  
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/searchProductInput?q=${encodeURIComponent(
+    `${publicEnv.apiUrlProveedor}/searchProductInput?q=${encodeURIComponent(
       search,
     )}`,
   );

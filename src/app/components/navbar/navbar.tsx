@@ -13,7 +13,7 @@ import {
 } from "react-icons/md";
 import useNavbar from "./useNavbar";
 import useService from "@/app/services/useService";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "@mui/material";
 import useLogin from "@/app/services/useLogin";
 import { FcGoogle } from "react-icons/fc";
@@ -26,6 +26,8 @@ import SearchProduct from "../searchProduct/SearchProduct";
 import { usePathname } from "next/navigation";
 import useStorage from "@/app/services/useStorage";
 import { useSession } from "next-auth/react";
+import { getAuthProfile, getAuthUserId, isAuthGoogle, setAuthSession } from "@/app/utils/authStorage";
+import { resolveProfilePhotoUrl } from "@/app/utils/profilePhoto";
 
 const Navbar = () => {
   const {
@@ -64,14 +66,26 @@ const Navbar = () => {
     setHasToken,
     hasToken,
     rutaImgPerfil,
+    setRutaImgPerfil,
     dataFavorites,
     socketPagos,
     dataCategories,
   } = useTheContext();
   const [totalItems, setTotalItems] = useState<number>(0);
-  const { onMouseEnterCart, onMouseLeaveCart, showDivCart } = useCart();
+  const { onMouseEnterCart, onMouseLeaveCart, closeCartNow, showDivCart, cartOpenMode, cancelCloseCart, toggleCart } = useCart();
+  const cartAnchorRef = useRef<HTMLDivElement>(null);
   const { totalPrice } = useService();
   const { data: session, status } = useSession();
+  const authProfile = useMemo(() => getAuthProfile(), [hasToken, status]);
+  const profilePhotoUrl = useMemo(
+    () =>
+      resolveProfilePhotoUrl(rutaImgPerfil, {
+        googleImageUrl: isAuthGoogle() ? session?.user?.image : null,
+        sessionEmail: session?.user?.email,
+        userId: getAuthUserId(),
+      }),
+    [rutaImgPerfil, session?.user?.image, session?.user?.email, hasToken],
+  );
   const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
   const { handleWriteStorageDataCart } = useStorage();
@@ -86,36 +100,34 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const authGoogle = localStorage.getItem("authGoogle");
+    if (session && status === "authenticated" && (session as any)?.token) {
+      const token = (session as any).token;
+      const idUser = (session as any).idUser;
+      const isValidToken = (session as any).isValidToken;
 
-    if (session && status == "authenticated" && authGoogle == "true") {
-      const token = (session as any)?.token;
-      const idUser = (session as any)?.idUser;
-      const isValidToken = (session as any)?.isValidToken;
       if (token && token !== "undefined" && token !== "null" && token != null) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("email", session.user?.email!);
-        localStorage.setItem("name", session.user?.name!);
-        localStorage.setItem("idUser", idUser);
-        localStorage.setItem("lastname", "");
+        setAuthSession({
+          token,
+          idUser: String(idUser),
+          email: session.user?.email ?? "",
+          name: session.user?.name ?? "",
+          lastname: "",
+          authGoogle: true,
+        });
 
         if (isValidToken?.idUser) {
           const now = Math.floor(Date.now() / 1000);
-
-          // validar
-          if (isValidToken?.exp < now) {
-            setHasToken(false);
-          } else {
-            setHasToken(true);
-          }
+          setHasToken(isValidToken.exp >= now);
         }
       }
-    } else if (authGoogle == "false") {
-      if (localStorage.getItem("token")) {
-        const validToken = isTokenExpired(localStorage.getItem("token")!);
+      return;
+    }
 
-        setHasToken(validToken == true ? false : true);
-        // setHasToken(true);
+    if (localStorage.getItem("authGoogle") === "false") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const validToken = isTokenExpired(token);
+        setHasToken(validToken !== true);
       } else {
         setHasToken(false);
       }
@@ -123,8 +135,11 @@ const Navbar = () => {
   }, [session, status]);
 
   useEffect(() => {
-    if (hasToken) {
+    const userId = getAuthUserId();
+    if (hasToken && userId) {
       getPhotoUser();
+    } else if (!hasToken) {
+      setRutaImgPerfil("");
     }
   }, [hasToken]);
 
@@ -173,15 +188,22 @@ const Navbar = () => {
           <SearchProduct setIsFocusedSearch={setIsFocusedSearch} />
         </div>
         <div className="container-car container-car-first">
-          <div className="icon-car relative cursor-pointer">
-            <div onMouseEnter={onMouseEnterCart}>
+          <div
+            ref={cartAnchorRef}
+            className="icon-car relative cursor-pointer"
+            onMouseEnter={onMouseEnterCart}
+            onMouseLeave={onMouseLeaveCart}
+          >
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={toggleCart}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") toggleCart();
+              }}
+            >
               <Cart />
             </div>
-
-            <ModalCart
-              showDivCart={showDivCart}
-              onMouseLeaveCart={onMouseLeaveCart}
-            />
 
             {totalItems > 0 && (
               <span
@@ -197,6 +219,15 @@ const Navbar = () => {
             <b style={{ color: "#BB3D4B" }}>{formatCurrency(totalPrice)}</b>
           </div>
         </div>
+
+        <ModalCart
+          showDivCart={showDivCart}
+          cartOpenMode={cartOpenMode}
+          onMouseLeaveCart={onMouseLeaveCart}
+          closeCartNow={closeCartNow}
+          cancelCloseCart={cancelCloseCart}
+          anchorRef={cartAnchorRef}
+        />
       </div>
       <div className="flex container">
         <div
@@ -457,10 +488,8 @@ const Navbar = () => {
                         style={{ zIndex: "120" }}
                       >
                         <div className="containerImageUser min-w-[180px] min-h-[200px] mt-2 flex flex-col">
-                          <img
-                            src={
-                              rutaImgPerfil == "" ? "/user.jpeg" : rutaImgPerfil
-                            }
+                        <img
+                            src={profilePhotoUrl}
                             style={{
                               width: "120px",
                               height: "120px",
@@ -478,19 +507,7 @@ const Navbar = () => {
                               marginTop: "10px",
                             }}
                           >
-                            {`${
-                              localStorage.getItem("name")
-                                ? localStorage.getItem("name")
-                                : ""
-                            }
-                              
-                              ${
-                                localStorage.getItem("lastname")
-                                  ? localStorage.getItem("lastname")
-                                  : ""
-                              }
-                              
-                              `}
+                            {`${authProfile.name || ""} ${authProfile.lastname || ""}`}
                           </span>
                         </div>
 

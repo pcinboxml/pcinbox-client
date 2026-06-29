@@ -7,6 +7,11 @@ import { signOut } from "next-auth/react";
 import ProductI from "../interfaces/products/product.interface";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import useStorage from "./useStorage";
+import { getCheckoutMode, setCheckoutMode as persistCheckoutMode } from "../utils/checkoutStorage";
+import { readCheckoutUiSession } from "../utils/checkoutSessionStorage";
+import { clearAuthSession, getAuthToken, getAuthUserId } from "../utils/authStorage";
+import { clearCachedProfilePhotoUrl } from "../utils/profilePhoto";
+import { publicEnv } from "../config/env";
 
 const useService = () => {
   const pathName = usePathname();
@@ -17,13 +22,14 @@ const useService = () => {
     buyNowProduct,
     setDataFavorites,
     setTotalFavorites,
+    setRutaImgPerfil,
   } = useTheContext();
   const { dataCartStorege, checkoutMode, setCheckoutMode } = useStorage();
   const [productsToShow, setProductsToShow] = useState<ProductI[] | null>(null);
 
   const api = useMemo(() => {
     const instance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
+      baseURL: publicEnv.apiUrl,
     });
 
     // // ✅ AGREGA TOKEN AUTOMATICAMENTE
@@ -117,7 +123,7 @@ const useService = () => {
     try {
       const res = await api.post(endPoint, data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
       });
       return res;
@@ -182,7 +188,7 @@ const useService = () => {
     try {
       const res = await api.get(endPoint, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
       });
 
@@ -244,7 +250,7 @@ const useService = () => {
     try {
       const res = await api.delete(endPoint, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
       });
       return res;
@@ -359,13 +365,11 @@ const useService = () => {
       title: "Cerrar Sesión",
       onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
+        const userId = getAuthUserId();
+        if (userId) clearCachedProfilePhotoUrl(userId);
         await signOut({ redirect: false });
-        localStorage.removeItem("email");
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("lastname");
-        localStorage.removeItem("authGoogle");
-        localStorage.removeItem("idUser");
+        clearAuthSession();
+        setRutaImgPerfil("");
         window.location.href = "/principal";
         setDataModal((prev) => ({ ...prev, isOpen: false }));
       },
@@ -450,27 +454,14 @@ const useService = () => {
       return calcularTodos(products, FACTOR, storeId);
     }
 
-    const stored = localStorage.getItem("progressPay2");
+    const uiSession = readCheckoutUiSession();
+    const optionEnvio = uiSession.optionEnvio;
 
-    // Si NO hay localStorage → calcula todo
-    if (!stored) {
+    if (!optionEnvio || !Object.keys(optionEnvio).length) {
       return calcularTodos(products, FACTOR, storeId);
     }
 
-    let jsonParsed: any;
-
-    try {
-      jsonParsed = JSON.parse(stored);
-    } catch {
-      return calcularTodos(products, FACTOR, storeId);
-    }
-
-    // Si no existe optionEnvio → calcula todo
-    if (!jsonParsed?.optionEnvio) {
-      return calcularTodos(products, FACTOR, storeId);
-    }
-
-    const valores = Object.entries(jsonParsed.optionEnvio).flatMap(
+    const valores = Object.entries(optionEnvio).flatMap(
       ([key, value]) => {
         if (value !== "paqueteexpress") return [];
 
@@ -560,6 +551,7 @@ const useService = () => {
       idProduct: params?.idProduct || "",
       name: params?.name || "",
       categoryId: params?.categoryId || "",
+      single: params?.single || "",
     });
 
     if (routeProp.startsWith("/result-search-category")) {
@@ -568,36 +560,39 @@ const useService = () => {
   };
 
   useEffect(() => {
+    const mode = getCheckoutMode();
     const hasBuyNow = buyNowProduct != null;
     const hasCart = dataCart && dataCart.length > 0;
 
-    if (hasBuyNow) {
+    if (mode === "buy_now" && hasBuyNow) {
       setProductsToShow([buyNowProduct]);
-      // Si estamos en buy_now pero buyNowProduct existe, todo bien
       if (checkoutMode !== "buy_now") {
         setCheckoutMode("buy_now");
-        localStorage.setItem("checkout_mode", "buy_now");
+        persistCheckoutMode("buy_now");
       }
       return;
     }
 
-    // Si no hay buyNowProduct, fallback a carrito
     if (hasCart) {
       setProductsToShow(dataCart);
       if (checkoutMode !== "cart") {
         setCheckoutMode("cart");
-        localStorage.setItem("checkout_mode", "cart");
+        persistCheckoutMode("cart");
       }
       return;
     }
 
-    // Si no hay nada
-    setProductsToShow([]);
-    if (checkoutMode !== "cart") {
-      setCheckoutMode("cart");
-      localStorage.setItem("checkout_mode", "cart");
+    if (hasBuyNow) {
+      setProductsToShow([buyNowProduct]);
+      if (checkoutMode !== "buy_now") {
+        setCheckoutMode("buy_now");
+        persistCheckoutMode("buy_now");
+      }
+      return;
     }
-  }, [buyNowProduct, dataCart]);
+
+    setProductsToShow([]);
+  }, [buyNowProduct, dataCart, checkoutMode]);
 
   // const returnUrl = useMemo((): string => {
   //   const queryString = searchParams.toString();

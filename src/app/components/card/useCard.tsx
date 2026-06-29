@@ -4,6 +4,7 @@ import ProductI from "@/app/interfaces/products/product.interface";
 import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useCartSync from "@/app/hooks/useCartSync";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 import { useState } from "react";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
@@ -12,6 +13,7 @@ const useCard = () => {
     useTheContext();
   const { requestPost } = useService();
   const { refreshCartFromServer } = useCartSync();
+  const { clearBuyNow } = useCheckoutSession();
 
   const [loadingAgregar, setLoadingAgregar] = useState<boolean>(false);
 
@@ -93,6 +95,7 @@ const useCard = () => {
 
     try {
       setLoadingAgregar(true);
+      clearBuyNow();
 
       const resp = await requestPost(
         {

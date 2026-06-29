@@ -4,7 +4,10 @@ import { useTheContext } from "@/app/services/globalContext";
 import useService from "@/app/services/useService";
 import useStorage from "@/app/services/useStorage";
 import useCartSync from "@/app/hooks/useCartSync";
-import { useState } from "react";
+import useConfirmEmptyCart from "@/app/hooks/useConfirmEmptyCart";
+import { useRef, useState } from "react";
+
+export type CartOpenMode = "hover" | "click" | null;
 
 const useCart = () => {
   const { setDataCart, setDataModal, hasToken } = useTheContext();
@@ -12,16 +15,61 @@ const useCart = () => {
   const { handleWriteStorageDataCart, handleRemoveStorageDataCart } =
     useStorage();
   const { refreshCartFromServer, clearCartEverywhere } = useCartSync();
+  const { confirmEmptyCart } = useConfirmEmptyCart();
 
   const [showDivCart, setShowDivCart] = useState<boolean>(false);
+  const [cartOpenMode, setCartOpenMode] = useState<CartOpenMode>(null);
   const [loadingRmAllCart, setLoadingRmAllCart] = useState<boolean>(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const onMouseEnterCart = () => {
+  const openCart = (mode: CartOpenMode = "hover") => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setCartOpenMode(mode);
     setShowDivCart(true);
   };
 
-  const onMouseLeaveCart = () => {
+  const onMouseEnterCart = () => {
+    openCart("hover");
+  };
+
+  const closeCartNow = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setCartOpenMode(null);
     setShowDivCart(false);
+  };
+
+  const onMouseLeaveCart = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
+      setCartOpenMode(null);
+      setShowDivCart(false);
+      closeTimerRef.current = null;
+    }, 220);
+  };
+
+  const cancelCloseCart = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const toggleCart = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setShowDivCart((prev) => {
+      const next = !prev;
+      setCartOpenMode(next ? "click" : null);
+      return next;
+    });
   };
 
   const handleRemoveItemCart = async (
@@ -76,7 +124,7 @@ const useCart = () => {
   };
 
   const addProductFromStorage = async () => {
-    const { readLocalCartStorage } = await import("../utils/cartSync");
+    const { readLocalCartStorage } = await import("@/app/utils/cartSync");
     const storage = readLocalCartStorage();
     if (storage.length === 0) return;
 
@@ -87,7 +135,7 @@ const useCart = () => {
       );
 
       if (getStatus?.status === 200) {
-        const { clearLocalCartStorage } = await import("../utils/cartSync");
+        const { clearLocalCartStorage } = await import("@/app/utils/cartSync");
         clearLocalCartStorage();
         await refreshCartFromServer();
       }
@@ -129,18 +177,8 @@ const useCart = () => {
     dataCartProp: ProductI[],
     onCloseCart?: () => void,
   ) => {
-    setDataModal({
-      isOpen: true,
-      message:
-        "¿Estás seguro de que deseas eliminar todos los productos del carrito?",
-      title: "Vaciar carrito",
-      type: "warning",
-      showActions: true,
-      onClose: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
-      onConfirm: () => {
-        setDataModal((prev) => ({ ...prev, isOpen: false }));
-        void handleRemoveAllCart(dataCartProp, onCloseCart);
-      },
+    confirmEmptyCart({
+      onConfirmEmpty: () => handleRemoveAllCart(dataCartProp, onCloseCart),
     });
   };
 
@@ -148,8 +186,12 @@ const useCart = () => {
     handleRemoveItemCart,
     loadingRmAllCart,
     showDivCart,
+    cartOpenMode,
     onMouseEnterCart,
     onMouseLeaveCart,
+    closeCartNow,
+    cancelCloseCart,
+    toggleCart,
     addProductFromStorage,
     handleRemoveAllCart,
     handleConfirmEmptyCart,

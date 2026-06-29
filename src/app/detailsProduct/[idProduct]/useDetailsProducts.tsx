@@ -5,6 +5,8 @@ import ProductI from "../../interfaces/products/product.interface";
 import useService from "../../services/useService";
 import { useTheContext } from "../../services/globalContext";
 import useProveedores from "@/app/services/proveedores/useProveedores";
+import useCartSync from "@/app/hooks/useCartSync";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 
 const useDetailsProduct = () => {
   const [quantity, setQuantity] = useState<number | string>(1);
@@ -15,6 +17,8 @@ const useDetailsProduct = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [changeImg, setChangeImg] = useState<string>("");
   const { onRouterLink } = useService();
+  const { refreshCartFromServer } = useCartSync();
+  const { clearBuyNow } = useCheckoutSession();
 
   // const [dataProduct, setProduct] = useState<ProductI>({
   //   categoryId: "",
@@ -40,22 +44,11 @@ const useDetailsProduct = () => {
       return;
     }
     setQuantity(newQuantity);
-
-    updateLocalStorageQuantity(newQuantity);
   };
 
   const handleSubstract = () => {
     const newQuantity = Number(quantity) > 1 ? Number(quantity) - 1 : 1;
     setQuantity(newQuantity);
-    updateLocalStorageQuantity(newQuantity);
-  };
-  const updateLocalStorageQuantity = (newQuantity: number) => {
-    const productStorage = localStorage.getItem("product");
-    if (productStorage) {
-      const parsed = JSON.parse(productStorage);
-      const updatedProduct = { ...parsed, quantity: newQuantity };
-      localStorage.setItem("product", JSON.stringify(updatedProduct));
-    }
   };
 
   const handleAddProductCart = async (
@@ -63,38 +56,11 @@ const useDetailsProduct = () => {
     quantityProp: number,
   ) => {
     try {
-      const stored = localStorage.getItem("dataCartStorage");
-      const products: (typeof dataProduct)[] = stored ? JSON.parse(stored) : [];
-
-      const existingProductIndex = products.findIndex(
-        (p: any) =>
-          Number(p.idProduct) === Number(dataProduct.idProduct) &&
-          Number(p.storeId) === Number(dataProduct.storeId),
-      );
-
       const stock = Number(dataProduct?.stock);
+      if (stock <= 0) return;
 
-      if (existingProductIndex !== -1) {
-        const currentQuantity = products[existingProductIndex].quantity;
-
-        // Validar límite de stock
-        if (currentQuantity >= stock) {
-          return;
-        }
-
-        products[existingProductIndex].quantity += 1;
-      } else {
-        // Si el stock es 0 tampoco agregar
-        if (stock <= 0) return;
-
-        products.push({
-          ...dataProduct,
-          quantity: 1,
-        });
-      }
-
-      localStorage.setItem("dataCartStorage", JSON.stringify(products));
       setLoadingAddProduct(true);
+      clearBuyNow();
 
       const resp = await requestPost(
         {
@@ -109,63 +75,7 @@ const useDetailsProduct = () => {
       setLoadingAddProduct(false);
 
       if (resp && resp.status == 200) {
-        // setDataNotification({
-        //   open: true,
-        //   handleClose: () =>
-        //     setDataNotification((prevNoti) => ({
-        //       ...prevNoti,
-        //       open: false,
-        //     })),
-        //   message: "Producto agregado al carrito correctamente",
-        //   type: "success",
-        // });
-
-        setDataCart((prev) => {
-          const existingProduct = prev.find(
-            (item) => Number(item.idProduct) === Number(dataProduct.idProduct),
-          );
-          if (existingProduct) {
-            return prev.map((item) =>
-              Number(item.idProduct) == Number(existingProduct.idProduct)
-                ? {
-                    ...item,
-                    quantity: quantityProp
-                      ? quantityProp + Number(item.quantity)
-                      : 1,
-                  }
-                : item,
-            );
-          } else {
-            return [
-              ...prev,
-              {
-                categoryId: dataProduct.categoryId,
-                createdAt: dataProduct.createdAt,
-                description: dataProduct.description,
-                idProduct: dataProduct.idProduct,
-                imageUrl: dataProduct.imageUrl,
-                name: dataProduct.name,
-                price: dataProduct.price,
-                providerId: dataProduct.providerId,
-                stock: dataProduct.stock,
-                rating: dataProduct.rating,
-                reviews: dataProduct.reviews,
-                quantity: quantityProp ? quantityProp : 1,
-                sku: dataProduct.sku,
-                isPC: dataProduct?.isPC,
-                isPc: dataProduct?.isPc,
-                caracteristicas: dataProduct?.caracteristicas,
-                height: dataProduct?.height,
-                idProductExt: dataProduct?.idProductExt,
-                largo: dataProduct?.largo,
-                storeId: dataProduct?.storeId,
-                upc: dataProduct?.upc,
-                width: dataProduct?.width,
-                product_stock: dataProduct?.product_stock,
-              },
-            ];
-          }
-        });
+        await refreshCartFromServer();
       }
     } catch (error: any) {
       setLoadingAddProduct(false);

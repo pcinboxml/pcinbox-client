@@ -177,6 +177,12 @@ section {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Botones flotantes (WhatsApp + robot) */
+  --fab-size: 60px;
+  --fab-offset-x: 20px;
+  --fab-offset-y: 24px;
+  --fab-dock-gap: 10px;
 }
 
 .dark {
@@ -225,9 +231,35 @@ section {
   }
 }
 
-@media (max-width: 996px) {
+/* Espacio al final del scroll para que los FAB no tapen footer/contenido */
+.main-content {
+  padding-bottom: calc(
+    var(--fab-size) + var(--fab-offset-y) + 24px + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+@media (max-width: 1199px) {
+  :root {
+    --fab-size: 56px;
+    --fab-offset-x: 16px;
+    --fab-offset-y: 16px;
+    --fab-dock-gap: 12px;
+  }
+
   .main-content {
     margin-top: 100px !important;
+    padding-bottom: calc(
+      120px + var(--fab-size) + var(--fab-dock-gap) + var(--fab-offset-y) + 20px +
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --fab-size: 52px;
+    --fab-offset-x: 12px;
+    --fab-offset-y: 12px;
   }
 }
 

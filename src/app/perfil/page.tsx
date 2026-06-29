@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
+import { getAuthProfile, getAuthUserId, isAuthGoogle } from "@/app/utils/authStorage";
+import { resolveProfilePhotoUrl } from "@/app/utils/profilePhoto";
 import SidebarMiCuenta from "./../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import styles from "./perfil.module.css";
 import usePerfil from "./usePerfil";
@@ -37,19 +40,23 @@ const MiCuenta = () => {
     // getAddressAuth,
   } = usePerfil();
 
-  const { rutaImgPerfil } = useTheContext();
+  const { rutaImgPerfil, setRutaImgPerfil } = useTheContext();
+  const { data: session } = useSession();
+  const profilePhotoUrl = useMemo(
+    () =>
+      resolveProfilePhotoUrl(rutaImgPerfil, {
+        googleImageUrl: isAuthGoogle() ? session?.user?.image : null,
+        sessionEmail: session?.user?.email,
+        userId: getAuthUserId(),
+      }),
+    [rutaImgPerfil, session?.user?.image, session?.user?.email],
+  );
   const [authGoogle, setAuthGoogle] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (
-      localStorage.getItem("authGoogle") &&
-      localStorage.getItem("authGoogle") == "true"
-    ) {
+    if (isAuthGoogle()) {
       setAuthGoogle(true);
-    } else if (
-      localStorage.getItem("authGoogle") &&
-      localStorage.getItem("authGoogle") == "false"
-    ) {
+    } else if (typeof window !== "undefined" && localStorage.getItem("authGoogle") === "false") {
       setAuthGoogle(false);
     }
   }, []);
@@ -58,15 +65,12 @@ const MiCuenta = () => {
     // getAddressAuth();
     getCatalagoCfdi();
 
-    if (
-      localStorage.getItem("email") ||
-      localStorage.getItem("name") ||
-      localStorage.getItem("lastname")
-    ) {
+    const profile = getAuthProfile();
+    if (profile.email || profile.name || profile.lastname) {
       setDataPerfil({
-        email: localStorage.getItem("email") || "",
-        name: localStorage.getItem("name") || "",
-        lastname: localStorage.getItem("lastname") || "",
+        email: profile.email || "",
+        name: profile.name || "",
+        lastname: profile.lastname || "",
       });
       getPhotoUser();
     }
@@ -122,9 +126,8 @@ const MiCuenta = () => {
                     Foto
                   </button>
                 </div>
-
                 <img
-                  src={rutaImgPerfil == "" ? "/user.jpeg" : rutaImgPerfil}
+                  src={profilePhotoUrl}
                   width="150"
                   height="150"
                   style={{ objectFit: "contain" }}

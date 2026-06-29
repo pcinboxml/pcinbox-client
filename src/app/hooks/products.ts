@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ProductI from "../interfaces/products/product.interface";
+import { publicEnv } from "@/app/config/env";
 
 const useProducts = () => {
   const [products, setProducts] = useState<ProductI[]>([]);
@@ -9,7 +10,7 @@ const useProducts = () => {
   useEffect(() => {
     const getProducts = async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROVEEDOR}/getAllProduct`,
+        `${publicEnv.apiUrlProveedor}/getAllProduct`,
       );
       const data = await res.json();
       setProducts(data?.data ?? []);

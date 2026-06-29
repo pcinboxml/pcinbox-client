@@ -1,8 +1,7 @@
 import ProductI from "@/app/interfaces/products/product.interface";
+import { publicEnv } from "@/app/config/env";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL_PROVEEDOR ??
-  "https://server-proveedores-a69933baa01a.herokuapp.com/api/v1";
+const API_BASE_URL = publicEnv.apiUrlProveedor;
 
 export async function getProductServer(
   idProduct: string,
@@ -50,8 +49,6 @@ export function getProductImageUrl(product: ProductI): string | undefined {
   if (!image) return undefined;
   if (image.startsWith("http")) return image;
 
-  const base = process.env.NEXT_PUBLIC_API_URL_PROVEEDOR?.replace(/\/api\/v1$/, "");
-  if (base) return `${base}${image.startsWith("/") ? image : `/${image}`}`;
-
-  return image;
+  const base = publicEnv.apiUrlProveedor.replace(/\/api\/v1$/, "");
+  return `${base}${image.startsWith("/") ? image : `/${image}`}`;
 }

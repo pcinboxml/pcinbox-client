@@ -4,6 +4,8 @@ import { ChangeEvent, SyntheticEvent, useState } from "react";
 import ProductI from "../interfaces/products/product.interface";
 import { useTheContext } from "./globalContext";
 import useService from "./useService";
+import useCartSync from "../hooks/useCartSync";
+import useCheckoutSession from "../hooks/useCheckoutSession";
 import { FavoritesI } from "../interfaces/favorites/favorites.interface";
 
 const useFavorites = () => {
@@ -15,6 +17,8 @@ const useFavorites = () => {
     setTotalFavorites,
   } = useTheContext();
   const { requestPost, requestGet } = useService();
+  const { refreshCartFromServer } = useCartSync();
+  const { clearBuyNow } = useCheckoutSession();
 
   const [loadingFavorite, setLoadingFavorite] = useState<boolean>(false);
   const [loadingRemoveFavorite, setLoadingRemoveFavorite] =
@@ -76,44 +80,12 @@ const useFavorites = () => {
 
   const handleAddFavoriteCart = async (product: FavoritesI) => {
     try {
-      const stored = localStorage.getItem("dataCartStorage");
-      const products: (typeof product)[] = stored ? JSON.parse(stored) : [];
-
-      const existingProductIndex = products.findIndex(
-        (p: any) =>
-          Number(p.idProduct) === Number(product.productId) &&
-          Number(p.storeId) === Number(product.products?.storeId),
-      );
-
       const stock = Number(product?.products?.stock);
-
-      if (existingProductIndex !== -1) {
-        const currentQuantity =
-          products[existingProductIndex].products?.quantity;
-
-        // Validar límite de stock
-        if (currentQuantity! >= stock) {
-          return;
-        }
-
-        const current = products[existingProductIndex]?.products?.quantity;
-        if (current != null) {
-          products[existingProductIndex].products!.quantity = current + 1;
-        }
-      } else {
-        // Si el stock es 0 tampoco agregar
-        if (stock <= 0) return;
-
-        products.push({
-          ...product.products,
-          quantity: 1,
-        } as FavoritesI & { quantity: number });
-      }
-
-      localStorage.setItem("dataCartStorage", JSON.stringify(products));
+      if (stock <= 0) return;
 
       setLoadingAddId(String(product.productId) || null);
       setLoadingAddCartFavorite(true);
+      clearBuyNow();
 
       const resp = await requestPost(
         {
@@ -129,51 +101,7 @@ const useFavorites = () => {
       setLoadingAddCartFavorite(false);
 
       if (resp.status == 200) {
-        setDataCart((prev) => {
-          const existingProduct = prev.find(
-            (item) =>
-              Number(item.idProduct) === Number(product.products?.idProduct),
-          );
-          if (existingProduct) {
-            return prev.map((item) =>
-              Number(item.idProduct) == Number(existingProduct.idProduct)
-                ? { ...item, quantity: Number(item.quantity) + Number(1) }
-                : item,
-            );
-          } else {
-            return [
-              ...prev,
-              {
-                categoryId: product.products?.categoryId || "",
-                createdAt: product.products?.createdAt || "",
-                description: product.products?.description || "",
-                idProduct: product.products?.idProduct || "",
-                imageUrl:
-                  product.products?.imageUrl ||
-                  (product.products as any)?.image_url ||
-                  "",
-                name: product.products?.name || "",
-                price: product.products?.price || "0",
-                providerId: product.products?.providerId || "",
-                stock: product.products?.stock || 0,
-                rating: product.products?.rating || 0,
-                reviews: product.products?.reviews || [],
-                sku: product.products?.sku || "",
-                quantity: 1,
-                isPC: product?.products?.isPC,
-                isPc: product?.products?.isPc,
-                caracteristicas: product?.products?.caracteristicas,
-                height: product?.products?.height,
-                idProductExt: product?.products?.idProductExt,
-                largo: product?.products?.largo,
-                product_stock: product?.products?.product_stock,
-                storeId: product?.products?.storeId,
-                upc: product?.products?.upc,
-                width: product?.products?.width,
-              },
-            ];
-          }
-        });
+        await refreshCartFromServer();
       }
     } catch (error) {
       setLoadingAddCartFavorite(false);

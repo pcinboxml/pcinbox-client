@@ -25,6 +25,7 @@ import useProveedores from "@/app/services/proveedores/useProveedores";
 import ProductI from "@/app/interfaces/products/product.interface";
 import { getShareProductUrl } from "@/app/lib/getSiteUrl";
 import { Share2 } from "lucide-react";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 import BranchStockTooltip from "@/app/components/branchStockTooltip/BranchStockTooltip";
 
 const DetailsProduct = () => {
@@ -56,7 +57,8 @@ const DetailsProduct = () => {
 
   const { formatCurrency, onRouterLink, handleShare } = useService();
   const { requestGetProveedor } = useProveedores();
-  const { setDataModal, hasToken, setBuyNowProduct } = useTheContext();
+  const { setDataModal, hasToken } = useTheContext();
+  const { startBuyNow } = useCheckoutSession();
   const router = useParams();
   const { idProduct } = router;
   const { handleAddFavorites, loadingFavorite } = useFavorites();
@@ -179,65 +181,8 @@ const DetailsProduct = () => {
         onConfirm: () => setDataModal((prev) => ({ ...prev, isOpen: false })),
       });
     } else {
-      localStorage.setItem("checkout_mode", "buy_now");
-
-      setBuyNowProduct({
-        ...dataProduct,
-        categoryId: dataProduct!.categoryId,
-        createdAt: dataProduct!.createdAt,
-        description: dataProduct!.description,
-        idProduct: dataProduct!.idProduct,
-        imageUrl: dataProduct!.imageUrl,
-        name: dataProduct!.name,
-        price: dataProduct!.price,
-        providerId: dataProduct!.providerId,
-        stock: dataProduct!.stock,
-        rating: dataProduct!.rating,
-        reviews: dataProduct!.reviews,
-        quantity: Number(quantity),
-        sku: dataProduct!.sku,
-        isPC: dataProduct?.isPC,
-        isPc: dataProduct?.isPc,
-        caracteristicas: dataProduct?.caracteristicas,
-        height: dataProduct?.height,
-        idProductExt: dataProduct?.idProductExt,
-        largo: dataProduct?.largo,
-        storeId: dataProduct?.storeId,
-        upc: dataProduct?.upc,
-        width: dataProduct?.width,
-        product_stock: dataProduct?.product_stock,
-      });
-      localStorage.setItem(
-        "buyNowProduct",
-        JSON.stringify({
-          ...dataProduct,
-          categoryId: dataProduct!.categoryId,
-          createdAt: dataProduct!.createdAt,
-          description: dataProduct!.description,
-          idProduct: dataProduct!.idProduct,
-          imageUrl: dataProduct!.imageUrl,
-          name: dataProduct!.name,
-          price: dataProduct!.price,
-          providerId: dataProduct!.providerId,
-          stock: dataProduct!.stock,
-          rating: dataProduct!.rating,
-          reviews: dataProduct!.reviews,
-          quantity: Number(quantity),
-          sku: dataProduct!.sku,
-          isPC: dataProduct?.isPC,
-          isPc: dataProduct?.isPc,
-          caracteristicas: dataProduct?.caracteristicas,
-          height: dataProduct?.height,
-          idProductExt: dataProduct?.idProductExt,
-          largo: dataProduct?.largo,
-          storeId: dataProduct?.storeId,
-          upc: dataProduct?.upc,
-          width: dataProduct?.width,
-          product_stock: dataProduct?.product_stock,
-        }),
-      );
+      startBuyNow(dataProduct!, Number(quantity));
       onRouterLink("/confirma-productos");
-
       return;
 
       // handleAddProductCart(dataProduct!, Number(quantity));

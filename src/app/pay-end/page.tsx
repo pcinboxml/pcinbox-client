@@ -8,6 +8,7 @@ import usePayEnd from "./usePayEnd";
 import { MdAutorenew, MdCopyAll } from "react-icons/md";
 import useService from "../services/useService";
 import useStorage from "../services/useStorage";
+import useCheckoutSession from "../hooks/useCheckoutSession";
 import styles from "./pay-end.module.css";
 
 function DetailRow({
@@ -55,6 +56,7 @@ const PayEnd = () => {
 
   const { formatCurrency } = useService();
   const { progressPay } = useStorage();
+  const { completePurchaseCleanup } = useCheckoutSession();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -66,6 +68,7 @@ const PayEnd = () => {
 
     if (idOrderParam) {
       setIdOrder(idOrderParam);
+      completePurchaseCleanup();
     }
 
     if (methodPayParam) {

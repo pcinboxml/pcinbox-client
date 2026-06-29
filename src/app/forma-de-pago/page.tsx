@@ -2,6 +2,8 @@
 
 import TimelineComponent from "../components/timeline/TimelineComponent";
 import useFormaDePago from "./useFormaDePago";
+import useCheckoutDraft from "../hooks/useCheckoutDraft";
+import { setCheckoutStep } from "../utils/checkoutStorage";
 import { useTheContext } from "../services/globalContext";
 import useService from "../services/useService";
 import { useEffect } from "react";
@@ -32,6 +34,7 @@ const FormaDePago = () => {
   } = useTheContext();
   const { onRouterLink, productsToShow } = useService();
   const { checkoutMode } = useStorage();
+  const { saveDraft } = useCheckoutDraft();
 
   // const { requestPostPagos } = usePasarelaDePagos();
 
@@ -43,7 +46,6 @@ const FormaDePago = () => {
   const {
     progressPay,
     handleWriteStorageProgressPay,
-    handleWriteStorageProgressPay2,
   } = useStorage();
 
   useEffect(() => {
@@ -317,54 +319,42 @@ const FormaDePago = () => {
                       return;
                     }
 
+                    const paymentName =
+                      idMethodPay == 1
+                        ? "tarjeta_debito_credito"
+                        : idMethodPay == 2
+                          ? "transferencia"
+                          : idMethodPay == 3
+                            ? "efectivo_al_recoger"
+                            : idMethodPay == 4
+                              ? "tarjeta_al_recoger"
+                              : idMethodPay == 6
+                                ? "mercadopago"
+                                : idMethodPay == 5
+                                  ? "efectivo"
+                                  : idMethodPay == 7
+                                    ? "openpay"
+                                    : "";
+
                     handleWriteStorageProgressPay({
                       methodPay: {
                         name: idMethodPay.toString(),
-                        typeMethod:
-                          idMethodPay == 1
-                            ? "tarjeta_debito_credito"
-                            : idMethodPay == 2
-                              ? "transferencia"
-                              : idMethodPay == 3
-                                ? "efectivo_al_recoger"
-                                : idMethodPay == 4
-                                  ? "tarjeta_al_recoger"
-                                  : idMethodPay == 6
-                                    ? "mercadopago"
-                                    : idMethodPay == 5
-                                      ? "efectivo"
-                                      : idMethodPay == 7
-                                        ? "openpay"
-                                        : "",
+                        typeMethod: paymentName,
                         idCard: selectedCard,
                       },
                     });
 
-                    handleWriteStorageProgressPay2({
-                      pay: {
+                    void saveDraft({
+                      checkoutStep: CheckoutStep.RESUMEN,
+                      paymentMethod: {
                         id: idMethodPay,
-                        name:
-                          idMethodPay == 1
-                            ? "tarjeta_debito_credito"
-                            : idMethodPay == 2
-                              ? "transferencia"
-                              : idMethodPay == 3
-                                ? "efectivo_al_recoger"
-                                : idMethodPay == 4
-                                  ? "tarjeta_al_recoger"
-                                  : idMethodPay == 6
-                                    ? "mercadopago"
-                                    : idMethodPay == 5
-                                      ? "efectivo"
-                                      : idMethodPay == 7
-                                        ? "openpay"
-                                        : "",
+                        name: paymentName,
+                        typeMethod: paymentName,
+                        idCard: selectedCard,
                       },
                     });
-                    localStorage.setItem(
-                      "checkout_step",
-                      String(CheckoutStep.RESUMEN),
-                    );
+
+                    setCheckoutStep(CheckoutStep.RESUMEN);
 
                     onRouterLink("/resumen");
                   }}

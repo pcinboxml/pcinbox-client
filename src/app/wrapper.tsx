@@ -13,12 +13,13 @@ import ProductI from "./interfaces/products/product.interface";
 import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
 import useCartSync from "./hooks/useCartSync";
+import useCheckoutSession from "./hooks/useCheckoutSession";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
-import BtnFloat from "./components/UI/BtnFloat/BtnFloat";
+import FabDock from "./components/UI/FabDock/FabDock";
 import useService from "./services/useService";
-import BtnAndroide from "./components/UI/BtnAndroide/BtnAndroide";
+import { getAuthToken } from "./utils/authStorage";
 
 export default function AppWrapper({
   children,
@@ -50,12 +51,7 @@ export default function AppWrapper({
 
   const { dataCartStorege } = useStorage();
   const { syncCartOnAuth } = useCartSync();
-
-  useEffect(() => {
-    if (dataCart && hasToken) {
-      localStorage.setItem("dataCartStorage", JSON.stringify(dataCart));
-    }
-  }, [dataCart, hasToken]);
+  const { completePurchaseCleanup } = useCheckoutSession();
 
   useEffect(() => {
     if (!hasToken) return;
@@ -86,7 +82,7 @@ export default function AppWrapper({
 
     if (typeof window === "undefined") return;
 
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     if (!token || typeof token !== "string") return;
     const payload: any = jwtDecode(token);
@@ -295,14 +291,11 @@ export default function AppWrapper({
 
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
-    socketPagos?.current?.on("removeStorageProgressPay2", () => {
-      localStorage.removeItem("progressPay2");
-      localStorage.setItem("dataCartStorage", JSON.stringify([]));
-      localStorage.removeItem("buyNowProduct");
-      localStorage.removeItem("checkout_mode");
-      localStorage.removeItem("checkout_products_snapshot");
-      localStorage.removeItem("checkout_step");
-    });
+    const handlePostPurchaseCleanup = () => {
+      completePurchaseCleanup();
+    };
+
+    socketPagos?.current?.on("removeStorageProgressPay2", handlePostPurchaseCleanup);
 
     return () => {
       // socket.off("newProduct", handlerNewProduct);
@@ -310,14 +303,7 @@ export default function AppWrapper({
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
-      socketPagos?.current?.off("removeStorageProgressPay2", () => {
-        localStorage.removeItem("progressPay2");
-        localStorage.setItem("dataCartStorage", JSON.stringify([]));
-        localStorage.removeItem("buyNowProduct");
-        localStorage.removeItem("checkout_mode");
-        localStorage.removeItem("checkout_products_snapshot");
-        localStorage.removeItem("checkout_step");
-      });
+      socketPagos?.current?.off("removeStorageProgressPay2", handlePostPurchaseCleanup);
     };
   }, [socketServer.current, socketPagos?.current]);
 
@@ -391,6 +377,12 @@ export default function AppWrapper({
 
   useScrollRestoration(scrollRef);
 
+  const showFab =
+    pathName != "/estatusMP" &&
+    pathName != "/estatusPay" &&
+    pathName != "/terminos_y_condiciones" &&
+    pathName != "/aviso_privacidad";
+
   return (
     <SessionProvider>
       <div
@@ -427,6 +419,8 @@ export default function AppWrapper({
             type={dataModal.type}
             children={dataModal.children}
             showActions={dataModal.showActions}
+            confirmLabel={dataModal.confirmLabel}
+            cancelLabel={dataModal.cancelLabel}
           />
 
           {/* <Notification dataNotification={dataNotification} /> */}
@@ -448,9 +442,6 @@ export default function AppWrapper({
               </>
             )}
         </main>
-
-        <BtnAndroide />
-        <BtnFloat />
         {/* <a
           href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
           target="_blank"
@@ -465,6 +456,7 @@ export default function AppWrapper({
           <FaWhatsapp className="fab-icon" />
         </a> */}
       </div>
+      {showFab && <FabDock />}
     </SessionProvider>
   );
 }

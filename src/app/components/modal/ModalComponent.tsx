@@ -15,6 +15,8 @@ const ModalComponent = ({
   children,
   onConfirm,
   showActions = true,
+  confirmLabel = "Aceptar",
+  cancelLabel = "Cancelar",
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -24,6 +26,8 @@ const ModalComponent = ({
   children?: React.ReactNode;
   onConfirm: () => void;
   showActions?: boolean;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -119,7 +123,7 @@ const ModalComponent = ({
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 z-[9999] flex items-center justify-center`}>
+    <div className={`fixed inset-0 z-[11000] flex items-center justify-center`}>
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-300 ${
           isVisible
@@ -201,14 +205,14 @@ const ModalComponent = ({
                   onClick={handleClose}
                   className="border text-[#808080] rounded px-2 py-1"
                 >
-                  Cancelar
+                  {cancelLabel}
                 </button>
 
                 <button
                   onClick={handleConfirm}
                   className={` text-white font-bold bg-[#bb3d4b] px-2 py-1 rounded`}
                 >
-                  Aceptar
+                  {confirmLabel}
                 </button>
               </div>
             )}

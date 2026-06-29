@@ -3,10 +3,10 @@
 import styles from "./result-search-category.module.css";
 import Image from "next/image";
 import { Alert, Box, Rating, styled, Tooltip } from "@mui/material";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import useProveedores from "../services/proveedores/useProveedores";
 import useService from "../services/useService";
-import { Carousel } from "react-responsive-carousel";
+import ProductImageCarousel from "../components/productImageCarousel/ProductImageCarousel";
 import {
   MdArrowDropDown,
   MdAutorenew,
@@ -57,7 +57,6 @@ const SearchCategoryContent = () => {
     setIsMounted(true);
   }, []);
   const { requestPostProveedor } = useProveedores();
-  const [data, setData] = useState<ProductI[]>([]);
   const [dataCopy, setDataCopy] = useState<ProductI[]>([]);
   const [marcas, setMarcas] = useState([]);
   const [marca, setMarca] = useState<any>("");
@@ -102,6 +101,7 @@ const SearchCategoryContent = () => {
   const idProduct = get("idProduct");
   const name = get("name");
   const categoryId = get("categoryId");
+  const single = get("single");
 
   const prevFiltersRef = useRef({
     marca,
@@ -143,12 +143,20 @@ const SearchCategoryContent = () => {
       );
       setLoadingData(false);
       if (resp.status == 200) {
-        const data = resp.data;
-        setData(data.data.data.filter((product: any) => product?.stock !== 0));
-        setDataCopy(
-          data.data.data.filter((product: any) => product?.stock !== 0),
+        const payload = resp.data;
+        let products = (payload.data.data ?? []).filter(
+          (product: any) => Number(product?.stock) > 0,
         );
-        setMarcas(data.data.marcas);
+
+        if (single === "1" && idProduct) {
+          products = products.filter(
+            (product: any) =>
+              String(product.idProduct) === String(idProduct),
+          );
+        }
+
+        setDataCopy(products);
+        setMarcas(payload.data.marcas ?? []);
       }
     } catch (error) {
       setLoadingData(false);
@@ -178,10 +186,9 @@ const SearchCategoryContent = () => {
     setProcessorSocketProcesador(type);
   };
 
-  useEffect(() => {
+  const visibleProducts = useMemo(() => {
     let filtered = [...dataCopy];
 
-    // ===== FILTROS =====
     if (marca) {
       filtered = filtered.filter((item: any) => item.marcaId == marca);
     }
@@ -197,50 +204,70 @@ const SearchCategoryContent = () => {
 
         const matchBrand = processorBrand
           ? caract.some(
-            (c) =>
-              c.prop === "Fabricante de procesador" &&
-              c.value?.toLowerCase() === processorBrand.toLowerCase(),
-          )
+              (c) =>
+                c.prop === "Fabricante de procesador" &&
+                c.value?.toLowerCase() === processorBrand.toLowerCase(),
+            )
           : true;
 
         const matchMemory = processorTipoMemoria
           ? caract.some(
-            (c) =>
-              c.prop === "Tipo de memoria interna" &&
-              c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
-          )
+              (c) =>
+                c.prop === "Tipo de memoria interna" &&
+                c.value?.toLowerCase() === processorTipoMemoria.toLowerCase(),
+            )
           : true;
 
         const matchSocket = processorSocketProcesador
           ? caract.some(
-            (c) =>
-              c.prop === "Socket de procesador" &&
-              c.value
-                ?.toLowerCase()
-                .includes(processorSocketProcesador.toLowerCase()),
-          )
+              (c) =>
+                c.prop === "Socket de procesador" &&
+                c.value
+                  ?.toLowerCase()
+                  .includes(processorSocketProcesador.toLowerCase()),
+            )
           : true;
 
         return matchBrand && matchMemory && matchSocket;
       });
     }
 
-    // ===== BUSCADOR =====
     const term = searchText.toLowerCase().trim();
-
     if (term.length >= 3) {
       filtered = filtered.filter((item: any) => {
         return (
-          item.name?.toLowerCase().includes(term.trim()) ||
-          item.description?.toLowerCase().includes(term.trim()) ||
-          item.sku?.toLowerCase().includes(term.trim()) ||
-          item.upc?.toLowerCase().includes(term.trim())
+          item.name?.toLowerCase().includes(term) ||
+          item.description?.toLowerCase().includes(term) ||
+          item.sku?.toLowerCase().includes(term) ||
+          item.upc?.toLowerCase().includes(term) ||
+          item.nameMarca?.toLowerCase().includes(term)
         );
       });
     }
 
-    setData(filtered);
+    if (orderBy === "1") {
+      filtered.sort((a: any, b: any) => Number(b.price) - Number(a.price));
+    } else if (orderBy === "2") {
+      filtered.sort((a: any, b: any) => Number(a.price) - Number(b.price));
+    }
 
+    return filtered;
+  }, [
+    dataCopy,
+    marca,
+    processorBrand,
+    processorTipoMemoria,
+    processorSocketProcesador,
+    searchText,
+    orderBy,
+  ]);
+
+  const paginatedProducts = useMemo(
+    () => visibleProducts.slice(startIndex, endIndex),
+    [visibleProducts, startIndex, endIndex],
+  );
+
+  useEffect(() => {
     const currentFilters = {
       marca,
       processorBrand,
@@ -258,12 +285,12 @@ const SearchCategoryContent = () => {
       prevFiltersRef.current = currentFilters;
     }
   }, [
-    dataCopy,
     marca,
     processorBrand,
     processorTipoMemoria,
     processorSocketProcesador,
     searchText,
+    orderBy,
   ]);
 
   useEffect(() => {
@@ -304,7 +331,6 @@ const SearchCategoryContent = () => {
               }),
             };
           });
-        setData(updateFn);
         setDataCopy(updateFn);
       }
     });
@@ -337,7 +363,6 @@ const SearchCategoryContent = () => {
             : item;
         });
       setDataCopy(updateFn);
-      setData(updateFn);
     };
 
     const handlerUpdateProductComponent = (dataSocket: ProductI) => {
@@ -357,7 +382,6 @@ const SearchCategoryContent = () => {
             : item;
         });
       setDataCopy(updateFn);
-      setData(updateFn);
       setDataFavorites((prevFavorites) =>
         prevFavorites.map((item: any) => {
           const match = Number(item.productId) == Number(dataSocket.idProduct);
@@ -395,7 +419,6 @@ const SearchCategoryContent = () => {
           return item;
         });
       setDataCopy(updateFn);
-      setData(updateFn);
     };
 
     const handleUpdateCategoryBanner = async (dataUpdateCategoryBanner: {
@@ -439,19 +462,6 @@ const SearchCategoryContent = () => {
   ];
 
   useEffect(() => {
-    if (orderBy) {
-      setData((prev) => {
-        const sorted = [...prev].sort((a: any, b: any) =>
-          orderBy === "1"
-            ? Number(b.price) - Number(a.price)
-            : Number(a.price) - Number(b.price),
-        );
-        return sorted;
-      });
-    }
-  }, [orderBy]);
-
-  useEffect(() => {
     updateURL("/result-search-category", {
       page,
       marca,
@@ -460,8 +470,9 @@ const SearchCategoryContent = () => {
       idProduct,
       name,
       categoryId,
+      single,
     });
-  }, [page, marca, searchText, filterValue, idProduct, name, categoryId]);
+  }, [page, marca, searchText, filterValue, idProduct, name, categoryId, single]);
 
   useEffect(() => {
     const pageParam = Number(get("page")) || 1;
@@ -472,6 +483,7 @@ const SearchCategoryContent = () => {
     setMarca(marcaParam ? Number(marcaParam) : "");
     setSearchText(searchParam);
     setFilterValue(orderParam);
+    setOrderBy(orderParam);
   }, []);
 
   useEffect(() => {
@@ -529,8 +541,20 @@ const SearchCategoryContent = () => {
     return { percentage, rating: progressRating.rating };
   };
 
+  const availableMarcas = useMemo(() => {
+    if (!marcas?.length) return [];
+    const marcaIds = new Set(
+      dataCopy.map((product: any) => Number(product.marcaId)),
+    );
+    return (marcas as any[]).filter((marcaItem) =>
+      marcaIds.has(Number(marcaItem.idMarca)),
+    );
+  }, [marcas, dataCopy]);
+
   const hasSidebar =
-    marcas && marcas?.length > 0 && (marcas as any)?.[0]?.idMarca != null;
+    single !== "1" &&
+    availableMarcas.length > 0 &&
+    availableMarcas[0]?.idMarca != null;
 
   const handleResetFilters = () => {
     if (dataCategories) {
@@ -545,13 +569,13 @@ const SearchCategoryContent = () => {
         setProcessorTipoMemoria(null);
       }
     }
-    setMarca(null);
+    setMarca("");
     setOrderBy("");
     setFilterValue("");
     // *** SOLUCIÓN 1: Reiniciar la página a 1 al resetear ***
     setPage(1);
     prevFiltersRef.current = {
-      marca: null,
+      marca: "",
       processorBrand: null,
       processorTipoMemoria: null,
       processorSocketProcesador: null,
@@ -656,7 +680,7 @@ const SearchCategoryContent = () => {
                 <span className={styles.sidebarTitle}>Marcas</span>
                 <ul className={styles.marcaList}>
                   {marcas &&
-                    marcas.map((m: any, indexMarca: number) => (
+                    availableMarcas.map((m: any, indexMarca: number) => (
                       <li key={indexMarca}>
                         <label
                           htmlFor={`marca${m.idMarca}`}
@@ -848,7 +872,7 @@ const SearchCategoryContent = () => {
 
           <div className={styles.mainContent}>
             <h3 className={styles.categoryTitle} ref={titleRef}>
-              {data && data.length > 0 ? (data[0] as any).nameCategoria : ""}
+              {visibleProducts.length > 0 ? (visibleProducts[0] as any).nameCategoria : ""}
             </h3>
 
             {dataCopy && dataCopy.length > 0 && (
@@ -931,19 +955,13 @@ const SearchCategoryContent = () => {
             <hr />
 
             <div>
-              {data && data.length > 0 ? (
+              {visibleProducts.length > 0 ? (
                 viewMode === "square" ? (
                   <div className={styles.productsGrid}>
-                    {data
-                      .slice(startIndex, endIndex)
-                      .sort((a: any, b: any) => {
-                        if (a.stock > 0 && b.stock === 0) return -1;
-                        if (a.stock === 0 && b.stock > 0) return 1;
-                        return 0;
-                      })
-                      .map((item, index: number) => (
-                        <div key={index} className={styles.productSquareCard}>
-                          <div className={styles.squareCardHeader}>
+                    {paginatedProducts.map((item) => (
+                        <div key={item.idProduct} className={styles.productSquareCard}>
+                          <div className={styles.squareMedia}>
+                            <div className={styles.squareCardHeader}>
                             {/* Favorito */}
                             <div>
                               <button
@@ -959,7 +977,7 @@ const SearchCategoryContent = () => {
                                   await handleToggleFavorites(
                                     isFavorite,
                                     Number(item?.idProduct),
-                                    setData,
+                                    setDataCopy,
                                     setDataCopy,
                                   );
                                   setLoadingToogleFavorite((prev) => ({
@@ -1021,46 +1039,17 @@ const SearchCategoryContent = () => {
                           </div>
 
                           <div className={styles.squareCarouselWrapper}>
-                            <Carousel
-                              showIndicators={true}
-                              showThumbs={false}
-                              showStatus={false}
-                              showArrows={true}
-                              onClickItem={() =>
+                            <ProductImageCarousel
+                              images={(item as any).image_url}
+                              imageClassName={styles.squareProductImg}
+                              slideClassName={styles.squareCarouselSlide}
+                              imageSizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
+                              imageTransform="tr=w-400,q-70,f-auto"
+                              onNavigate={() =>
                                 onRouterLink(`/detailsProduct/${item.idProduct}`)
                               }
-                            >
-                              {(item as any).image_url &&
-                                (item as any).image_url.length > 0
-                                ? (item as any).image_url.map(
-                                  (img: string, i: number) => (
-                                    <div
-                                      key={i}
-                                      className={styles.squareCarouselSlide}
-                                    >
-                                      <Image
-                                        src={`${img}?tr=w-400,q-70,f-auto`}
-                                        alt="producto"
-                                        width={140}
-                                        height={140}
-                                        style={{
-                                          objectFit: "contain",
-                                          height: "140px",
-                                          width: "140px",
-                                          marginTop: "8px",
-                                        }}
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority={i === 0}
-                                      />
-                                    </div>
-                                  ),
-                                )
-                                : [
-                                  <div key="no-img" style={{ padding: 8, fontSize: 12 }}>
-                                    Sin imágenes
-                                  </div>,
-                                ]}
-                            </Carousel>
+                            />
+                          </div>
                           </div>
 
                           <div className={styles.squareCardBody}>
@@ -1202,15 +1191,9 @@ const SearchCategoryContent = () => {
                       ))}
                   </div>
                 ) : (
-                  data
-                    .slice(startIndex, endIndex)
-                    .sort((a: any, b: any) => {
-                      if (a.stock > 0 && b.stock === 0) return -1;
-                      if (a.stock === 0 && b.stock > 0) return 1;
-                      return 0;
-                    })
-                    .map((item, index: number) => (
-                      <div key={index} className={styles.productCard}>
+                  <div className={styles.productsList}>
+                    {paginatedProducts.map((item) => (
+                      <div key={item.idProduct} className={styles.productCard}>
                         <div
                           className="flex justify-end"
                           style={{ marginLeft: "auto" }}
@@ -1230,7 +1213,7 @@ const SearchCategoryContent = () => {
                                 await handleToggleFavorites(
                                   isFavorite,
                                   Number(item?.idProduct),
-                                  setData,
+                                  setDataCopy,
                                   setDataCopy,
                                 );
                                 setLoadingToogleFavorite((prev) => ({
@@ -1430,7 +1413,7 @@ const SearchCategoryContent = () => {
                                                         >
                                                           <div
                                                             style={{
-                                                              width: `${calcPorcentaje(item, data, progressRating).percentage}%`,
+                                                              width: `${calcPorcentaje(item, dataCopy, progressRating).percentage}%`,
                                                               height: 15,
                                                               background:
                                                                 "#BB3D4B",
@@ -1449,7 +1432,7 @@ const SearchCategoryContent = () => {
                                                           {
                                                             calcPorcentaje(
                                                               item,
-                                                              data,
+                                                              dataCopy,
                                                               progressRating,
                                                             ).rating
                                                           }
@@ -1728,54 +1711,21 @@ const SearchCategoryContent = () => {
                           </div>
 
                           <div className={styles.carouselWrapper}>
-                            <Carousel
-                              showIndicators={true}
-                              showThumbs={false}
-                              showStatus={false}
-                              showArrows={true}
-                              onClickItem={() =>
+                            <ProductImageCarousel
+                              images={(item as any).image_url}
+                              imageClassName={styles.listProductImg}
+                              slideClassName={styles.carouselSlide}
+                              imageSizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 200px"
+                              imageTransform="tr=w-600,q-70,f-auto"
+                              onNavigate={() =>
                                 onRouterLink(`/detailsProduct/${item.idProduct}`)
                               }
-                            >
-                              {(item as any).image_url &&
-                                (item as any).image_url.length > 0
-                                ? (item as any).image_url.map(
-                                  (img: string, i: number) => (
-                                    <div
-                                      key={i}
-                                      className={styles.carouselSlide}
-                                    >
-                                      <Image
-                                        src={`${img}?tr=w-600,q-70,f-auto`}
-                                        alt="producto"
-                                        width={150}
-                                        height={150}
-                                        style={{
-                                          objectFit: "contain",
-                                          height: "150px",
-                                          width: "150px",
-                                          marginTop: "12px",
-                                        }}
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority={i === 0}
-
-                                      // className={styles.productImg}
-                                      // sizes="(max-width: 768px) 100vw, 50vw"
-                                      // priority={i === 0}
-                                      />
-                                    </div>
-                                  ),
-                                )
-                                : [
-                                  <div key="no-img" style={{ padding: 8 }}>
-                                    Sin imágenes
-                                  </div>,
-                                ]}
-                            </Carousel>
+                            />
                           </div>
                         </div>
                       </div>
-                    ))
+                    ))}
+                  </div>
                 )
               ) : (
                 <Alert severity="info">Sin contenido disponible</Alert>
@@ -1787,12 +1737,12 @@ const SearchCategoryContent = () => {
         <Alert severity="info">Cargando...</Alert> // Mensaje más claro mientras carga
       )}
 
-      {data && data?.length > 0 && (
+      {visibleProducts.length > 0 && (
         <div className={styles.paginationWrapper}>
           <PaginationComponent
             onChange={handleChangePage}
             page={page}
-            count={Math.ceil(data.length / itemsPerPage)}
+            count={Math.ceil(visibleProducts.length / itemsPerPage)}
           />
         </div>
       )}

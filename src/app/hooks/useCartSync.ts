@@ -7,7 +7,7 @@ import useStorage from "../services/useStorage";
 import {
   clearLocalCartStorage,
   readLocalCartStorage,
-  writeLocalCartStorage,
+  writeLocalCartStorageFromProducts,
 } from "../utils/cartSync";
 
 export default function useCartSync() {
@@ -17,14 +17,17 @@ export default function useCartSync() {
 
   const applyCartItems = (items: ProductI[]) => {
     setDataCart(items);
-    handleWriteStorageDataCart(items);
+    if (hasToken) {
+      clearLocalCartStorage();
+    } else {
+      writeLocalCartStorageFromProducts(items);
+      handleWriteStorageDataCart(items);
+    }
   };
 
   const refreshCartFromServer = async (): Promise<ProductI[]> => {
     if (!hasToken) {
-      const localItems = readLocalCartStorage();
-      applyCartItems(localItems);
-      return localItems;
+      return [];
     }
 
     try {
@@ -35,23 +38,22 @@ export default function useCartSync() {
         return items;
       }
     } catch {
-      // fallback al storage local si el servidor no responde
+      // sin servidor autenticado no hay carrito persistido local útil
     }
 
-    const localItems = readLocalCartStorage();
-    applyCartItems(localItems);
-    return localItems;
+    applyCartItems([]);
+    return [];
   };
 
   const mergeLocalCartIntoServer = async () => {
     if (!hasToken) return refreshCartFromServer();
 
-    const localItems = readLocalCartStorage();
-    if (localItems.length > 0) {
+    const localRefs = readLocalCartStorage();
+    if (localRefs.length > 0) {
       try {
         await requestPost(
           {
-            dataCart: localItems.map((item) => ({
+            dataCart: localRefs.map((item) => ({
               idProduct: item.idProduct,
               quantity: Number(item.quantity) || 1,
               storeId: item.storeId ?? null,
@@ -60,9 +62,7 @@ export default function useCartSync() {
           "/cart/addProductFromStorage",
         );
       } catch {
-        // Si falla el merge, al menos mostramos lo local
-        applyCartItems(localItems);
-        return localItems;
+        clearLocalCartStorage();
       }
     }
 
@@ -76,7 +76,7 @@ export default function useCartSync() {
 
   const syncCartLineQuantity = async (product: ProductI, quantity: number) => {
     if (!hasToken) {
-      const localItems = readLocalCartStorage().map((item) =>
+      const localItems = (await refreshCartFromServer()).map((item) =>
         String(item.idProduct) === String(product.idProduct) &&
         String(item.storeId ?? "") === String(product.storeId ?? "")
           ? { ...item, quantity }
@@ -113,6 +113,5 @@ export default function useCartSync() {
     syncCartOnAuth,
     syncCartLineQuantity,
     clearCartEverywhere,
-    writeLocalCartStorage,
   };
 }

@@ -141,7 +141,7 @@ const Failed = ({
                       {
                         orderId: dataPayOpenPay?.order_id,
                         idUser: localStorage.getItem("idUser"),
-                        idAddress: progressPay.optionSend.address,
+                        idAddress: progressPay.optionSend?.address,
                       },
                       "/openpay/retryPaymentOpenPay"
                     );

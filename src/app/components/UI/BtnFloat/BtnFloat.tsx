@@ -6,23 +6,23 @@ import useService from "@/app/services/useService";
 
 const BtnFloat = () => {
   const { onRouterHref } = useService();
+
   return (
     <button
+      type="button"
+      aria-label="Contactar por WhatsApp"
       onClick={() => {
         onRouterHref("https://wa.me/message/W345O6QEZDJEP1?src=qr", true);
       }}
-      //   href="https://wa.me/message/W345O6QEZDJEP1?src=qr"
-      //   target="_blank"
-      //   rel="noopener noreferrer"
-      className={styles.fab}
+      className={`${styles.fab} fab-dock-item`}
     >
-      <span className={styles.wave}></span>
-      <span className={styles.wave}></span>
-      <span className={styles.wave}></span>
-      <span className={styles.wave}></span>
-
-      <FaWhatsapp className="fab-icon" size={30} />
+      <span className={styles.wave} aria-hidden />
+      <span className={styles.wave} aria-hidden />
+      <span className={styles.wave} aria-hidden />
+      <span className={styles.wave} aria-hidden />
+      <FaWhatsapp className={styles.icon} aria-hidden />
     </button>
   );
 };
+
 export default BtnFloat;
