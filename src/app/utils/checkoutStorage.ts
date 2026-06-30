@@ -32,6 +32,8 @@ export type BuyNowSession = {
 export const CHECKOUT_STORAGE_KEYS = {
   cart: "dataCartStorage",
   legacyCart: "dataCart",
+  /** null = carrito de invitado; solo se fusiona al login si no pertenece a otra cuenta. */
+  cartOwner: "cartOwnerUserId",
   buyNow: "buyNowProduct",
   checkoutMode: "checkout_mode",
   checkoutSnapshot: "checkout_products_snapshot",
@@ -39,6 +41,14 @@ export const CHECKOUT_STORAGE_KEYS = {
   progressPay: "progressPay",
   progressPay2: "progressPay2",
 } as const;
+
+const SESSION_CHECKOUT_MODE = "checkout_mode_session";
+
+function hasPersistedAuthToken(): boolean {
+  if (typeof window === "undefined") return false;
+  const token = localStorage.getItem("token");
+  return Boolean(token && token !== "null" && token !== "undefined");
+}
 
 function safeParse<T>(raw: string | null): T | null {
   if (!raw) return null;
@@ -154,6 +164,7 @@ export function readCartLineRefs(): CartLineRef[] {
 
 export function writeCartLineRefs(refs: CartLineRef[]) {
   if (typeof window === "undefined") return;
+  if (hasPersistedAuthToken()) return;
   localStorage.setItem(CHECKOUT_STORAGE_KEYS.cart, JSON.stringify(refs));
   localStorage.removeItem(CHECKOUT_STORAGE_KEYS.legacyCart);
 }
@@ -180,6 +191,7 @@ export function readBuyNowSession(): BuyNowSession | null {
 
 export function writeBuyNowSession(session: BuyNowSession) {
   if (typeof window === "undefined") return;
+  if (hasPersistedAuthToken()) return;
   localStorage.setItem(CHECKOUT_STORAGE_KEYS.buyNow, JSON.stringify(session));
 }
 
@@ -190,17 +202,49 @@ export function clearBuyNowSession() {
 
 export function getCheckoutMode(): CheckoutMode | null {
   if (typeof window === "undefined") return null;
+  if (hasPersistedAuthToken()) {
+    const sessionMode = sessionStorage.getItem(SESSION_CHECKOUT_MODE);
+    return sessionMode === "cart" || sessionMode === "buy_now"
+      ? sessionMode
+      : null;
+  }
   const mode = localStorage.getItem(CHECKOUT_STORAGE_KEYS.checkoutMode);
   return mode === "cart" || mode === "buy_now" ? mode : null;
 }
 
 export function setCheckoutMode(mode: CheckoutMode | null) {
   if (typeof window === "undefined") return;
+  if (hasPersistedAuthToken()) {
+    if (mode) {
+      sessionStorage.setItem(SESSION_CHECKOUT_MODE, mode);
+    } else {
+      sessionStorage.removeItem(SESSION_CHECKOUT_MODE);
+    }
+    return;
+  }
   if (mode) {
     localStorage.setItem(CHECKOUT_STORAGE_KEYS.checkoutMode, mode);
   } else {
     localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutMode);
   }
+}
+
+/** Productos activos en checkout según modo (carrito vs comprar ahora). */
+export function resolveCheckoutProducts(
+  checkoutMode: CheckoutMode,
+  buyNowProduct: ProductI | null | undefined,
+  dataCart: ProductI[] | null | undefined,
+): ProductI[] {
+  if (checkoutMode === "buy_now" && buyNowProduct != null) {
+    return [buyNowProduct];
+  }
+  if (dataCart?.length) {
+    return dataCart;
+  }
+  if (buyNowProduct != null) {
+    return [buyNowProduct];
+  }
+  return [];
 }
 
 export function readCheckoutSnapshot(): ProductCheckoutSnapshot[] {
@@ -220,6 +264,7 @@ export function readCheckoutSnapshot(): ProductCheckoutSnapshot[] {
 
 export function writeCheckoutSnapshot(products: ProductCheckoutSnapshot[]) {
   if (typeof window === "undefined") return;
+  if (hasPersistedAuthToken()) return;
   localStorage.setItem(
     CHECKOUT_STORAGE_KEYS.checkoutSnapshot,
     JSON.stringify(products),
@@ -232,6 +277,8 @@ export function syncCheckoutFromProducts(
   dataCart: ProductI[],
   productsToShow: ProductI[] | null | undefined,
 ) {
+  if (hasPersistedAuthToken()) return;
+
   if (buyNowProduct != null && dataCart.length === 0) {
     setCheckoutMode("buy_now");
     if (productsToShow?.length) {
@@ -266,6 +313,13 @@ export function clearCheckoutSnapshot() {
   localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutSnapshot);
 }
 
+function clearPersistedCheckoutModeAndStep() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutMode);
+  localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
+  sessionStorage.removeItem(SESSION_CHECKOUT_MODE);
+}
+
 export function getCheckoutStep(): CheckoutStep | null {
   if (typeof window === "undefined") return null;
   const raw = localStorage.getItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
@@ -276,6 +330,7 @@ export function getCheckoutStep(): CheckoutStep | null {
 
 export function setCheckoutStep(step: CheckoutStep | null) {
   if (typeof window === "undefined") return;
+  if (hasPersistedAuthToken()) return;
   if (step === null) {
     localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
   } else {
@@ -291,6 +346,23 @@ export type ClearCheckoutOptions = {
   clearStep?: boolean;
   clearMode?: boolean;
 };
+
+/** Limpia buy now y progreso de checkout sin tocar el carrito de invitado (para merge al login). */
+export function clearGuestBuyNowAndCheckoutProgress() {
+  if (typeof window === "undefined") return;
+  clearBuyNowSession();
+  clearPersistedCheckoutModeAndStep();
+  clearCheckoutSnapshot();
+  clearCheckoutProgressStorage();
+}
+
+/** Limpia todo el checkout persistido al cambiar de cuenta o cerrar sesión. */
+export function clearAccountScopedCheckoutStorage() {
+  if (typeof window === "undefined") return;
+  clearCartLineRefs();
+  localStorage.removeItem(CHECKOUT_STORAGE_KEYS.cartOwner);
+  clearGuestBuyNowAndCheckoutProgress();
+}
 
 /** Limpia estado de checkout en localStorage (sin tocar token ni perfil). */
 export function clearCheckoutLocalStorage(options: ClearCheckoutOptions = {}) {
@@ -310,8 +382,7 @@ export function clearCheckoutLocalStorage(options: ClearCheckoutOptions = {}) {
   }
   if (clearBuyNow) clearBuyNowSession();
   if (clearSnapshot) clearCheckoutSnapshot();
-  if (clearStep) setCheckoutStep(null);
-  if (clearMode) setCheckoutMode(null);
+  if (clearStep || clearMode) clearPersistedCheckoutModeAndStep();
   if (clearCartRefs) clearCartLineRefs();
 }
 
@@ -330,11 +401,13 @@ export function clearPostPurchaseStorage() {
 /** Inicia sesión comprar ahora sin alterar el carrito persistido. */
 export function persistBuyNowSession(product: ProductI, quantity: number) {
   const session = toBuyNowSession(product, quantity);
-  writeBuyNowSession(session);
+  if (!hasPersistedAuthToken()) {
+    writeBuyNowSession(session);
+    clearCheckoutProgressStorage();
+    setCheckoutStep(null);
+    clearCheckoutSnapshot();
+  }
   setCheckoutMode("buy_now");
-  clearCheckoutProgressStorage();
-  setCheckoutStep(null);
-  clearCheckoutSnapshot();
   return session;
 }
 

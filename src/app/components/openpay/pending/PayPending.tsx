@@ -29,7 +29,7 @@ const PayPending = ({
   const { requestGetPagos } = usePasarelaDePagos();
   const [loadingDownloadBar, setLoadingDownloadBar] = useState<boolean>(false);
   const { socketPagos } = useTheContext();
-  const { completePurchaseCleanup } = useCheckoutSession();
+  const { resetCheckoutProgress } = useCheckoutSession();
   const cleanedUpRef = useRef(false);
 
   useEffect(() => {
@@ -37,8 +37,8 @@ const PayPending = ({
     if (!isOfflineOpenPayMethod(dataPayOpenPay)) return;
 
     cleanedUpRef.current = true;
-    void completePurchaseCleanup();
-  }, [dataPayOpenPay, completePurchaseCleanup]);
+    resetCheckoutProgress();
+  }, [dataPayOpenPay, resetCheckoutProgress]);
 
   const formatAmount = (value: number) => {
     return new Intl.NumberFormat("es-MX", {
@@ -249,7 +249,7 @@ const PayPending = ({
             <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={() => {
-                  void completePurchaseCleanup();
+                  resetCheckoutProgress();
                   onRouterLink(
                     `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${
                       dataPayOpenPay?.order_id

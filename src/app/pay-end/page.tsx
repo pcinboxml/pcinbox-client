@@ -52,7 +52,7 @@ const PayEnd = () => {
 
   const { formatCurrency } = useService();
   const { progressPay } = useStorage();
-  const { completePurchaseCleanup } = useCheckoutSession();
+  const { resetCheckoutProgress } = useCheckoutSession();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -64,7 +64,7 @@ const PayEnd = () => {
 
     if (idOrderParam) {
       setIdOrder(idOrderParam);
-      void completePurchaseCleanup();
+      resetCheckoutProgress();
     }
 
     if (methodPayParam) {

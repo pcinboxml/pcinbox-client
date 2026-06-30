@@ -1,4 +1,9 @@
 /** Claves de sesión de autenticación (única fuente de verdad). */
+import {
+  clearAccountScopedCheckoutStorage,
+  clearGuestBuyNowAndCheckoutProgress,
+} from "./checkoutStorage";
+
 export const AUTH_STORAGE_KEYS = {
   token: "token",
   idUser: "idUser",
@@ -54,6 +59,17 @@ export function hasAuthToken(): boolean {
 
 export function setAuthSession(session: AuthSession) {
   if (!isBrowser()) return;
+
+  const previousUserId = getAuthUserId();
+  const switchingAccount =
+    previousUserId && String(previousUserId) !== String(session.idUser);
+
+  if (switchingAccount) {
+    clearAccountScopedCheckoutStorage();
+  } else {
+    clearGuestBuyNowAndCheckoutProgress();
+  }
+
   localStorage.setItem(AUTH_STORAGE_KEYS.token, session.token);
   localStorage.setItem(AUTH_STORAGE_KEYS.idUser, String(session.idUser));
   if (session.email != null) localStorage.setItem(AUTH_STORAGE_KEYS.email, session.email);
@@ -70,4 +86,5 @@ export function setAuthSession(session: AuthSession) {
 export function clearAuthSession() {
   if (!isBrowser()) return;
   Object.values(AUTH_STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+  clearAccountScopedCheckoutStorage();
 }

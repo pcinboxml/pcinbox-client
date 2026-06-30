@@ -6,6 +6,7 @@ import useService from "@/app/services/useService";
 import { useTheContext } from "@/app/services/globalContext";
 import { signIn } from "next-auth/react";
 import { setAuthSession } from "@/app/utils/authStorage";
+import { setCachedProfilePhotoUrl } from "@/app/utils/profilePhoto";
 
 const useLogin = () => {
   const [formData, setFormData] = useState<LoginI>({
@@ -15,7 +16,7 @@ const useLogin = () => {
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false);
   const [loadingLoginGoogle, setLoadingLogingGoogle] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { requestPost } = useService();
+  const { requestPost, requestGet } = useService();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
   const { setTotalFavorites } = useTheContext();
@@ -50,16 +51,28 @@ const useLogin = () => {
 
       if (res && res.status == 200) {
         const data = await res.data;
+        const idUser = data?.data?.idUser || data?.idUser;
 
         setAuthSession({
           token: data?.data?.token || data?.token || "",
-          idUser: data?.data?.idUser || data?.idUser,
+          idUser,
           email: formData?.email || "",
           name: data?.data?.name || "",
           lastname: data?.data?.lastname || "",
           authGoogle: false,
         });
         setTotalFavorites(data?.data?.totalFavorites);
+
+        try {
+          const photoResp = await requestGet("/user/getPhotoUser", true);
+          const photoUrl = String(photoResp?.data?.data?.rutaImg ?? "").trim();
+          if (photoUrl && idUser) {
+            setCachedProfilePhotoUrl(idUser, photoUrl);
+          }
+        } catch {
+          // La foto se cargará en el siguiente render vía useProfilePhotoSync
+        }
+
         window.location.href = "/principal";
       }
     } catch (error: any) {

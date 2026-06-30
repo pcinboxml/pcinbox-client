@@ -1,10 +1,20 @@
 import useService from "@/app/services/useService";
-import React, { useState, useEffect, JSX } from "react";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
+import React, { useState, useEffect, useRef, JSX } from "react";
 
 const SuccessMP = ({ dataMpPay }: { dataMpPay: any }) => {
   const { onRouterLink } = useService();
+  const { clearCartAfterPaymentConfirmed } = useCheckoutSession();
+  const cartClearedRef = useRef(false);
   const orderIdFromMeta =
     dataMpPay?.metadata?.id_order ?? dataMpPay?.metadata?.idOrder ?? "";
+
+  useEffect(() => {
+    if (cartClearedRef.current) return;
+    cartClearedRef.current = true;
+    void clearCartAfterPaymentConfirmed();
+  }, [clearCartAfterPaymentConfirmed]);
+
   useEffect(() => {
     createConfetti();
   }, []);

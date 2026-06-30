@@ -14,11 +14,19 @@ import {
   Truck,
   CheckCircle2,
 } from "lucide-react";
-import { MdAccountBalance, MdMoney } from "react-icons/md";
+import { MdAccountBalance, MdAutorenew, MdMoney } from "react-icons/md";
+import {
+  getOrderDetailHeader,
+  resolveOrderDetailMode,
+} from "../../utils/orderDetailHelpers";
+import {
+  formatPaymentMethodLabel,
+  getCancelRefundMessage,
+} from "../../utils/historyPaymentMessages";
 
 const DetallesPedido = () => {
   const { formatCurrency, onRouterLink } = useService();
-  const { dataSalesByUser, handleGetSalesByUser } = useDetallesPedido();
+  const { dataSalesByUser, loading, handleGetSalesByUser } = useDetallesPedido();
 
   const router = useParams();
   const { idDetallePedido } = router;
@@ -29,10 +37,51 @@ const DetallesPedido = () => {
     }
   }, [idDetallePedido]);
 
-  return dataSalesByUser &&
-    dataSalesByUser?.status == "paid" &&
-    dataSalesByUser?.shipments?.length &&
-    dataSalesByUser?.shipments?.[0].status == "entregado" ? (
+  const detailMode = resolveOrderDetailMode(dataSalesByUser);
+  const header = detailMode ? getOrderDetailHeader(detailMode) : null;
+  const isCancelled = detailMode === "cancelled";
+  const isPickup = detailMode === "pickup";
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#f9fafb",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.75rem",
+          color: "#6b7280",
+        }}
+      >
+        <MdAutorenew size={24} className="the-spinner" />
+        Cargando detalles del pedido...
+      </div>
+    );
+  }
+
+  if (!dataSalesByUser || !detailMode || !header) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#f9fafb",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "1rem",
+        }}
+      >
+        <Alert severity="info" style={{ maxWidth: "448px" }}>
+          Los detalles están disponibles cuando el pedido fue entregado,
+          completado o cancelado.
+        </Alert>
+      </div>
+    );
+  }
+
+  return (
     <div
       style={{
         minHeight: "100vh",
@@ -111,7 +160,7 @@ const DetallesPedido = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Pedido Completado
+                  {header.label}
                 </p>
                 <h1
                   style={{
@@ -135,12 +184,16 @@ const DetallesPedido = () => {
               }}
             >
               <CheckCircle2
-                style={{ width: "20px", height: "20px", color: "#86efac" }}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  color: isCancelled ? "#fecaca" : "#86efac",
+                }}
               />
               <span
                 style={{ color: "rgba(255, 255, 255, 0.9)", fontWeight: "500" }}
               >
-                Entregado exitosamente
+                {header.subtitle}
               </span>
             </div>
           </div>
@@ -263,11 +316,14 @@ const DetallesPedido = () => {
                           marginBottom: "0.25rem",
                         }}
                       >
-                        Fecha de entrega
+                        Fecha de {isCancelled ? "cancelación" : "entrega"}
                       </p>
                       <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
                         {new Date(
-                          dataSalesByUser?.shipments?.[0]?.createdAt
+                          isCancelled
+                            ? dataSalesByUser?.updatedAt
+                            : dataSalesByUser?.shipments?.[0]?.updatedAt ||
+                              dataSalesByUser?.shipments?.[0]?.createdAt,
                         ).toLocaleString("es-MX", {
                           dateStyle: "medium",
                           timeStyle: "short",
@@ -416,7 +472,7 @@ const DetallesPedido = () => {
                               marginBottom: "0.75rem",
                             }}
                           >
-                            🏪 Se entregó en sucursal
+                            🏪 {isPickup ? "Recogido en sucursal" : "Se entregó en sucursal"}
                           </span>
                           <div
                             style={{
@@ -714,11 +770,14 @@ const DetallesPedido = () => {
                 {/* Estado de pago */}
                 <div
                   style={{
-                    background:
-                      "linear-gradient(to bottom right, #dcfce7, #a7f3d0)",
+                    background: isCancelled
+                      ? "linear-gradient(to bottom right, #fce8ea, #fecdd3)"
+                      : "linear-gradient(to bottom right, #dcfce7, #a7f3d0)",
                     borderRadius: "16px",
                     padding: "1rem",
-                    border: "2px solid #86efac",
+                    border: isCancelled
+                      ? "2px solid #fca5a5"
+                      : "2px solid #86efac",
                   }}
                 >
                   <div
@@ -733,7 +792,7 @@ const DetallesPedido = () => {
                       style={{
                         width: "20px",
                         height: "20px",
-                        color: "#16a34a",
+                        color: isCancelled ? "#bb3d4b" : "#16a34a",
                       }}
                     />
                     <p
@@ -744,19 +803,31 @@ const DetallesPedido = () => {
                         margin: 0,
                       }}
                     >
-                      Estado de pago
+                      Estado del pedido
                     </p>
                   </div>
                   <p
                     style={{
                       fontSize: "1.5rem",
                       fontWeight: "bold",
-                      color: "#15803d",
+                      color: isCancelled ? "#bb3d4b" : "#15803d",
                       margin: 0,
                     }}
                   >
-                    Pagado
+                    {isCancelled ? "Cancelado" : "Pagado"}
                   </p>
+                  {isCancelled ? (
+                    <p
+                      style={{
+                        marginTop: "0.75rem",
+                        fontSize: "0.875rem",
+                        color: "#7f1d1d",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {getCancelRefundMessage(dataSalesByUser.pay_method)}
+                    </p>
+                  ) : null}
                 </div>
 
                 {/* Método de pago */}
@@ -845,10 +916,26 @@ const DetallesPedido = () => {
                             <MdMoney size={20} style={{ color: "#6b7280" }} />
                           </div>
                           <span style={{ fontWeight: "500", color: "#111827" }}>
-                            Efectivo
+                            {formatPaymentMethodLabel(dataSalesByUser.pay_method)}
                           </span>
                         </>
-                      ) : null}
+                      ) : (
+                        <>
+                          <div
+                            style={{
+                              background: "white",
+                              padding: "0.5rem",
+                              borderRadius: "8px",
+                              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                            }}
+                          >
+                            <MdMoney size={20} style={{ color: "#6b7280" }} />
+                          </div>
+                          <span style={{ fontWeight: "500", color: "#111827" }}>
+                            {formatPaymentMethodLabel(dataSalesByUser.pay_method)}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -911,21 +998,6 @@ const DetallesPedido = () => {
           </div>
         </div>
       </div>
-    </div>
-  ) : (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#f9fafb",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "1rem",
-      }}
-    >
-      <Alert severity="info" style={{ maxWidth: "448px" }}>
-        Sin contenido disponible
-      </Alert>
     </div>
   );
 };

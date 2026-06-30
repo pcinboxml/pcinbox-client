@@ -2,7 +2,8 @@
 
 import { ChargesOpenPay } from "@/app/interfaces/openpay/charges.interface";
 import useService from "@/app/services/useService";
-import { useState, useEffect } from "react";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
+import { useEffect, useRef, useState } from "react";
 
 const PaySuccess = ({
   dataPayOpenPay,
@@ -12,7 +13,15 @@ const PaySuccess = ({
   const [showConfetti, setShowConfetti] = useState(true);
   const [checkmarkComplete, setCheckmarkComplete] = useState(false);
   const { onRouterLink } = useService();
+  const { clearCartAfterPaymentConfirmed } = useCheckoutSession();
   const [loadingRoute, setLoadingRoute] = useState<boolean>(false);
+  const cartClearedRef = useRef(false);
+
+  useEffect(() => {
+    if (cartClearedRef.current) return;
+    cartClearedRef.current = true;
+    void clearCartAfterPaymentConfirmed();
+  }, [clearCartAfterPaymentConfirmed]);
 
   useEffect(() => {
     const timer = setTimeout(() => setCheckmarkComplete(true), 400);

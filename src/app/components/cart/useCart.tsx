@@ -151,7 +151,7 @@ const useCart = () => {
     if (hasToken) {
       try {
         setLoadingRmAllCart(true);
-        await clearCartEverywhere(dataCartProp);
+        await clearCartEverywhere();
         handleRemoveStorageDataCart();
         onMouseLeaveCartProp();
       } catch {

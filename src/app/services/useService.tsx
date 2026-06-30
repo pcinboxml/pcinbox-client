@@ -14,7 +14,7 @@ import {
   useState,
 } from "react";
 import useStorage from "./useStorage";
-import { getCheckoutMode, setCheckoutMode as persistCheckoutMode } from "../utils/checkoutStorage";
+import { getCheckoutMode, resolveCheckoutProducts, setCheckoutMode as persistCheckoutMode } from "../utils/checkoutStorage";
 import { readCheckoutUiSession } from "../utils/checkoutSessionStorage";
 import { clearAuthSession, getAuthToken, getAuthUserId } from "../utils/authStorage";
 import { clearCachedProfilePhotoUrl } from "../utils/profilePhoto";
@@ -34,8 +34,10 @@ const useService = () => {
     setDataFavorites,
     setTotalFavorites,
     setRutaImgPerfil,
+    setDataCart,
   } = useTheContext();
-  const { dataCartStorege, checkoutMode, setCheckoutMode } = useStorage();
+  const { dataCartStorege, checkoutMode, setCheckoutMode, clearAccountCheckoutState } =
+    useStorage();
   const [productsToShow, setProductsToShow] = useState<ProductI[] | null>(null);
 
   const api = useMemo(() => {
@@ -386,6 +388,7 @@ const useService = () => {
       onConfirm: async () => {
         const userId = getAuthUserId();
         if (userId) clearCachedProfilePhotoUrl(userId);
+        clearAccountCheckoutState();
         await signOut({ redirect: false });
         clearAuthSession();
         setRutaImgPerfil("");
@@ -579,38 +582,33 @@ const useService = () => {
   };
 
   useEffect(() => {
-    const mode = getCheckoutMode();
     const hasBuyNow = buyNowProduct != null;
     const hasCart = dataCart && dataCart.length > 0;
+    const resolvedMode =
+      checkoutMode === "buy_now" || checkoutMode === "cart"
+        ? checkoutMode
+        : getCheckoutMode() ??
+          (hasBuyNow && !hasCart
+            ? "buy_now"
+            : hasCart
+              ? "cart"
+              : hasBuyNow
+                ? "buy_now"
+                : "cart");
 
-    if (mode === "buy_now" && hasBuyNow) {
-      setProductsToShow([buyNowProduct]);
-      if (checkoutMode !== "buy_now") {
-        setCheckoutMode("buy_now");
-        persistCheckoutMode("buy_now");
-      }
-      return;
+    const products = resolveCheckoutProducts(resolvedMode, buyNowProduct, dataCart);
+
+    setProductsToShow(products);
+
+    if (products.length === 0) return;
+
+    const nextMode: "cart" | "buy_now" =
+      resolvedMode === "buy_now" && hasBuyNow ? "buy_now" : "cart";
+
+    if (checkoutMode !== nextMode) {
+      setCheckoutMode(nextMode);
     }
-
-    if (hasCart) {
-      setProductsToShow(dataCart);
-      if (checkoutMode !== "cart") {
-        setCheckoutMode("cart");
-        persistCheckoutMode("cart");
-      }
-      return;
-    }
-
-    if (hasBuyNow) {
-      setProductsToShow([buyNowProduct]);
-      if (checkoutMode !== "buy_now") {
-        setCheckoutMode("buy_now");
-        persistCheckoutMode("buy_now");
-      }
-      return;
-    }
-
-    setProductsToShow([]);
+    persistCheckoutMode(nextMode);
   }, [buyNowProduct, dataCart, checkoutMode]);
 
   // const returnUrl = useMemo((): string => {

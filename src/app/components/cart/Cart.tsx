@@ -12,10 +12,11 @@ import type { CartOpenMode } from "./useCart";
 import useCartSync from "@/app/hooks/useCartSync";
 import { MdAutorenew } from "react-icons/md";
 import useStorage from "@/app/services/useStorage";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 import {
   clearCheckoutProgressStorage,
-  syncCheckoutFromProducts,
   setCheckoutStep,
+  syncCheckoutFromProducts,
 } from "@/app/utils/checkoutStorage";
 import { CheckoutStep } from "@/app/components/timeline/checkoutSteps";
 import Image from "next/image";
@@ -58,6 +59,7 @@ export const ModalCart = ({
     loadingRmAllCart,
   } = useCart();
   const { syncCartLineQuantity } = useCartSync();
+  const { enterCartCheckout } = useCheckoutSession();
   const [updatingQtyKey, setUpdatingQtyKey] = useState<string | null>(null);
 
   const itemCount = useMemo(
@@ -83,7 +85,7 @@ export const ModalCart = ({
       const rect = anchorRef.current.getBoundingClientRect();
       const viewportPad = 12;
       const gap = 8;
-      const panelWidth = Math.min(600, window.innerWidth - viewportPad * 2);
+      const panelWidth = Math.min(560, window.innerWidth - viewportPad * 2);
 
       let left = rect.right - panelWidth;
       left = Math.max(
@@ -93,8 +95,8 @@ export const ModalCart = ({
 
       const top = rect.bottom + gap;
       const availableHeight = window.innerHeight - top - viewportPad;
-      const maxHeight = Math.min(680, availableHeight);
-      const minHeight = Math.min(540, maxHeight);
+      const maxHeight = Math.min(520, availableHeight);
+      const minHeight = Math.min(380, maxHeight);
 
       const bridgeLeft = Math.min(rect.left, left);
       const bridgeRight = Math.max(rect.right, left + panelWidth);
@@ -336,8 +338,8 @@ export const ModalCart = ({
                         src={imageSrc}
                         loading="lazy"
                         alt={product.name || "Producto"}
-                        width={88}
-                        height={88}
+                        width={64}
+                        height={64}
                         className="cart-item-image"
                         onClick={() => {
                           onRouterLink(`/detailsProduct/${product.idProduct}`);
@@ -434,8 +436,7 @@ export const ModalCart = ({
                 type="button"
                 className="cart-btn-primary"
                 onClick={() => {
-                  setCheckoutStep(CheckoutStep.CONFIRMAR_PRODUCTOS);
-                  syncCheckoutFromProducts(buyNowProduct, dataCart ?? [], productsToShow);
+                  enterCartCheckout(dataCart ?? []);
                   onRouterLink("/confirma-productos");
                   closeCartNow();
                 }}

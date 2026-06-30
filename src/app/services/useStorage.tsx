@@ -13,6 +13,7 @@ import {
   buyNowSessionToProduct,
   CHECKOUT_STORAGE_KEYS,
   CheckoutMode,
+  clearAccountScopedCheckoutStorage,
   getCheckoutMode,
   readBuyNowSession,
   setCheckoutMode,
@@ -81,32 +82,38 @@ const useStorage = () => {
   });
 
   useEffect(() => {
-    const stored = safeParse<ProgressPayPersisted>(
-      localStorage.getItem(CHECKOUT_STORAGE_KEYS.progressPay),
-    );
-    if (stored) {
-      setProgressPay((prev) => ({
-        ...prev,
-        ...sanitizeProgressPay(stored),
-        optionSend: { ...prev.optionSend, ...stored.optionSend },
-        methodPay: { ...prev.methodPay, ...stored.methodPay },
-      }));
-    }
-
-    if (!hasAuthToken()) {
-      readLocalCartStorage();
-    }
-
-    try {
-      const buyNowSession = readBuyNowSession();
-      const mode = getCheckoutMode() ?? "cart";
-      setCheckoutModeState(mode);
-      if (buyNowSession) {
-        setBuyNowProduct(buyNowSessionToProduct(buyNowSession));
+    if (hasAuthToken()) {
+      const mode = getCheckoutMode();
+      if (mode) {
+        setCheckoutModeState(mode);
       }
-    } catch {
-      // sin sesión buy now
+      return;
     }
+
+    const stored = safeParse<ProgressPayPersisted>(
+        localStorage.getItem(CHECKOUT_STORAGE_KEYS.progressPay),
+      );
+      if (stored) {
+        setProgressPay((prev) => ({
+          ...prev,
+          ...sanitizeProgressPay(stored),
+          optionSend: { ...prev.optionSend, ...stored.optionSend },
+          methodPay: { ...prev.methodPay, ...stored.methodPay },
+        }));
+      }
+
+      readLocalCartStorage();
+
+      try {
+        const buyNowSession = readBuyNowSession();
+        const mode = getCheckoutMode() ?? "cart";
+        setCheckoutModeState(mode);
+        if (buyNowSession) {
+          setBuyNowProduct(buyNowSessionToProduct(buyNowSession));
+        }
+      } catch {
+        // sin sesión buy now
+      }
   }, [setBuyNowProduct]);
 
   const handleWriteStorageProgressPay = (obj: Partial<ProgressPayPersisted>) => {
@@ -122,10 +129,12 @@ const useStorage = () => {
     });
 
     setProgressPay(updated);
-    localStorage.setItem(
-      CHECKOUT_STORAGE_KEYS.progressPay,
-      JSON.stringify(updated),
-    );
+    if (!hasAuthToken()) {
+      localStorage.setItem(
+        CHECKOUT_STORAGE_KEYS.progressPay,
+        JSON.stringify(updated),
+      );
+    }
   };
 
   /** Solo memoria — montos y dataPurchase viven en el borrador del servidor. */
@@ -149,6 +158,18 @@ const useStorage = () => {
     clearLocalCartStorage();
   };
 
+  const clearAccountCheckoutState = () => {
+    handleRemoveStorageDataCart();
+    clearAccountScopedCheckoutStorage();
+    setBuyNowProduct(null);
+    setCheckoutModeState("cart");
+    setProgressPay({
+      optionSend: { name: "", address: 0 },
+      methodPay: { name: "", typeMethod: "", idCard: "" },
+    });
+    setProgressPay2({ dataPurchase: {}, pay: {} });
+  };
+
   const handleSetCheckoutMode = (mode: CheckoutMode) => {
     setCheckoutModeState(mode);
     setCheckoutMode(mode);
@@ -162,6 +183,7 @@ const useStorage = () => {
     handleWriteStorageProgressPay2,
     handleWriteStorageDataCart,
     handleRemoveStorageDataCart,
+    clearAccountCheckoutState,
     checkoutMode,
     setCheckoutMode: handleSetCheckoutMode,
   };

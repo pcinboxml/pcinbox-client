@@ -5,7 +5,7 @@ export function formatPaymentMethodLabel(method?: string): string {
     tarjeta_sucursal: "Tarjeta en sucursal",
     transferencia_bancaria: "Transferencia bancaria",
     mercadopago: "Mercado Pago",
-    oxxo: "Efectivo en OXXO",
+    oxxo: "Efectivo en establecimiento",
     efectivo_sucursal: "Efectivo en establecimiento",
     efectivo: "Efectivo",
   };
@@ -30,8 +30,8 @@ export function getCancelRefundMessage(paymentMethod?: string): string {
     return "Comunícate con la sucursal PCInbox para coordinar el reembolso por transferencia.";
   }
 
-  if (method === "oxxo" || method === "efectivo_sucursal" || method === "efectivo") {
-    return "Acude a la sucursal PCInbox donde realizaste el pago en efectivo para solicitar tu reembolso.";
+  if (method === "oxxo" || method === "efectivo" || method === "efectivo_sucursal") {
+    return "El pago se realizó en un establecimiento afiliado (farmacia, tienda u otro). Para tu reembolso, acude a la sucursal PCInbox con tu comprobante y número de orden; te apoyaremos en efectivo o por transferencia bancaria.";
   }
 
   return "Recibirás instrucciones de reembolso según el método de pago utilizado.";

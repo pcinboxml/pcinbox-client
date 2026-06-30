@@ -27,7 +27,6 @@ import { FcGoogle } from "react-icons/fc";
 import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
-import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import useStorage from "@/app/services/useStorage";
@@ -70,7 +69,6 @@ const NavbarResponsive = () => {
     setHasToken,
     hasToken,
     rutaImgPerfil,
-    setRutaImgPerfil,
     dataFavorites,
     dataCategories,
     totalFavorites,
@@ -91,7 +89,6 @@ const NavbarResponsive = () => {
       }),
     [rutaImgPerfil, session?.user?.image, session?.user?.email, hasToken],
   );
-  const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
 
   // Mobile state
@@ -144,15 +141,6 @@ const NavbarResponsive = () => {
       }
     }
   }, [session, status]);
-
-  useEffect(() => {
-    const userId = getAuthUserId();
-    if (hasToken && userId) {
-      getPhotoUser();
-    } else if (!hasToken) {
-      setRutaImgPerfil("");
-    }
-  }, [hasToken]);
 
   useEffect(() => {
     const total = dataCart

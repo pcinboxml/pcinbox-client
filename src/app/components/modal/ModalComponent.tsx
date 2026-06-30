@@ -134,7 +134,7 @@ const ModalComponent = ({
       />
 
       <div
-        className={`relative bg-[#E6E6E6] rounded shadow-2xl mx-4 p-2 sm:p-4 md:p-8 transform transition-all duration-300 w-full max-w-[95vw] md:max-w-[700px] lg:max-w-[900px] ${
+        className={`relative bg-[#E6E6E6] rounded shadow-2xl mx-4 p-2 sm:p-3 md:p-4 transform transition-all duration-300 w-fit max-w-[95vw] md:max-w-[700px] lg:max-w-[900px] ${
           isVisible
             ? "scale-100 opacity-100"
             : "scale-95 opacity-0 pointer-events-none"
@@ -152,65 +152,65 @@ const ModalComponent = ({
           <X className="w-5 h-5 text-[white] font-bold" />
         </button>
 
-        <div className="bg-[#E6E6E6] min-h-[200px] w-full flex items-end p-1 sm:p-3 mt-5 relative">
-          <div
-            className="absolute"
-            style={{
-              left: "50%",
-              transform: "translateX(-50%)",
-              top: "-17px",
-            }}
-          >
-            {config.type == "info" ? (
-              <MdInfo size={55} color="#bb3d4b" />
-            ) : config.type == "success" ? (
-              <MdCheckCircle size={55} />
-            ) : config.type == "warning" ? (
-              <MdWarningAmber size={55} color="#bb3d4b" />
-            ) : config.type == "error" ? (
-              <MdError size={55} color="#bb3d4b" />
-            ) : (
-              ""
-            )}
-          </div>
-          <div className="bg-[white] w-full py-4 px-1 sm:px-2 rounded max-h-[70vh] md:max-h-[75vh] overflow-y-auto">
-            {title && (
-              <h3
-                id="modal-title"
-                className="text-2xl text-center font-bold text-[#606060]"
-                style={{
-                  color: "#606060",
-                  fontWeight: "bold",
-                }}
-              >
-                {title}
-              </h3>
-            )}
+        <div className="bg-[#E6E6E6] w-full p-2 sm:p-3 mt-8 relative rounded">
+          <div className="bg-[white] w-full rounded flex flex-col max-h-[min(70vh,640px)] min-w-[min(100%,320px)]">
+            <div
+              className={`flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 pt-8 ${
+                showActions ? "pb-4" : "pb-5 sm:pb-6"
+              }`}
+            >
+              <div className="flex flex-col items-center w-full">
+                <div className="mb-5 flex shrink-0 justify-center">
+                  {config.type == "info" ? (
+                    <MdInfo size={52} color="#bb3d4b" />
+                  ) : config.type == "success" ? (
+                    <MdCheckCircle size={52} />
+                  ) : config.type == "warning" ? (
+                    <MdWarningAmber size={52} color="#bb3d4b" />
+                  ) : config.type == "error" ? (
+                    <MdError size={52} color="#bb3d4b" />
+                  ) : null}
+                </div>
 
-            {typeof message == "string" ? (
-              <p
-                id="modal-description"
-                className="text-[#808080] text-center mb-8 leading-relaxed text-base max-w-[420px] mx-auto"
-              >
-                {message}
-              </p>
-            ) : (
-              <div className="w-full px-2 sm:px-4">{message}</div>
-            )}
-            {children}
+                {title && (
+                  <h3
+                    id="modal-title"
+                    className="text-2xl text-center font-bold text-[#606060] mb-4 px-2 w-full"
+                    style={{
+                      color: "#606060",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {title}
+                  </h3>
+                )}
+
+                {typeof message == "string" ? (
+                  <p
+                    id="modal-description"
+                    className="text-[#808080] text-center leading-relaxed text-base max-w-[420px] mx-auto px-2"
+                  >
+                    {message}
+                  </p>
+                ) : (
+                  <div className="w-full px-2 sm:px-4">{message}</div>
+                )}
+                {children}
+              </div>
+            </div>
 
             {showActions && showActions == true && (
-              <div className="flex gap-4 justify-center">
+              <div className="shrink-0 flex gap-4 justify-center px-4 sm:px-6 py-4 border-t border-[#ececec] bg-white rounded-b w-full">
                 <button
                   onClick={handleClose}
-                  className="border text-[#808080] rounded px-2 py-1"
+                  className="border text-[#808080] rounded px-3 py-1.5 min-w-[96px]"
                 >
                   {cancelLabel}
                 </button>
 
                 <button
                   onClick={handleConfirm}
-                  className={` text-white font-bold bg-[#bb3d4b] px-2 py-1 rounded`}
+                  className="text-white font-bold bg-[#bb3d4b] px-3 py-1.5 rounded min-w-[96px]"
                 >
                   {confirmLabel}
                 </button>

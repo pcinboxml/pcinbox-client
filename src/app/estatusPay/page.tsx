@@ -19,7 +19,7 @@ const EstatusPayContent = () => {
   const id = get("id");
 
   const { requestPostPagos } = usePasarelaDePagos();
-  const { completePurchaseCleanup } = useCheckoutSession();
+  const { resetCheckoutProgress } = useCheckoutSession();
 
   const [dataPayOpenPay, setDataPayOpenPay] = useState<ChargesOpenPay | null>(
     null,
@@ -59,7 +59,7 @@ const EstatusPayContent = () => {
               offlineType === "bank");
 
           if (isOfflinePending) {
-            void completePurchaseCleanup();
+            resetCheckoutProgress();
           }
         } else {
           setError(true);

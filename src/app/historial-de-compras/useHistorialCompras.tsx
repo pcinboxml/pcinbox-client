@@ -12,6 +12,9 @@ import {
   getCancelRefundMessage,
   getCancelSuccessMessage,
 } from "../utils/historyPaymentMessages";
+import { canViewOrderDetails } from "../utils/orderDetailHelpers";
+
+export { canViewOrderDetails };
 
 export type HistoryFilterState = {
   status: string;

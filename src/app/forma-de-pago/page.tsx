@@ -345,7 +345,16 @@ const FormaDePago = () => {
                     });
 
                     await saveDraft({
+                      checkoutMode: checkoutMode as "cart" | "buy_now",
                       checkoutStep: CheckoutStep.RESUMEN,
+                      buyNow:
+                        checkoutMode === "buy_now" && buyNowProduct
+                          ? {
+                              idProduct: buyNowProduct.idProduct,
+                              quantity: Number(buyNowProduct.quantity),
+                              storeId: buyNowProduct.storeId ?? null,
+                            }
+                          : null,
                       paymentMethod: {
                         id: idMethodPay,
                         name: paymentName,

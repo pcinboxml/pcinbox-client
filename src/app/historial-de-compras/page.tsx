@@ -5,6 +5,7 @@ import SidebarMiCuenta from "../components/sidebar-mi-cuenta/SidebarMiCuenta";
 import style from "./historial-de-compras.module.css";
 import useHistorialDeCompras, {
   canCancelOrder,
+  canViewOrderDetails,
   formatPaymentMethod,
   getOrderTotal,
   isOrderCancelled,
@@ -271,17 +272,19 @@ const HistoryShop = () => {
           })}
         </div>
 
-        <div className={style.orderActions}>
-          <button
-            type="button"
-            className={style.detailBtn}
-            onClick={() =>
-              onRouterLink(`/detalles-pedido/${historyCompra.idOrder}`)
-            }
-          >
-            Ver detalles
-          </button>
-        </div>
+        {canViewOrderDetails(historyCompra) ? (
+          <div className={style.orderActions}>
+            <button
+              type="button"
+              className={style.detailBtn}
+              onClick={() =>
+                onRouterLink(`/detalles-pedido/${historyCompra.idOrder}`)
+              }
+            >
+              Ver detalles
+            </button>
+          </div>
+        ) : null}
       </article>
     );
   };

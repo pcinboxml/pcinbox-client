@@ -306,33 +306,39 @@
   text-decoration: none;
 }
 
+.status,
 .orderStatus {
-  padding: 8px 16px;
-  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 9999px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .statusDelivered {
-  background: #d4edda;
-  color: #155724;
+  background: #dcfce7;
+  color: #166534;
 }
 
 .statusShipped {
-  background: #cce7ff;
-  color: #0056b3;
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .statusProcessing {
-  background: #fff3cd;
-  color: #856404;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .statusCancelled {
-  background: #f8d7da;
-  color: #721c24;
+  background: #fce8ea;
+  color: #bb3d4b;
 }
 
 .orderTotal {
@@ -525,9 +531,10 @@
     font-size: 1rem;
   }
 
-  .status {
-    font-size: 0.75rem !important;
-    padding: 4px 8px !important;
+  .status,
+  .orderStatus {
+    font-size: 0.7rem;
+    padding: 5px 12px;
   }
 }
 
@@ -573,9 +580,10 @@
     font-size: 0.95rem;
   }
 
-  .status {
-    font-size: 0.7rem !important;
-    padding: 3px 6px !important;
+  .status,
+  .orderStatus {
+    font-size: 0.65rem;
+    padding: 4px 10px;
   }
 
   /* button {

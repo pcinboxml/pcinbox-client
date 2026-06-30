@@ -13,6 +13,7 @@ const useDetallesPedido = () => {
   const [dataSalesByUser, setDataSalesByUser] = useState<SalesByUserI | null>(
     null
   );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const match = window.matchMedia("(max-width: 1550px)");
@@ -167,6 +168,7 @@ const useDetallesPedido = () => {
   // ];
 
   const handleGetSalesByUser = async (idOrder: any) => {
+    setLoading(true);
     try {
       const resp = await requestPost(
         { idOrder: idOrder },
@@ -175,48 +177,18 @@ const useDetallesPedido = () => {
       if (resp.status == 200) {
         const data = resp.data;
         setDataSalesByUser(data.data.data);
-
-        // let dataRow = data.data.data.map((item: any) => {
-        //   return {
-        //     id: item.idOrder,
-        //     img: item.image_url,
-        //     description: item.description,
-        //     quantity: Number(item.quantity),
-        //     unitPrice: Number(item.price),
-        //     totalPrice: Number(item.totalAmount),
-        //     createdAt: item.createdAt,
-        //     pay_method: item.pay_method,
-        //     status: item.status,
-        //     updatedAt: item.updatedAt,
-        //   };
-        // });
-
-        // const grouped: any = Object.values(
-        //   dataRow.reduce((acc: any, item: any) => {
-        //     if (!acc[item.id]) {
-        //       // Clonar el item para no modificar el original
-        //       acc[item.id] = { ...item };
-        //     } else {
-        //       // Sumar quantity
-        //       acc[item.id].quantity += item.quantity;
-
-        //       // (Opcional) combinar arrays de imágenes sin duplicar
-        //       acc[item.id].img = Array.from(
-        //         new Set([...acc[item.id].img, ...item.img])
-        //       );
-        //     }
-        //     return acc;
-        //   }, {})
-        // );
-
-        // setRows(grouped);
+      } else {
+        setDataSalesByUser(null);
       }
     } catch (error) {
       setDataSalesByUser(null);
+    } finally {
+      setLoading(false);
     }
   };
   return {
     dataSalesByUser,
+    loading,
     handleGetSalesByUser,
   };
 };

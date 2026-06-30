@@ -123,12 +123,14 @@ export const OrderTimeline = ({ steps, product }: OrderTimelineProps) => {
                 <p className="text-[#bb3d4b] text-[22px] font-bold">
                   Pedido Cancelado <br />
                   <span className="text-[#606060] text-[15px] font-bold">
-                    Comunicate con la sucursal{" "}
-                    <span className="text-[#000] font-bold">PCInbox</span> para
-                    solicitar tu reembolso.
+                    El pago se realizó en un establecimiento afiliado. Acude a
+                    la sucursal{" "}
+                    <span className="text-[#000] font-bold">PCInbox</span> con
+                    tu comprobante para coordinar tu reembolso en efectivo o por
+                    transferencia.
                     <br />
                     <span className="text-[#606060] text-[15px] font-bold">
-                      Envia el No. de orden #{p.idOrder} y tu nombre por favor.
+                      Envía el No. de orden #{p.idOrder} y tu nombre por favor.
                     </span>
                   </span>
                 </p>

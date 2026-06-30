@@ -13,6 +13,7 @@ import useCheckoutDraft from "../hooks/useCheckoutDraft";
 import useCartSync from "../hooks/useCartSync";
 import {
   clearCheckoutLocalStorage,
+  resolveCheckoutProducts,
   setCheckoutMode,
   writeCheckoutSnapshot,
 } from "../utils/checkoutStorage";
@@ -29,9 +30,9 @@ const useConfirmaProductos = () => {
     buyNowProduct,
   } = useTheContext();
   const { requestPost, formatCurrency } = useService();
-  const { handleRemoveStorageDataCart } = useStorage();
+  const { handleRemoveStorageDataCart, checkoutMode } = useStorage();
   const { clearBuyNow } = useCheckoutSession();
-  const { refreshCartFromServer } = useCartSync();
+  const { refreshCartFromServer, clearCartEverywhere } = useCartSync();
   const { confirmEmptyCart } = useConfirmEmptyCart();
   const { clearDraft } = useCheckoutDraft();
   const isSmallScreen = useMediaQuery("(max-width: 1250px)", { noSsr: true });
@@ -45,12 +46,11 @@ const useConfirmaProductos = () => {
 
   // ---------- Manejo automático de productos a mostrar ----------
   useEffect(() => {
-    const sourceProducts =
-      buyNowProduct && buyNowProduct != null
-        ? [buyNowProduct]
-        : dataCart && dataCart.length > 0
-          ? dataCart
-          : [];
+    const sourceProducts = resolveCheckoutProducts(
+      checkoutMode,
+      buyNowProduct,
+      dataCart,
+    );
 
     if (sourceProducts?.length === 0) {
       clearCheckoutLocalStorage({ clearProgress: false, clearBuyNow: false });
@@ -68,7 +68,7 @@ const useConfirmaProductos = () => {
         action: 1,
       })),
     );
-  }, [buyNowProduct, dataCart]);
+  }, [buyNowProduct, dataCart, checkoutMode]);
 
   // ---------- Eliminar producto ----------
   const handleRemoveProduct = async (idProduct: string) => {
@@ -117,13 +117,11 @@ const useConfirmaProductos = () => {
       onConfirmEmpty: async () => {
         try {
           setLoadingClearCar(true);
-          const resp = await requestPost({ dataCart }, "/cart/removeAllCart");
+          await clearCartEverywhere();
 
-          if (resp?.status === 200) {
-            handleRemoveStorageDataCart();
-            clearCheckoutLocalStorage({ clearProgress: true, clearBuyNow: true });
-            await clearDraft();
-          }
+          handleRemoveStorageDataCart();
+          clearCheckoutLocalStorage({ clearProgress: true, clearBuyNow: true });
+          await clearDraft();
         } catch (error) {
           console.error(error);
         } finally {

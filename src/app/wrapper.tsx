@@ -14,12 +14,13 @@ import { jwtDecode } from "jwt-decode";
 import useStorage from "./services/useStorage";
 import useCartSync from "./hooks/useCartSync";
 import useCheckoutSession from "./hooks/useCheckoutSession";
+import { ProfilePhotoLoader } from "./hooks/useProfilePhotoSync";
 import useProtectedRoute from "./middleware/protectedRoute";
 import NavbarResponsive from "./components/navbarMobile/NavbarMobile";
 import { useScrollRestoration } from "./services/useScrollRestauration";
 import FabDock from "./components/UI/FabDock/FabDock";
 import useService from "./services/useService";
-import { getAuthToken } from "./utils/authStorage";
+import { getAuthToken, getAuthUserId } from "./utils/authStorage";
 
 export default function AppWrapper({
   children,
@@ -42,6 +43,7 @@ export default function AppWrapper({
     hasToken,
     dataCart,
     setDataCart,
+    setBuyNowProduct,
     //setDataProducts,
     setDataFavorites,
     socketServer,
@@ -50,11 +52,25 @@ export default function AppWrapper({
   } = useTheContext();
 
   const { dataCartStorege } = useStorage();
-  const { syncCartOnAuth } = useCartSync();
-  const { completePurchaseCleanup } = useCheckoutSession();
+  const { syncCartOnAuth, refreshCartFromServer } = useCartSync();
+  const { clearCartAfterPaymentConfirmed } = useCheckoutSession();
+  const lastAuthUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!hasToken) return;
+    if (!hasToken) {
+      lastAuthUserIdRef.current = null;
+      return;
+    }
+
+    const userId = getAuthUserId();
+    if (!userId) return;
+
+    if (lastAuthUserIdRef.current && lastAuthUserIdRef.current !== userId) {
+      setDataCart([]);
+      setBuyNowProduct(null);
+    }
+    lastAuthUserIdRef.current = userId;
+
     void syncCartOnAuth();
   }, [hasToken]);
 
@@ -62,7 +78,7 @@ export default function AppWrapper({
     if (!hasToken || typeof window === "undefined") return;
 
     const refreshOnFocus = () => {
-      void syncCartOnAuth();
+      void refreshCartFromServer();
     };
 
     window.addEventListener("focus", refreshOnFocus);
@@ -122,24 +138,6 @@ export default function AppWrapper({
     const socket = socketServer.current;
 
     const handlerUpdateProduct = (data: ProductI) => {
-      // setDataProducts((prev) =>
-      //   prev.map((item) => {
-      //     const match = Number(item.idProduct) === Number(data.idProduct);
-
-      //     return match
-      //       ? {
-      //           ...item,
-      //           name: data.name,
-      //           description: data.description,
-      //           caracteristicas: data.caracteristicas,
-      //           price: Number(data.price).toString(),
-      //           stock: Number(data.stock),
-      //           sku: data.sku,
-      //         }
-      //       : item;
-      //   }),
-      // );
-
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           const match = Number(item.idProduct) === Number(data.idProduct);
@@ -180,26 +178,8 @@ export default function AppWrapper({
     };
 
     const handlerUpdateProductComponent = (dataSocket: ProductI) => {
-      // setDataProducts((prev) =>
-      //   prev.map((item) => {
-      //     const match = Number(item.idProduct) === Number(dataSocket.idProduct);
-
-      //     return match
-      //       ? {
-      //           ...item,
-      //           name: dataSocket.name,
-      //           description: dataSocket.description,
-      //           caracteristicas: dataSocket.caracteristicas,
-      //           price: Number(dataSocket.price).toString(),
-      //           stock: Number(dataSocket.stock),
-      //           sku: dataSocket.sku,
-      //         }
-      //       : item;
-      //   }),
-      // );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
-          // Aquí comparamos con la estructura correcta:
           const match = Number(item.productId) == Number(dataSocket.idProduct);
 
           return match
@@ -219,25 +199,6 @@ export default function AppWrapper({
     const handleUpdatedStock = (
       dataSocket: { idProduct: number; stock: Number }[],
     ) => {
-      // setDataProducts((prev) =>
-      //   prev.map((item) => {
-      //     let findIdProduct = dataSocket.find(
-      //       (dSocket) => Number(dSocket.idProduct) === Number(item.idProduct),
-      //     );
-
-      //     if (findIdProduct) {
-      //       return {
-      //         ...item,
-      //         stock:
-      //           item?.stock == 0
-      //             ? 0
-      //             : Number(item?.stock - Number(findIdProduct.stock)),
-      //       };
-      //     }
-
-      //     return item;
-      //   }),
-      // );
       setDataFavorites((prevFavorites) => {
         return prevFavorites.map((item: any) => {
           let findIdProduct = dataSocket.find(
@@ -284,7 +245,6 @@ export default function AppWrapper({
 
     socket.on("updateProductComponent", handlerUpdateProductComponent);
 
-    //socket.on("newProduct", handlerNewProduct);
     socket.on("updateProduct", handlerUpdateProduct);
 
     socket.on("updateCart", handleUpdateCart);
@@ -292,18 +252,20 @@ export default function AppWrapper({
     socketPagos?.current?.on("updatedStock", handleUpdatedStock);
 
     const handlePostPurchaseCleanup = () => {
-      completePurchaseCleanup();
+      void clearCartAfterPaymentConfirmed();
     };
 
     socketPagos?.current?.on("removeStorageProgressPay2", handlePostPurchaseCleanup);
 
     return () => {
-      // socket.off("newProduct", handlerNewProduct);
       socket.off("updateProduct", handlerUpdateProduct);
       socket.off("updateCart", handleUpdateCart);
       socket.off("updateProductComponent", handlerUpdateProductComponent);
       socketPagos?.current?.off("updatedStock", handleUpdatedStock);
-      socketPagos?.current?.off("removeStorageProgressPay2", handlePostPurchaseCleanup);
+      socketPagos?.current?.off(
+        "removeStorageProgressPay2",
+        handlePostPurchaseCleanup,
+      );
     };
   }, [socketServer.current, socketPagos?.current]);
 
@@ -385,6 +347,7 @@ export default function AppWrapper({
 
   return (
     <SessionProvider>
+      <ProfilePhotoLoader />
       <div
         {...props}
         ref={scrollRef}

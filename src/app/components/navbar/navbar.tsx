@@ -20,7 +20,6 @@ import { FcGoogle } from "react-icons/fc";
 import { Cart, ModalCart } from "../cart/Cart";
 import { useTheContext } from "@/app/services/globalContext";
 import useCart from "../cart/useCart";
-import usePerfil from "@/app/perfil/usePerfil";
 import SubMenuProductos from "../subMenuProductos/SubMenuProductos";
 import SearchProduct from "../searchProduct/SearchProduct";
 import { usePathname } from "next/navigation";
@@ -66,7 +65,6 @@ const Navbar = () => {
     setHasToken,
     hasToken,
     rutaImgPerfil,
-    setRutaImgPerfil,
     dataFavorites,
     socketPagos,
     dataCategories,
@@ -86,7 +84,6 @@ const Navbar = () => {
       }),
     [rutaImgPerfil, session?.user?.image, session?.user?.email, hasToken],
   );
-  const { getPhotoUser } = usePerfil();
   const [isFocusedSearch, setIsFocusedSearch] = useState<boolean>(false);
   const { handleWriteStorageDataCart } = useStorage();
 
@@ -133,15 +130,6 @@ const Navbar = () => {
       }
     }
   }, [session, status]);
-
-  useEffect(() => {
-    const userId = getAuthUserId();
-    if (hasToken && userId) {
-      getPhotoUser();
-    } else if (!hasToken) {
-      setRutaImgPerfil("");
-    }
-  }, [hasToken]);
 
   // useEffect(() => {
   //   if (dataCart.length === 0 && dataCartStorege.length > 0) {
