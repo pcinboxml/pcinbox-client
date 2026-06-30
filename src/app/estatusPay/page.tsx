@@ -9,6 +9,7 @@ import PaySuccess from "../components/openpay/success/PaySuccess";
 import PayPending from "../components/openpay/pending/PayPending";
 import Failed from "../components/openpay/failed/Failed";
 import usePasarelaDePagos from "../services/pasarela-de-pagos/usePasarelaDePagos";
+import useCheckoutSession from "../hooks/useCheckoutSession";
 import { ChargesOpenPay } from "../interfaces/openpay/charges.interface";
 import { useSafeSearchParams } from "../hooks/useSafeSearchParams";
 
@@ -18,6 +19,7 @@ const EstatusPayContent = () => {
   const id = get("id");
 
   const { requestPostPagos } = usePasarelaDePagos();
+  const { completePurchaseCleanup } = useCheckoutSession();
 
   const [dataPayOpenPay, setDataPayOpenPay] = useState<ChargesOpenPay | null>(
     null,
@@ -43,7 +45,22 @@ const EstatusPayContent = () => {
         );
 
         if (resp.status === 200) {
-          setDataPayOpenPay(resp.data.data.data);
+          const paymentData = resp.data.data.data as ChargesOpenPay;
+          setDataPayOpenPay(paymentData);
+
+          const offlineType =
+            paymentData?.payment_method?.type ?? paymentData?.method;
+          const isOfflinePending =
+            (paymentData?.status === "charge_pending" ||
+              paymentData?.status === "in_progress") &&
+            (offlineType === "store" ||
+              offlineType === "bank_transfer" ||
+              offlineType === "bank_account" ||
+              offlineType === "bank");
+
+          if (isOfflinePending) {
+            void completePurchaseCleanup();
+          }
         } else {
           setError(true);
         }

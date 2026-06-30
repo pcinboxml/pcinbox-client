@@ -244,7 +244,7 @@ const FormaDePago = () => {
                 </button>
                 <button
                   className="bg-[#B92B3D] py-2 px-5 text-white rounded"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!hasToken) {
                       setDataModal({
                         isOpen: true,
@@ -344,7 +344,7 @@ const FormaDePago = () => {
                       },
                     });
 
-                    void saveDraft({
+                    await saveDraft({
                       checkoutStep: CheckoutStep.RESUMEN,
                       paymentMethod: {
                         id: idMethodPay,

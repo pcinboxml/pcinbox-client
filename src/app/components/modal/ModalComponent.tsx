@@ -195,7 +195,7 @@ const ModalComponent = ({
                 {message}
               </p>
             ) : (
-              message
+              <div className="w-full px-2 sm:px-4">{message}</div>
             )}
             {children}
 

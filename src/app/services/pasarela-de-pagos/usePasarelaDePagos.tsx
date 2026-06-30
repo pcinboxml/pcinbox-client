@@ -4,6 +4,7 @@ import { useTheContext } from "../globalContext";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { publicEnv } from "@/app/config/env";
+import { getAuthToken } from "@/app/utils/authStorage";
 
 const usePasarelaDePagos = () => {
   const { setDataModal } = useTheContext();
@@ -86,7 +87,7 @@ const usePasarelaDePagos = () => {
     try {
       const resp = await api.get(endpoint, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
         responseType: blob ? "blob" : undefined,
       });
@@ -145,7 +146,7 @@ const usePasarelaDePagos = () => {
     try {
       const resp = await api.post(endpoint, data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
       });
       return resp;

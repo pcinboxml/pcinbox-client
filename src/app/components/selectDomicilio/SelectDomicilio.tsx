@@ -67,10 +67,10 @@ const SelectDomicilio = ({
     return dataUserAddress;
   }, [dataUserAddress, selectedOption]);
   return (
-    <>
-      <div className="max-h-[500px] max-w-[550px] overflow-y-auto pr-2 space-y-3">
-        {filteredAddresses.length > 0 ? (
-          filteredAddresses.map((address) => {
+    <div className="w-full flex flex-col gap-4 px-1 sm:px-2">
+      {filteredAddresses.length > 0 ? (
+        <div className="w-full flex flex-col gap-4">
+          {filteredAddresses.map((address) => {
             const isSelected =
               String(localAddressByStore[envioKey]) ===
               String(address.idAddress);
@@ -79,12 +79,12 @@ const SelectDomicilio = ({
               <label
                 key={address.idAddress}
                 className={`
-                  my-2 relative cursor-pointer rounded-lg border-2 p-4
-                  transition-all duration-200 flex items-start gap-4 w-full
+                  relative block cursor-pointer rounded-lg border-2 p-4
+                  transition-all duration-200 w-full
                   ${
                     isSelected
-                      ? "border-[#BB3D4B] bg-red-50 shadow-lg"
-                      : "border-gray-200 hover:border-gray-300 hover:shadow-md bg-white"
+                      ? "border-[#BB3D4B] bg-red-50 shadow-md"
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white"
                   }
                 `}
               >
@@ -106,6 +106,7 @@ const SelectDomicilio = ({
                   }}
                 />
 
+                <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 pt-1">
                   <div
                     className={`
@@ -155,18 +156,19 @@ const SelectDomicilio = ({
                     className="absolute top-3 right-3 text-[#BB3D4B]"
                   />
                 )}
+                </div>
               </label>
             );
-          })
-        ) : (
-          <Alert severity="info">
-            No hay domicilios disponibles para este tipo de envío
-          </Alert>
-        )}
-      </div>
+          })}
+        </div>
+      ) : (
+        <Alert severity="info">
+          No hay domicilios disponibles para este tipo de envío
+        </Alert>
+      )}
 
       {filteredAddresses.length > 0 && (
-        <div className="flex justify-center items-center gap-2">
+        <div className="flex flex-wrap justify-center items-center gap-3 pt-2 border-t border-gray-200">
           <button
             onClick={() => {
               setLocalAddressByStore((prev) => ({
@@ -207,7 +209,7 @@ const SelectDomicilio = ({
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

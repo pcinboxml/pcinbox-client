@@ -1,13 +1,24 @@
 "use client";
 
 import { ChargesOpenPay } from "@/app/interfaces/openpay/charges.interface";
+import useCheckoutSession from "@/app/hooks/useCheckoutSession";
 import { useTheContext } from "@/app/services/globalContext";
 import usePasarelaDePagos from "@/app/services/pasarela-de-pagos/usePasarelaDePagos";
 import useService from "@/app/services/useService";
 import { Download } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Barcode from "react-barcode";
 import { MdAutorenew } from "react-icons/md";
+
+function isOfflineOpenPayMethod(data: ChargesOpenPay | null) {
+  const type = data?.payment_method?.type ?? data?.method;
+  return (
+    type === "store" ||
+    type === "bank_transfer" ||
+    type === "bank_account" ||
+    type === "bank"
+  );
+}
 
 const PayPending = ({
   dataPayOpenPay,
@@ -18,6 +29,16 @@ const PayPending = ({
   const { requestGetPagos } = usePasarelaDePagos();
   const [loadingDownloadBar, setLoadingDownloadBar] = useState<boolean>(false);
   const { socketPagos } = useTheContext();
+  const { completePurchaseCleanup } = useCheckoutSession();
+  const cleanedUpRef = useRef(false);
+
+  useEffect(() => {
+    if (!dataPayOpenPay || cleanedUpRef.current) return;
+    if (!isOfflineOpenPayMethod(dataPayOpenPay)) return;
+
+    cleanedUpRef.current = true;
+    void completePurchaseCleanup();
+  }, [dataPayOpenPay, completePurchaseCleanup]);
 
   const formatAmount = (value: number) => {
     return new Intl.NumberFormat("es-MX", {
@@ -228,6 +249,7 @@ const PayPending = ({
             <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={() => {
+                  void completePurchaseCleanup();
                   onRouterLink(
                     `/pay-end?id=${dataPayOpenPay?.id}&idOrder=${
                       dataPayOpenPay?.order_id

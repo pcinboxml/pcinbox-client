@@ -2,7 +2,7 @@
 
 import { Alert } from "@mui/material";
 import { Download } from "lucide-react";
-import { useEffect, useState, useRef } from "react"; // <-- CAMBIO 1: Añade useRef a la importación
+import { useEffect, useState } from "react";
 import Barcode from "react-barcode";
 import usePayEnd from "./usePayEnd";
 import { MdAutorenew, MdCopyAll } from "react-icons/md";
@@ -41,16 +41,12 @@ const PayEnd = () => {
   const [methodPay, setMethodPay] = useState("");
   const [expired, setExpired] = useState("");
 
-  // <-- CAMBIO 2: Crea la referencia al enlace de descarga
-  const downloadLinkRef = useRef<HTMLAnchorElement | null>(null);
-
   const {
     dataOrderCash,
     loadingDownloadBar,
     handleGetOrderCash,
     formatDate,
     handleDownloadBar,
-    // initDownloadBar, <-- CAMBIO 3: Ya no necesitas esta función aquí
     handleCopy,
   } = usePayEnd();
 
@@ -68,7 +64,7 @@ const PayEnd = () => {
 
     if (idOrderParam) {
       setIdOrder(idOrderParam);
-      completePurchaseCleanup();
+      void completePurchaseCleanup();
     }
 
     if (methodPayParam) {
@@ -79,18 +75,7 @@ const PayEnd = () => {
     if (expiredParam) {
       setExpired(expiredParam);
     }
-  }, []); // Este efecto solo se ejecuta una vez para leer los parámetros de la URL
-
-  // <-- CAMBIO 4: Actualiza el useEffect para la descarga automática
-  useEffect(() => {
-    // Solo intenta descargar si los datos ya han llegado
-    if (dataOrderCash?.payment_method?.reference) {
-      handleDownloadBar(
-        dataOrderCash.payment_method.reference,
-        downloadLinkRef,
-      );
-    }
-  }, [dataOrderCash]); // Se ejecuta cada vez que dataOrderCash se carga
+  }, []);
 
   return (
     <section className={styles.section}>
@@ -99,13 +84,13 @@ const PayEnd = () => {
       ) : (
         <div className="w-full">
           <span
-            className="text-[#808080] font-bold block text-center text-[18px]"
+            className={`text-[#808080] font-bold block text-center text-[18px] ${styles.readyTitle}`}
             style={{ fontStyle: "italic" }}
           >
             ¡Todo Listo!
           </span>
 
-          <div className="mt-3 w-full">
+          <div className="w-full">
             {/* Header tabla */}
             <div
               className="header-container-tabla w-full p-2 bg-[#666666] flex items-center"
@@ -162,7 +147,6 @@ const PayEnd = () => {
                         onClick={() =>
                           handleDownloadBar(
                             dataOrderCash?.payment_method.reference,
-                            downloadLinkRef,
                           )
                         }
                         className="flex items-center justify-center mx-auto my-2 px-3 py-1 bg-[#606060] text-white text-xs rounded"
@@ -361,8 +345,6 @@ const PayEnd = () => {
         </div>
       )}
 
-      {/* <-- CAMBIO 5: Añade el enlace oculto al final del componente, justo antes de cerrar la etiqueta <section> */}
-      <a ref={downloadLinkRef} style={{ display: "none" }} />
     </section>
   );
 };

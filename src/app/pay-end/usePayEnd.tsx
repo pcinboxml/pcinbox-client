@@ -32,7 +32,7 @@ const usePayEnd = () => {
   const formatDate = (unix: number) => {
     const date = new Date(unix * 1000);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Enero = 0
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -40,133 +40,39 @@ const usePayEnd = () => {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
-  // No necesitas crear el 'a' aquí, solo la lógica de descarga
-  const handleDownloadBar = async (
-    valueBar: any,
-    linkRef: React.RefObject<HTMLAnchorElement | null>,
-  ) => {
-    if (!linkRef.current) return; // Salir si la referencia no está lista
+  const handleDownloadBar = async (valueBar: string) => {
+    const barcodeValue = String(valueBar ?? "").trim();
+    if (!barcodeValue) return;
+
+    let link: HTMLAnchorElement | null = null;
+    let objectUrl: string | null = null;
 
     try {
       setLoadingDownloadBar(true);
       const resp = await requestGetPagos(
-        `/codeOxxo/downloadCodeBar/${valueBar}`,
+        `/codeOxxo/downloadCodeBar/${encodeURIComponent(barcodeValue)}`,
         true,
       );
 
-      const url = window.URL.createObjectURL(new Blob([resp.data]));
-
-      // Usamos la referencia al elemento 'a' que está en el componente
-      const link = linkRef.current;
-      link.href = url;
-      link.setAttribute("download", `barcode-${valueBar}.png`);
-
-      // Simulamos el click
-      link.click();
-
-      // Limpiamos la URL temporal después de un pequeño retraso
-      // para asegurar que la descarga haya comenzado.
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 100); // 100ms es generalmente suficiente
-    } catch (error) {
-      console.error("Error al descargar el código de barras:", error);
-    } finally {
-      setLoadingDownloadBar(false);
-    }
-  };
-
-  // const handleDownloadBar = async (valueBar: any) => {
-  //   try {
-  //     setLoadingDownloadBar(true);
-  //     const resp = await requestGetPagos(
-  //       `/codeOxxo/downloadCodeBar/${valueBar}`,
-  //       true
-  //     );
-
-  //     const url = window.URL.createObjectURL(new Blob([resp.data]));
-
-  //     // Crear <a> y simular click
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.setAttribute("download", `barcode-${valueBar}.png`);
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     if (link.parentNode) {
-  //       link.parentNode.removeChild(link);
-  //     }
-
-  //     // Limpiar URL temporal
-  //     window.URL.revokeObjectURL(url);
-
-  //     setLoadingDownloadBar(false);
-  //   } catch (error) {
-  //     setLoadingDownloadBar(false);
-  //   }
-  // };
-
-  // const initDownloadBar = async (valueBar: any) => {
-  //   const resp = await requestGetPagos(
-  //     `/codeOxxo/downloadCodeBar/${valueBar}`,
-  //     true,
-  //   );
-
-  //   const url = window.URL.createObjectURL(new Blob([resp.data]));
-
-  //   // Crear <a> y simular click
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.setAttribute("download", `barcode-${valueBar}.png`);
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   if (link.parentNode) {
-  //     link.parentNode.removeChild(link);
-  //   }
-
-  //   // Limpiar URL temporal
-  //   window.URL.revokeObjectURL(url);
-  // };
-
-  const initDownloadBar = async (valueBar: any) => {
-    let link: HTMLAnchorElement | null = null;
-    let url: string | null = null;
-
-    try {
-      const resp = await requestGetPagos(
-        `/codeOxxo/downloadCodeBar/${valueBar}`,
-        true,
+      objectUrl = window.URL.createObjectURL(
+        new Blob([resp.data], { type: "image/png" }),
       );
 
-      url = window.URL.createObjectURL(new Blob([resp.data]));
-
-      // Crear <a> y simular click
       link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `barcode-${valueBar}.png`);
+      link.href = objectUrl;
+      link.setAttribute("download", `barcode-${barcodeValue}.png`);
       document.body.appendChild(link);
       link.click();
     } catch (error) {
-      console.error("Error en la inicialización de la descarga:", error);
-      // Manejar el error si es necesario
+      console.error("Error al descargar el código de barras:", error);
     } finally {
-      // Limpieza segura
-      if (link) {
-        try {
-          // Elimina el nodo del body directamente.
-          document.body.removeChild(link);
-        } catch (e) {
-          // Si falla, no es crítico, el navegador probablemente ya lo limpió.
-          console.warn(
-            "No se pudo remover el enlace del DOM en initDownloadBar.",
-            e,
-          );
-        }
+      if (link?.parentNode) {
+        link.parentNode.removeChild(link);
       }
-
-      if (url) {
-        // Limpia la URL temporal para liberar memoria.
-        window.URL.revokeObjectURL(url);
+      if (objectUrl) {
+        window.URL.revokeObjectURL(objectUrl);
       }
+      setLoadingDownloadBar(false);
     }
   };
 
@@ -175,18 +81,16 @@ const usePayEnd = () => {
       .writeText(idOrder)
       .then(() => {
         console.log("Texto copiado al portapapeles:", idOrder);
-        // Puedes mostrar un toast o mensaje de éxito aquí
       })
       .catch((err) => {
         console.error("Error al copiar:", err);
-        // Manejo de errores
       });
   };
+
   return {
     handleGetOrderCash,
     formatDate,
     handleDownloadBar,
-    initDownloadBar,
     handleCopy,
     dataOrderCash,
     loadingDownloadBar,

@@ -233,7 +233,7 @@ const useOpcionesEntrega = () => {
 
   const getValuesStorage2 = async () => {
     try {
-      const resp = await requestGet("/checkout/getDraft", true);
+      const resp = await requestGet("/checkout/getDraft", false);
       const draft = resp?.data?.data;
       if (!draft?.deliveryGroups) return;
 

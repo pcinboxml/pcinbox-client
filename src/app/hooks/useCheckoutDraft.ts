@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import useService from "../services/useService";
 import ProductI from "../interfaces/products/product.interface";
 
@@ -41,6 +41,12 @@ export default function useCheckoutDraft() {
   const { requestGet, requestPost, requestDelete } = useService();
   const [summary, setSummary] = useState<CheckoutSummary | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
+  const summaryFetchKeyRef = useRef<string | null>(null);
+  const summaryInFlightRef = useRef<Promise<CheckoutSummary | null> | null>(
+    null,
+  );
+  const summaryRef = useRef<CheckoutSummary | null>(null);
+  summaryRef.current = summary;
 
   const saveDraft = useCallback(
     async (partial: CheckoutDraft) => {
@@ -51,7 +57,7 @@ export default function useCheckoutDraft() {
   );
 
   const getDraft = useCallback(async () => {
-    const resp = await requestGet("/checkout/getDraft", true);
+    const resp = await requestGet("/checkout/getDraft", false);
     return (resp?.data?.data ?? null) as CheckoutDraft | null;
   }, [requestGet]);
 
@@ -109,21 +115,45 @@ export default function useCheckoutDraft() {
 
   const fetchSummary = useCallback(
     async (products?: ProductI[]) => {
-      setLoadingSummary(true);
-      try {
-        const resp = await requestPost(
-          products ? { products } : {},
-          "/checkout/summary",
-        );
-        if (resp?.status === 200) {
-          const data = resp.data.data as CheckoutSummary;
-          setSummary(data);
-          return data;
-        }
-      } finally {
-        setLoadingSummary(false);
+      const key =
+        products
+          ?.map(
+            (p) =>
+              `${p.idProduct}:${p.quantity}:${p.storeId ?? ""}:${p.price ?? ""}`,
+          )
+          .join("|") ?? "__empty__";
+
+      if (summaryFetchKeyRef.current === key && summaryRef.current) {
+        return summaryRef.current;
       }
-      return null;
+
+      if (summaryInFlightRef.current && summaryFetchKeyRef.current === key) {
+        return summaryInFlightRef.current;
+      }
+
+      summaryFetchKeyRef.current = key;
+      setLoadingSummary(true);
+
+      const task = (async () => {
+        try {
+          const resp = await requestPost(
+            products ? { products } : {},
+            "/checkout/summary",
+          );
+          if (resp?.status === 200) {
+            const data = resp.data.data as CheckoutSummary;
+            setSummary(data);
+            return data;
+          }
+        } finally {
+          setLoadingSummary(false);
+          summaryInFlightRef.current = null;
+        }
+        return null;
+      })();
+
+      summaryInFlightRef.current = task;
+      return task;
     },
     [requestPost],
   );

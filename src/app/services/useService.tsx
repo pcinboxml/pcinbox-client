@@ -5,13 +5,24 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTheContext } from "./globalContext";
 import { signOut } from "next-auth/react";
 import ProductI from "../interfaces/products/product.interface";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import useStorage from "./useStorage";
 import { getCheckoutMode, setCheckoutMode as persistCheckoutMode } from "../utils/checkoutStorage";
 import { readCheckoutUiSession } from "../utils/checkoutSessionStorage";
 import { clearAuthSession, getAuthToken, getAuthUserId } from "../utils/authStorage";
 import { clearCachedProfilePhotoUrl } from "../utils/profilePhoto";
 import { publicEnv } from "../config/env";
+
+type ApiRequestConfig = {
+  suppressErrorModal?: boolean;
+};
 
 const useService = () => {
   const pathName = usePathname();
@@ -81,7 +92,11 @@ const useService = () => {
         //   });
         // } else
 
-        if (er.response?.status != 401) {
+        const suppressErrorModal = Boolean(
+          (er.config as ApiRequestConfig | undefined)?.suppressErrorModal,
+        );
+
+        if (!suppressErrorModal && er.response?.status != 401) {
           setDataModal({
             isOpen: true,
             message:
@@ -119,78 +134,82 @@ const useService = () => {
 
   const router = useRouter();
 
-  const requestPost = async (data: any, endPoint: string) => {
-    try {
-      const res = await api.post(endPoint, data, {
-        headers: {
-          Authorization: `Bearer ${getAuthToken() ?? ""}`,
-        },
-      });
-      return res;
-    } catch (error: any) {
-      if (error?.response?.status === 401) {
-        setDataModal({
-          isOpen: true,
-          message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
-          title: "Sesión expirada",
-
-          onClose: () => {
-            setDataModal((prev) => ({
-              ...prev,
-              isOpen: false,
-            }));
+  const requestPost = useCallback(
+    async (data: any, endPoint: string) => {
+      try {
+        const res = await api.post(endPoint, data, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken() ?? ""}`,
           },
-
-          onConfirm: async () => {
-            setDataModal((prev) => ({
-              ...prev,
-              isOpen: false,
-            }));
-          },
-
-          type: "info",
         });
-      } else {
-        setDataModal({
-          isOpen: true,
-          message:
-            error?.response?.data?.message ||
-            error?.message ||
-            "Error interno del servidor",
-          title: "Error",
+        return res;
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          setDataModal({
+            isOpen: true,
+            message: "Tu sesión expiró, debes iniciar sesión nuevamente.",
+            title: "Sesión expirada",
 
-          onClose: () => {
-            setDataModal((prev) => ({
-              ...prev,
-              isOpen: false,
-            }));
-          },
+            onClose: () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
 
-          onConfirm: async () => {
-            setDataModal((prev) => ({
-              ...prev,
-              isOpen: false,
-            }));
-          },
+            onConfirm: async () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
 
-          type: "info",
-        });
+            type: "info",
+          });
+        } else {
+          setDataModal({
+            isOpen: true,
+            message:
+              error?.response?.data?.message ||
+              error?.message ||
+              "Error interno del servidor",
+            title: "Error",
+
+            onClose: () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
+
+            onConfirm: async () => {
+              setDataModal((prev) => ({
+                ...prev,
+                isOpen: false,
+              }));
+            },
+
+            type: "info",
+          });
+        }
+
+        throw error;
       }
+    },
+    [api, setDataModal],
+  );
 
-      throw error;
-    }
-  };
-
-  const requestGet = async (
+  const requestGet = useCallback(async (
     endPoint: string,
-    showErrorSesion: boolean = false,
+    showErrorModal: boolean = true,
   ) => {
     try {
       const res = await api.get(endPoint, {
         headers: {
           Authorization: `Bearer ${getAuthToken() ?? ""}`,
         },
-      });
+        suppressErrorModal: !showErrorModal,
+      } as ApiRequestConfig & { headers: Record<string, string> });
 
       return res;
     } catch (error: any) {
@@ -216,7 +235,7 @@ const useService = () => {
 
           type: "info",
         });
-      } else {
+      } else if (showErrorModal) {
         setDataModal({
           isOpen: true,
           message:
@@ -244,9 +263,9 @@ const useService = () => {
       }
       throw error;
     }
-  };
+  }, [api, setDataModal]);
 
-  const requestDelete = async (endPoint: string) => {
+  const requestDelete = useCallback(async (endPoint: string) => {
     try {
       const res = await api.delete(endPoint, {
         headers: {
@@ -305,7 +324,7 @@ const useService = () => {
       }
       throw error;
     }
-  };
+  }, [api, setDataModal]);
 
   const onRouterLink = (route: string): void => {
     try {
