@@ -11,7 +11,7 @@ import {
 } from "../utils/cartSync";
 
 export default function useCartSync() {
-  const { setDataCart, hasToken } = useTheContext();
+  const { setDataCart, hasToken, dataCart } = useTheContext();
   const { requestGet, requestPost } = useService();
   const { handleWriteStorageDataCart } = useStorage();
 
@@ -38,11 +38,11 @@ export default function useCartSync() {
         return items;
       }
     } catch {
-      // sin servidor autenticado no hay carrito persistido local útil
+      // Error de red o servidor: conservar el carrito visible para no “borrarlo” de golpe.
+      return dataCart;
     }
 
-    applyCartItems([]);
-    return [];
+    return dataCart;
   };
 
   const mergeLocalCartIntoServer = async () => {
@@ -61,8 +61,9 @@ export default function useCartSync() {
           },
           "/cart/addProductFromStorage",
         );
-      } catch {
         clearLocalCartStorage();
+      } catch {
+        // Si falla el merge, conservar localStorage para reintentar en el próximo sync.
       }
     }
 

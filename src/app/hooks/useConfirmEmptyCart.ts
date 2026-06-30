@@ -14,7 +14,7 @@ export default function useConfirmEmptyCart() {
   const confirmEmptyCart = ({
     onConfirmEmpty,
     title = "Vaciar carrito",
-    message = "¿Estás seguro de que deseas eliminar todos los productos del carrito? Esta acción no se puede deshacer.",
+    message = "Se eliminarán todos los productos de tu carrito. ¿Deseas continuar? Esta acción no se puede deshacer.",
   }: ConfirmEmptyCartOptions) => {
     setDataModal({
       isOpen: true,
