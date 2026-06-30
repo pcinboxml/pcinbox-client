@@ -8,6 +8,8 @@ import useService from "../services/useService";
 import { Alert } from "@mui/material";
 import { CheckoutStep } from "../components/timeline/checkoutSteps";
 import { useCheckoutGuard } from "../hooks/useCheckoutGuard";
+import useCheckoutDraft from "../hooks/useCheckoutDraft";
+import useStorage from "../services/useStorage";
 import style from "./confirma-productos.module.css";
 import { useEffect, useMemo, useState } from "react";
 import { useTheContext } from "../services/globalContext";
@@ -29,8 +31,10 @@ import {
 const ConfirmaProducts = () => {
   const [runCheckoutSync, setRunCheckoutSync] = useState(false);
 
-  const { dataCart, buyNowProduct, setDataModal } = useTheContext();
+  const { dataCart, buyNowProduct, setDataModal, hasToken } = useTheContext();
   const { formatCurrency, onRouterLink, productsToShow } = useService();
+  const { checkoutMode } = useStorage();
+  const { saveDraft } = useCheckoutDraft();
 
   useCheckoutGuard(CheckoutStep.CONFIRMAR_PRODUCTOS);
 
@@ -129,6 +133,22 @@ const ConfirmaProducts = () => {
     const goToDelivery = () => {
       writeCheckoutSnapshot(currentSnapshot);
       setCheckoutStep(CheckoutStep.OPCIONES_ENTREGA);
+
+      if (hasToken) {
+        void saveDraft({
+          checkoutMode: checkoutMode as "cart" | "buy_now",
+          checkoutStep: CheckoutStep.OPCIONES_ENTREGA,
+          buyNow:
+            checkoutMode === "buy_now" && buyNowProduct
+              ? {
+                  idProduct: buyNowProduct.idProduct,
+                  quantity: Number(buyNowProduct.quantity),
+                  storeId: buyNowProduct.storeId ?? null,
+                }
+              : null,
+        });
+      }
+
       onRouterLink("/opciones-entrega");
     };
 

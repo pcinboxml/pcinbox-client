@@ -339,11 +339,13 @@ export default function AppWrapper({
 
   useScrollRestoration(scrollRef);
 
-  const showFab =
-    pathName != "/estatusMP" &&
-    pathName != "/estatusPay" &&
-    pathName != "/terminos_y_condiciones" &&
-    pathName != "/aviso_privacidad";
+  const isFullBleedRoute =
+    pathName === "/estatusMP" ||
+    pathName === "/estatusPay" ||
+    pathName === "/terminos_y_condiciones" ||
+    pathName === "/aviso_privacidad";
+
+  const showFab = !isFullBleedRoute;
 
   return (
     <SessionProvider>
@@ -355,21 +357,25 @@ export default function AppWrapper({
         style={{
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
-          overflowY: "auto",
+          height: isFullBleedRoute ? "100dvh" : "100vh",
+          overflowY: isFullBleedRoute ? "hidden" : "auto",
         }}
       >
-        {pathName != "/estatusMP" &&
-          pathName != "/estatusPay" &&
-          pathName != "/terminos_y_condiciones" &&
-          pathName != "/aviso_privacidad" && <NavbarResponsive />}
+        {!isFullBleedRoute && <NavbarResponsive />}
         <main
-          style={{ marginTop }}
-          className={
-            pathName !== "/estatusMP" && pathName !== "/estatusPay"
-              ? "container main-content"
-              : ""
-          }
+          style={{
+            marginTop: isFullBleedRoute ? 0 : marginTop,
+            ...(isFullBleedRoute
+              ? {
+                  flex: 1,
+                  minHeight: 0,
+                  height: "100%",
+                  padding: 0,
+                  overflow: "hidden",
+                }
+              : {}),
+          }}
+          className={!isFullBleedRoute ? "container main-content" : ""}
         >
           {children}
 
@@ -388,15 +394,9 @@ export default function AppWrapper({
 
           {/* <Notification dataNotification={dataNotification} /> */}
 
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && <Footer />}
+          {!isFullBleedRoute && <Footer />}
 
-          {pathName != "/estatusMP" &&
-            pathName != "/estatusPay" &&
-            pathName != "/terminos_y_condiciones" &&
-            pathName != "/aviso_privacidad" && (
+          {!isFullBleedRoute && (
               <>
                 <span className="block mx-auto my-2 text-center text-[13px]">
                   © {new Date().getFullYear().toString()} PCinBOX Todos los

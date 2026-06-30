@@ -42,10 +42,13 @@ const HistoryShop = () => {
     showModal,
     showUbicationStore,
     updateFilter,
+    searchInput,
+    handleSearchInputChange,
     clearFilters,
     hasActiveFilters,
     setDataHistoryCompras,
     loading,
+    isSearching,
     errorMsg,
     page,
     totalPages,
@@ -360,18 +363,27 @@ const HistoryShop = () => {
 
             <div className={`${style.filterGroup} ${style.filterGroupSearch}`}>
               <label htmlFor="searchProduct" className={style.filterLabel}>
-                Buscar producto
+                Buscar
               </label>
-              <input
-                id="searchProduct"
-                type="text"
-                className={style.filterControl}
-                placeholder="Nombre del producto..."
-                value={dataFilter.searchProduct}
-                onChange={(e) =>
-                  updateFilter({ searchProduct: e.target.value.trim() })
-                }
-              />
+              <div className={style.searchInputWrap}>
+                <input
+                  id="searchProduct"
+                  type="search"
+                  className={style.filterControl}
+                  placeholder="Producto, #orden o guía de rastreo..."
+                  value={searchInput}
+                  onChange={(e) => handleSearchInputChange(e.target.value)}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                {isSearching ? (
+                  <MdAutorenew
+                    size={18}
+                    className={`${style.searchSpinner} the-spinner`}
+                    aria-hidden
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
@@ -402,7 +414,12 @@ const HistoryShop = () => {
               <span>Cargando compras...</span>
             </div>
           ) : dataHistoryCompras.length > 0 ? (
-            dataHistoryCompras.map(renderOrderCard)
+            <>
+              {isSearching ? (
+                <p className={style.searchingHint}>Actualizando resultados...</p>
+              ) : null}
+              {dataHistoryCompras.map(renderOrderCard)}
+            </>
           ) : (
             <div className={style.emptyState}>
               <p className={style.emptyStateTitle}>

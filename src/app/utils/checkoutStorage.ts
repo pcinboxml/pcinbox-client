@@ -43,6 +43,7 @@ export const CHECKOUT_STORAGE_KEYS = {
 } as const;
 
 const SESSION_CHECKOUT_MODE = "checkout_mode_session";
+const SESSION_CHECKOUT_STEP = "checkout_step_session";
 
 function hasPersistedAuthToken(): boolean {
   if (typeof window === "undefined") return false;
@@ -318,11 +319,14 @@ function clearPersistedCheckoutModeAndStep() {
   localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutMode);
   localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
   sessionStorage.removeItem(SESSION_CHECKOUT_MODE);
+  sessionStorage.removeItem(SESSION_CHECKOUT_STEP);
 }
 
 export function getCheckoutStep(): CheckoutStep | null {
   if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
+  const raw = hasPersistedAuthToken()
+    ? sessionStorage.getItem(SESSION_CHECKOUT_STEP)
+    : localStorage.getItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
   if (raw === null || raw === "") return null;
   const step = Number(raw);
   return Number.isNaN(step) ? null : (step as CheckoutStep);
@@ -330,7 +334,14 @@ export function getCheckoutStep(): CheckoutStep | null {
 
 export function setCheckoutStep(step: CheckoutStep | null) {
   if (typeof window === "undefined") return;
-  if (hasPersistedAuthToken()) return;
+  if (hasPersistedAuthToken()) {
+    if (step === null) {
+      sessionStorage.removeItem(SESSION_CHECKOUT_STEP);
+    } else {
+      sessionStorage.setItem(SESSION_CHECKOUT_STEP, String(step));
+    }
+    return;
+  }
   if (step === null) {
     localStorage.removeItem(CHECKOUT_STORAGE_KEYS.checkoutStep);
   } else {

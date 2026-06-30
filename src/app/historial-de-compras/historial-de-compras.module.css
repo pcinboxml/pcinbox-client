@@ -111,6 +111,29 @@
   font-size: 0.875rem;
 }
 
+.searchInputWrap {
+  position: relative;
+}
+
+.searchInputWrap .filterControl {
+  width: 100%;
+  padding-right: 2.25rem;
+}
+
+.searchSpinner {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.searchingHint {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
 .filtersHeader {
   display: flex;
   align-items: center;

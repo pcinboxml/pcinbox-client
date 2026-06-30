@@ -37,7 +37,6 @@ if (googleOAuth.enabled) {
 
 const handler = NextAuth({
   providers,
-  trustHost: true,
 
   callbacks: {
     async signIn({ user }) {

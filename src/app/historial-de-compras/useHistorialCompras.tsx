@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useService from "../services/useService";
 import { useTheContext } from "../services/globalContext";
 import { HistoryComprasI } from "../interfaces/compras/historyCompras.interface";
@@ -31,6 +31,7 @@ const DEFAULT_HISTORY_FILTERS: HistoryFilterState = {
 };
 
 export const HISTORY_ITEMS_PER_PAGE = 10;
+const SEARCH_DEBOUNCE_MS = 350;
 
 export function getOrderTotal(historyCompra: HistoryComprasI): number {
   if (Number.isFinite(Number(historyCompra.totalSales))) {
@@ -65,6 +66,7 @@ export function canCancelOrder(historyCompra: HistoryComprasI): boolean {
 const useHistorialDeCompras = () => {
   const [dataFilter, setDataFilter] =
     useState<HistoryFilterState>(DEFAULT_HISTORY_FILTERS);
+  const [searchInput, setSearchInput] = useState("");
   const { requestPost } = useService();
   const [loadingCancelledCompra, setLoadingCancelledCompra] = useState<
     Record<number, boolean>
@@ -74,15 +76,30 @@ const useHistorialDeCompras = () => {
     HistoryComprasI[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const fetchRequestIdRef = useRef(0);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const filtersRef = useRef(dataFilter);
+  filtersRef.current = dataFilter;
 
   const fetchHistory = useCallback(
-    async (targetPage: number, filters: HistoryFilterState) => {
-      setLoading(true);
+    async (
+      targetPage: number,
+      filters: HistoryFilterState,
+      options?: { initial?: boolean },
+    ) => {
+      const requestId = ++fetchRequestIdRef.current;
+      const isInitialLoad = options?.initial === true;
+
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setIsSearching(true);
+      }
       setErrorMsg("");
 
       try {
@@ -92,12 +109,14 @@ const useHistorialDeCompras = () => {
             status: filters.status,
             startDate: filters.startDate,
             endDate: filters.endDate,
-            searchProduct: filters.searchProduct,
+            searchProduct: filters.searchProduct.trim(),
             page: targetPage,
             limit: HISTORY_ITEMS_PER_PAGE,
           },
           "/sales/filterSales",
         );
+
+        if (requestId !== fetchRequestIdRef.current) return;
 
         if (resp.status == 200) {
           const list = resp?.data?.data?.data;
@@ -115,52 +134,69 @@ const useHistorialDeCompras = () => {
           setErrorMsg("No se pudo cargar tu historial de compras.");
         }
       } catch {
+        if (requestId !== fetchRequestIdRef.current) return;
         setDataHistoryCompras([]);
         setTotalPages(0);
         setTotalItems(0);
         setErrorMsg("Error al cargar tu historial de compras.");
       } finally {
-        setLoading(false);
+        if (requestId !== fetchRequestIdRef.current) return;
+        if (isInitialLoad) {
+          setLoading(false);
+        }
+        setIsSearching(false);
       }
     },
     [requestPost],
   );
 
   const initDataHistory = useCallback(() => {
-    fetchHistory(page, dataFilter);
-  }, [page, dataFilter, fetchHistory]);
+    void fetchHistory(1, filtersRef.current, { initial: true });
+  }, [fetchHistory]);
 
-  const updateFilter = (patch: Partial<HistoryFilterState>) => {
-    const nextFilters = { ...dataFilter, ...patch };
+  const applyFilters = useCallback(
+    (nextFilters: HistoryFilterState, targetPage = 1) => {
+      setDataFilter(nextFilters);
+      setPage(targetPage);
+      void fetchHistory(targetPage, nextFilters);
+    },
+    [fetchHistory],
+  );
+
+  const updateFilter = (patch: Partial<Omit<HistoryFilterState, "searchProduct">>) => {
+    applyFilters({ ...filtersRef.current, ...patch }, 1);
+  };
+
+  const handleSearchInputChange = (value: string) => {
+    setSearchInput(value);
 
     if (searchDebounceRef.current) {
       clearTimeout(searchDebounceRef.current);
     }
 
-    const isSearchOnly =
-      Object.keys(patch).length === 1 && "searchProduct" in patch;
-
-    if (isSearchOnly) {
-      searchDebounceRef.current = setTimeout(() => {
-        setPage(1);
-        fetchHistory(1, nextFilters);
-        setDataFilter(nextFilters);
-      }, 400);
-      return;
-    }
-
-    setDataFilter(nextFilters);
-    setPage(1);
-    fetchHistory(1, nextFilters);
+    searchDebounceRef.current = setTimeout(() => {
+      const nextFilters = {
+        ...filtersRef.current,
+        searchProduct: value.trim(),
+      };
+      applyFilters(nextFilters, 1);
+    }, SEARCH_DEBOUNCE_MS);
   };
+
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
 
   const clearFilters = () => {
     if (searchDebounceRef.current) {
       clearTimeout(searchDebounceRef.current);
     }
-    setDataFilter(DEFAULT_HISTORY_FILTERS);
-    setPage(1);
-    fetchHistory(1, DEFAULT_HISTORY_FILTERS);
+    setSearchInput("");
+    applyFilters(DEFAULT_HISTORY_FILTERS, 1);
   };
 
   const handleChangePage = (
@@ -168,7 +204,7 @@ const useHistorialDeCompras = () => {
     value: number,
   ) => {
     setPage(value);
-    fetchHistory(value, dataFilter);
+    void fetchHistory(value, filtersRef.current);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -178,7 +214,7 @@ const useHistorialDeCompras = () => {
     dataFilter.status !== "allState" ||
     Boolean(dataFilter.startDate) ||
     Boolean(dataFilter.endDate) ||
-    Boolean(dataFilter.searchProduct);
+    Boolean(searchInput.trim());
 
   const showModal = (historyCompra: HistoryComprasI) => {
     setDataModal({
@@ -419,10 +455,13 @@ const useHistorialDeCompras = () => {
   return {
     dataHistoryCompras,
     loading,
+    isSearching,
     errorMsg,
     loadingCancelledCompra,
     showModal,
     updateFilter,
+    searchInput,
+    handleSearchInputChange,
     clearFilters,
     hasActiveFilters,
     dataFilter,
